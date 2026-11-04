@@ -38,7 +38,8 @@
         "Tools/Tests",
         "Tools/ci.py and GitHub Actions (pinned via setup-python)",
         "Tools/Reference: standard library only; no third-party Python packages",
-        "Tools/Synthetic: original standard-library generators, mathematical oracles and generation benchmarks"
+        "Tools/Synthetic: original standard-library generators, mathematical oracles and generation benchmarks",
+        "Tools/Framing: original Decimal window oracle and isolated host benchmark evidence validation"
       ],
       "redistributed": false
     },
@@ -65,7 +66,8 @@
       "license": "GPL-3.0-or-later (distributed application; retain bundled component notices)",
       "licenseEvidenceURL": "https://github.com/praat/praat.github.io/blob/6f3da9ef1d8cce0d5684afc104d02888dfc71b25/docs/manual/License.html",
       "usedBy": [
-        "Tools/Reference explicit developer-only CLI; official binary downloaded to ignored .build only; no source copying or runtime linkage"
+        "Tools/Reference explicit developer-only CLI; official binary downloaded to ignored .build only; no source copying or runtime linkage",
+        "Tools/Framing/reference.py: black-box Gaussian coefficient oracle only; no runtime linkage"
       ],
       "redistributed": false,
       "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/26",
@@ -2759,6 +2761,38 @@
       ],
       "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
       "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/vowel-low.wav"
+    },
+    {
+      "id": "framing-gaussian2",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Framing/gaussian2.json",
+      "sha256": "199390ba80b01906ee7cbe0ce6d3c7c9faf83daaa921dacaf23f6e1f227a351b",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/24",
+        "versionOrHash": "generator-v1-sha256:3005814f5f25e528a316f68ab643f0da6c3d23f2b72ddf25129f4e1116faff54"
+      },
+      "generator": {
+        "path": "Tools/Framing/reference.py",
+        "version": "1",
+        "sha256": "3005814f5f25e528a316f68ab643f0da6c3d23f2b72ddf25129f4e1116faff54"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constant synthetic samples; no human recording"
+      },
+      "transformations": [
+        "Pinned Praat public scripting Gaussian2 window on ones",
+        "Independent original Decimal evaluation with 70 significant digits",
+        "Reference numerical outputs only; no Praat implementation code redistributed"
+      ],
+      "expectedProfile": "praat-gaussian-2-physical/v1; explicit count and rate per case",
+      "referenceOutputIdentity": "sha256:199390ba80b01906ee7cbe0ce6d3c7c9faf83daaa921dacaf23f6e1f227a351b"
     }
   ],
   "optionalModels": []

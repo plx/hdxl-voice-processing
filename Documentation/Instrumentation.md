@@ -135,5 +135,11 @@ Raw `.trace`/XML files under each `private/` directory may include host/process
 metadata added by Instruments. Keep them local. Share only the JSON summaries,
 trials, redacted command logs, and audited assembly; CI uploads these from the
 system and compiled-out modes only. The bounded test sink independently verifies
-pairing and task cancellation. Production adoption and integrated overhead remain
-#56/#62; sustained physical measurements remain #74.
+pairing and task cancellation. `PCMFramer` now uses bounded `FrameAssembly` scopes
+for each ring-to-emission copy, nested in a frame scope with token 24, ordinal,
+sample count, and full/partial geometry status. Validation, input ring ingestion,
+and consumer callbacks are outside these scopes. Its unit tests verify exact
+mode counts, callback boundaries, and equal samples across modes. See
+[framing measurements](../Tools/Framing/README.md) for full-call timing and
+default-disabled allocation evidence. Broader production adoption and integrated
+overhead remain #56/#62; sustained physical measurements remain #74.
