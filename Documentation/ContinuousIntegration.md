@@ -40,9 +40,9 @@ must enter the normal test suite so both instrumented lanes exercise them.
 
 The weekly and manual `extended` job runs every Swift Testing test up to ten times
 in release configuration, stopping a test's repetitions on failure. Reproduce
-with `python3 Tools/ci.py extended`. The current suite contains contracts, not
-DSP accuracy or audio stress coverage. #18/#26 add fixture/reference infrastructure;
-later streaming issues add stress cases. They should extend this lane when their
+with `python3 Tools/ci.py extended`. The current suite contains contracts, diagnostics, independent reference fixtures
+and analytic primitive checks. Native voice algorithms and audio stress coverage
+arrive in their later issues. They should extend this lane when their
 runtime warrants separation while retaining representative checks on every PR.
 Controlled benchmark/baseline work belongs to #17/#20 and performance epics.
 There is no elapsed-time pass threshold here; recorded job/command durations are
@@ -107,3 +107,17 @@ and compiled-out configurations. It checks deterministic output, sampling/emissi
 counts and bounded callback counter assembly, then retains overhead observations
 without timing thresholds. Actual Instruments recordings run locally; raw traces
 are excluded from hosted artifacts.
+
+## External references
+
+Ordinary debug CI runs `Tools/Reference/verify.py` offline. Swift tests consume the
+committed fixtures directly; reference processes are never required by consumers.
+The separate `Reference regeneration` workflow runs on reference-related PR changes,
+manually and weekly. It checksums/acquires the exact external Praat tool, repeats each
+current original-synthetic workload three times, compares committed goldens and
+measures release native fixture validation separately. Its artifacts include raw
+numeric reference output and manifests for these original synthetic inputs only;
+no executable, disk image, personal recording or external corpus is uploaded.
+See [reference instructions](../Tools/Reference/README.md) and
+[initial evidence](Evidence/references.md). Numerical/identity disagreements fail the
+workflow; timing has no machine-independent pass threshold.

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tool": "Praat",
+  "version": "7.0.02",
+  "versionOutput": "Praat 7.0.02 (August 26 2026)",
+  "sourceRepository": "https://github.com/praat/praat.github.io",
+  "sourceRevision": "6f3da9ef1d8cce0d5684afc104d02888dfc71b25",
+  "tag": "v7.0.02",
+  "artifactURL": "https://github.com/praat/praat.github.io/releases/download/v7.0.02/praat7002_mac.dmg",
+  "artifactSHA256": "9e4d1d220cff32ccfa4521114d23c11ebbfd792db61884f6019a44bd4aba19d4",
+  "executableSHA256": "8af6acef5b539d69e5decc07a016882a3f04f7a545715756dd9a5e5c7fdf599a",
+  "executablePath": "Praat.app/Contents/MacOS/Praat",
+  "host": "macOS 27 arm64; upstream universal macOS binary",
+  "pythonVersion": "3.14.8",
+  "pythonPackages": [],
+  "locale": "C",
+  "precision": "IEEE-754 binary64",
+  "options": [
+    "--run",
+    "--no-pref-files",
+    "--no-plugins",
+    "--utf8"
+  ],
+  "historicalBinaryParity": false,
+  "artifactBytes": 109494129
+}

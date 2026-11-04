@@ -20,7 +20,7 @@ package enum DiagnosticValidity: UInt8, Sendable {
 }
 
 package enum DiagnosticStage: String, CaseIterable, Sendable {
-    case initialize, reset, analysisFrame, captureHandoff, queueWait, dequeue
+    case initialize, reset, analysisFrame, captureHandoff, queueWait, dequeue, referenceValidation
     case resample, frameAssembly, fft, cepstrum, cpp, cppsSmoothing, cppsFitting
     case pitch, hnr, pulses, perturbation, resultPublication
     case overrun, drop, routeChange, configurationChange, error, cancelled
@@ -36,6 +36,7 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
     // Explicit literals, never a dynamically formatted event name.
     var signpostName: StaticString {
         switch self {
+        case .referenceValidation: "ReferenceValidation"
         case .initialize: "Initialize"
         case .reset: "Reset"
         case .analysisFrame: "AnalysisFrame"

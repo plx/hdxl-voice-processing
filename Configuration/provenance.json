@@ -36,7 +36,8 @@
         "Tools/verify-provenance.py",
         "Tools/Fixtures/generate-contract-fixtures.py",
         "Tools/Tests",
-        "Tools/ci.py and GitHub Actions (pinned via setup-python)"
+        "Tools/ci.py and GitHub Actions (pinned via setup-python)",
+        "Tools/Reference: standard library only; no third-party Python packages"
       ],
       "redistributed": false
     },
@@ -56,30 +57,23 @@
       "redistributed": false
     },
     {
-      "id": "praat-parselmouth",
-      "status": "planned",
-      "sourceURL": "https://github.com/YannickJadoul/Parselmouth",
-      "selectedVersion": null,
-      "license": "GPL-3.0-or-later",
-      "licenseEvidenceURL": "https://github.com/YannickJadoul/Parselmouth/blob/master/README.md#license",
-      "usedBy": [
-        "Tools/Reference/ only; planned in #26"
-      ],
-      "redistributed": false,
-      "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/26"
-    },
-    {
       "id": "praat",
-      "status": "planned",
-      "sourceURL": "https://github.com/praat/praat",
-      "selectedVersion": null,
+      "status": "development-tool",
+      "sourceURL": "https://github.com/praat/praat.github.io",
+      "selectedVersion": "7.0.02",
       "license": "GPL-3.0-or-later (distributed application; retain bundled component notices)",
-      "licenseEvidenceURL": "https://praat.org/manual/License.html",
+      "licenseEvidenceURL": "https://github.com/praat/praat.github.io/blob/6f3da9ef1d8cce0d5684afc104d02888dfc71b25/docs/manual/License.html",
       "usedBy": [
-        "Pinned external reference or embedded Parselmouth Praat version in #26"
+        "Tools/Reference explicit developer-only CLI; official binary downloaded to ignored .build only; no source copying or runtime linkage"
       ],
       "redistributed": false,
-      "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/26"
+      "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/26",
+      "revision": "6f3da9ef1d8cce0d5684afc104d02888dfc71b25",
+      "licenseSHA256": "03f032ce9f093a629647b071edc98f83d10f0cb0dde3e7aa057ddddbaf76609d",
+      "acknowledgmentsURL": "https://github.com/praat/praat.github.io/blob/6f3da9ef1d8cce0d5684afc104d02888dfc71b25/docs/manual/Acknowledgments.html",
+      "acknowledgmentsSHA256": "dd8aaef85744b246d9ccd1169144b4be2d839fb4870759107e874b914c2e8659",
+      "artifactSHA256": "9e4d1d220cff32ccfa4521114d23c11ebbfd792db61884f6019a44bd4aba19d4",
+      "executableSHA256": "8af6acef5b539d69e5decc07a016882a3f04f7a545715756dd9a5e5c7fdf599a"
     },
     {
       "id": "ivoice",
@@ -311,6 +305,258 @@
       ],
       "expectedProfile": "contract-fixture/v1:11af161bd9d8054c8549b8d5de5d106c62a9afed741ba97de5358ffc0793f1e0",
       "referenceOutputIdentity": "contract-schema-v1/result-v1.json; structural serialization example, not a numerical CPPS reference"
+    },
+    {
+      "id": "reference-cpps-saw-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/cpps-saw/reference.json",
+      "sha256": "67d708b1638b0eae2202865332742a50862526bf008612b468aa61df44a1a1dd",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:3706fc497b0c049d30bc42090d9d8dc088047d05295c03bb5c62806fd3618976"
+      },
+      "generator": {
+        "path": "Tools/Reference/run.py",
+        "version": "1",
+        "sha256": "3706fc497b0c049d30bc42090d9d8dc088047d05295c03bb5c62806fd3618976"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Original deterministic PCM input; exact normalized/artifact input hashes recorded in reference manifest",
+        "Pinned external Praat 7.0.02 computation; settings, binary/source/runner hashes in manifest",
+        "Raw numeric stdout retained; strict parser; canonical JSON with LF; no PCM normalization or zero substitution"
+      ],
+      "expectedProfile": "3dc8164b59c24a1f45a68317f4d894f06d94066d50770adadc12fc6dd33c29f3",
+      "referenceOutputIdentity": "d5f6921e52c89073ee996279c94892239290ada28b6a4f3390de96c8294bec5b"
+    },
+    {
+      "id": "reference-cpps-saw-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/cpps-saw/reference.raw.txt",
+      "sha256": "869aec76a4b4a9eddb16e591a5d51bdaaaa82bce6896cb50c1a4008733bfa945",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:3706fc497b0c049d30bc42090d9d8dc088047d05295c03bb5c62806fd3618976"
+      },
+      "generator": {
+        "path": "Tools/Reference/run.py",
+        "version": "1",
+        "sha256": "3706fc497b0c049d30bc42090d9d8dc088047d05295c03bb5c62806fd3618976"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Original deterministic PCM input; exact normalized/artifact input hashes recorded in reference manifest",
+        "Pinned external Praat 7.0.02 computation; settings, binary/source/runner hashes in manifest",
+        "Raw numeric stdout retained; strict parser; canonical JSON with LF; no PCM normalization or zero substitution"
+      ],
+      "expectedProfile": "3dc8164b59c24a1f45a68317f4d894f06d94066d50770adadc12fc6dd33c29f3",
+      "referenceOutputIdentity": "d5f6921e52c89073ee996279c94892239290ada28b6a4f3390de96c8294bec5b"
+    },
+    {
+      "id": "reference-hnr-silence-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/hnr-silence/reference.json",
+      "sha256": "755981529b4b8bc06612fd6481969a1357a5c01edac513af47252c7399d0e398",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:3706fc497b0c049d30bc42090d9d8dc088047d05295c03bb5c62806fd3618976"
+      },
+      "generator": {
+        "path": "Tools/Reference/run.py",
+        "version": "1",
+        "sha256": "3706fc497b0c049d30bc42090d9d8dc088047d05295c03bb5c62806fd3618976"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Original deterministic PCM input; exact normalized/artifact input hashes recorded in reference manifest",
+        "Pinned external Praat 7.0.02 computation; settings, binary/source/runner hashes in manifest",
+        "Raw numeric stdout retained; strict parser; canonical JSON with LF; no PCM normalization or zero substitution"
+      ],
+      "expectedProfile": "praat-7.0.02-hnr-cc-reference",
+      "referenceOutputIdentity": "5ec7f00bcfeb2ce83985f93e3ba2efeb362423bfe6e92092e69dc4361f3448ef"
+    },
+    {
+      "id": "reference-hnr-silence-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/hnr-silence/reference.raw.txt",
+      "sha256": "4355fd7bdef94dd6206552c429f51336d2f801591c704d2b3adf721e59ad26c9",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:3706fc497b0c049d30bc42090d9d8dc088047d05295c03bb5c62806fd3618976"
+      },
+      "generator": {
+        "path": "Tools/Reference/run.py",
+        "version": "1",
+        "sha256": "3706fc497b0c049d30bc42090d9d8dc088047d05295c03bb5c62806fd3618976"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Original deterministic PCM input; exact normalized/artifact input hashes recorded in reference manifest",
+        "Pinned external Praat 7.0.02 computation; settings, binary/source/runner hashes in manifest",
+        "Raw numeric stdout retained; strict parser; canonical JSON with LF; no PCM normalization or zero substitution"
+      ],
+      "expectedProfile": "praat-7.0.02-hnr-cc-reference",
+      "referenceOutputIdentity": "5ec7f00bcfeb2ce83985f93e3ba2efeb362423bfe6e92092e69dc4361f3448ef"
+    },
+    {
+      "id": "reference-primitives-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/primitives.json",
+      "sha256": "df7debb58ba1e2a39c0c801cdbc5ed10ef658d94c45be953f854aca59d5438da",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "generator": {
+        "path": "Tools/Reference/fixtures.py",
+        "version": "1",
+        "sha256": "a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Hand-derived N=8 DFT/energy values from closed-form equations, no native DSP implementation",
+        "Exact rational PCM and normalized Float64-LE hashes; canonical JSON with LF"
+      ],
+      "expectedProfile": "analytic-rectangular-dft8-energy/v1",
+      "referenceOutputIdentity": "5206cb318f611efee474059765001d04106a1dc0848762b9481dcac17bc17435"
+    },
+    {
+      "id": "reference-saw-120ms-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/saw-120ms.wav",
+      "sha256": "38a478e745ddeac9a7f70f3e5a4984be452b4cb21f7548d7cef584d93307fe1d",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "generator": {
+        "path": "Tools/Reference/fixtures.py",
+        "version": "1",
+        "sha256": "a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Integer-arithmetic 200Hz saw or exact silence; division by 32768 is exact binary scaling",
+        "Original mono Float64 RIFF WAVE at 16kHz; no recordings, trim, noise, or external content"
+      ],
+      "expectedProfile": "reference mono16k normalizedFloat64",
+      "referenceOutputIdentity": "original-reference-input-v1/sha256:38a478e745ddeac9a7f70f3e5a4984be452b4cb21f7548d7cef584d93307fe1d"
+    },
+    {
+      "id": "reference-saw-500ms-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/saw-500ms.wav",
+      "sha256": "c7ee8279d601679475cf5a4c9efb8f2094195a38faa091e2ee0cdbd08ec3c9b8",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "generator": {
+        "path": "Tools/Reference/fixtures.py",
+        "version": "1",
+        "sha256": "a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Integer-arithmetic 200Hz saw or exact silence; division by 32768 is exact binary scaling",
+        "Original mono Float64 RIFF WAVE at 16kHz; no recordings, trim, noise, or external content"
+      ],
+      "expectedProfile": "reference mono16k normalizedFloat64",
+      "referenceOutputIdentity": "original-reference-input-v1/sha256:c7ee8279d601679475cf5a4c9efb8f2094195a38faa091e2ee0cdbd08ec3c9b8"
+    },
+    {
+      "id": "reference-silence-500ms-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/silence-500ms.wav",
+      "sha256": "f7b54f941d6b8c2425c6951c6eaa0f09517399d110d8eda0271ab4c2ee875939",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "generator": {
+        "path": "Tools/Reference/fixtures.py",
+        "version": "1",
+        "sha256": "a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Integer-arithmetic 200Hz saw or exact silence; division by 32768 is exact binary scaling",
+        "Original mono Float64 RIFF WAVE at 16kHz; no recordings, trim, noise, or external content"
+      ],
+      "expectedProfile": "reference mono16k normalizedFloat64",
+      "referenceOutputIdentity": "original-reference-input-v1/sha256:f7b54f941d6b8c2425c6951c6eaa0f09517399d110d8eda0271ab4c2ee875939"
     }
   ],
   "optionalModels": []

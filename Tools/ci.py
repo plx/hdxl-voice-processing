@@ -86,6 +86,7 @@ def commands(lane, output):
     return [
         ["bash", "Tools/format.sh", "--check"],
         [sys.executable, "Tools/verify-provenance.py"],
+        [sys.executable, "Tools/Reference/verify.py"],
         [sys.executable, "-m", "unittest", "discover", "-s", "Tools/Tests", "-p", "test_*.py"],
         ["swift", "build"],
         test,
