@@ -100,6 +100,18 @@ class InstrumentationEvidenceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 trace.validate_trace(ET.tostring(changed))
 
+    def test_end_records_cannot_carry_metadata(self):
+        for structured in (False, True):
+            root = synthetic_trace()
+            end = next(row for row in root.findall("node/row") if row.findtext("event-type") == "End")
+            message = end.find("message")
+            if structured:
+                ET.SubElement(message, "narrative-text").text = "file=/private/audio.wav"
+            else:
+                message.text = "file=/private/audio.wav"
+            with self.assertRaisesRegex(ValueError, "ends must not contain metadata"):
+                trace.validate_trace(ET.tostring(root))
+
     def test_trace_uses_raw_numeric_arguments_instead_of_localized_display(self):
         root = synthetic_trace()
         message = root.find("node/row/message")

@@ -71,6 +71,8 @@ def validate_trace(xml):
         key = (record["category"], record["name"], record["identifier"])
         kind = record["event-type"]
         if kind == "End":
+            if record["message"]:
+                raise ValueError("Interval ends must not contain metadata")
             begin = active.pop(key, None)
             if begin is None or begin["time"] > record["time"]:
                 raise ValueError("Unmatched/reversed interval end")

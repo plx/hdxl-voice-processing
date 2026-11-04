@@ -42,9 +42,14 @@ private subdirectories because they contain machine metadata. CI retains the
 repeatable system/fallback probes without a noisy timing gate. Production traces
 and integrated overhead will be revisited under #56/#62.
 
-Local validation passed 26 Swift test cases in the CI report and 31
+Local validation passed 26 Swift test cases in the CI report and 32
 Python evidence/provenance tests. Consumer graph, network-denied execution,
 formatting, and pinned actionlint checks passed. Trace-parser regression tests
 include localized large-integer displays: validation uses typed raw arguments
 instead of presentation strings. Follow-up #84 records owner review of the
 sampling, budget, and profile-token policy after production integration.
+
+The first local review found that end-record payloads bypassed metadata validation.
+The validator now requires empty end payloads; regressions reject both plain-text
+and structured extra content, including file paths. The existing real trace still
+passes the stricter validator.
