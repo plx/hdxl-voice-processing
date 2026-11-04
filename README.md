@@ -1,2 +1,32 @@
-# hdxl-voice-processing
-Library for fast, realtime voice quality metrics on Apple systems.
+# HDXLVoiceProcessing
+
+A Swift package under development for reproducible acoustic voice measurements
+on macOS 27 and iOS 27. It will provide PCM analysis, native audio adapters, and
+optional visualizations. Algorithms and microphone capture are not implemented
+in this initial foundation. Measurements will retain units, validity, timing,
+and numerical-profile identity; they are not universal voice-quality or health scores.
+
+Requires Xcode 27.0 / Swift 6.4, using Swift 6 language mode.
+
+| Product | Purpose |
+| --- | --- |
+| `HDXLVoiceProcessing` | PCM contracts and deterministic algorithms |
+| `HDXLVoiceProcessingAudio` | Optional Apple audio integration |
+| `HDXLVoiceProcessingVisualization` | Optional SwiftUI components |
+
+```sh
+swift build
+swift test
+swift run --package-path Examples/CoreConsumer CoreConsumer
+```
+
+The independent consumer demonstrates the current `PCMFormat` value. Importing
+core does not link capture/UI frameworks or require reference/benchmark tooling.
+This library has no app bundle and does not start microphones. Host applications
+own permissions, audio sessions, sandbox entitlements, and lifecycle.
+
+See [contribution instructions](CONTRIBUTING.md),
+[architecture](Documentation/Architecture/0001-package-boundaries.md), and the
+[roadmap](https://github.com/plx/hdxl-voice-processing/issues/1).
+watchOS is pending a separate capability decision. Physical-device validation
+is deferred to [follow-up #74](https://github.com/plx/hdxl-voice-processing/issues/74).
