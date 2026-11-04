@@ -15,6 +15,9 @@ let package = Package(
         .target(name: "HDXLVoiceProcessing"),
         .target(name: "HDXLVoiceProcessingAudio", dependencies: ["HDXLVoiceProcessing"]),
         .target(name: "HDXLVoiceProcessingVisualization", dependencies: ["HDXLVoiceProcessing"]),
+        .executableTarget(
+            name: "InstrumentationProbe", dependencies: ["HDXLVoiceProcessing"],
+            path: "Tools/InstrumentationProbe"),
         .testTarget(
             name: "HDXLVoiceProcessingTests", dependencies: ["HDXLVoiceProcessing"],
             resources: [.copy("Fixtures")]),

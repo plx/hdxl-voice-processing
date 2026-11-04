@@ -135,3 +135,12 @@ Primary release documentation:
 [getting started](https://github.com/ordo-one/benchmark/blob/1.38.0/Sources/Benchmark/Documentation.docc/GettingStarted.md),
 [writing benchmarks](https://github.com/ordo-one/benchmark/blob/1.38.0/Sources/Benchmark/Documentation.docc/WritingBenchmarks.md),
 [manifest](https://github.com/ordo-one/benchmark/blob/1.38.0/Package.swift).
+
+## Instrumentation probe
+
+The framework-independent worker diagnostic probe is part of the benchmark CI
+smoke lane. Run `python3 Tools/instrumentation.py` and its `--compiled-out` variant
+from the repository root. It reports bare, disabled, sampled, and detailed costs
+with identical optimized outputs; it does not alter the gain/energy benchmark's
+metrics or establish a timing budget. Local Instruments commands and evidence
+handling are documented in [Instrumentation](../Documentation/Instrumentation.md).

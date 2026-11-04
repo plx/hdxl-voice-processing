@@ -68,6 +68,10 @@ jobs:
         run: python3 Tools/benchmark.py timing
       - name: Allocation and ARC capability diagnostics
         run: python3 Tools/benchmark.py allocation
+      - name: Measure synthetic worker instrumentation
+        run: python3 Tools/instrumentation.py
+      - name: Verify compiled-out instrumentation fallback
+        run: python3 Tools/instrumentation.py --compiled-out
       - name: Retain benchmark smoke evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -76,6 +80,8 @@ jobs:
           path: |
             Benchmarks/.build/artifacts/*/run/*.json
             Benchmarks/.build/artifacts/*/run/*.log
+            .build/instrumentation-artifacts/system/*.*
+            .build/instrumentation-artifacts/compiled-out/*.*
           if-no-files-found: error
           include-hidden-files: true
           retention-days: 14

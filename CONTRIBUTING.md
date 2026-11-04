@@ -56,3 +56,8 @@ Update `Configuration/provenance.json` and `THIRD_PARTY_NOTICES.md` in the same 
 failure cases, and the consumer under a network-denied runtime sandbox.
 The project license is pending owner decision #78; publication checks fail until
 that decision and the corresponding license file are recorded.
+
+Worker instrumentation changes also run `python3 Tools/instrumentation.py` and
+`python3 Tools/instrumentation.py --compiled-out`. For actual local trace evidence,
+use the commands in [Instrumentation](Documentation/Instrumentation.md); keep raw
+Instruments traces local and share only the approved summaries.

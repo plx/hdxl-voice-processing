@@ -1,0 +1,139 @@
+# Internal instrumentation
+
+`WorkerDiagnostics` is a package-scoped, synchronous, single-owner facade. It is
+shared by root-package targets without becoming public consumer API. Every
+analyzer creates its own instance on a worker/control path. It defaults to
+`disabled`; applications do not acquire microphone permissions or configure
+logging by importing core. There are no external runtime dependencies.
+
+The implementation follows [Apple OSSignposter](https://developer.apple.com/documentation/os/ossignposter)
+and [Recording Performance Data](https://developer.apple.com/documentation/os/recording-performance-data).
+The current macOS/iOS 27 deployment floor supports this API. `canImport(os)` and
+`HDXL_DISABLE_SIGNPOSTS` guard the system sink; the same computations still run
+when that sink is unavailable. The fallback is exercised with the current Swift
+6.4 toolchain, not claimed as support for older deployment targets or other OSes.
+
+## Modes and bounds
+
+- **Disabled:** no sink construction, signpost calls, per-frame ID generation,
+  or diagnostic counter updates. Construct the facade before processing; session
+  allocation uses a control-path mutex even for a disabled instance.
+- **Sampled:** select frame sequences divisible by 16, including frame zero.
+  All nested stages use that selection; no independently sampled end calls.
+- **Detailed:** select every frame. This is opt-in diagnostic work, not a normal
+  capture mode.
+
+Both active modes admit at most 64 starts/events per frame and eight concurrent
+nested intervals. Ends are reserved by their accepted starts and never compete
+for that budget. There is no application-side queue of diagnostic records.
+Control events before/between frames use the remaining budget; initialization
+starts with 64 slots, and only entry to a nonnested frame refreshes it. A control
+event storm therefore exhausts the budget until the next frame. Nested frame
+entry executes its body with the enclosing context and does not refresh limits.
+
+`counts` contains saturating totals of submitted interval starts, submitted
+events, suppressed records (sampling/budget/depth/identity exhaustion), and
+unavailable records (no enabled sink). Submitted means the API accepted the call,
+not that Instruments persisted it. The OS may discard records; trace validation
+must detect missing intervals. No counters silently become unsupported zeros.
+
+A session ID is a process-local monotonically allocated UInt64. Each record has
+a session-local increasing span ID and a reset epoch. Exhaustion disables future
+records rather than reusing an identity. Actual OS intervals additionally use
+`makeSignpostID()` rather than `.exclusive`. `withInterval` closes its captured
+state in `defer`, including early return, throw, cooperative cancellation, and a
+reset inside the scope. Existing spans keep their starting epoch; subsequent
+records use the incremented epoch. There is no API for an interval across an
+`await`: asynchronous orchestration surrounds synchronous worker turns.
+
+## Event dictionary
+
+Subsystem: **`org.hdxl.voice-processing`**. Names are explicit `StaticString`
+literals. The following vocabulary is reserved as implementations arrive; the
+synthetic probe does not claim to implement the named DSP algorithms.
+
+| Category | Names | Meaning/boundary |
+| --- | --- | --- |
+| lifecycle | Initialize, Reset, RouteChange, ConfigurationChange | Worker/control lifecycle observations |
+| flow | CaptureHandoff, Dequeue | Worker observation of a delivered block, never a capture callback span |
+| flow | QueueWait | Worker-side bookkeeping span; actual queue residence comes from timestamps in `queue_ns` |
+| flow | Overrun, Drop | Worker observation of explicit discontinuity/drop information |
+| worker | AnalysisFrame | One admitted synchronous synthetic/analysis worker turn |
+| worker | Resample, FrameAssembly | Future conversion and frame assembly work |
+| worker | FFT, Cepstrum, CPP, CPPSSmoothing, CPPSFitting | Future numerical stages |
+| worker | Pitch, HNR, Pulses, Perturbation | Future numerical stages |
+| worker | ResultPublication | Worker-side result construction/publication work |
+| worker | Error, Cancelled | Worker outcomes with numeric validity reasons |
+
+Begin/event payloads use only the following numeric fields. Ends carry no extra
+payload. The facade cannot accept arbitrary messages, PCM, transcripts, paths,
+calibration values, or dynamically formatted names.
+
+| Field | Unit/meaning |
+| --- | --- |
+| session, epoch, span | Process-local diagnostic identities, not user identifiers |
+| profile | Ephemeral numeric token assigned by the control plane; resolve to an approved algorithm profile outside the trace, never a personal label/hash |
+| frame | Frame sequence within the analysis stream; UInt64.max outside a frame |
+| samples | Samples per channel in the frame |
+| depth | Queue depth in blocks, not nesting depth |
+| validity | 0 unspecified, 1 available, 2 warmup, 3 discontinuity, 4 invalid input, 5 cancelled, 6 failed |
+| processed | Count of completed processing turns before this one |
+| queue_ns | Timestamp-derived queue residence in nanoseconds; UInt64.max means unavailable, while zero is a valid measured delay |
+
+Call `event(_:validity:)` inside the frame scope when reporting frame failures.
+Metadata is a copied value and is never read back into analysis configuration or
+outputs. Profile/window configuration and numeric validity remain the analysis
+implementation's responsibility.
+
+## Capture callback policy
+
+`CaptureDiagnostics` is a 28-byte payload (32-byte stride) of scalar counters and
+one supplied host timestamp. Construct it before capture begins. Its `record`
+method has bounded saturating arithmetic and stores only: callback count,
+dropped-frame count, last host timestamp, and largest block size. It reads no
+clock, constructs no interval state or string, generates no ID, locks nothing,
+creates no task, and dispatches nothing. The release wrapper inspects its arm64
+machine code and rejects calls, unsupported instructions, and backward branches.
+
+Only the producer may mutate it. Copy its value through the eventual production
+handoff header, or inspect it after capture has stopped; concurrent unsynchronized
+reads are forbidden. This issue provides the diagnostic primitive, not the later
+PCM handoff or capture implementation. There is no opt-in callback signposting
+path. Use Audio Client instrumentation for callback behavior. Worker spans and
+queue timestamps must never be relabeled as capture-time spans.
+
+## Reproduce the evidence
+
+Run from the repository root:
+
+```sh
+python3 Tools/instrumentation.py
+python3 Tools/instrumentation.py --compiled-out
+python3 Tools/trace-instrumentation.py
+python3 Tools/trace-instrumentation.py --overhead
+```
+
+The first two commands need Swift/Xcode and Python only, not the benchmark
+framework. They build release `InstrumentationProbe`, warm each path, rotate
+four mode orders over eight trials of 10,000 frames, independently verify the
+UInt64 workload checksum, check exact emission/sampling counts, and retain raw
+trials plus min/median/max and paired differences from bare execution. They also
+inspect the optimized callback counter routine. Results live under
+`.build/instrumentation-artifacts/`. Timings are observations, not CI thresholds.
+The normal probe checks enabled API calls; it does not infer that a recorder is
+attached. The trace overhead command separately records the same probe.
+
+The last two commands require local Instruments recording permission. They use
+the Logging template and target only the synthetic executable. Pairing validation
+checks all 128 intervals, two actually overlapping sessions, resets, cancellation,
+errors, overruns, configuration changes, and numeric-only metadata. Its source is
+synthetic integer work, with a trace-only sleep to expose overlap. FFT is a label
+exercising the facade, not an FFT implementation. `queue_ns=123` in this probe is
+explicitly simulated, not a measured queue latency.
+
+Raw `.trace`/XML files under each `private/` directory may include host/process
+metadata added by Instruments. Keep them local. Share only the JSON summaries,
+trials, redacted command logs, and audited assembly; CI uploads these from the
+system and compiled-out modes only. The bounded test sink independently verifies
+pairing and task cancellation. Production adoption and integrated overhead remain
+#56/#62; sustained physical measurements remain #74.
