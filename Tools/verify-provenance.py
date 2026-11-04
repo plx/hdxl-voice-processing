@@ -52,11 +52,15 @@ def visible_files(root):
         ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=root
     )
     names = {item.decode("utf-8") for item in output.split(b"\0") if item}
-    return {name for name in names if (root / name).is_file()}
+    return {name for name in names if (root / name).is_file() or (root / name).is_symlink()}
 
 
 def fixture_paths(files):
-    audio = {".wav", ".aif", ".aiff", ".flac", ".mp3", ".m4a", ".ogg", ".caf", ".pcm"}
+    audio = {
+        ".wav", ".wave", ".bwf", ".rf64", ".w64", ".aif", ".aiff", ".aifc", ".aiffc",
+        ".flac", ".mp3", ".mp2", ".m4a", ".m4b", ".aac", ".adts", ".alac",
+        ".ogg", ".oga", ".opus", ".caf", ".pcm", ".au", ".snd", ".amr", ".wma",
+    }
     return {
         name for name in files
         if PurePosixPath(name).suffix.lower() in audio
@@ -75,6 +79,7 @@ def validate(root, manifest, files, for_publication=False):
     require(status in {"pending-owner-decision", "selected"}, "Invalid project license status")
     if status == "selected":
         text(project["identifier"], "Project license identifier")
+        require(project["path"] in files, "Project license is not Git-visible")
         checked_path(root, project["path"])
         text(project["decisionURL"], "Project license decision")
     else:
@@ -107,6 +112,7 @@ def validate(root, manifest, files, for_publication=False):
         if component.get("redistributed"):
             require(state == "active", f"Only active dependencies may be redistributed: {identifier}")
             for notice in component["noticePaths"]:
+                require(notice in files, f"Required notice is not Git-visible: {notice}")
                 checked_path(root, notice)
             require(bool(component["noticePaths"]), f"Missing notices: {identifier}")
 

@@ -7,11 +7,12 @@ changes were needed for this issue.
 - `python3 Tools/verify-provenance.py`: passes for both existing fixture artifacts,
   their exact generator source hash, dependency records, and the empty external
   runtime/model inventories.
-- `python3 -m unittest discover -s Tools/Tests -p 'test_*.py'`: fourteen tests pass,
+- `python3 -m unittest discover -s Tools/Tests -p 'test_*.py'`: sixteen tests pass,
   including deliberately changed/missing provenance, unlisted audio, license/consent
   violations, path traversal, duplicates, dependency source/revision drift, fixture
   removal before staging, mandatory generator records/resolved pins, symlink
-  rejection, and independent golden reproduction.
+  rejection (including discovery of broken links), standard audio extensions,
+  Git-visible license/notice files, and independent golden reproduction.
 - `swift test` through `Tools/verify.sh`: all twenty Swift tests pass.
 - The Python generator's candidate files compare byte-for-byte with both committed
   contract fixtures. No expected outputs or profile identities were changed.

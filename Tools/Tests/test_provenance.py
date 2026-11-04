@@ -81,18 +81,49 @@ class ProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.ProvenanceError, "Symbolic links"):
             self.check()
 
-    def test_removed_fixture_is_not_treated_as_unlisted_before_staging(self):
+    def test_visibility_distinguishes_deleted_files_and_broken_symlinks(self):
         subprocess.run(["git", "init", "--quiet"], cwd=self.root, check=True)
         subprocess.run(["git", "add", "Tests"], cwd=self.root, check=True)
         name = self.manifest["fixtures"][0]["path"]
         self.assertIn(name, MODULE.visible_files(self.root))
         (self.root / name).unlink()
         self.assertNotIn(name, MODULE.visible_files(self.root))
+        (self.root / name).symlink_to(self.root / "missing-target")
+        self.assertIn(name, MODULE.visible_files(self.root))
 
     def test_uninventoried_audio_fails_even_outside_fixture_directory(self):
-        self.files.add("Examples/undisclosed.wav")
-        with self.assertRaisesRegex(MODULE.ProvenanceError, "unlisted"):
+        for extension in ["wav", "wave", "aifc", "aac", "opus", "m4b", "AIFC", "caf", "flac"]:
+            with self.subTest(extension=extension):
+                name = f"Examples/undisclosed.{extension}"
+                self.files.add(name)
+                with self.assertRaisesRegex(MODULE.ProvenanceError, "unlisted"):
+                    self.check()
+                self.files.remove(name)
+
+    def test_publication_license_must_be_git_visible(self):
+        license_path = self.root / ".build/LICENSE"
+        license_path.parent.mkdir()
+        license_path.write_text("Test-only license placeholder")
+        self.manifest["projectLicense"].update(
+            status="selected", identifier="LicenseRef-Test", path=".build/LICENSE")
+        with self.assertRaisesRegex(MODULE.ProvenanceError, "Project license is not Git-visible"):
+            self.check(publication=True)
+        self.files.add(".build/LICENSE")
+        self.check(publication=True)
+
+    def test_redistributed_dependency_notices_must_be_git_visible(self):
+        notice = self.root / "notice.txt"
+        notice.write_text("Test-only notice placeholder")
+        self.manifest["components"] = [{
+            "id": "example", "sourceURL": "https://example.invalid/source",
+            "license": "LicenseRef-Test", "licenseEvidenceURL": "https://example.invalid/license",
+            "usedBy": ["Example"], "status": "active", "selectedVersion": "1",
+            "redistributed": True, "noticePaths": ["notice.txt"],
+        }]
+        with self.assertRaisesRegex(MODULE.ProvenanceError, "Required notice is not Git-visible"):
             self.check()
+        self.files.add("notice.txt")
+        self.check()
 
     def test_third_party_cannot_inherit_project_license(self):
         self.manifest["fixtures"][0]["source"]["kind"] = "third-party"

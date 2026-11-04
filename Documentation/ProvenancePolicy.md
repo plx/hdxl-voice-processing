@@ -24,8 +24,8 @@ In #17, select an exact Benchmark release/revision, inspect the effective manife
 selected by Swift 6.4 (including versioned manifests/traits), commit its lockfile,
 and inventory every transitive dependency/license. Its compiler requirements must
 not change runtime minimums. The verifier compares Swift lockfile identities, source
-URLs, versions, and revisions with active inventory records. A future runtime
-dependency cannot remain active without a resolved pin. Fixture and generator paths
+URLs, versions, and revisions with active inventory records. Every active Swift
+dependency requires a resolved pin. Fixture and generator paths
 must refer to repository files without symbolic links in any path component. A future runtime
 dependency needs a justified issue and deliberate graph/provenance policy update.
 
@@ -76,7 +76,8 @@ do not commit private forms/contact details. Preserve license-required attributi
 and other notices, and review distribution conditions before adding material.
 
 The checker inventories Git-visible non-source/non-Markdown artifacts under
-`Fixtures/` directories, plus audio files anywhere in the checkout. Source generators
+`Fixtures/` directories, plus recognized audio extensions anywhere in the checkout
+(including AIFC, AAC, and Opus; see `fixture_paths` for the explicit set). Source generators
 (`.py`/`.swift`) are source rather than fixture outputs and have checked hashes when
 referenced. This catches ordinary omitted fixture files; it cannot detect private
 audio encoded inside arbitrary source. Reviewers still inspect added resources.
@@ -114,7 +115,9 @@ Build/resolve is a separate developer action. This verifies the available contra
 and serialization path now; add actual analysis workloads as algorithms arrive.
 
 For actual publication, run `python3 Tools/verify-provenance.py --for-publication`.
-It intentionally fails while #78 is pending. Release dry runs may report that gate
+Project license files and required dependency notices must be Git-visible repository
+files; ignored local files cannot satisfy the gate. It intentionally fails while
+#78 is pending. Release dry runs may report that gate
 as pending without publishing; actual publication must not bypass it. The checker
 verifies recorded metadata/hashes, not legal compatibility.
 
