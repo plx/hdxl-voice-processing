@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "swiftToolsVersion": "6.4",
+  "swiftLanguageMode": "6",
+  "xcodeVersion": "27.0",
+  "xcodeBuild": "27A266a",
+  "sdkVersions": {"macOS": "27.0", "iOS": "27.0", "iOSSimulator": "27.0"},
+  "deploymentTargets": {"macOS": "27.0", "iOS": "27.0"},
+  "watchOS": "pending capability issue #60; no support claim",
+  "ciRunner": "pending validation in issue #19",
+  "physicalDeviceEvidence": "deferred by owner to issue #74"
+}
