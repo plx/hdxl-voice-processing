@@ -121,3 +121,10 @@ no executable, disk image, personal recording or external corpus is uploaded.
 See [reference instructions](../Tools/Reference/README.md) and
 [initial evidence](Evidence/references.md). Numerical/identity disagreements fail the
 workflow; timing has no machine-independent pass threshold.
+
+Level-related changes also regenerate the pinned MIT coefficient equations and independent
+80-digit Decimal K-filter vectors with `Tools/Levels/reference.py acquire` then `verify`.
+Only original synthetic numeric fixtures are retained. The separate `Level benchmarks`
+workflow runs 100 configurations in timing and allocation modes, checks all measured
+distributions and positive allocator controls, and retains its JSON/gzip/log evidence for
+14 days. It reports host processing batches; physical capture and device energy remain #74.

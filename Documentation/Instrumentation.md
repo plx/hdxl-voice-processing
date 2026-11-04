@@ -164,3 +164,15 @@ Disabled/default instrumentation is used in timing/allocation workloads. See the
 
 Conditioning kernel spans end before invoking the borrowed-buffer consumer. Downstream FFT
 or other analysis therefore does not become resampler time; tests assert this at callback entry.
+
+### Digital levels and K-weighting (A04)
+
+`PreparedLevelAnalyzer` uses `AnalysisFrame` with profile token 32 and the emitted grid index.
+`LevelEnergy` surrounds ingestion of newly pending samples and window aggregation;
+`KWeighting` surrounds the two-stage continuous filter over those samples. A complete first
+window processes N samples; subsequent windows process H new samples, independent of input
+chunking. At most four intervals occur per emitted window. All end before the owned-result
+consumer runs. Validation and pending input copies are outside these scopes and remain part
+of full-call benchmark timing. No per-sample events or PCM payloads are emitted.
+Tests check exact sampling counts, numeric metadata, exception pairing, reset epochs, and
+callback boundaries. See [the level guide](DigitalLevels.md) and [workloads](../Tools/Levels/README.md).

@@ -7,6 +7,10 @@ on:
   pull_request:
     paths:
       - 'Tools/Reference/**'
+      - 'Tools/Levels/reference.py'
+      - 'Sources/HDXLVoiceProcessing/Levels/**'
+      - 'Tests/HDXLVoiceProcessingTests/Level*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Levels/**'
       - 'Tools/Conditioning/reference.py'
       - 'Tools/Conditioning/reference.praat'
       - 'Sources/HDXLVoiceProcessing/Conditioning/**'
@@ -30,7 +34,7 @@ concurrency:
 
 jobs:
   regenerate:
-    name: Pinned Praat regeneration / Xcode 27.0
+    name: Pinned references / Xcode 27.0
     runs-on: xcode-27
     timeout-minutes: 30
     env:
@@ -55,6 +59,12 @@ jobs:
           set -o pipefail
           python3 Tools/Conditioning/reference.py | tee .build/reference-evidence/conditioning.log
           cp Tests/HDXLVoiceProcessingTests/Fixtures/Conditioning/praat.json .build/reference-evidence/conditioning-reference.json
+      - name: Compare pinned K-weighting coefficients and independent Decimal vectors
+        run: |
+          set -o pipefail
+          python3 Tools/Levels/reference.py acquire
+          python3 Tools/Levels/reference.py verify | tee .build/reference-evidence/levels.log
+          cp Tests/HDXLVoiceProcessingTests/Fixtures/Levels/k-weighting.json .build/reference-evidence/levels-reference.json
       - name: Retain original-synthetic reference evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -22,7 +22,7 @@ package enum DiagnosticValidity: UInt8, Sendable {
 package enum DiagnosticStage: String, CaseIterable, Sendable {
     case initialize, reset, analysisFrame, captureHandoff, queueWait, dequeue, referenceValidation
     case resample, preEmphasis, frameAssembly, fft, cepstrum, cpp, cppsSmoothing, cppsFitting
-    case pitch, hnr, pulses, perturbation, resultPublication
+    case pitch, hnr, pulses, perturbation, resultPublication, levelEnergy, kWeighting
     case overrun, drop, routeChange, configurationChange, error, cancelled
 
     var category: String {
@@ -56,6 +56,8 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
         case .pulses: "Pulses"
         case .perturbation: "Perturbation"
         case .resultPublication: "ResultPublication"
+        case .levelEnergy: "LevelEnergy"
+        case .kWeighting: "KWeighting"
         case .overrun: "Overrun"
         case .drop: "Drop"
         case .routeChange: "RouteChange"

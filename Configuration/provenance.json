@@ -244,6 +244,22 @@
         "Benchmarks/ isolated development package only; never a runtime consumer dependency"
       ],
       "redistributed": false
+    },
+    {
+      "id": "deman-k-coefficient-reference",
+      "status": "development-tool",
+      "sourceURL": "https://github.com/BrechtDeMan/loudness.py",
+      "selectedVersion": "dc0f83883d247cbeb106064784e32d8c38ce1573",
+      "revision": "dc0f83883d247cbeb106064784e32d8c38ce1573",
+      "license": "MIT",
+      "licenseEvidenceURL": "https://github.com/BrechtDeMan/loudness.py/blob/dc0f83883d247cbeb106064784e32d8c38ce1573/LICENSE",
+      "licenseSHA256": "9c69b733c8db29a3f3dab2686fb7051991e76b0610eed74b1a22bfda8e451d00",
+      "artifactSHA256": "5e388497cb67fb13969881beb86b8d93bafaeab8f372655c034b587afcc61bc3",
+      "usedBy": [
+        "Tools/Levels/reference.py: pinned external coefficient calculation in ignored development cache; no runtime linkage or source copying"
+      ],
+      "redistributed": false,
+      "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/32"
     }
   ],
   "fixtures": [
@@ -2857,6 +2873,38 @@
       ],
       "expectedProfile": "praat7-whole-interval-conditioning/v1; explicit rate, depth, precision and pre-emphasis per case",
       "referenceOutputIdentity": "sha256:feb8bafe6d2af61ef61e67842704b31b04448aa628e3fe42482e3b0ab38ab32f"
+    },
+    {
+      "id": "levels-k-weighting",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Levels/k-weighting.json",
+      "sha256": "3e85291e5662f67e5fd4f922a9f61328efee3d5a4ba3e0235cd60bdc35507165",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/32",
+        "versionOrHash": "generator-v1-sha256:eb0e7be6789cdcaff6db8bdb017098f3627df5b2330d3c13d6553a4dfa98644d"
+      },
+      "generator": {
+        "path": "Tools/Levels/reference.py",
+        "version": "1",
+        "sha256": "eb0e7be6789cdcaff6db8bdb017098f3627df5b2330d3c13d6553a4dfa98644d"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical inputs; no recordings"
+      },
+      "transformations": [
+        "Explicit Float32/Float64 input rounding",
+        "Pinned external K coefficient function with math-only compatibility shim, not SciPy",
+        "Independent 80-digit Decimal direct-form-I cascade; normalized outputs preserve tiny energy"
+      ],
+      "expectedProfile": "digital-level-windows/v1; bs1770-5-prewarped-tables/v1; explicit rate and precision per case",
+      "referenceOutputIdentity": "sha256:3e85291e5662f67e5fd4f922a9f61328efee3d5a4ba3e0235cd60bdc35507165"
     }
   ],
   "optionalModels": []
