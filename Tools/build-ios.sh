@@ -10,3 +10,7 @@ for scheme in HDXLVoiceProcessing HDXLVoiceProcessingAudio HDXLVoiceProcessingVi
     xcodebuild -scheme "$scheme" -configuration Debug -destination "$destination" \
         -derivedDataPath "$derived" CODE_SIGNING_ALLOWED=NO build
 done
+repository_dir="$PWD"
+cd Examples/CoreConsumer
+xcodebuild -scheme CoreConsumer -configuration Debug -destination "$destination" \
+    -derivedDataPath "$repository_dir/$derived-consumer" CODE_SIGNING_ALLOWED=NO build

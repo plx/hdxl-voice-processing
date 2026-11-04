@@ -37,7 +37,7 @@ def environment(lane):
         "hostOSBuild": capture("sw_vers", "-buildVersion"),
         "architecture": platform.machine(),
         "xcode": capture("xcodebuild", "-version"),
-        "swift": capture("xcrun", "swift", "--version"),
+        "swift": capture("swift", "--version"),
         "python": platform.python_version(),
         "sdks": {sdk: capture("xcrun", "--sdk", sdk, "--show-sdk-version")
                  for sdk in ("macosx", "iphoneos", "iphonesimulator")},
@@ -126,6 +126,19 @@ def test_reports(output):
     return reports
 
 
+def redact_report(path):
+    # Redact values, not serialized markup: <checkout> must be escaped in XML.
+    tree = ET.parse(path)
+    for element in tree.iter():
+        for key, value in element.attrib.items():
+            element.set(key, redact(value))
+        if element.text:
+            element.text = redact(element.text)
+        if element.tail:
+            element.tail = redact(element.tail)
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("lane", choices=LANES)
@@ -152,9 +165,15 @@ def main():
         print(result["error"], file=sys.stderr)
     finally:
         result["durationSeconds"] = round(time.monotonic() - started, 3)
-        (output / "result.json").write_text(json.dumps(result, indent=2) + "\n")
         for report in output.glob("*.xml"):
-            report.write_text(redact(report.read_text()))
+            try:
+                redact_report(report)
+            except (OSError, ET.ParseError) as error:
+                # A truncated/crashed report must not be published unredacted.
+                report.unlink(missing_ok=True)
+                result["status"] = "failed"
+                result["reportError"] = redact(f"{report.name}: {error}")
+        (output / "result.json").write_text(json.dumps(result, indent=2) + "\n")
     return 0 if result["status"] == "passed" else 1
 
 

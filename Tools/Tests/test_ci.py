@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location("ci", Path(__file__).resolve().parents[1] / "ci.py")
@@ -69,6 +70,19 @@ class CIGateTests(unittest.TestCase):
             (output / 'tests-swift-testing.xml').write_text(
                 '<testsuites><testsuite><testcase/></testsuite></testsuites>')
             self.assertEqual(ci.test_reports(output)[0]['testCases'], 1)
+
+    def test_report_redaction_preserves_valid_xml_and_failure_details(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report = Path(directory) / 'tests.xml'
+            root = ET.Element('testsuites')
+            failure = ET.SubElement(root, 'failure', message=f'{ci.ROOT}/Tests/example.json & missing')
+            failure.text = f'Failed to read {Path.home()}/private-path'
+            ET.ElementTree(root).write(report, encoding='utf-8', xml_declaration=True)
+            ci.redact_report(report)
+            restored = ET.parse(report).getroot().find('failure')
+            self.assertEqual(restored.get('message'), '<checkout>/Tests/example.json & missing')
+            self.assertEqual(restored.text, 'Failed to read <home>/private-path')
+            self.assertNotIn(str(Path.home()), report.read_text())
 
 
 if __name__ == "__main__":

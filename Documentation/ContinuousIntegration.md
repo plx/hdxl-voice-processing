@@ -28,8 +28,8 @@ failure still leaves evidence from the other lanes. These are independent jobs:
 | `python3 Tools/ci.py release` | All tests compiled with optimization | Native macOS optimized correctness; future numerical tests join this suite automatically |
 | `python3 Tools/ci.py address` | All tests with Address Sanitizer | Native macOS instrumented memory accesses |
 | `python3 Tools/ci.py thread` | All tests with Thread Sanitizer | Native macOS exercised concurrency paths |
-| `python3 Tools/ci.py ios-simulator` | All three products, generic iOS Simulator destination, Debug | Compile/link only; no simulator execution or microphone capture claim |
-| `python3 Tools/ci.py ios-device` | All three products, generic iOS destination, Debug, signing disabled | Device-target compile only; no installed app or physical execution claim |
+| `python3 Tools/ci.py ios-simulator` | All three products and independent core consumer, generic iOS Simulator destination, Debug | Compile/link only; no simulator execution or microphone capture claim |
+| `python3 Tools/ci.py ios-device` | All three products and independent core consumer, generic iOS destination, Debug, signing disabled | Device-target compile only; no installed app or physical execution claim |
 
 Do not combine address and thread sanitizers in one build. They have separate
 scratch directories, as do release and extended runs. Sanitizers currently cover
