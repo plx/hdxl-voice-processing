@@ -43,6 +43,9 @@ The [conditioning guide](Documentation/Conditioning.md) defines raw pre-emphasis
 Praat compatibility, streaming preview, bandwidth checks, boundary support, and recorded delay.
 The [digital-level guide](Documentation/DigitalLevels.md) defines peak/RMS/dBFS, clipping
 diagnostics, continuous K-weighting, warm-up, numeric limits, and source timing.
+The [licensed voice corpus](Documentation/VoiceCorpus.md) supplies pinned PVQD originals,
+sample-exact speech/vowel excerpts, simulated defects, explicit negative cases, and
+offline load/decode checks without adding resources to runtime products.
 
 Dependency and fixture provenance is documented in [the policy](Documentation/ProvenancePolicy.md)
 and [third-party notices](THIRD_PARTY_NOTICES.md). The project license is pending

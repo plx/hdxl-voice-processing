@@ -88,6 +88,7 @@ def commands(lane, output):
         [sys.executable, "Tools/verify-provenance.py"],
         [sys.executable, "Tools/Reference/verify.py"],
         [sys.executable, "Tools/Synthetic/verify.py"],
+        [sys.executable, "Tools/Corpus/corpus.py", "verify"],
         [sys.executable, "-m", "unittest", "discover", "-s", "Tools/Tests", "-p", "test_*.py"],
         ["swift", "build"],
         test,
