@@ -8,13 +8,21 @@ From a clean checkout:
 
 ```sh
 bash Tools/verify.sh
-bash Tools/build-ios.sh
+python3 Tools/ci.py release
+python3 Tools/ci.py address
+python3 Tools/ci.py thread
+python3 Tools/ci.py ios-simulator
+python3 Tools/ci.py ios-device
 ```
 
 `verify.sh` runs formatting, debug build/tests, the independent core consumer,
-and graph/link checks. Tests use Swift Testing. iOS builds do not require signing
-or a microphone. CI in issue #19 will run these same commands, add optimized
-and sanitizer tests, and record the exact selected SDKs.
+and graph/link checks. Use CPython 3.14.8 for the verification scripts. Tests use
+Swift Testing. iOS builds do not require signing or a microphone. CI runs these
+same commands and records exact toolchain/SDK/destination and results in
+`.build/ci-artifacts/<lane>/`. `bash Tools/check-workflows.sh` checks workflow syntax
+with a checksum-pinned actionlint download (macOS arm64, network required).
+See [CI coverage and artifacts](Documentation/ContinuousIntegration.md) for the
+fast versus extended lanes, sanitizer limits, and artifact privacy policy.
 
 Format with `bash Tools/format.sh --write`; check with `--check`. The formatter
 is the `swift-format` bundled with the declared Xcode, configured by `.swift-format`.

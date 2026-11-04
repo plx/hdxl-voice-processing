@@ -35,7 +35,8 @@
         "Tools/verify-package-graph.py",
         "Tools/verify-provenance.py",
         "Tools/Fixtures/generate-contract-fixtures.py",
-        "Tools/Tests"
+        "Tools/Tests",
+        "Tools/ci.py and GitHub Actions (pinned via setup-python)"
       ],
       "redistributed": false
     },
@@ -87,6 +88,54 @@
       "licenseEvidenceURL": "https://tintin.cs.uiowa.edu/Pages/Software/IVoice/Documents/IVoice-Source.zip",
       "usedBy": [
         "Design context only; no code, assets, or thresholds copied"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "actions-checkout",
+      "status": "development-tool",
+      "sourceURL": "https://github.com/actions/checkout",
+      "selectedVersion": "v7.0.1 (3d3c42e5aac5ba805825da76410c181273ba90b1)",
+      "license": "MIT",
+      "licenseEvidenceURL": "https://github.com/actions/checkout/blob/3d3c42e5aac5ba805825da76410c181273ba90b1/LICENSE",
+      "usedBy": [
+        "GitHub Actions correctness verification only; no runtime package dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "actions-upload-artifact",
+      "status": "development-tool",
+      "sourceURL": "https://github.com/actions/upload-artifact",
+      "selectedVersion": "v7.0.2 (cf430e030ddbb5b0abf93d22962f4752f3646cd9)",
+      "license": "MIT",
+      "licenseEvidenceURL": "https://github.com/actions/upload-artifact/blob/cf430e030ddbb5b0abf93d22962f4752f3646cd9/LICENSE",
+      "usedBy": [
+        "GitHub Actions correctness verification only; no runtime package dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "actions-setup-python",
+      "status": "development-tool",
+      "sourceURL": "https://github.com/actions/setup-python",
+      "selectedVersion": "v7.1.0 (6d4fd22b20465ccc0f7354476588e8df7c9ca0e0)",
+      "license": "MIT",
+      "licenseEvidenceURL": "https://github.com/actions/setup-python/blob/6d4fd22b20465ccc0f7354476588e8df7c9ca0e0/LICENSE",
+      "usedBy": [
+        "GitHub Actions correctness verification only; no runtime package dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "rhysd-actionlint",
+      "status": "development-tool",
+      "sourceURL": "https://github.com/rhysd/actionlint",
+      "selectedVersion": "v1.7.12 (914e7df21a07ef503a81201c76d2b11c789d3fca)",
+      "license": "MIT",
+      "licenseEvidenceURL": "https://github.com/rhysd/actionlint/blob/914e7df21a07ef503a81201c76d2b11c789d3fca/LICENSE.txt",
+      "usedBy": [
+        "GitHub Actions correctness verification only; no runtime package dependency"
       ],
       "redistributed": false
     }

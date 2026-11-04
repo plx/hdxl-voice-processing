@@ -15,6 +15,8 @@ distribution is gated by `python3 Tools/verify-provenance.py --for-publication`.
 | --- | --- | --- |
 | Xcode 27.0 / SDKs 27.0 / Swift 6.4 | System toolchain/frameworks, not vendored | [Xcode and Apple SDKs agreement](https://developer.apple.com/support/terms/) and notices distributed with the tools |
 | CPython 3.14.8 | Development-only scripts, not a runtime dependency | [Python license](https://docs.python.org/3.14/license.html), PSF-2.0 and included notices |
+| actions/checkout, setup-python, upload-artifact | Revision-pinned CI actions, executed by GitHub; not vendored or linked to products | MIT; exact release license URLs in the provenance manifest |
+| rhysd/actionlint 1.7.12 | Checksum-pinned workflow syntax validator, downloaded for development/CI only | [MIT](https://github.com/rhysd/actionlint/blob/v1.7.12/LICENSE.txt); binary not redistributed |
 | ordo-one/benchmark | Planned isolated package in #17; version not selected | [Apache-2.0](https://github.com/ordo-one/benchmark/blob/main/LICENSE); audit selected release and transitive dependencies when activated |
 | Parselmouth | Planned external development reference in #26 | [GPL-3.0-or-later](https://github.com/YannickJadoul/Parselmouth/blob/master/README.md#license); does not replace Praat's terms |
 | Praat | Planned external reference or pinned version embedded in Parselmouth | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
