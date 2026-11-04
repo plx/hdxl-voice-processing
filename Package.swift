@@ -15,7 +15,9 @@ let package = Package(
         .target(name: "HDXLVoiceProcessing"),
         .target(name: "HDXLVoiceProcessingAudio", dependencies: ["HDXLVoiceProcessing"]),
         .target(name: "HDXLVoiceProcessingVisualization", dependencies: ["HDXLVoiceProcessing"]),
-        .testTarget(name: "HDXLVoiceProcessingTests", dependencies: ["HDXLVoiceProcessing"]),
+        .testTarget(
+            name: "HDXLVoiceProcessingTests", dependencies: ["HDXLVoiceProcessing"],
+            resources: [.copy("Fixtures")]),
         .testTarget(
             name: "ProductBoundaryTests",
             dependencies: ["HDXLVoiceProcessingAudio", "HDXLVoiceProcessingVisualization"]),
