@@ -1,0 +1,80 @@
+name: Correctness
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'ci-probe/**']
+  workflow_dispatch:
+  schedule:
+    - cron: '23 8 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: correctness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: ${{ matrix.lane }} / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [debug, release, address, thread, ios-simulator, ios-device]
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Validate workflow syntax
+        if: matrix.lane == 'debug'
+        run: bash Tools/check-workflows.sh
+      - name: Run correctness lane
+        run: python3 Tools/ci.py '${{ matrix.lane }}'
+      - name: Retain public correctness evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: correctness-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: |
+            .build/ci-artifacts/${{ matrix.lane }}/*.json
+            .build/ci-artifacts/${{ matrix.lane }}/*.log
+            .build/ci-artifacts/${{ matrix.lane }}/*.xml
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+
+  extended:
+    name: Repeated correctness / Xcode 27.0
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: xcode-27
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - run: python3 Tools/ci.py extended
+      - name: Retain public repeated-test evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: correctness-extended-${{ github.run_attempt }}
+          path: |
+            .build/ci-artifacts/extended/*.json
+            .build/ci-artifacts/extended/*.log
+            .build/ci-artifacts/extended/*.xml
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14

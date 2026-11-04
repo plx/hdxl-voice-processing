@@ -1,0 +1,5 @@
+# actionlint 1.7.12 predates GitHub's hosted preview label. This option adds a
+# recognized label to the validator; the workflow still uses a hosted runner.
+# https://github.com/actions/runner-images/issues/14404
+self-hosted-runner:
+  labels: [xcode-27]

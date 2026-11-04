@@ -4,9 +4,18 @@
   "swiftLanguageMode": "6",
   "xcodeVersion": "27.0",
   "xcodeBuild": "27A266a",
-  "sdkVersions": {"macOS": "27.0", "iOS": "27.0", "iOSSimulator": "27.0"},
-  "deploymentTargets": {"macOS": "27.0", "iOS": "27.0"},
+  "sdkVersions": {
+    "macOS": "27.0",
+    "iOS": "27.0",
+    "iOSSimulator": "27.0"
+  },
+  "deploymentTargets": {
+    "macOS": "27.0",
+    "iOS": "27.0"
+  },
   "watchOS": "pending capability issue #60; no support claim",
-  "ciRunner": "pending validation in issue #19",
-  "physicalDeviceEvidence": "deferred by owner to issue #74"
+  "ciRunner": "xcode-27 (standard GitHub-hosted arm64; macOS 27 runtime required)",
+  "physicalDeviceEvidence": "deferred by owner to issue #74",
+  "pythonVersion": "3.14.8",
+  "swiftCompilerVersion": "6.4.0.34.1"
 }
