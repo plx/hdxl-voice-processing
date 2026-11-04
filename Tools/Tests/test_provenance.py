@@ -22,7 +22,11 @@ class ProvenanceTests(unittest.TestCase):
         fixture = self.root / name
         fixture.parent.mkdir(parents=True)
         fixture.write_text('{"value":1}\n')
-        self.files = {name}
+        generator_name = "Tools/generator.py"
+        generator = self.root / generator_name
+        generator.parent.mkdir()
+        generator.write_text("print('example')\n")
+        self.files = {name, generator_name}
         self.manifest = {
             "schemaVersion": 1,
             "runtimeExternalDependencies": [],
@@ -32,6 +36,7 @@ class ProvenanceTests(unittest.TestCase):
             "fixtures": [{
                 "id": "example", "path": name, "sha256": MODULE.digest(fixture),
                 "source": {"kind": "original-generated", "url": "https://example.invalid/source", "versionOrHash": "1"},
+                "generator": {"path": generator_name, "version": "1", "sha256": MODULE.digest(generator)},
                 "redistribution": {"license": "project", "permission": "inherits-project-license", "evidence": "Owner decision pending"},
                 "containsHumanVoice": False,
                 "consent": {"status": "not-applicable", "evidence": "Synthetic JSON; no human recording"},
@@ -53,6 +58,27 @@ class ProvenanceTests(unittest.TestCase):
     def test_changed_fixture_fails(self):
         (self.root / self.manifest["fixtures"][0]["path"]).write_text("tampered")
         with self.assertRaisesRegex(MODULE.ProvenanceError, "SHA256 mismatch"):
+            self.check()
+
+    def test_generated_fixture_requires_generator_metadata(self):
+        del self.manifest["fixtures"][0]["generator"]
+        with self.assertRaisesRegex(MODULE.ProvenanceError, "missing generator metadata"):
+            self.check()
+
+    def test_symlink_cannot_supply_uncommitted_fixture_bytes(self):
+        path = self.root / self.manifest["fixtures"][0]["path"]
+        target = self.root / "uncommitted.json"
+        target.write_bytes(path.read_bytes())
+        path.unlink()
+        path.symlink_to(target)
+        with self.assertRaisesRegex(MODULE.ProvenanceError, "Symbolic links"):
+            self.check()
+        path.unlink()
+        path.write_bytes(target.read_bytes())
+        moved = self.root / "uncommitted-fixtures"
+        path.parent.rename(moved)
+        path.parent.symlink_to(moved, target_is_directory=True)
+        with self.assertRaisesRegex(MODULE.ProvenanceError, "Symbolic links"):
             self.check()
 
     def test_removed_fixture_is_not_treated_as_unlisted_before_staging(self):
@@ -132,6 +158,21 @@ class ProvenanceTests(unittest.TestCase):
         for name, content in generator.fixtures().items():
             actual = (ROOT / "Tests/HDXLVoiceProcessingTests/Fixtures" / name).read_bytes()
             self.assertEqual(actual, content.encode("utf-8"))
+
+    def test_active_swift_dependency_requires_resolved_pin(self):
+        self.manifest["components"] = [{
+            "id": "benchmark", "sourceURL": "https://example.invalid/benchmark",
+            "license": "Apache-2.0", "licenseEvidenceURL": "https://example.invalid/license",
+            "usedBy": ["Benchmarks"], "status": "active", "selectedVersion": "1.0.0",
+            "revision": "a" * 40, "swiftPackageIdentity": "benchmark", "redistributed": False,
+        }]
+        with self.assertRaisesRegex(MODULE.ProvenanceError, "missing resolved pins"):
+            self.check()
+        lock = self.root / "Package.resolved"
+        lock.write_text(json.dumps({"version": 3, "pins": []}))
+        self.files.add("Package.resolved")
+        with self.assertRaisesRegex(MODULE.ProvenanceError, "missing resolved pins"):
+            self.check()
 
 
 if __name__ == "__main__":

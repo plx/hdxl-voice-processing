@@ -30,6 +30,10 @@ def checked_path(root, relative):
     text(relative, "path")
     pure = PurePosixPath(relative)
     require(not pure.is_absolute() and ".." not in pure.parts, f"Unsafe path: {relative}")
+    candidate = root
+    for part in pure.parts:
+        candidate = candidate / part
+        require(not candidate.is_symlink(), f"Symbolic links are not provenance artifacts: {relative}")
     resolved = (root / relative).resolve()
     require(resolved.is_relative_to(root.resolve()), f"Path leaves repository: {relative}")
     require(resolved.is_file(), f"Missing file: {relative}")
@@ -107,6 +111,7 @@ def validate(root, manifest, files, for_publication=False):
             require(bool(component["noticePaths"]), f"Missing notices: {identifier}")
 
     # Every resolved direct/transitive Swift package must have an exact inventory record.
+    matched_swift_pins = set()
     for name in files:
         if PurePosixPath(name).name != "Package.resolved":
             continue
@@ -120,6 +125,8 @@ def validate(root, manifest, files, for_publication=False):
             require(normalized_url(pin["location"]) == normalized_url(entry["sourceURL"]), f"Dependency source drift: {identity}")
             require(pin["state"]["revision"] == entry["revision"], f"Dependency revision drift: {identity}")
             require(pin["state"].get("version", entry["selectedVersion"]) == entry["selectedVersion"], f"Dependency version drift: {identity}")
+            matched_swift_pins.add(identity)
+    require(set(swift_pins) == matched_swift_pins, f"Active Swift dependencies missing resolved pins: {sorted(set(swift_pins) - matched_swift_pins)}")
 
     paths = set()
     identifiers = set()
@@ -134,6 +141,8 @@ def validate(root, manifest, files, for_publication=False):
         check_hash(root, fixture)
         source = fixture["source"]
         require(source["kind"] in {"original-generated", "third-party"}, f"Private/unknown source is not allowed: {path}")
+        if source["kind"] == "original-generated":
+            require("generator" in fixture, f"Original-generated fixture is missing generator metadata: {path}")
         for key in ("url", "versionOrHash"):
             text(source[key], f"{path}.source.{key}")
         rights = fixture["redistribution"]

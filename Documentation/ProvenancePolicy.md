@@ -25,6 +25,8 @@ selected by Swift 6.4 (including versioned manifests/traits), commit its lockfil
 and inventory every transitive dependency/license. Its compiler requirements must
 not change runtime minimums. The verifier compares Swift lockfile identities, source
 URLs, versions, and revisions with active inventory records. A future runtime
+dependency cannot remain active without a resolved pin. Fixture and generator paths
+must refer to repository files without symbolic links in any path component. A future runtime
 dependency needs a justified issue and deliberate graph/provenance policy update.
 
 ## Reference execution and source reuse
@@ -56,7 +58,7 @@ Every committed fixture artifact needs:
 - Stable ID, relative path, and SHA-256 of exact bytes.
 - Source/generator URL and exact version or hash. Classify original generated
   versus third-party content; original generators also have a checked path,
-  version, and source hash.
+version, and source hash.
 - Redistribution terms and permission evidence. Original artifacts explicitly
   inherit the pending project license decision; publication remains blocked until
   it is selected. Third-party artifacts need independently granted permission and
