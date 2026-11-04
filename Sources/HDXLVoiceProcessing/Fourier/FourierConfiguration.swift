@@ -18,9 +18,9 @@ public struct FourierBin<Sample: BinaryFloatingPoint & Sendable>: Sendable, Hash
 }
 
 /// Negative-exponent, unnormalized forward DFT; positive-exponent inverse divided by N.
-/// Version 1 supports exactly the powers of two from 2 through 65536, in Float or Double.
+/// Version 1 supports exactly the powers of two from 2 through 4194304, in Float or Double.
 public struct FourierConfiguration: Sendable, Hashable, Codable {
-    public static let maximumLength = 65_536
+    public static let maximumLength = 4_194_304
     public let length: Int
     public let sampleRate: Double
     public let precision: AnalysisPrecision

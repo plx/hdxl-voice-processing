@@ -162,3 +162,9 @@ The [Fourier matrix](../Tools/Fourier/README.md) covers 22 size/precision config
 setup and prepared transforms, spectra, inverse-cepstrum workload primitives, scalar
 DFT comparisons, and separately owned concurrent workers. Each has a dedicated
 wrapper and workflow with raw distributions and allocation controls.
+
+The separate [whole-interval Fourier matrix](../Tools/Fourier/README.md#whole-interval-capacity-matrix)
+adds twelve size/precision configurations through N=4,194,304. Each measurement
+performs one operation, reports explicit caller/workspace bytes, and records
+sampled whole-process resident memory. It has its own workflow and artifacts;
+its timings have a different denominator from the ordinary ten-operation rows.

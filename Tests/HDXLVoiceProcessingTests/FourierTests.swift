@@ -44,12 +44,12 @@ private func noiseSamples<S: BinaryFloatingPoint & Sendable>(
 }
 
 private func checkFourierOracle<S: BinaryFloatingPoint & Sendable>(
-    _ type: S.Type, precision: AnalysisPrecision
+    _ type: S.Type, precision: AnalysisPrecision, lengths: ClosedRange<Int> = 2...65_536
 ) throws {
     let oracle = try loadFourierOracle()
-    #expect(oracle.supportedLengths == (1...16).map { 1 << $0 })
+    #expect(oracle.supportedLengths == (1...22).map { 1 << $0 })
     var worstRatios: [Int: Double] = [:]
-    for item in oracle.cases where item.precision == precision {
+    for item in oracle.cases where item.precision == precision && lengths.contains(item.length) {
         let configuration = try FourierConfiguration(
             length: item.length, sampleRate: 48_000, precision: precision)
         let plan = try PreparedFourierTransform<S>(configuration)
@@ -63,22 +63,31 @@ private func checkFourierOracle<S: BinaryFloatingPoint & Sendable>(
                 FourierBin(real: S($0[0]), imaginary: S($0[1]))
             }
         }
+        // Hash in fixed-size blocks instead of retaining another full large input copy.
+        var hash = SHA256()
         var bytes = Data()
-        for z in values {
-            for x in [z.real, z.imaginary] {
-                if precision == .float32 {
-                    var bits = Float(x).bitPattern.littleEndian
-                    withUnsafeBytes(of: &bits) { bytes.append(contentsOf: $0) }
-                } else {
-                    var bits = Double(x).bitPattern.littleEndian
-                    withUnsafeBytes(of: &bits) { bytes.append(contentsOf: $0) }
-                }
+        bytes.reserveCapacity(65_536)
+        func append(_ x: S) {
+            if precision == .float32 {
+                var bits = Float(x).bitPattern.littleEndian
+                withUnsafeBytes(of: &bits) { bytes.append(contentsOf: $0) }
+            } else {
+                var bits = Double(x).bitPattern.littleEndian
+                withUnsafeBytes(of: &bits) { bytes.append(contentsOf: $0) }
+            }
+            if bytes.count >= 65_536 {
+                hash.update(data: bytes)
+                bytes.removeAll(keepingCapacity: true)
             }
         }
-        #expect(
-            SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined() == item.inputSHA256
-        )
-        var actual = [FourierBin<S>](repeating: FourierBin(real: 0), count: item.length)
+        for z in values {
+            append(z.real)
+            append(z.imaginary)
+        }
+        hash.update(data: bytes)
+        #expect(hash.finalize().map { String(format: "%02x", $0) }.joined() == item.inputSHA256)
+        // Retain only the requested bins, including the independent negative-frequency checks.
+        var actual: [FourierBin<S>] = []
         switch item.kind {
         case "realForward":
             let real = values.map(\.real)
@@ -90,39 +99,42 @@ private func checkFourierOracle<S: BinaryFloatingPoint & Sendable>(
                 }
             }
             #expect(half[0].imaginary == 0 && half[item.length / 2].imaginary == 0)
-            for k in 0..<item.length {
-                actual[k] =
-                    k <= item.length / 2
+            actual = item.indices.map { k in
+                k <= item.length / 2
                     ? half[k]
                     : FourierBin(
                         real: half[item.length - k].real,
                         imaginary: -half[item.length - k].imaginary)
             }
         case "complexForward":
+            var full = [FourierBin<S>](repeating: FourierBin(real: 0), count: item.length)
             try values.withUnsafeBufferPointer { input in
-                try actual.withUnsafeMutableBufferPointer {
+                try full.withUnsafeMutableBufferPointer {
                     _ = try plan.forwardComplex(input, into: $0)
                 }
             }
+            actual = item.indices.map { full[$0] }
         case "realInverse":
             var real = [S](repeating: 0, count: item.length)
             try values.withUnsafeBufferPointer { input in
                 try real.withUnsafeMutableBufferPointer { try plan.inverseReal(input, into: $0) }
             }
-            actual = real.map { FourierBin(real: $0) }
+            actual = item.indices.map { FourierBin(real: real[$0]) }
         case "complexInverse":
+            var full = [FourierBin<S>](repeating: FourierBin(real: 0), count: item.length)
             try values.withUnsafeBufferPointer { input in
-                try actual.withUnsafeMutableBufferPointer {
+                try full.withUnsafeMutableBufferPointer {
                     try plan.inverseComplex(input, into: $0)
                 }
             }
+            actual = item.indices.map { full[$0] }
         default: Issue.record("Unknown oracle operation \(item.kind)")
         }
         #expect(item.indices.count == item.expected.count)
         for (position, k) in item.indices.enumerated() {
             let error = max(
-                abs(Double(actual[k].real) - item.expected[position][0]),
-                abs(Double(actual[k].imaginary) - item.expected[position][1]))
+                abs(Double(actual[position].real) - item.expected[position][0]),
+                abs(Double(actual[position].imaginary) - item.expected[position][1]))
             #expect(
                 error <= item.maximumAbsoluteError,
                 "\(precision) \(item.name) \(item.kind) N=\(item.length) k=\(k), error \(error), bound \(item.maximumAbsoluteError)"
@@ -145,10 +157,23 @@ private func checkFourierOracle<S: BinaryFloatingPoint & Sendable>(
     try checkFourierOracle(Double.self, precision: .float64)
 }
 
+// Neumaier accumulation keeps the energy reference accurate when summing millions
+// of nonnegative terms. The transform tolerance itself is unchanged.
+private func compensatedSum<T: Sequence>(_ values: T) -> Double where T.Element == Double {
+    var sum = 0.0
+    var correction = 0.0
+    for value in values {
+        let next = sum + value
+        correction += abs(sum) >= abs(value) ? (sum - next) + value : (value - next) + sum
+        sum = next
+    }
+    return sum + correction
+}
+
 private func checkRoundTrips<S: BinaryFloatingPoint & Sendable>(
-    _ type: S.Type, precision: AnalysisPrecision
+    _ type: S.Type, precision: AnalysisPrecision, exponents: ClosedRange<Int> = 1...16
 ) throws {
-    for exponent in 1...16 {
+    for exponent in exponents {
         let n = 1 << exponent
         let plan = try PreparedFourierTransform<S>(
             FourierConfiguration(length: n, sampleRate: 44_100, precision: precision))
@@ -157,46 +182,56 @@ private func checkRoundTrips<S: BinaryFloatingPoint & Sendable>(
         try input.withUnsafeBufferPointer { x in
             try spectrum.withUnsafeMutableBufferPointer { _ = try plan.forwardComplex(x, into: $0) }
         }
-        let inputEnergy = input.reduce(0.0) {
-            $0 + Double($1.real) * Double($1.real) + Double($1.imaginary) * Double($1.imaginary)
-        }
+        let inputEnergy = compensatedSum(
+            input.lazy.map {
+                Double($0.real) * Double($0.real) + Double($0.imaginary) * Double($0.imaginary)
+            })
         let spectrumEnergy =
-            spectrum.reduce(0.0) {
-                $0 + Double($1.real) * Double($1.real) + Double($1.imaginary) * Double($1.imaginary)
-            } / Double(n)
+            compensatedSum(
+                spectrum.lazy.map {
+                    Double($0.real) * Double($0.real) + Double($0.imaginary) * Double($0.imaginary)
+                }) / Double(n)
         let tolerance = 8 * Double(S.ulpOfOne) * Double(exponent)
         #expect(abs(inputEnergy - spectrumEnergy) <= inputEnergy * tolerance)
         // Same-buffer inverse verifies all input is staged before any caller output is written.
         try spectrum.withUnsafeMutableBufferPointer {
             try plan.inverseComplex(UnsafeBufferPointer($0), into: $0)
         }
+        var maximumComplexError = 0.0
         for k in 0..<n {
-            #expect(abs(Double(input[k].real - spectrum[k].real)) < tolerance)
-            #expect(abs(Double(input[k].imaginary - spectrum[k].imaginary)) < tolerance)
+            maximumComplexError = max(
+                maximumComplexError, abs(Double(input[k].real - spectrum[k].real)),
+                abs(Double(input[k].imaginary - spectrum[k].imaginary)))
         }
+        #expect(maximumComplexError < tolerance)
         let real = input.map(\.real)
         var bins = [FourierBin<S>](repeating: FourierBin(real: 0), count: n / 2 + 1)
         var restored = [S](repeating: 0, count: n)
         try real.withUnsafeBufferPointer { x in
             try bins.withUnsafeMutableBufferPointer { _ = try plan.forwardReal(x, into: $0) }
         }
-        let weightedEnergy = bins.enumerated().reduce(0.0) { total, pair in
-            let z = pair.element
-            let c = pair.offset == 0 || pair.offset == n / 2 ? 1.0 : 2.0
-            return total + c
-                * (Double(z.real) * Double(z.real) + Double(z.imaginary) * Double(z.imaginary))
-                / Double(n)
-        }
-        let realEnergy = real.reduce(0.0) { $0 + Double($1) * Double($1) }
+        let weightedEnergy = compensatedSum(
+            bins.lazy.enumerated().map { pair in
+                let z = pair.element
+                let c = pair.offset == 0 || pair.offset == n / 2 ? 1.0 : 2.0
+                return c
+                    * (Double(z.real) * Double(z.real) + Double(z.imaginary) * Double(z.imaginary))
+                    / Double(n)
+            })
+        let realEnergy = compensatedSum(real.lazy.map { Double($0) * Double($0) })
         #expect(abs(weightedEnergy - realEnergy) <= realEnergy * tolerance)
         try bins.withUnsafeBufferPointer { x in
             try restored.withUnsafeMutableBufferPointer { try plan.inverseReal(x, into: $0) }
         }
-        for k in 0..<n { #expect(abs(Double(real[k] - restored[k])) < tolerance) }
+        var maximumRealError = 0.0
+        for k in 0..<n {
+            maximumRealError = max(maximumRealError, abs(Double(real[k] - restored[k])))
+        }
+        #expect(maximumRealError < tolerance)
     }
 }
 
-@Test func fourierRoundTripsAndParsevalAtEverySupportedLength() throws {
+@Test func fourierRoundTripsAndParsevalAtOrdinaryFrameLengths() throws {
     try checkRoundTrips(Float.self, precision: .float32)
     try checkRoundTrips(Double.self, precision: .float64)
 }
@@ -270,7 +305,9 @@ private func checkRoundTrips<S: BinaryFloatingPoint & Sendable>(
 }
 
 @Test func fourierConfigurationCodingAndPrecisionFailClosed() throws {
-    for length in [Int.min, -1, 0, 1, 3, 6, 12, 65535, 65537, 131072, Int.max] {
+    for length in [
+        Int.min, -1, 0, 1, 3, 6, 12, 65535, 65537, 4_194_303, 4_194_305, 8_388_608, Int.max,
+    ] {
         #expect(throws: FourierError.unsupportedLength) {
             try FourierConfiguration(length: length, sampleRate: 48_000)
         }
@@ -362,5 +399,36 @@ private func checkRoundTrips<S: BinaryFloatingPoint & Sendable>(
             }
         }
         #expect(output == Array(repeating: sentinel, count: 8))
+    }
+}
+
+/// One test runs all large cases sequentially so Float/Double and inverse paths do not
+/// retain multiple maximum-size plans at once. Ordinary small tests may run concurrently.
+@Suite(.serialized) struct LargeFourierCorrectness {
+    @Test func largeFourierOraclesRoundTripsAndEnergy() throws {
+        try checkFourierOracle(Float.self, precision: .float32, lengths: 131_072...4_194_304)
+        try checkFourierOracle(Double.self, precision: .float64, lengths: 131_072...4_194_304)
+        try checkRoundTrips(Float.self, precision: .float32, exponents: 17...22)
+        try checkRoundTrips(Double.self, precision: .float64, exponents: 17...22)
+    }
+}
+
+@Test func largeFourierPaddingPreservesWholeUtteranceCapacity() throws {
+    for rate in [16_000, 44_100, 48_000] {
+        let required = 60 * rate + 2000
+        let length = try FourierConfiguration.lengthPadding(required)
+        #expect(length >= required && length <= 4_194_304)
+        #expect(length / 2 < required)
+        let config = try FourierConfiguration(length: length, sampleRate: Double(rate))
+        #expect(
+            try JSONDecoder().decode(FourierConfiguration.self, from: JSONEncoder().encode(config))
+                == config)
+    }
+    #expect(FourierConfiguration.maximumLength == 4_194_304)
+    #expect(WindowSpecification.maximumSampleCount == 65_536)
+    #expect(try FourierConfiguration.lengthPadding(65_537) == 131_072)
+    #expect(try FourierConfiguration.lengthPadding(4_194_304) == 4_194_304)
+    #expect(throws: FourierError.unsupportedLength) {
+        try FourierConfiguration.lengthPadding(4_194_305)
     }
 }
