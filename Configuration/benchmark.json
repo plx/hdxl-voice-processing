@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "framework": {
+    "repository": "https://github.com/ordo-one/benchmark",
+    "version": "1.38.0",
+    "revision": "def9afdba446b03efbbbcecb3b892e97e8294214",
+    "selectedManifest": "Package.swift",
+    "manifestToolsVersion": "6.3.0",
+    "manifestSHA256": "ed944381eb8ce1fb1a8cdf1b0af417f6b1a7800d2947b9bdba801fa8ff3ea5b0"
+  },
+  "minimumHostOS": "macOS 27.0",
+  "supportedToolchain": "Configuration/build.json",
+  "timing": {
+    "traits": [],
+    "allocator": "disabled",
+    "arc": "not requested"
+  },
+  "allocation": {
+    "traits": [
+      "AllocationDiagnostics"
+    ],
+    "allocator": "malloc-interposer 1.6.1",
+    "arc": "Swift 6.4 native runtime hooks"
+  },
+  "prerequisites": "Xcode 27.0, Python 3.14.8; SwiftPM fetches package dependencies; no system jemalloc",
+  "deviceSupport": "No iOS, watchOS, or physical-device benchmark support claim"
+}

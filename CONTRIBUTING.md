@@ -39,6 +39,17 @@ output, or machine-specific paths. Add numerical reference/provenance evidence
 when implementing algorithms. Physical-device evidence is deferred to #74;
 simulator and compile results must retain their actual labels.
 
+Benchmark smoke checks are isolated from runtime consumers:
+
+```sh
+python3 Tools/benchmark.py timing
+python3 Tools/benchmark.py allocation
+```
+
+These also run in a separate CI job. See [the benchmark guide](Benchmarks/README.md)
+for backend capabilities, export interpretation, filtering, and local baselines.
+Diagnostic timing is affected by instrumentation; use timing mode for timing work.
+
 Dependency and fixture changes follow [the provenance policy](Documentation/ProvenancePolicy.md).
 Update `Configuration/provenance.json` and `THIRD_PARTY_NOTICES.md` in the same PR.
 `verify.sh` checks hashes, permissions metadata, lockfile identities, provenance

@@ -42,16 +42,18 @@
     },
     {
       "id": "swift-benchmark",
-      "status": "planned",
-      "sourceURL": "https://github.com/ordo-one/benchmark",
-      "selectedVersion": null,
+      "status": "active",
+      "sourceURL": "https://github.com/ordo-one/benchmark.git",
+      "swiftPackageIdentity": "benchmark",
+      "selectedVersion": "1.38.0",
+      "revision": "def9afdba446b03efbbbcecb3b892e97e8294214",
       "license": "Apache-2.0",
-      "licenseEvidenceURL": "https://github.com/ordo-one/benchmark/blob/main/LICENSE",
+      "licenseEvidenceURL": "https://github.com/ordo-one/benchmark/blob/def9afdba446b03efbbbcecb3b892e97e8294214/LICENSE",
+      "licenseSHA256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
       "usedBy": [
-        "Benchmarks/ only; planned in #17"
+        "Benchmarks/ isolated development package only; never a runtime consumer dependency"
       ],
-      "redistributed": false,
-      "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/17"
+      "redistributed": false
     },
     {
       "id": "praat-parselmouth",
@@ -136,6 +138,113 @@
       "licenseEvidenceURL": "https://github.com/rhysd/actionlint/blob/914e7df21a07ef503a81201c76d2b11c789d3fca/LICENSE.txt",
       "usedBy": [
         "GitHub Actions correctness verification only; no runtime package dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "benchmark-hdrhistogram-swift",
+      "status": "active",
+      "sourceURL": "https://github.com/HdrHistogram/hdrhistogram-swift.git",
+      "swiftPackageIdentity": "hdrhistogram-swift",
+      "selectedVersion": "0.2.0",
+      "revision": "c2e1210df04b4fff47e53f2f9dad9cc45ae15d63",
+      "license": "Apache-2.0",
+      "licenseEvidenceURL": "https://github.com/HdrHistogram/hdrhistogram-swift/blob/c2e1210df04b4fff47e53f2f9dad9cc45ae15d63/LICENSE",
+      "licenseSHA256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "usedBy": [
+        "Benchmarks/ isolated development package only; never a runtime consumer dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "benchmark-malloc-interposer",
+      "status": "active",
+      "sourceURL": "https://github.com/ordo-one/malloc-interposer.git",
+      "swiftPackageIdentity": "malloc-interposer",
+      "selectedVersion": "1.6.1",
+      "revision": "977dc0639b742ecd05ac03fecc53664095821a5d",
+      "license": "Apache-2.0",
+      "licenseEvidenceURL": "https://github.com/ordo-one/malloc-interposer/blob/977dc0639b742ecd05ac03fecc53664095821a5d/LICENSE",
+      "licenseSHA256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "usedBy": [
+        "Benchmarks/ isolated development package only; never a runtime consumer dependency"
+      ],
+      "redistributed": false,
+      "upstreamNoticeURL": "https://github.com/ordo-one/malloc-interposer/blob/977dc0639b742ecd05ac03fecc53664095821a5d/NOTICE",
+      "upstreamNoticeSHA256": "635a7bf92864130f9dbedd742a868d5527d5e673e383f8e4317ab425d307b1df"
+    },
+    {
+      "id": "benchmark-swift-argument-parser",
+      "status": "active",
+      "sourceURL": "https://github.com/apple/swift-argument-parser.git",
+      "swiftPackageIdentity": "swift-argument-parser",
+      "selectedVersion": "1.8.2",
+      "revision": "6a52f3251125d74daf04fcbd5e6f08a75d074382",
+      "license": "Apache-2.0 WITH Swift-exception",
+      "licenseEvidenceURL": "https://github.com/apple/swift-argument-parser/blob/6a52f3251125d74daf04fcbd5e6f08a75d074382/LICENSE.txt",
+      "licenseSHA256": "770af8291f708538d8ff885a0bbc4e045cd700531741c4f99528d435c14d7f55",
+      "usedBy": [
+        "Benchmarks/ isolated development package only; never a runtime consumer dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "benchmark-swift-atomics",
+      "status": "active",
+      "sourceURL": "https://github.com/apple/swift-atomics.git",
+      "swiftPackageIdentity": "swift-atomics",
+      "selectedVersion": "1.3.1",
+      "revision": "0442cb5a3f98ab802acb777929fdb446bda11a34",
+      "license": "Apache-2.0 WITH Swift-exception",
+      "licenseEvidenceURL": "https://github.com/apple/swift-atomics/blob/0442cb5a3f98ab802acb777929fdb446bda11a34/LICENSE.txt",
+      "licenseSHA256": "770af8291f708538d8ff885a0bbc4e045cd700531741c4f99528d435c14d7f55",
+      "usedBy": [
+        "Benchmarks/ isolated development package only; never a runtime consumer dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "benchmark-swift-numerics",
+      "status": "active",
+      "sourceURL": "https://github.com/apple/swift-numerics",
+      "swiftPackageIdentity": "swift-numerics",
+      "selectedVersion": "1.1.1",
+      "revision": "0c0290ff6b24942dadb83a929ffaaa1481df04a2",
+      "license": "Apache-2.0 WITH Swift-exception",
+      "licenseEvidenceURL": "https://github.com/apple/swift-numerics/blob/0c0290ff6b24942dadb83a929ffaaa1481df04a2/LICENSE.txt",
+      "licenseSHA256": "770af8291f708538d8ff885a0bbc4e045cd700531741c4f99528d435c14d7f55",
+      "usedBy": [
+        "Benchmarks/ isolated development package only; never a runtime consumer dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "benchmark-swift-system",
+      "status": "active",
+      "sourceURL": "https://github.com/apple/swift-system.git",
+      "swiftPackageIdentity": "swift-system",
+      "selectedVersion": "1.8.1",
+      "revision": "869129b7bf4ecc57b97d0193ad29690ca2134750",
+      "license": "Apache-2.0 WITH Swift-exception",
+      "licenseEvidenceURL": "https://github.com/apple/swift-system/blob/869129b7bf4ecc57b97d0193ad29690ca2134750/LICENSE.txt",
+      "licenseSHA256": "2245a990b635558be210fb3eb4f8a6f7a49aebc0fefbf5859146a65ddc7ddcf3",
+      "usedBy": [
+        "Benchmarks/ isolated development package only; never a runtime consumer dependency"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "benchmark-texttable",
+      "status": "active",
+      "sourceURL": "https://github.com/ordo-one/TextTable.git",
+      "swiftPackageIdentity": "texttable",
+      "selectedVersion": "0.0.2",
+      "revision": "a27a07300cf4ae322e0079ca0a475c5583dd575f",
+      "license": "MIT",
+      "licenseEvidenceURL": "https://github.com/ordo-one/TextTable/blob/a27a07300cf4ae322e0079ca0a475c5583dd575f/LICENSE.md",
+      "licenseSHA256": "10626ae8b41b8993a5f87f17ff13fb2cb5fb7b22f06892475355b6630905d848",
+      "usedBy": [
+        "Benchmarks/ isolated development package only; never a runtime consumer dependency"
       ],
       "redistributed": false
     }

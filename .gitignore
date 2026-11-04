@@ -35,6 +35,7 @@ playground.xcworkspace
 .DS_Store
 __pycache__/
 .venv/
+.benchmarkBaselines/
 
 # CocoaPods
 #
