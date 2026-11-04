@@ -147,6 +147,23 @@ class ReferenceTests(unittest.TestCase):
                     generate(GOLDENS / "saw-120ms.wav", REFERENCE / "Profiles/cpps-murton-praat7.json", Path("unused"), output)
             self.assertFalse(output.exists())
 
+    def test_cpps_limits_are_rejected_before_tool_launch(self):
+        build = REFERENCE.parents[1] / ".build"
+        build.mkdir(exist_ok=True)
+        for count, export in ((61 * 16000, False), (4800, True)):
+            with tempfile.TemporaryDirectory(dir=build) as temporary:
+                output = Path(temporary) / "candidate"
+                source = {**self.source, "sampleCount": count}
+                with patch("run.read_pcm", return_value=([0] * count, source)), \
+                     patch("run.verify_tool") as verify_tool, patch("run.subprocess.run") as command:
+                    with self.assertRaises(UnsupportedInput) as failure:
+                        generate(GOLDENS / "saw-120ms.wav", REFERENCE / "Profiles/cpps-murton-praat7.json",
+                                 Path("unused"), output, export)
+                    self.assertEqual(failure.exception.reason, "unsupportedRange")
+                    verify_tool.assert_not_called()
+                    command.assert_not_called()
+                self.assertFalse(output.exists())
+
     def test_changed_pcm_and_manifest_are_rejected_offline(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "changed.wav"

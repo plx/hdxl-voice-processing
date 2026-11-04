@@ -4,6 +4,8 @@ import math
 from common import ReferenceFailure, number
 
 FRAME_COLUMNS = ("timeSeconds", "slopeDBPerSecond", "interceptDB", "peakDB", "peakQuefrencySeconds", "cppDB")
+MAX_FRAMES = 30000
+MAX_MATRIX_CELLS = 50000
 
 
 def arguments(profile, path, export):
@@ -52,7 +54,7 @@ def parse(raw, input_record, export):
             input_seen = True
         elif tag == "axes" and len(fields) == 6 and axes is None:
             count, first, hop, bins, qstep = integer(fields[1]), number(fields[2]), number(fields[3]), integer(fields[4]), number(fields[5])
-            if not 1 <= count <= 30000 or not 1 <= bins <= 8193 or any(v is None for v in (first, hop, qstep)) or first < 0 or hop <= 0 or qstep <= 0:
+            if not 1 <= count <= MAX_FRAMES or not 1 <= bins <= 8193 or any(v is None for v in (first, hop, qstep)) or first < 0 or hop <= 0 or qstep <= 0:
                 raise ReferenceFailure("Invalid reference axes")
             axes = {"frameCount": count, "firstCenterSeconds": first, "hopSeconds": hop,
                     "quefrencyBinCount": bins, "quefrencyOriginSeconds": 0, "quefrencyStepSeconds": qstep}
@@ -81,7 +83,7 @@ def parse(raw, input_record, export):
             or not math.isclose(axes["firstCenterSeconds"], expected_first, abs_tol=1e-12, rel_tol=0)):
         raise ReferenceFailure("Axes disagree with pinned CPPS recipe and input duration")
     expected_frames = set(range(1, n + 1))
-    if export and n * q > 50000:
+    if export and n * q > MAX_MATRIX_CELLS:
         raise ReferenceFailure("Intermediate budget exceeded")
     result = {"axes": axes, "frames": {}, "matrices": {}}
     for stage in frames:

@@ -31,9 +31,11 @@ runs the other pinned recipes. Use `saw-500ms.wav` for these probes. All input m
 be mono, 16 kHz, normalized PCM16 or IEEE Float32/Float64 RIFF WAVE; no rescaling,
 channel averaging, gap stitching or implicit sample-rate conversion happens in the
 wrapper. Praat's explicitly configured internal conversions are separate. Inputs
-are bounded to 2,880,000 samples; minimum duration is 100 ms. CPPS matrix export is
-limited to 50,000 scalars per matrix; `--frames-only` supports longer inputs.
-Unsupported inputs fail explicitly without writing a candidate.
+are bounded to 2,880,000 samples; minimum duration is 100 ms. CPPS additionally
+accepts at most 30,000 frames (about 60 seconds at the fixed 2 ms hop), checked
+before launching Praat. Matrix export is limited to 50,000 scalars per matrix;
+`--frames-only` supports longer inputs within that frame ceiling. Unsupported
+inputs fail explicitly without writing a candidate or running external analysis.
 
 ## Profiles, independent sources and scope
 

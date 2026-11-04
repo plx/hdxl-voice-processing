@@ -70,7 +70,8 @@ def generate(input_path, profile_path, tool, output, export=True, analysis="cpps
     if len(samples) / source["sampleRate"] < 0.1:
         raise UnsupportedInput("insufficientData")
     frames = cpps.frame_count(len(samples), source["sampleRate"])
-    if analysis == "cpps" and export and frames * 513 > 50000:
+    if analysis == "cpps" and (not 1 <= frames <= cpps.MAX_FRAMES
+                              or (export and frames * 513 > cpps.MAX_MATRIX_CELLS)):
         raise UnsupportedInput("unsupportedRange")
     lock = load_json(HERE / "toolchain.json")
     if platform.python_version() != lock["pythonVersion"]:
