@@ -30,3 +30,10 @@ Do not commit private recordings, signing assets, credentials, generated build
 output, or machine-specific paths. Add numerical reference/provenance evidence
 when implementing algorithms. Physical-device evidence is deferred to #74;
 simulator and compile results must retain their actual labels.
+
+Dependency and fixture changes follow [the provenance policy](Documentation/ProvenancePolicy.md).
+Update `Configuration/provenance.json` and `THIRD_PARTY_NOTICES.md` in the same PR.
+`verify.sh` checks hashes, permissions metadata, lockfile identities, provenance
+failure cases, and the consumer under a network-denied runtime sandbox.
+The project license is pending owner decision #78; publication checks fail until
+that decision and the corresponding license file are recorded.
