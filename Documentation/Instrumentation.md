@@ -143,3 +143,10 @@ mode counts, callback boundaries, and equal samples across modes. See
 [framing measurements](../Tools/Framing/README.md) for full-call timing and
 default-disabled allocation evidence. Broader production adoption and integrated
 overhead remain #56/#62; sustained physical measurements remain #74.
+
+`PreparedFourierTransform` accepts the same worker facade through a package-scoped
+initializer. Its `FFT` scopes cover the Accelerate kernel only; packing, validation,
+scaling, and conversion costs remain visible in full-call benchmark rows. It uses
+the caller's enclosing frame metadata, with no new per-sample events. Tests verify
+matching scope pairs and that rejected input emits no kernel interval. See the
+[Fourier guide](FourierTransforms.md) and [workload matrix](../Tools/Fourier/README.md).

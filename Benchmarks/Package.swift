@@ -6,6 +6,8 @@ let package = Package(
     name: "VoiceBenchmarks",
     platforms: [.macOS("27.0")],
     products: [
+        .executable(name: "FourierBenchmarks", targets: ["FourierBenchmarks"]),
+        .executable(name: "FourierWorkloadCheck", targets: ["FourierWorkloadCheck"]),
         .executable(name: "VoiceDSPBenchmarks", targets: ["VoiceDSPBenchmarks"]),
         .executable(name: "WorkloadCheck", targets: ["WorkloadCheck"]),
         .executable(name: "FramingBenchmarks", targets: ["FramingBenchmarks"]),
@@ -25,6 +27,15 @@ let package = Package(
             ]),
     ],
     targets: [
+        .target(
+            name: "FourierWorkload",
+            dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
+        .executableTarget(name: "FourierWorkloadCheck", dependencies: ["FourierWorkload"]),
+        .executableTarget(
+            name: "FourierBenchmarks",
+            dependencies: ["FourierWorkload", .product(name: "Benchmark", package: "benchmark")],
+            path: "Benchmarks/FourierBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .target(
             name: "SmokeWorkload",
             dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),

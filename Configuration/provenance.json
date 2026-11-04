@@ -2793,6 +2793,38 @@
       ],
       "expectedProfile": "praat-gaussian-2-physical/v1; explicit count and rate per case",
       "referenceOutputIdentity": "sha256:199390ba80b01906ee7cbe0ce6d3c7c9faf83daaa921dacaf23f6e1f227a351b"
+    },
+    {
+      "id": "fourier-direct-dft",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Fourier/oracles.json",
+      "sha256": "7822b5acc89b0c0c77318d95fe3ff345b2cb621dc73bd1b1c36d1d0b4fba71c5",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/30",
+        "versionOrHash": "generator-v1-sha256:79f39882c7f55ebc20ea956472a284eed094ad864377fddf945ce4031a6e6b17"
+      },
+      "generator": {
+        "path": "Tools/Fourier/oracle.py",
+        "version": "1",
+        "sha256": "79f39882c7f55ebc20ea956472a284eed094ad864377fddf945ce4031a6e6b17"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical vectors; no recordings"
+      },
+      "transformations": [
+        "Original scalar direct complex DFT and inverse from mathematical sums",
+        "Explicit IEEE Float32 rounding of Float32 inputs before scalar evaluation",
+        "Full small vectors and independently evaluated selected bins for all supported lengths"
+      ],
+      "expectedProfile": "fourier-negative-forward-inverse-over-n/v1; explicit length and precision per case",
+      "referenceOutputIdentity": "sha256:7822b5acc89b0c0c77318d95fe3ff345b2cb621dc73bd1b1c36d1d0b4fba71c5"
     }
   ],
   "optionalModels": []

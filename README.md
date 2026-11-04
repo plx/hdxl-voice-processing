@@ -2,7 +2,7 @@
 
 A Swift package under development for reproducible acoustic voice measurements
 on macOS 27 and iOS 27. It will provide PCM analysis, native audio adapters, and
-optional visualizations. Deterministic PCM framing and windows are implemented;
+optional visualizations. Deterministic PCM framing, windows, Fourier transforms, and spectrum conversions are implemented;
 voice-measurement algorithms and microphone capture are still in development.
 Measurements will retain units, validity, timing,
 and numerical-profile identity; they are not universal voice-quality or health scores.
@@ -37,6 +37,8 @@ fixture checks are described in [reference tooling](Tools/Reference/README.md).
 [Assigned reference routes](Tools/Reference/ROUTES.md) cover the planned algorithms.
 The [framing guide](Documentation/Framing.md) specifies sample grids, windows,
 discontinuities, partial support, and borrowed-buffer ownership.
+The [Fourier guide](Documentation/FourierTransforms.md) defines transform scaling,
+real/complex storage, window-normalized spectra, and independent accuracy bounds.
 
 Dependency and fixture provenance is documented in [the policy](Documentation/ProvenancePolicy.md)
 and [third-party notices](THIRD_PARTY_NOTICES.md). The project license is pending
