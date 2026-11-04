@@ -8,6 +8,8 @@ let package = Package(
     products: [
         .executable(name: "VoiceDSPBenchmarks", targets: ["VoiceDSPBenchmarks"]),
         .executable(name: "WorkloadCheck", targets: ["WorkloadCheck"]),
+        .executable(name: "FramingBenchmarks", targets: ["FramingBenchmarks"]),
+        .executable(name: "FramingWorkloadCheck", targets: ["FramingWorkloadCheck"]),
     ],
     traits: [
         .trait(
@@ -27,6 +29,17 @@ let package = Package(
             name: "SmokeWorkload",
             dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
         .executableTarget(name: "WorkloadCheck", dependencies: ["SmokeWorkload"]),
+        .target(
+            name: "FramingWorkload",
+            dependencies: [
+                .product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")
+            ]),
+        .executableTarget(name: "FramingWorkloadCheck", dependencies: ["FramingWorkload"]),
+        .executableTarget(
+            name: "FramingBenchmarks",
+            dependencies: ["FramingWorkload", .product(name: "Benchmark", package: "benchmark")],
+            path: "Benchmarks/FramingBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .executableTarget(
             name: "VoiceDSPBenchmarks",
             dependencies: ["SmokeWorkload", .product(name: "Benchmark", package: "benchmark")],

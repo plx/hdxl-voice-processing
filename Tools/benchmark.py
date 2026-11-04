@@ -170,7 +170,8 @@ def main():
         (output / "environment.json").write_text(ci.redact(json.dumps(environment, indent=2)) + "\n")
         (output / "resolution.json").write_bytes(lock_before)
         common = swift_arguments(args.mode)
-        plugin = ["swift", "package", *common, "--allow-writing-to-package-directory", "benchmark"]
+        plugin = ["swift", "package", *common, "--allow-writing-to-package-directory", "benchmark",
+                  "--target", "VoiceDSPBenchmarks"]
         with (output / "commands.log").open("w") as log:
             def run(command):
                 ci.run_command(command, log, result["commands"])

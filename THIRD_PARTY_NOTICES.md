@@ -21,7 +21,7 @@ distribution is gated by `python3 Tools/verify-provenance.py --for-publication`.
 | malloc-interposer 1.6.1 | Optional allocation diagnostic backend in the benchmark package only | Apache-2.0; retains upstream [SwiftNIO-derived machinery notice](https://github.com/ordo-one/malloc-interposer/blob/1.6.1/NOTICE) |
 | swift-argument-parser, swift-atomics, swift-numerics, swift-system | Transitive development benchmark dependencies | Apache-2.0 with Swift Runtime Library Exception; exact selected license files and hashes in the manifest |
 | hdrhistogram-swift, TextTable | Transitive development benchmark reporting dependencies | Apache-2.0 and MIT respectively; exact revisions and license hashes in the manifest |
-| Praat 7.0.02 | Pinned external development CLI in `Tools/Reference`; never vendored or linked into products | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
+| Praat 7.0.02 | Pinned external development CLI in `Tools/Reference` and the `Tools/Framing` Gaussian oracle; never vendored or linked into products | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
 | IVoice | Design context only; no code, assets, or thresholds copied | Root `IVoice-Source/LICENSE`: MIT, copyright 2025 Iman Noferesti, in the [archive](https://tintin.cs.uiowa.edu/Pages/Software/IVoice/Documents/IVoice-Source.zip); bundled assets/tools have separate notices |
 
 The inspected IVoice archive SHA-256 is

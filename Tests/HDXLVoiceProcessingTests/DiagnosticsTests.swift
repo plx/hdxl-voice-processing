@@ -42,6 +42,45 @@ private final class RecordingSink: DiagnosticSink {
 
 private enum SyntheticError: Error { case expected }
 
+@Test func framingDiagnosticsBoundAssemblyScopesAndPreserveFrames() throws {
+    let epoch = StreamEpoch(streamID: UUID())
+    let config = try FramingConfiguration(
+        window: WindowSpecification(definition: .rectangular, sampleCount: 4, sampleRate: 16_000),
+        hopLength: 2, partialWindowPolicy: .emitUnavailable)
+    let samples = Array(0..<8).map(Double.init)
+    for mode in DiagnosticMode.allCases {
+        let sink = RecordingSink()
+        let diagnostics = WorkerDiagnostics(mode: mode, sink: sink)
+        let framer = try PCMFramer<Double>(
+            configuration: config, epoch: epoch, diagnostics: diagnostics)
+        var output: [[Double]] = []
+        func emit(_ buffer: UnsafeBufferPointer<Double>, _ support: PCMFrameSupport) {
+            output.append(Array(buffer))
+            if mode == .detailed {
+                guard case .end(let record) = sink.entries.last else {
+                    Issue.record("Consumer ran inside a diagnostic assembly interval")
+                    return
+                }
+                #expect(record.stage == .analysisFrame)
+                #expect(record.metadata.sampleCount == UInt32(buffer.count))
+                #expect(
+                    record.metadata.validity
+                        == (support.unavailability == nil ? .available : .warmup))
+            }
+        }
+        _ = try samples.withUnsafeBufferPointer {
+            try framer.process(
+                $0,
+                interval: SourceInterval(
+                    epoch: epoch, startSample: 0, sampleCount: 8, sampleRate: 16_000), emit: emit)
+        }
+        try framer.finish(emit: emit)
+        #expect(output == [[0, 1, 2, 3], [2, 3, 4, 5], [4, 5, 6, 7], [6, 7]])
+        #expect(diagnostics.counts.intervals == (mode == .disabled ? 0 : mode == .sampled ? 2 : 8))
+        framer.cancel()
+    }
+}
+
 @Test func diagnosticScopesBalanceAcrossResetReturnErrorAndCancellation() throws {
     let sink = RecordingSink()
     let diagnostics = WorkerDiagnostics(mode: .detailed, sink: sink)
