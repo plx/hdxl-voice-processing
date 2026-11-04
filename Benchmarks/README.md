@@ -176,3 +176,10 @@ both whole-interval Praat-compatible and streaming-preview profiles, both precis
 operations. Raw timing distributions and allocation diagnostics are collected in separate
 binaries; both prepared operations require zero maximum heap-allocation counters and a
 positive allocation/ARC control. Host evidence does not replace physical-device measurements.
+
+The [level matrix](../Tools/Levels/README.md) covers 100 configurations of direct/sliding
+rectangular energy, optional combined K-weighting, 10/50/400 ms windows, 16/44.1/48 kHz,
+both input precisions, explicit warm-up, silence, denormals, and separately configured workers.
+Preparation/destruction and prepared Analyze are separate operations. Both modes retain
+complete raw distributions; allocation mode requires positive controls and zero maximum
+prepared heap counters. Batch latency and throughput have explicit per-analyzer input durations.

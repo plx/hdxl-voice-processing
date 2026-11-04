@@ -23,6 +23,7 @@ distribution is gated by `python3 Tools/verify-provenance.py --for-publication`.
 | hdrhistogram-swift, TextTable | Transitive development benchmark reporting dependencies | Apache-2.0 and MIT respectively; exact revisions and license hashes in the manifest |
 | Praat 7.0.02 | Pinned external development CLI in `Tools/Reference` and the `Tools/Framing` Gaussian oracle; never vendored or linked into products | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
 | IVoice | Design context only; no code, assets, or thresholds copied | Root `IVoice-Source/LICENSE`: MIT, copyright 2025 Iman Noferesti, in the [archive](https://tintin.cs.uiowa.edu/Pages/Software/IVoice/Documents/IVoice-Source.zip); bundled assets/tools have separate notices |
+| Brecht De Man, loudness.py | External K-filter coefficient reference in an ignored development cache; math-only compatibility shim, no NumPy/SciPy execution or runtime linkage; source not redistributed | [MIT, copyright 2018 Brecht De Man](https://github.com/BrechtDeMan/loudness.py/blob/dc0f83883d247cbeb106064784e32d8c38ce1573/LICENSE), pinned revision in the manifest |
 
 The inspected IVoice archive SHA-256 is
 `b72be0624623971e3a9af21698f6cdf76b009c8a764329a897fff43aa286e4dc`.
@@ -40,3 +41,12 @@ must retain applicable licenses, attribution, exact origin, and modification rec
 Its generated numerical vectors are inventoried as original synthetic fixtures;
 no external FFT implementation or source is copied into the oracle. The runtime
 uses the system Accelerate framework through its public APIs.
+
+`Tools/Levels/reference.py` evaluates the pinned author's K-filter coefficient
+function using a minimal math-only compatibility surface, then uses an original
+80-digit Decimal direct-form-I cascade to produce synthetic vectors. This is not
+an execution of SciPy or a full integrated-loudness conformance result. The native
+K design independently reconstructs the ITU-R BS.1770-5 tables by inverse bilinear
+transformation and stage-specific prewarping; no external implementation is copied
+into the Swift package. The author reference is associated with Brecht De Man,
+“Evaluation of Implementations of the EBU R128 Loudness Measurement,” AES 145, 2018.

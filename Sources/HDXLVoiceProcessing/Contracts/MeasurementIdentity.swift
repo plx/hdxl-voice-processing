@@ -24,7 +24,8 @@ public struct VersionedIdentifier: Sendable, Hashable, Codable {
 /// The measurement definition is separate from the algorithm used to estimate it.
 public enum MeasurementKind: String, Sendable, Hashable, Codable, CaseIterable {
     case cpp, cpps, fundamentalFrequency, harmonicToNoiseRatio
-    case rms, peakAmplitude, levelDBFS, calibratedSPL, clippingFraction, kWeightedEnergy
+    case rms, peakAmplitude, meanSquare, crestFactor, levelDBFS, calibratedSPL, clippingFraction,
+        kWeightedEnergy
     case jitterLocal, jitterAbsolute, jitterRAP, jitterPPQ5, jitterDDP
     case shimmerLocal, shimmerDB, shimmerAPQ3, shimmerAPQ5, shimmerAPQ11, shimmerDDA
     case spectralCentroid, spectralSpread, spectralSkewness, spectralKurtosis, spectralFlatness
@@ -45,7 +46,8 @@ public enum MeasurementKind: String, Sendable, Hashable, Codable, CaseIterable {
         case .clippingFraction, .jitterLocal, .jitterRAP, .jitterPPQ5, .jitterDDP,
             .shimmerLocal, .shimmerAPQ3, .shimmerAPQ5, .shimmerAPQ11, .shimmerDDA:
             unit == .fraction || unit == .percent
-        case .kWeightedEnergy: unit == .normalizedSquaredAmplitude
+        case .meanSquare, .kWeightedEnergy: unit == .normalizedSquaredAmplitude
+        case .crestFactor: unit == .dimensionless || unit == .decibelsRatio
         case .spectralSkewness, .spectralKurtosis, .spectralFlatness: unit == .dimensionless
         case .spectralSlope: unit == .decibelsPerOctave || unit == .decibelsPerHertz
         case .spectralBandEnergyRatio: unit == .dimensionless || unit == .decibelsRatio
