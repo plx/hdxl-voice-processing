@@ -37,7 +37,8 @@
         "Tools/Fixtures/generate-contract-fixtures.py",
         "Tools/Tests",
         "Tools/ci.py and GitHub Actions (pinned via setup-python)",
-        "Tools/Reference: standard library only; no third-party Python packages"
+        "Tools/Reference: standard library only; no third-party Python packages",
+        "Tools/Synthetic: original standard-library generators, mathematical oracles and generation benchmarks"
       ],
       "redistributed": false
     },
@@ -557,6 +558,2207 @@
       ],
       "expectedProfile": "reference mono16k normalizedFloat64",
       "referenceOutputIdentity": "original-reference-input-v1/sha256:f7b54f941d6b8c2425c6951c6eaa0f09517399d110d8eda0271ab4c2ee875939"
+    },
+    {
+      "id": "synthetic-algebra-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/algebra.json",
+      "sha256": "1ceba935c7fb60398fe96ae30ca834c75ba24e8f8d694c05ad1cfb7b7ff76265",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/algebra.json"
+    },
+    {
+      "id": "synthetic-bin-tone-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/bin-tone.json",
+      "sha256": "18e280a5344feff91b9346c86518e0272fa01de7e7c1650f6cc2cca91c00375d",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/bin-tone.json"
+    },
+    {
+      "id": "synthetic-bin-tone-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/bin-tone.wav",
+      "sha256": "1646202e6ff198d2a1da3ea1b96a66466a94eafd3c3ab6cd2026496e5786c9c9",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/bin-tone.wav"
+    },
+    {
+      "id": "synthetic-catalog-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/catalog.json",
+      "sha256": "3f66c89f03774279cd332b3f6bf45eedd5e7a473251340fac5a39f5e615d8721",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/catalog.json"
+    },
+    {
+      "id": "synthetic-clipped-dc-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/clipped-dc.json",
+      "sha256": "0037ecc9ecd896690fc1c6bfcea6bfad7ddbeae5c2774031277ba7172fb4af56",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/clipped-dc.json"
+    },
+    {
+      "id": "synthetic-clipped-dc-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/clipped-dc.wav",
+      "sha256": "1756fd54a51b59fa76c77e9d7999d1c0b3295f586fab4ab58a819f5ec60b75df",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/clipped-dc.wav"
+    },
+    {
+      "id": "synthetic-dc-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/dc.json",
+      "sha256": "ad0cbfc0760397e72ea6e3cf6b5dddb9eee92e7362046aa3a5249fe2e4a41ccb",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/dc.json"
+    },
+    {
+      "id": "synthetic-dc-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/dc.wav",
+      "sha256": "a3c085523d471845315e35f161ea88dc7377ebe4a0795c8a1e3b84ef354e3d5c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/dc.wav"
+    },
+    {
+      "id": "synthetic-dominant-upper-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/dominant-upper.json",
+      "sha256": "716fcb20f37d01be2261967d6fc8f854eadca52004c12d602054b2e66c2a5e85",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/dominant-upper.json"
+    },
+    {
+      "id": "synthetic-dominant-upper-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/dominant-upper.wav",
+      "sha256": "b2d18668539a5d4406497a7e8748c3b6e33483e47ed52e70c93ca31bf8c6bbf6",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/dominant-upper.wav"
+    },
+    {
+      "id": "synthetic-empty-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/empty.json",
+      "sha256": "a6be68ee50533f52484ec2a6f12af4ee99367461068f468a5daa3bfbcb08580c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/empty.json"
+    },
+    {
+      "id": "synthetic-empty-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/empty.wav",
+      "sha256": "6f750f5664e936960b33d06f77ea6a8038d4cb0d679834c00ddb694225f7ae05",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/empty.wav"
+    },
+    {
+      "id": "synthetic-filtered-harmonics-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/filtered-harmonics.json",
+      "sha256": "d55cf22357a49317cebdd3931a80a0cdfc355a8e44f5d6a4b78535b64f112bce",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/filtered-harmonics.json"
+    },
+    {
+      "id": "synthetic-filtered-harmonics-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/filtered-harmonics.wav",
+      "sha256": "e7b716935d615182fabecfab24354c9a8c8f855b67629da5da644f3826f4fac2",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/filtered-harmonics.wav"
+    },
+    {
+      "id": "synthetic-fully-excluded-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/fully-excluded.json",
+      "sha256": "4ce3907f1fe6bd43ce0e9cce225bae4985ff3c2740664114aac68de95e8c029e",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/fully-excluded.json"
+    },
+    {
+      "id": "synthetic-fully-excluded-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/fully-excluded.wav",
+      "sha256": "2c415bade1ff08682ef7fc43bd19a8b1d661217fddd958e007b303e06a55c64c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/fully-excluded.wav"
+    },
+    {
+      "id": "synthetic-harmonic-high-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/harmonic-high.json",
+      "sha256": "afae5541306a8f0551d5b9d5514c8a3b419007b25df10661f7673c43b6ae92d5",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/harmonic-high.json"
+    },
+    {
+      "id": "synthetic-harmonic-high-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/harmonic-high.wav",
+      "sha256": "a880eed484e35358686eb2454634731b1c87777b411ba0ea02efb139f835b88a",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/harmonic-high.wav"
+    },
+    {
+      "id": "synthetic-harmonic-low-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/harmonic-low.json",
+      "sha256": "95fa1dcbbdca99131bdf5e3f8353e73a78fd79b26360796fe9cea35db9480cf5",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/harmonic-low.json"
+    },
+    {
+      "id": "synthetic-harmonic-low-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/harmonic-low.wav",
+      "sha256": "1b12f4869cb983601dd75f49a35932a6f011d16170e88d66d9eb8d5ed184cd34",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/harmonic-low.wav"
+    },
+    {
+      "id": "synthetic-impulse-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/impulse.json",
+      "sha256": "97247a3408b8f78d28cf19d62866b0a63a79147bfa333f1cf27c0b742fc60db8",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/impulse.json"
+    },
+    {
+      "id": "synthetic-impulse-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/impulse.wav",
+      "sha256": "21a6af9d2f7fcb1ab7a5970bf68e6820fd0336800f0e2388e24810b7c49e20a8",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/impulse.wav"
+    },
+    {
+      "id": "synthetic-inharmonic-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/inharmonic.json",
+      "sha256": "86d1f0f2ceddb9fe7166be4b905ec0d598abbe133946b06d7d6d7d39007eb857",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/inharmonic.json"
+    },
+    {
+      "id": "synthetic-inharmonic-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/inharmonic.wav",
+      "sha256": "62d4db727feda79114a4ecca9dd561f0ccd11e1537d36f6444ddb7da4a3370bf",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/inharmonic.wav"
+    },
+    {
+      "id": "synthetic-irregular-pulses-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/irregular-pulses.json",
+      "sha256": "8be10cd4ac7bb14cc529126bc2485309d14ef22c570b2dd9e13fd0081852b0ed",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/irregular-pulses.json"
+    },
+    {
+      "id": "synthetic-irregular-pulses-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/irregular-pulses.wav",
+      "sha256": "9255d364c73987fa3f1328d36e0914882883a4122384da5f6f400d878bfa985b",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/irregular-pulses.wav"
+    },
+    {
+      "id": "synthetic-known-pole-impulse-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/known-pole-impulse.json",
+      "sha256": "eaa47f1650fed68625400b0c71feb0547a95d4ea7aa5f830fd8fa06310f8656a",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/known-pole-impulse.json"
+    },
+    {
+      "id": "synthetic-known-pole-impulse-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/known-pole-impulse.wav",
+      "sha256": "47e646b4bfa02abbceb1799416e31ca2da1d77d8922482380ef14d411775bdce",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/known-pole-impulse.wav"
+    },
+    {
+      "id": "synthetic-missing-fundamental-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/missing-fundamental.json",
+      "sha256": "73526a0c42bffb2ef0a2571a22979feaec7243022daea9f589907da9c6365a27",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/missing-fundamental.json"
+    },
+    {
+      "id": "synthetic-missing-fundamental-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/missing-fundamental.wav",
+      "sha256": "adef14412e3048550f81d9857bf3cc4d5bef26e531a4fe06a7125134299ef149",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/missing-fundamental.wav"
+    },
+    {
+      "id": "synthetic-missing-intervals-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/missing-intervals.json",
+      "sha256": "829867af6a1420bf1bd8a7d258f62d90088f830d6b2f710e1266f3e67c498241",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/missing-intervals.json"
+    },
+    {
+      "id": "synthetic-missing-intervals-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/missing-intervals.wav",
+      "sha256": "1646202e6ff198d2a1da3ea1b96a66466a94eafd3c3ab6cd2026496e5786c9c9",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/missing-intervals.wav"
+    },
+    {
+      "id": "synthetic-noise-mixture-0db-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/noise-mixture-0db.json",
+      "sha256": "1ea7d2cfa0d68384bcf34956a0717a83bdcd2585ce95fa02426414b24b5541fb",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/noise-mixture-0db.json"
+    },
+    {
+      "id": "synthetic-noise-mixture-0db-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/noise-mixture-0db.wav",
+      "sha256": "42f411ec44cafb6549c8edd7fda7c1cde77bd421b28389b15aacf49061906731",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/noise-mixture-0db.wav"
+    },
+    {
+      "id": "synthetic-noise-mixture-20db-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/noise-mixture-20db.json",
+      "sha256": "fdc8d15e613599751b1184b13ee2b40a510ed209f7b3f445051299f0b08ec615",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/noise-mixture-20db.json"
+    },
+    {
+      "id": "synthetic-noise-mixture-20db-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/noise-mixture-20db.wav",
+      "sha256": "a447ebf57633cfdb67dcf787c7fcbcbfb75b451d9bd7b8e802d682b8dbb7304c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/noise-mixture-20db.wav"
+    },
+    {
+      "id": "synthetic-noise-seed-seven-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/noise-seed-seven.json",
+      "sha256": "9993fd18abc2bb4d1ff5f0e9163ca34459ee9bdd0f42ec70d9d09f8e9e34ddea",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/noise-seed-seven.json"
+    },
+    {
+      "id": "synthetic-noise-seed-seven-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/noise-seed-seven.wav",
+      "sha256": "e5d809f5fb3d20efefa40a8b280bc2636addf60598e17249946e99927198d469",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/noise-seed-seven.wav"
+    },
+    {
+      "id": "synthetic-noise-seed-zero-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/noise-seed-zero.json",
+      "sha256": "604a6058addd7872ed477b386825acbd7647aa27fa6a186b394487bb4820aafb",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/noise-seed-zero.json"
+    },
+    {
+      "id": "synthetic-noise-seed-zero-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/noise-seed-zero.wav",
+      "sha256": "519e749d2b982225999dba57665277ad84f4dfb92275f15b50378c8e3e9e6bf5",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/noise-seed-zero.wav"
+    },
+    {
+      "id": "synthetic-nyquist-cosine-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/nyquist-cosine.json",
+      "sha256": "7b56a822f5ce9b89fdca2531a4c55bf83b45de878f32869c982cbeb10d30b14e",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/nyquist-cosine.json"
+    },
+    {
+      "id": "synthetic-nyquist-cosine-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/nyquist-cosine.wav",
+      "sha256": "e7e661e8afd9984468a7fd3a797686bf89e3f101b1bae11963264489604ffb5b",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/nyquist-cosine.wav"
+    },
+    {
+      "id": "synthetic-nyquist-sine-zero-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/nyquist-sine-zero.json",
+      "sha256": "912877746c4cb0baa4c815f303af2744f09ac25da8c150cc83994c77ecc642ac",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/nyquist-sine-zero.json"
+    },
+    {
+      "id": "synthetic-nyquist-sine-zero-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/nyquist-sine-zero.wav",
+      "sha256": "b1b7f6d418f881bb2b27e69f224d3bb3e158a7ad0ad2f26404db820165b10bb9",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/nyquist-sine-zero.wav"
+    },
+    {
+      "id": "synthetic-off-bin-tone-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/off-bin-tone.json",
+      "sha256": "cab0def36cbb8a841be81dfccb376e2138ee909fe5323f100100bf4017917572",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/off-bin-tone.json"
+    },
+    {
+      "id": "synthetic-off-bin-tone-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/off-bin-tone.wav",
+      "sha256": "d77299b1bac5f7ee7512b24ade8217617773e043cde8a70e38d29d2c0dd48753",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/off-bin-tone.wav"
+    },
+    {
+      "id": "synthetic-one-sample-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/one-sample.json",
+      "sha256": "e2ef836347194e107b365a16c26dc540fee0829da1124e86260e604dd26a9a05",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/one-sample.json"
+    },
+    {
+      "id": "synthetic-one-sample-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/one-sample.wav",
+      "sha256": "a8bedabb014c7a07513708f39230b668acc13a10454f1fb2fa15f3c57cf59891",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/one-sample.wav"
+    },
+    {
+      "id": "synthetic-quarter-tone-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/quarter-tone.json",
+      "sha256": "74bdbed7856ef8751cd3a140de9426360b3a301eb7b774857aaa87a48fca0be1",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/quarter-tone.json"
+    },
+    {
+      "id": "synthetic-quarter-tone-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/quarter-tone.wav",
+      "sha256": "00b4916ca1292893c979eab784457b7ee4c9e265f21e5b727e63b6d137de6c4d",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/quarter-tone.wav"
+    },
+    {
+      "id": "synthetic-regular-pulses-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/regular-pulses.json",
+      "sha256": "ebee12e71c411c5d66f46fc0f5579c063158564eed2975e6beefd8367bb26371",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/regular-pulses.json"
+    },
+    {
+      "id": "synthetic-regular-pulses-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/regular-pulses.wav",
+      "sha256": "de4ffa2490abb58e95d18fc8b2c284a107ee7ab1d3d40a6f7f74c4ee34aba08a",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/regular-pulses.wav"
+    },
+    {
+      "id": "synthetic-sequences-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/sequences.json",
+      "sha256": "c05c9252cc9abbf855c125ddaa2652b4ee3b93cf6f4acec838f763ee12073f6c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/sequences.json"
+    },
+    {
+      "id": "synthetic-silence-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/silence.json",
+      "sha256": "cca8d6f3bfc8b5967d67f9f5aa3de5c812e048c3a696a4954e9aaadf4104bc18",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/silence.json"
+    },
+    {
+      "id": "synthetic-silence-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/silence.wav",
+      "sha256": "838e03367da2f67de1d5c13fda2d02f13994b85eed9150b7feaec87fa2e5c357",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/silence.wav"
+    },
+    {
+      "id": "synthetic-source-harmonics-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/source-harmonics.json",
+      "sha256": "a04f89f049146c2d629b77f05988eb64b7fddfb1efacbebb2dcdf6ca7876f0d3",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/source-harmonics.json"
+    },
+    {
+      "id": "synthetic-source-harmonics-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/source-harmonics.wav",
+      "sha256": "d24fb277d99665d343281667db178d3e78d1cb68d4fb8e6e7d7543f93fc0546a",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/source-harmonics.wav"
+    },
+    {
+      "id": "synthetic-subnormal-dc-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/subnormal-dc.json",
+      "sha256": "e3f44a6344402ef6af048bf7bb880a81bf6114e594506c12a95d168c4d1525b0",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/subnormal-dc.json"
+    },
+    {
+      "id": "synthetic-subnormal-dc-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/subnormal-dc.wav",
+      "sha256": "2e26bad7d7f45c63ddbd270e1e49c0172c059e16efe8313c1f70b160ecce3f89",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/subnormal-dc.wav"
+    },
+    {
+      "id": "synthetic-tone-double-rate-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/tone-double-rate.json",
+      "sha256": "7b69c9f3b26f622b5c551a1252728754775ca230fb5ab3c283adfb6e3c95d929",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/tone-double-rate.json"
+    },
+    {
+      "id": "synthetic-tone-double-rate-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/tone-double-rate.wav",
+      "sha256": "fecac91983867a7c755297b5bee94db128401b7e35fad5f8921391549cc908a4",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/tone-double-rate.wav"
+    },
+    {
+      "id": "synthetic-tone-half-gain-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/tone-half-gain.json",
+      "sha256": "08f2990ef46c2d8a0ea03b20536ff25464dc3eb5e5fc35edaa3d12975ad47b90",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/tone-half-gain.json"
+    },
+    {
+      "id": "synthetic-tone-half-gain-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/tone-half-gain.wav",
+      "sha256": "8c7566c41c40f5742df80104e619bb871c790904ad48224b16c21c7e8ba394ad",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/tone-half-gain.wav"
+    },
+    {
+      "id": "synthetic-tone-inverted-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/tone-inverted.json",
+      "sha256": "4f660f0eb19f38f35b0f1b06709802c9efd2878b937ee3a51b0ae29e90423e24",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/tone-inverted.json"
+    },
+    {
+      "id": "synthetic-tone-inverted-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/tone-inverted.wav",
+      "sha256": "1ffc4067662c1430a9732c88d224c3c5be396b0fa0519383803bfaecf517d2ff",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/tone-inverted.wav"
+    },
+    {
+      "id": "synthetic-tone-time-dilated-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/tone-time-dilated.json",
+      "sha256": "90722d8e85a71f870a6663745ed269470b650c1a48dc464421040bfc5498f4b5",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/tone-time-dilated.json"
+    },
+    {
+      "id": "synthetic-tone-time-dilated-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/tone-time-dilated.wav",
+      "sha256": "5db9e388c402f4d169f7e99a546b42880263707de9dc6ca3e4641e41c441f0c2",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/tone-time-dilated.wav"
+    },
+    {
+      "id": "synthetic-vowel-high-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/vowel-high.json",
+      "sha256": "f44b1da7e011345634379acfce1e3226dd31d59fcd8a5825b15e1e9ba9f9a50e",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/vowel-high.json"
+    },
+    {
+      "id": "synthetic-vowel-high-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/vowel-high.wav",
+      "sha256": "0f85a7b3eadfdcd137b37889dfa2ec04e557fe0251408652d2ed4a025c479273",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/vowel-high.wav"
+    },
+    {
+      "id": "synthetic-vowel-low-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/vowel-low.json",
+      "sha256": "7e646f7b742c0842933bf0faafa156507ba95490b1b3e145750feee6ca0e1f9a",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/vowel-low.json"
+    },
+    {
+      "id": "synthetic-vowel-low-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/vowel-low.wav",
+      "sha256": "918f7c29d2ed83fc0556ebf2a20c7db30f58e338450316b9c25ed10b2b1d51ff",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/22",
+        "versionOrHash": "generator-v1-sha256:374db54ac8271ed4ca877cb965487ccc398f37eaf0567b571b47469191770089"
+      },
+      "generator": {
+        "path": "Tools/Synthetic/generate.py",
+        "version": "1",
+        "sha256": "3eed5ff162bed1654c696ed09ca01f0f5878fd4d1e1bfbf62b2569728a8dd343"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical synthetic source; no human recording"
+      },
+      "transformations": [
+        "Explicit recipes and equations in Tools/Synthetic; binary64 Float64 WAVE or canonical JSON",
+        "Numerical source hashes and all artifact hashes in Synthetic/catalog.json"
+      ],
+      "expectedProfile": "independent-synthetic-sources/v1; per-case recipe identity in manifest",
+      "referenceOutputIdentity": "4a774c2f7e05a197641b6a7e67ef0f87398884eae1c6d6d4a6d0ea58082268b5/vowel-low.wav"
     }
   ],
   "optionalModels": []

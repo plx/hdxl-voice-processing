@@ -144,3 +144,13 @@ from the repository root. It reports bare, disabled, sampled, and detailed costs
 with identical optimized outputs; it does not alter the gain/energy benchmark's
 metrics or establish a timing budget. Local Instruments commands and evidence
 handling are documented in [Instrumentation](../Documentation/Instrumentation.md).
+
+## Registered synthetic inputs for #25
+
+[V03 synthetic infrastructure](../Tools/Synthetic/README.md) registers 24 workloads:
+1/10/60/300 seconds × 16/44.1/48 kHz × 50/600 Hz source F0. The manifest factory is
+`Tools/Synthetic/benchmark.py:workloads`; it includes explicit recipes, identities,
+precision, block size, and suggested analysis frame/hop sizes. Use its `--mode prepare`
+to create immutable hashed PCM under `.build`. Verify and load/map it before timing
+native algorithms; do not run synthesis in benchmark loops. The separate generation
+report and native fixture-validation signposts make no DSP performance claim.

@@ -1,0 +1,58 @@
+name: Synthetic fixtures
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 9 * * 3'
+  pull_request:
+    paths:
+      - 'Tools/Synthetic/**'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/**'
+      - 'Tests/HDXLVoiceProcessingTests/SyntheticFixtureTests.swift'
+      - '.github/workflows/synthetic-fixtures.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: synthetic-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthesize:
+    name: Independent synthesis / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 20
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Reproduce independent catalog
+        run: python3 Tools/Synthetic/verify.py
+      - name: Full synthesis matrix
+        run: python3 Tools/Synthetic/benchmark.py --matrix full --trials 3 --output .build/synthetic-generation
+      - name: Prepare an analysis input outside timed analysis
+        run: python3 Tools/Synthetic/benchmark.py --mode prepare --workload synthetic-1s-16000hz-f0-50 --output .build/synthetic-prepared
+      - name: Native validation timing with signposts
+        env:
+          HDXL_SYNTHETIC_PERFORMANCE: '1'
+        run: |
+          set -o pipefail
+          swift test -c release --filter syntheticNativeValidationPerformance 2>&1 | tee .build/synthetic-generation/native-validation.log
+      - name: Retain numeric generation and validation evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: synthetic-generation-${{ github.run_attempt }}
+          path: |
+            .build/synthetic-generation/*.json
+            .build/synthetic-generation/*.log
+            .build/synthetic-prepared/*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
