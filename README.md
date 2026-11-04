@@ -30,3 +30,8 @@ See [contribution instructions](CONTRIBUTING.md),
 [roadmap](https://github.com/plx/hdxl-voice-processing/issues/1).
 watchOS is pending a separate capability decision. Physical-device validation
 is deferred to [follow-up #74](https://github.com/plx/hdxl-voice-processing/issues/74).
+
+Dependency and fixture provenance is documented in [the policy](Documentation/ProvenancePolicy.md)
+and [third-party notices](THIRD_PARTY_NOTICES.md). The project license is pending
+[owner decision #78](https://github.com/plx/hdxl-voice-processing/issues/78); no
+redistribution license is granted by the public development repository alone.

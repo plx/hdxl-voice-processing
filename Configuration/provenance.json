@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "reviewedDate": "2026-11-04",
+  "projectLicense": {
+    "status": "pending-owner-decision",
+    "identifier": null,
+    "path": null,
+    "decisionURL": "https://github.com/plx/hdxl-voice-processing/issues/78"
+  },
+  "runtimeExternalDependencies": [],
+  "components": [
+    {
+      "id": "xcode-sdk-toolchain",
+      "status": "system",
+      "sourceURL": "https://developer.apple.com/xcode/",
+      "selectedVersion": "Xcode 27.0 (27A266a); Swift 6.4 (swiftlang-6.4.0.34.1); Apple SDKs 27.0",
+      "license": "LicenseRef-Apple-Xcode-SDK-Agreement",
+      "licenseEvidenceURL": "https://developer.apple.com/support/terms/",
+      "usedBy": [
+        "HDXLVoiceProcessing: Swift, Foundation, CryptoKit",
+        "HDXLVoiceProcessingAudio: AVFAudio",
+        "HDXLVoiceProcessingVisualization: SwiftUI",
+        "All tests and Examples/CoreConsumer; bundled swift-format"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "cpython",
+      "status": "development-tool",
+      "sourceURL": "https://www.python.org/",
+      "selectedVersion": "3.14.8",
+      "license": "PSF-2.0",
+      "licenseEvidenceURL": "https://docs.python.org/3.14/license.html",
+      "usedBy": [
+        "Tools/verify-package-graph.py",
+        "Tools/verify-provenance.py",
+        "Tools/Fixtures/generate-contract-fixtures.py",
+        "Tools/Tests"
+      ],
+      "redistributed": false
+    },
+    {
+      "id": "swift-benchmark",
+      "status": "planned",
+      "sourceURL": "https://github.com/ordo-one/benchmark",
+      "selectedVersion": null,
+      "license": "Apache-2.0",
+      "licenseEvidenceURL": "https://github.com/ordo-one/benchmark/blob/main/LICENSE",
+      "usedBy": [
+        "Benchmarks/ only; planned in #17"
+      ],
+      "redistributed": false,
+      "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/17"
+    },
+    {
+      "id": "praat-parselmouth",
+      "status": "planned",
+      "sourceURL": "https://github.com/YannickJadoul/Parselmouth",
+      "selectedVersion": null,
+      "license": "GPL-3.0-or-later",
+      "licenseEvidenceURL": "https://github.com/YannickJadoul/Parselmouth/blob/master/README.md#license",
+      "usedBy": [
+        "Tools/Reference/ only; planned in #26"
+      ],
+      "redistributed": false,
+      "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/26"
+    },
+    {
+      "id": "praat",
+      "status": "planned",
+      "sourceURL": "https://github.com/praat/praat",
+      "selectedVersion": null,
+      "license": "GPL-3.0-or-later (distributed application; retain bundled component notices)",
+      "licenseEvidenceURL": "https://praat.org/manual/License.html",
+      "usedBy": [
+        "Pinned external reference or embedded Parselmouth Praat version in #26"
+      ],
+      "redistributed": false,
+      "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/26"
+    },
+    {
+      "id": "ivoice",
+      "status": "design-only",
+      "sourceURL": "https://tintin.cs.uiowa.edu/Pages/Software/IVoice/Documents/IVoice-Source.zip",
+      "selectedVersion": "archive-sha256:b72be0624623971e3a9af21698f6cdf76b009c8a764329a897fff43aa286e4dc",
+      "license": "MIT (root IVoice code; bundled assets have separate terms)",
+      "licenseEvidenceURL": "https://tintin.cs.uiowa.edu/Pages/Software/IVoice/Documents/IVoice-Source.zip",
+      "usedBy": [
+        "Design context only; no code, assets, or thresholds copied"
+      ],
+      "redistributed": false
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "contract-profile-v1",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/profile-v1.json",
+      "sha256": "7885fc5a58d515fc2f3b168a6046ffbdda12c52107d7acf58934a849c4630786",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/15",
+        "versionOrHash": "generator-v1-sha256:467837893051e717df42ff4180f780bd2da4f5bd18bafa5df4e99196bfa6ddb3"
+      },
+      "generator": {
+        "path": "Tools/Fixtures/generate-contract-fixtures.py",
+        "version": "1",
+        "sha256": "467837893051e717df42ff4180f780bd2da4f5bd18bafa5df4e99196bfa6ddb3"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic JSON metadata; no recording or human voice"
+      },
+      "transformations": [
+        "Python standard-library JSON: sorted keys, compact separators, UTF-8, trailing LF",
+        "Reference profile hash excludes the trailing LF"
+      ],
+      "expectedProfile": "contract-fixture/v1:11af161bd9d8054c8549b8d5de5d106c62a9afed741ba97de5358ffc0793f1e0",
+      "referenceOutputIdentity": "contract-schema-v1/profile-v1.json; structural serialization example, not a numerical CPPS reference"
+    },
+    {
+      "id": "contract-result-v1",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/result-v1.json",
+      "sha256": "5b46caf72ecf6941c75e5b2eb7b02fb77d7954132f5f425b21bccdb5c3d5993a",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/15",
+        "versionOrHash": "generator-v1-sha256:467837893051e717df42ff4180f780bd2da4f5bd18bafa5df4e99196bfa6ddb3"
+      },
+      "generator": {
+        "path": "Tools/Fixtures/generate-contract-fixtures.py",
+        "version": "1",
+        "sha256": "467837893051e717df42ff4180f780bd2da4f5bd18bafa5df4e99196bfa6ddb3"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic JSON metadata; no recording or human voice"
+      },
+      "transformations": [
+        "Python standard-library JSON: sorted keys, compact separators, UTF-8, trailing LF",
+        "Reference profile hash excludes the trailing LF"
+      ],
+      "expectedProfile": "contract-fixture/v1:11af161bd9d8054c8549b8d5de5d106c62a9afed741ba97de5358ffc0793f1e0",
+      "referenceOutputIdentity": "contract-schema-v1/result-v1.json; structural serialization example, not a numerical CPPS reference"
+    }
+  ],
+  "optionalModels": []
+}
