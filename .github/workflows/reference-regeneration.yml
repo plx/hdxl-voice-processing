@@ -7,6 +7,11 @@ on:
   pull_request:
     paths:
       - 'Tools/Reference/**'
+      - 'Tools/Conditioning/reference.py'
+      - 'Tools/Conditioning/reference.praat'
+      - 'Sources/HDXLVoiceProcessing/Conditioning/**'
+      - 'Tests/HDXLVoiceProcessingTests/ConditioningReferenceTests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Conditioning/**'
       - 'Tools/Framing/reference.py'
       - 'Tools/Framing/gaussian.praat'
       - 'Sources/HDXLVoiceProcessing/Framing/**'
@@ -45,6 +50,11 @@ jobs:
         run: |
           set -o pipefail
           python3 Tools/Framing/reference.py .build/reference-tool/7.0.02/Praat.app/Contents/MacOS/Praat | tee .build/reference-evidence/gaussian.log
+      - name: Compare pinned conditioning vectors
+        run: |
+          set -o pipefail
+          python3 Tools/Conditioning/reference.py | tee .build/reference-evidence/conditioning.log
+          cp Tests/HDXLVoiceProcessingTests/Fixtures/Conditioning/praat.json .build/reference-evidence/conditioning-reference.json
       - name: Retain original-synthetic reference evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

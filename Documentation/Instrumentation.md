@@ -59,7 +59,7 @@ synthetic probe does not claim to implement the named DSP algorithms.
 | flow | QueueWait | Worker-side bookkeeping span; actual queue residence comes from timestamps in `queue_ns` |
 | flow | Overrun, Drop | Worker observation of explicit discontinuity/drop information |
 | worker | AnalysisFrame | One admitted synchronous synthetic/analysis worker turn |
-| worker | Resample, FrameAssembly | Future conversion and frame assembly work |
+| worker | Resample, PreEmphasis, FrameAssembly | Conditioning and frame assembly work |
 | worker | FFT, Cepstrum, CPP, CPPSSmoothing, CPPSFitting | Future numerical stages |
 | worker | Pitch, HNR, Pulses, Perturbation | Future numerical stages |
 | worker | ResultPublication | Worker-side result construction/publication work |
@@ -150,3 +150,17 @@ scaling, and conversion costs remain visible in full-call benchmark rows. It use
 the caller's enclosing frame metadata, with no new per-sample events. Tests verify
 matching scope pairs and that rejected input emits no kernel interval. See the
 [Fourier guide](FourierTransforms.md) and [workload matrix](../Tools/Fourier/README.md).
+
+### Conditioning kernels (A03)
+
+Both prepared conditioners accept the worker facade through package-scoped initializers.
+They reuse its frame context and budget: `Resample` surrounds source processing or whole-interval
+conversion, `FFT` nests for reference global filtering, and `PreEmphasis` surrounds each emitted
+block's raw filter (one whole block for a reference interval). There are no PCM payloads or
+per-sample events. Tiny output capacities still obey the shared 64-start/event budget; a test
+checks bounded, balanced spans even at capacity one. Input validation occurs before these spans.
+Disabled/default instrumentation is used in timing/allocation workloads. See the
+[conditioning guide](Conditioning.md) and [workload matrix](../Tools/Conditioning/README.md).
+
+Conditioning kernel spans end before invoking the borrowed-buffer consumer. Downstream FFT
+or other analysis therefore does not become resampler time; tests assert this at callback entry.

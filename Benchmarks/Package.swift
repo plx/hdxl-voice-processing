@@ -6,6 +6,8 @@ let package = Package(
     name: "VoiceBenchmarks",
     platforms: [.macOS("27.0")],
     products: [
+        .executable(name: "ConditioningBenchmarks", targets: ["ConditioningBenchmarks"]),
+        .executable(name: "ConditioningWorkloadCheck", targets: ["ConditioningWorkloadCheck"]),
         .executable(name: "LargeFourierBenchmarks", targets: ["LargeFourierBenchmarks"]),
         .executable(name: "LargeFourierWorkloadCheck", targets: ["LargeFourierWorkloadCheck"]),
         .executable(name: "FourierBenchmarks", targets: ["FourierBenchmarks"]),
@@ -29,6 +31,18 @@ let package = Package(
             ]),
     ],
     targets: [
+        .target(
+            name: "ConditioningWorkload",
+            dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
+        .executableTarget(
+            name: "ConditioningWorkloadCheck", dependencies: ["ConditioningWorkload"]),
+        .executableTarget(
+            name: "ConditioningBenchmarks",
+            dependencies: [
+                "ConditioningWorkload", .product(name: "Benchmark", package: "benchmark"),
+            ],
+            path: "Benchmarks/ConditioningBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .target(
             name: "LargeFourierWorkload",
             dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),

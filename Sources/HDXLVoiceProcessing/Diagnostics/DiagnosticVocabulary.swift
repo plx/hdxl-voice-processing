@@ -21,7 +21,7 @@ package enum DiagnosticValidity: UInt8, Sendable {
 
 package enum DiagnosticStage: String, CaseIterable, Sendable {
     case initialize, reset, analysisFrame, captureHandoff, queueWait, dequeue, referenceValidation
-    case resample, frameAssembly, fft, cepstrum, cpp, cppsSmoothing, cppsFitting
+    case resample, preEmphasis, frameAssembly, fft, cepstrum, cpp, cppsSmoothing, cppsFitting
     case pitch, hnr, pulses, perturbation, resultPublication
     case overrun, drop, routeChange, configurationChange, error, cancelled
 
@@ -44,6 +44,7 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
         case .queueWait: "QueueWait"
         case .dequeue: "Dequeue"
         case .resample: "Resample"
+        case .preEmphasis: "PreEmphasis"
         case .frameAssembly: "FrameAssembly"
         case .fft: "FFT"
         case .cepstrum: "Cepstrum"
