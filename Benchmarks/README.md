@@ -154,3 +154,11 @@ precision, block size, and suggested analysis frame/hop sizes. Use its `--mode p
 to create immutable hashed PCM under `.build`. Verify and load/map it before timing
 native algorithms; do not run synthesis in benchmark loops. The separate generation
 report and native fixture-validation signposts make no DSP performance claim.
+
+## Algorithm workloads
+
+The [framing matrix](../Tools/Framing/README.md) covers 88 frame/window configurations.
+The [Fourier matrix](../Tools/Fourier/README.md) covers 22 size/precision configurations,
+setup and prepared transforms, spectra, inverse-cepstrum workload primitives, scalar
+DFT comparisons, and separately owned concurrent workers. Each has a dedicated
+wrapper and workflow with raw distributions and allocation controls.

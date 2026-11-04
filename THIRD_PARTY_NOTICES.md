@@ -35,3 +35,8 @@ Papers and algorithm descriptions are cited as methods; a citation does not gran
 rights to their text, figures, recordings, or source. Original implementations of
 mathematics are recorded separately from copied/modified third-party code, which
 must retain applicable licenses, attribution, exact origin, and modification records.
+
+`Tools/Fourier/oracle.py` is an original direct mathematical DFT implementation.
+Its generated numerical vectors are inventoried as original synthetic fixtures;
+no external FFT implementation or source is copied into the oracle. The runtime
+uses the system Accelerate framework through its public APIs.
