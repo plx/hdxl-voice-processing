@@ -42,7 +42,7 @@ private subdirectories because they contain machine metadata. CI retains the
 repeatable system/fallback probes without a noisy timing gate. Production traces
 and integrated overhead will be revisited under #56/#62.
 
-The local debug lane passed 27 Swift tests across the two test bundles and 31
+Local validation passed 26 Swift test cases in the CI report and 31
 Python evidence/provenance tests. Consumer graph, network-denied execution,
 formatting, and pinned actionlint checks passed. Trace-parser regression tests
 include localized large-integer displays: validation uses typed raw arguments
