@@ -1,5 +1,5 @@
 """Explicit versioned reference recipes; no implicit Praat defaults."""
-from common import ReferenceError
+from common import ReferenceError, canonical
 
 
 def setting(kind, value):
@@ -37,6 +37,7 @@ def validate_cpps_profile(profile):
     # The initial executable recipe is deliberately exact. Extend named recipes
     # with independently reviewed goldens rather than silently accepting settings
     # the runner cannot honor. Identity hashing still covers every supplied field.
-    if profile != expected:
+    # JSON booleans and numbers are distinct even though Python True == 1.
+    if canonical(profile) != canonical(expected):
         raise ReferenceError("Unsupported or mismatched CPPS profile; add a named recipe before changing settings")
     return profile

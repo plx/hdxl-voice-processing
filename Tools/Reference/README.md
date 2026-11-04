@@ -44,6 +44,9 @@ It follows the parameter recipe in [Murton et al.](https://pmc.ncbi.nlm.nih.gov/
 interpolation; straight robust fit from 1 ms through the quefrency domain end.
 Pre-smoothing trend subtraction is disabled. Physical Gaussian support is 100 ms,
 analysis rate 10 kHz, FFT length 1024, 513 quefrency bins at 0.1 ms spacing.
+Frame count uses the pinned binary64 duration after resampling before flooring;
+there is no epsilon added at exact-hop boundaries. This follows the selected
+`Sampled_shortTermAnalysis` convention, independently checked at 100/102/110/120/128/150/200 ms.
 
 The paper used **Praat 6.0.40**. This profile is **Praat 7.0.02 with the recipe**,
 not historical binary parity. In this pinned source, `Robust` selects Siegel repeated

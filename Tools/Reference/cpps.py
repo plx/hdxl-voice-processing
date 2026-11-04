@@ -25,6 +25,14 @@ def integer(token):
     return int(token)
 
 
+def frame_count(sample_count, sample_rate):
+    # The pinned reference floors binary64 durations AFTER resampling. Adding an
+    # epsilon or using the original duration invents a frame at some boundaries.
+    resampled_count = math.floor(sample_count / sample_rate * 10000 + 0.5)
+    physical_duration = resampled_count * (1 / 10000)
+    return math.floor((physical_duration - 0.1) / 0.002) + 1
+
+
 def parse(raw, input_record, export):
     lines = raw.splitlines()
     if len(lines) < 5 or lines[0] != "begin\tcpps-v1" or lines[-1] != "end\tcpps-v1":
@@ -66,7 +74,7 @@ def parse(raw, input_record, export):
         raise ReferenceFailure("Incomplete reference header")
     n, q = axes["frameCount"], axes["quefrencyBinCount"]
     duration = input_record["sampleCount"] / input_record["sampleRate"]
-    expected_count = int((duration - 0.1) / 0.002 + 1.000000001)
+    expected_count = frame_count(input_record["sampleCount"], input_record["sampleRate"])
     expected_first = (duration - (n - 1) * 0.002) / 2
     if (n != expected_count or q != 513 or axes["hopSeconds"] != 0.002
             or axes["quefrencyStepSeconds"] != 0.0001

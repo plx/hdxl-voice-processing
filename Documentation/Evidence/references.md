@@ -17,10 +17,10 @@ The initial 120 ms 200 Hz saw CPPS is **31.643434394886956 dB**, from 11 frames,
 raw/smoothed power-cepstrum matrices. The profile hash is
 `3dc8164b59c24a1f45a68317f4d894f06d94066d50770adadc12fc6dd33c29f3`.
 Reference identity:
-`86031342aed04aea36dfdea3892297fc5234395e1a1ec868c152b9205067cb54`.
+`39aae048904095b4006e22ca92ddda5ae220b6ea9651b6d083240fdab016bc0f`.
 The 500 ms silent HNR CC result remains unavailable, with all raw frame values
 undefined; reference identity:
-`b8e2c1a9de928b3c2c74d0221832383fd581646849195b779139805d15aa3d97`.
+`f7988507dff2fe42603351f45971275e6ebb23e4fb2bdde6b82879e450e4d1a6`.
 
 Both committed outputs were generated twice during construction, then independently
 regenerated three more times using the installed hash-verified binary. All complete
@@ -39,29 +39,35 @@ The full debug lane also passes consumer graph/link and network-denied execution
 
 Host: Mac13,1 arm64, macOS 27.0.1; Python 3.14.8, Swift 6.4.0.34.1, Xcode 27.0.
 Clean acquisition (download, checksum, read-only mount/copy/detach and binary verify)
-took 8.127 s. Reused per-run verification/input setup took 126–136 ms in these trials.
+took 8.127 s. Reused per-run verification/input setup took 124–130 ms in these trials.
 These are small-sample host observations, not budgets or device evidence.
 
 | Workload | Input | External process median / p95 (ms) | Parser median (ms) |
 | --- | --- | --- | --- |
-| CPPS smoke, components only | 120 ms | 237.465 / 243.078 | 0.722 |
-| CPPS intermediate export | 120 ms | 391.370 / 397.953 | 13.066 |
-| CPPS catalog | 500 ms | 375.157 / 380.086 | 1.723 |
-| HNR AC | 500 ms | 172.815 / 173.259 | 0.676 |
-| HNR CC | 500 ms | 178.045 / 182.576 | 0.669 |
-| Pulses and perturbation | 500 ms | 173.966 / 181.500 | 0.768 |
-| Burg formants | 500 ms | 179.370 / 179.840 | 1.045 |
-| Silent HNR CC | 500 ms | 171.876 / 173.982 | 0.690 |
+| CPPS smoke, components only | 120 ms | 237.458 / 238.811 | 0.794 |
+| CPPS intermediate export | 120 ms | 386.423 / 393.613 | 12.409 |
+| CPPS catalog | 500 ms | 360.607 / 374.273 | 1.779 |
+| HNR AC | 500 ms | 168.422 / 168.981 | 0.670 |
+| HNR CC | 500 ms | 168.752 / 172.706 | 0.684 |
+| Pulses and perturbation | 500 ms | 175.750 / 175.990 | 0.757 |
+| Burg formants | 500 ms | 175.055 / 175.073 | 1.162 |
+| Silent HNR CC | 500 ms | 162.771 / 166.416 | 0.725 |
 
 External times include process startup, file read, analysis and output formatting.
 Native release fixture JSON decode/contract/hash/axis validation on preloaded data,
-with detailed bounded signposts, measured median **4.091 ms**, p95 **4.201 ms** over
+with detailed bounded signposts, measured median **4.157 ms**, p95 **4.311 ms** over
 ten trials. It names the exact CPPS profile/reference identities above and does not
 measure a native CPPS algorithm. Build/test launch is separately recorded. Neither
 process has an audited allocation backend here, so allocation counts are unavailable.
 
 `Tools/Reference/benchmark.py` retains all trials, nearest-rank p95, throughput,
 hardware, units, profile, frame/hop, precision and timing boundaries. Local evidence
-is in `.build/reference-evidence-local`; the dedicated hosted workflow retains its
+is in `.build/reference-evidence-reviewed`; the dedicated hosted workflow retains its
 own complete JSON and original-synthetic reference outputs. #25/#27 will expand the
 catalog and #66 will consolidate algorithm-specific evidence and conditioning limits.
+
+Review hardening added exact Praat frame-count boundary checks and fresh-directory
+Python execution, plus type-sensitive profile validation that rejects booleans in numeric fields. Regeneration changed runner/reference identities only: all initial
+numeric values, raw output hashes and profile hashes remained identical. Floating
+numeric comparison now applies tolerance consistently to serialized integral-valued
+quantities, while structural counts/indices remain exact.

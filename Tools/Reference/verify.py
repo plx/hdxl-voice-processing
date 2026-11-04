@@ -35,13 +35,14 @@ def compare_values(expected, actual, absolute=1e-8, relative=1e-10):
     if isinstance(expected, (int, float)) and isinstance(actual, (int, float)):
         if not math.isfinite(expected) or not math.isfinite(actual):
             return False
-        if type(expected) is int:
-            return expected == actual
         return math.isclose(expected, actual, abs_tol=absolute, rel_tol=relative)
     if type(expected) is not type(actual):
         return False
     if isinstance(expected, dict):
-        return expected.keys() == actual.keys() and all(compare_values(expected[k], actual[k], absolute, relative) for k in expected)
+        exact = {"schemaVersion", "frameCount", "quefrencyBinCount", "columns", "frame", "number", "sampleCount", "startSample", "includedSampleCount"}
+        return expected.keys() == actual.keys() and all(
+            (expected[k] == actual[k] and type(expected[k]) is type(actual[k])) if k in exact or (k == "rows" and isinstance(expected[k], int))
+            else compare_values(expected[k], actual[k], absolute, relative) for k in expected)
     if isinstance(expected, list):
         return len(expected) == len(actual) and all(compare_values(a, b, absolute, relative) for a, b in zip(expected, actual))
     return expected == actual

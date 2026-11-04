@@ -51,9 +51,28 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(compare_outcomes(outcome(0), {"status": "unavailable", "reason": "unsupportedRange"}), "unsupportedInput")
         self.assertEqual(compare_outcomes(outcome(None), outcome(None)), "matchingUnavailable")
         self.assertEqual(compare_outcomes(outcome(None), outcome(0)), "referenceDisagreement")
-        self.assertFalse(compare_values(1, 1.000000001))
+        self.assertFalse(compare_values({"frameCount": 1}, {"frameCount": 1.000000001}))
+        self.assertTrue(compare_values(0, 1e-12))
+        self.assertTrue(compare_values(1, 1 + 1e-12))
         self.assertFalse(compare_values(True, 1))
         self.assertFalse(compare_values(float("nan"), float("nan")))
+
+    def test_profile_rejects_boolean_number_type_confusion(self):
+        edits = (
+            lambda p: p.update(schemaVersion=True),
+            lambda p: p["identifier"].update(version=True),
+            lambda p: p["channels"].update(channelIndex=False),
+            lambda p: p["algorithmSettings"]["subtractTrendBeforeSmoothing"].update(boolean=0),
+        )
+        for edit in edits:
+            profile = cpps_profile()
+            edit(profile)
+            with self.assertRaises(ReferenceError):
+                validate_cpps_profile(profile)
+
+    def test_praat_binary64_frame_boundaries_after_resampling(self):
+        for count, expected in ((1600, 1), (1632, 2), (1760, 5), (1920, 11), (2048, 14), (2400, 25), (3200, 51), (8000, 201)):
+            self.assertEqual(cpps.frame_count(count, 16000), expected)
 
     def test_malformed_empty_truncated_duplicate_and_wrong_axes(self):
         lines = self.raw.splitlines()
@@ -115,7 +134,9 @@ class ReferenceTests(unittest.TestCase):
         self.assertTrue(all(row[1] is None for row in fixture["data"]["rows"]))
 
     def test_failed_reference_never_writes_candidate(self):
-        with tempfile.TemporaryDirectory(dir=REFERENCE.parents[1] / ".build") as temporary:
+        build = REFERENCE.parents[1] / ".build"
+        build.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=build) as temporary:
             output = Path(temporary) / "candidate"
             with patch("run.verify_tool", return_value=Path("/unused/praat")), \
                  patch("run.subprocess.run") as command:

@@ -309,16 +309,16 @@
     {
       "id": "reference-cpps-saw-reference-json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/cpps-saw/reference.json",
-      "sha256": "793715834b385f7c30406a3d89c86c767faab54ff202198d0086ec22966b8c4f",
+      "sha256": "9bf8722d2caef36c16f2e466977c509a1dbbbad7a635d874499a7f895342f1f7",
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
-        "versionOrHash": "generator-v1-sha256:fa91f08fe22d42d4ef975fb06ccc98ff705d3b245797b9041a9fcef24ed0fe51"
+        "versionOrHash": "generator-v1-sha256:ef1c87f86fec0b721df53c304faaaec64ccbc48d4e0ce6141e8c61e58bb2a28c"
       },
       "generator": {
         "path": "Tools/Reference/run.py",
         "version": "1",
-        "sha256": "fa91f08fe22d42d4ef975fb06ccc98ff705d3b245797b9041a9fcef24ed0fe51"
+        "sha256": "ef1c87f86fec0b721df53c304faaaec64ccbc48d4e0ce6141e8c61e58bb2a28c"
       },
       "redistribution": {
         "license": "project",
@@ -336,7 +336,7 @@
         "Raw numeric stdout retained; strict parser; canonical JSON with LF; no PCM normalization or zero substitution"
       ],
       "expectedProfile": "3dc8164b59c24a1f45a68317f4d894f06d94066d50770adadc12fc6dd33c29f3",
-      "referenceOutputIdentity": "86031342aed04aea36dfdea3892297fc5234395e1a1ec868c152b9205067cb54"
+      "referenceOutputIdentity": "39aae048904095b4006e22ca92ddda5ae220b6ea9651b6d083240fdab016bc0f"
     },
     {
       "id": "reference-cpps-saw-reference-raw-txt",
@@ -345,12 +345,12 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
-        "versionOrHash": "generator-v1-sha256:fa91f08fe22d42d4ef975fb06ccc98ff705d3b245797b9041a9fcef24ed0fe51"
+        "versionOrHash": "generator-v1-sha256:ef1c87f86fec0b721df53c304faaaec64ccbc48d4e0ce6141e8c61e58bb2a28c"
       },
       "generator": {
         "path": "Tools/Reference/run.py",
         "version": "1",
-        "sha256": "fa91f08fe22d42d4ef975fb06ccc98ff705d3b245797b9041a9fcef24ed0fe51"
+        "sha256": "ef1c87f86fec0b721df53c304faaaec64ccbc48d4e0ce6141e8c61e58bb2a28c"
       },
       "redistribution": {
         "license": "project",
@@ -368,21 +368,21 @@
         "Raw numeric stdout retained; strict parser; canonical JSON with LF; no PCM normalization or zero substitution"
       ],
       "expectedProfile": "3dc8164b59c24a1f45a68317f4d894f06d94066d50770adadc12fc6dd33c29f3",
-      "referenceOutputIdentity": "86031342aed04aea36dfdea3892297fc5234395e1a1ec868c152b9205067cb54"
+      "referenceOutputIdentity": "39aae048904095b4006e22ca92ddda5ae220b6ea9651b6d083240fdab016bc0f"
     },
     {
       "id": "reference-hnr-silence-reference-json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Reference/hnr-silence/reference.json",
-      "sha256": "05298db1dc10764a1b5cecdc98ff0a484d78b2388a5cc6c7241fb2ca2aa6fd67",
+      "sha256": "70d986a0a78fc02e9ca113a132602e0b96c4b47ca28c6c57be408836daf7340e",
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
-        "versionOrHash": "generator-v1-sha256:fa91f08fe22d42d4ef975fb06ccc98ff705d3b245797b9041a9fcef24ed0fe51"
+        "versionOrHash": "generator-v1-sha256:ef1c87f86fec0b721df53c304faaaec64ccbc48d4e0ce6141e8c61e58bb2a28c"
       },
       "generator": {
         "path": "Tools/Reference/run.py",
         "version": "1",
-        "sha256": "fa91f08fe22d42d4ef975fb06ccc98ff705d3b245797b9041a9fcef24ed0fe51"
+        "sha256": "ef1c87f86fec0b721df53c304faaaec64ccbc48d4e0ce6141e8c61e58bb2a28c"
       },
       "redistribution": {
         "license": "project",
@@ -400,7 +400,7 @@
         "Raw numeric stdout retained; strict parser; canonical JSON with LF; no PCM normalization or zero substitution"
       ],
       "expectedProfile": "praat-7.0.02-hnr-cc-reference",
-      "referenceOutputIdentity": "b8e2c1a9de928b3c2c74d0221832383fd581646849195b779139805d15aa3d97"
+      "referenceOutputIdentity": "f7988507dff2fe42603351f45971275e6ebb23e4fb2bdde6b82879e450e4d1a6"
     },
     {
       "id": "reference-hnr-silence-reference-raw-txt",
@@ -409,12 +409,12 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
-        "versionOrHash": "generator-v1-sha256:fa91f08fe22d42d4ef975fb06ccc98ff705d3b245797b9041a9fcef24ed0fe51"
+        "versionOrHash": "generator-v1-sha256:ef1c87f86fec0b721df53c304faaaec64ccbc48d4e0ce6141e8c61e58bb2a28c"
       },
       "generator": {
         "path": "Tools/Reference/run.py",
         "version": "1",
-        "sha256": "fa91f08fe22d42d4ef975fb06ccc98ff705d3b245797b9041a9fcef24ed0fe51"
+        "sha256": "ef1c87f86fec0b721df53c304faaaec64ccbc48d4e0ce6141e8c61e58bb2a28c"
       },
       "redistribution": {
         "license": "project",
@@ -432,7 +432,7 @@
         "Raw numeric stdout retained; strict parser; canonical JSON with LF; no PCM normalization or zero substitution"
       ],
       "expectedProfile": "praat-7.0.02-hnr-cc-reference",
-      "referenceOutputIdentity": "b8e2c1a9de928b3c2c74d0221832383fd581646849195b779139805d15aa3d97"
+      "referenceOutputIdentity": "f7988507dff2fe42603351f45971275e6ebb23e4fb2bdde6b82879e450e4d1a6"
     },
     {
       "id": "reference-primitives-json",
