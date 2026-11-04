@@ -31,6 +31,10 @@ See [contribution instructions](CONTRIBUTING.md),
 watchOS is pending a separate capability decision. Physical-device validation
 is deferred to [follow-up #74](https://github.com/plx/hdxl-voice-processing/issues/74).
 
+Pinned developer-only Praat runners, original synthetic goldens, and offline Swift
+fixture checks are described in [reference tooling](Tools/Reference/README.md).
+[Assigned reference routes](Tools/Reference/ROUTES.md) cover the planned algorithms.
+
 Dependency and fixture provenance is documented in [the policy](Documentation/ProvenancePolicy.md)
 and [third-party notices](THIRD_PARTY_NOTICES.md). The project license is pending
 [owner decision #78](https://github.com/plx/hdxl-voice-processing/issues/78); no

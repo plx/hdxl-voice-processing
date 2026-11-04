@@ -1,0 +1,52 @@
+name: Reference regeneration
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 9 * * 2'
+  pull_request:
+    paths:
+      - 'Tools/Reference/**'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Reference/**'
+      - 'Tests/HDXLVoiceProcessingTests/ReferenceFixtureTests.swift'
+      - '.github/workflows/reference-regeneration.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: references-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    name: Pinned Praat regeneration / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Verify offline references
+        run: python3 Tools/Reference/verify.py
+      - name: Acquire reference and compare repeated runs
+        run: python3 Tools/Reference/benchmark.py --output .build/reference-evidence --trials 3
+      - name: Retain original-synthetic reference evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reference-regeneration-${{ github.run_attempt }}
+          path: |
+            .build/reference-evidence/*.json
+            .build/reference-evidence/*.log
+            .build/reference-evidence/workloads/**/reference.json
+            .build/reference-evidence/workloads/**/reference.raw.txt
+            .build/reference-evidence/workloads/**/execution.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

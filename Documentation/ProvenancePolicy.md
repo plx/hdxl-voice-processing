@@ -32,9 +32,11 @@ dependency needs a justified issue and deliberate graph/provenance policy update
 ## Reference execution and source reuse
 
 Implement published mathematics independently in Swift and compare it with pinned
-external Praat/Parselmouth development processes. #26 selects exact versions/hashes,
-records Python/NumPy and embedded Praat versions, validates Python locks, and supplies
-commands and per-profile reference manifests. No version is marked selected before
+external Praat development processes. #26 selects the exact Praat 7.0.02 binary/source
+and artifact hashes in `Tools/Reference/toolchain.json`. The direct CLI uses pinned
+Python 3.14.8 standard library only: no Parselmouth, NumPy, embedded Praat, or Python
+package resolution is involved. Its lock, installation/regeneration commands, strict
+parsers and per-profile manifests are verified independently of runtime builds. No version is marked selected before
 the environment is implemented and tested. Reference generation is an explicit
 developer operation, never a runtime dependency or automatic build step.
 
