@@ -101,3 +101,9 @@ journeys remain unmeasured here. The owner authorized initial bring-up to procee
 with these explicitly deferred to [#74](https://github.com/plx/hdxl-voice-processing/issues/74).
 Before making corresponding claims, collect that evidence and adjust thresholds,
 implementations, and documented support as needed. Green CI does not close #74.
+
+The benchmark smoke job also runs the independent instrumentation probe in system
+and compiled-out configurations. It checks deterministic output, sampling/emission
+counts and bounded callback counter assembly, then retains overhead observations
+without timing thresholds. Actual Instruments recordings run locally; raw traces
+are excluded from hosted artifacts.
