@@ -83,6 +83,13 @@ python3 Tools/benchmark.py timing baseline-compare --baseline seed
 The same operations work with `allocation`. Names are prefixed by mode, such as
 `timing-seed`, in ignored `Benchmarks/.benchmarkBaselines/`. Comparison measures
 the current build and reports differences without enforcing timing thresholds.
+Update/compare first write a uniquely named fresh baseline and validate its export.
+Update atomically replaces the requested baseline only after validation; failed
+writes cannot reuse old samples. Comparison reads that same stored capture and
+the selected baseline, so the retained JSON and reported deltas share one run.
+`captured-baseline.json` retains the current distributions with hostname redacted;
+`capturedResultSHA256` identifies their canonical results. Temporary captures are
+removed afterward. Raw baseline artifacts are excluded from default CI uploads.
 On `baseline-read`, environment metadata describes the reader, not the original
 measurement. Cross-machine/configuration comparability and threshold policies
 are #20 work; these smoke baselines are not release evidence.

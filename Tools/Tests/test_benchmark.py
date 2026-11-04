@@ -1,7 +1,10 @@
 """Fail closed when the framework omits or cannot populate a requested metric."""
 from pathlib import Path
+import json
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import benchmark
@@ -38,3 +41,32 @@ class BenchmarkExportTests(unittest.TestCase):
         changed = [{**row, 'value': 0} if row['name'].startswith(benchmark.SMOKE) and 'Time' not in row['name']
                    else row for row in rows]
         self.assertEqual(benchmark.validate_results(changed, 'allocation')['metricCount'], 14)
+
+    def test_framework_success_without_fresh_write_cannot_reuse_old_baseline(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(benchmark, 'PACKAGE', Path(directory)):
+            previous = benchmark.baseline_path('timing-seed')
+            previous.parent.mkdir(parents=True)
+            previous.write_text('previous measurement')
+            output = Path(directory) / 'output'
+            output.mkdir()
+            with self.assertRaisesRegex(ValueError, 'did not write'):
+                with benchmark.capture_baseline(['plugin'], output, 'timing', lambda command: None):
+                    self.fail('Missing fresh capture must not be accepted')
+            self.assertEqual(previous.read_text(), 'previous measurement')
+            self.assertEqual(list(previous.parent.parent.iterdir()), [previous.parent])
+
+    def test_failed_atomic_promotion_preserves_previous_samples(self):
+        raw = {'baselineName': 'fresh', 'results': [{'samples': [1, 2, 3]}], 'machine': {}}
+        with tempfile.TemporaryDirectory() as directory, patch.object(benchmark, 'PACKAGE', Path(directory)):
+            destination = benchmark.baseline_path('timing-seed')
+            destination.parent.mkdir(parents=True)
+            destination.write_text('previous measurement')
+            with patch.object(benchmark.os, 'replace', side_effect=PermissionError('write denied')):
+                with self.assertRaises(PermissionError):
+                    benchmark.replace_baseline(raw, 'timing-seed')
+            self.assertEqual(destination.read_text(), 'previous measurement')
+            self.assertEqual(list(destination.parent.iterdir()), [destination])
+            benchmark.replace_baseline(raw, 'timing-seed')
+            stored = json.loads(destination.read_text())
+            self.assertEqual(stored['results'], raw['results'])
+            self.assertEqual(stored['baselineName'], 'timing-seed')

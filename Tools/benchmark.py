@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run isolated, locked host benchmarks and validate their exported evidence."""
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import math
@@ -10,6 +11,8 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
+import uuid
 
 import ci
 
@@ -79,6 +82,58 @@ def inspect_binary(path, mode):
     return {"linkedLibraries": ci.redact(links), "allocatorLinkVerified": True}
 
 
+def baseline_path(name):
+    return PACKAGE / ".benchmarkBaselines" / "VoiceDSPBenchmarks" / name / "results.json"
+
+
+@contextmanager
+def capture_baseline(plugin, output, mode, run):
+    """Use a never-before-existing name so failed writes cannot reuse old samples."""
+    name = f"{mode}-capture-{uuid.uuid4().hex}"
+    path = baseline_path(name)
+    if path.parent.exists():
+        raise ValueError("Fresh baseline name unexpectedly exists")
+    try:
+        run([*plugin, "baseline", "update", name])
+        if not path.is_file():
+            raise ValueError("Framework did not write the fresh baseline; refusing stale evidence")
+        raw = json.loads(path.read_text())
+        if raw.get("baselineName") != name or not raw.get("results"):
+            raise ValueError("Fresh baseline has the wrong identity or no results")
+        run([*plugin, "baseline", "read", name, "--format", "jsonSmallerIsBetter", "--path", str(output)])
+        export = output / f"{name}.json"
+        capabilities = validate_results(json.loads(export.read_text()), mode)
+        # Retain the measured distributions used by the comparison, with host name
+        # removed from the shareable copy. Original local baselines keep their metadata.
+        public_raw = json.loads(json.dumps(raw))
+        public_raw["machine"]["hostname"] = "<host>"
+        (output / "captured-baseline.json").write_text(json.dumps(public_raw, indent=2) + "\n")
+        yield name, raw, export, capabilities
+    finally:
+        if path.parent.exists():
+            shutil.rmtree(path.parent)
+
+
+def replace_baseline(raw, name):
+    """Promote validated samples atomically; failed writes preserve the old baseline."""
+    destination = baseline_path(name)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    content = (json.dumps({**raw, "baselineName": name}, sort_keys=True) + "\n").encode()
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, destination)
+        if destination.read_bytes() != content:
+            raise ValueError("Stored baseline does not match the validated capture")
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("timing", "allocation"))
@@ -145,19 +200,24 @@ def main():
             pattern = f"^({re.escape(SMOKE)}|{re.escape(PROBE)})$"
             if args.operation == "run":
                 run([*plugin, "run", "--filter", pattern, *export])
-            elif args.operation == "baseline-update":
-                run([*plugin, "baseline", "update", baseline])
-                run([*plugin, "baseline", "read", baseline, *export])
             elif args.operation == "baseline-read":
                 run([*plugin, "baseline", "read", baseline, *export])
-            elif args.operation == "baseline-compare":
-                # This compares an existing baseline with a new measured run. It reports
-                # differences but intentionally does not enforce performance thresholds.
-                run([*plugin, "run", "--filter", pattern, *export])
-                run([*plugin, "baseline", "compare", baseline])
+            elif args.operation in ("baseline-update", "baseline-compare"):
+                if args.operation == "baseline-compare" and not baseline_path(baseline).is_file():
+                    raise ValueError(f"Missing baseline: {baseline}")
+                with capture_baseline(plugin, output, args.mode, run) as (name, raw, _, capabilities):
+                    result["capturedResultSHA256"] = hashlib.sha256(
+                        json.dumps(raw["results"], sort_keys=True).encode()).hexdigest()
+                    result["capturedBaseline"] = name
+                    if args.operation == "baseline-update":
+                        replace_baseline(raw, baseline)
+                    else:
+                        # Two names compare stored samples: no second measurement run.
+                        run([*plugin, "baseline", "compare", baseline, name])
+                    result["capabilities"] = capabilities
             if args.operation in ("run", "baseline-update", "baseline-read", "baseline-compare"):
                 exports = [p for p in output.glob("*.json") if p.name not in {
-                    "environment.json", "resolution.json", "workload.json", "result.json"}]
+                    "environment.json", "resolution.json", "workload.json", "result.json", "captured-baseline.json"}]
                 if len(exports) != 1:
                     raise ValueError(f"Expected one fresh benchmark export; found {len(exports)}")
                 result["capabilities"] = validate_results(json.loads(exports[0].read_text()), args.mode)
