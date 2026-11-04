@@ -21,7 +21,8 @@ binary_dir = subprocess.check_output(
 ).strip()
 binary = Path(binary_dir) / "CoreConsumer"
 libraries = subprocess.check_output(["otool", "-L", str(binary)], text=True)
-for forbidden in ("SwiftUI", "AVFAudio", "AVFoundation"):
+for forbidden in ("SwiftUI", "AVFAudio", "AVFoundation", "Benchmark", "jemalloc",
+                  "MallocInterposer", "SwiftRuntimeInterposer"):
     assert forbidden not in libraries, f"Core consumer unexpectedly links {forbidden}"
 print("Core dependency graph and linked libraries verified.")
 print(f"Informational debug consumer size: {binary.stat().st_size} bytes")

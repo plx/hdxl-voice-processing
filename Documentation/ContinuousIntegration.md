@@ -48,6 +48,13 @@ Controlled benchmark/baseline work belongs to #17/#20 and performance epics.
 There is no elapsed-time pass threshold here; recorded job/command durations are
 for CI cost and suite partition decisions, not performance claims.
 
+Issue #17 adds a separate `benchmark-smoke` job using the same pinned host setup.
+It runs `Tools/benchmark.py timing` and `allocation` from the isolated nested
+package, verifies exported metric coverage and a positive allocator/ARC control,
+and checks the optimized workload checksum. It enforces no timing threshold.
+Its JSON/log artifacts come only from `Benchmarks/.build/artifacts/*/run/` and
+are retained for 14 days; raw baseline storage and binaries are excluded.
+
 No build output or test result cache is restored. The initial package has no
 external Swift dependencies, so a cache adds little value and could obscure
 whether a correctness check ran. A later dependency cache must key exact OS,

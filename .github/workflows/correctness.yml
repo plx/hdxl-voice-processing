@@ -51,6 +51,35 @@ jobs:
           include-hidden-files: true
           retention-days: 14
 
+  benchmark-smoke:
+    name: Benchmark smoke and capabilities / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Release timing without allocation instrumentation
+        run: python3 Tools/benchmark.py timing
+      - name: Allocation and ARC capability diagnostics
+        run: python3 Tools/benchmark.py allocation
+      - name: Retain benchmark smoke evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: benchmark-smoke-${{ github.run_attempt }}
+          path: |
+            Benchmarks/.build/artifacts/*/run/*.json
+            Benchmarks/.build/artifacts/*/run/*.log
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+
   extended:
     name: Repeated correctness / Xcode 27.0
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
