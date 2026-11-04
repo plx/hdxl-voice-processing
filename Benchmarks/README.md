@@ -168,3 +168,11 @@ adds twelve size/precision configurations through N=4,194,304. Each measurement
 performs one operation, reports explicit caller/workspace bytes, and records
 sampled whole-process resident memory. It has its own workflow and artifacts;
 its timings have a different denominator from the ordinary ten-operation rows.
+
+The [conditioning matrix](../Tools/Conditioning/README.md) covers 120 configurations:
+both whole-interval Praat-compatible and streaming-preview profiles, both precisions,
+16/44.1/48 kHz sources, 10/11/16 kHz targets, 64/256/1024-sample chunks, and additional
+60-second cases. Preparation, conditioning, and conditioning-plus-framing/FFT are separate
+operations. Raw timing distributions and allocation diagnostics are collected in separate
+binaries; both prepared operations require zero maximum heap-allocation counters and a
+positive allocation/ARC control. Host evidence does not replace physical-device measurements.

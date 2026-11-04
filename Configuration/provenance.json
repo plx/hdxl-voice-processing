@@ -2825,6 +2825,38 @@
       ],
       "expectedProfile": "fourier-negative-forward-inverse-over-n/v1; explicit length and precision per case",
       "referenceOutputIdentity": "sha256:89f89706746fb81400350f6f132083eb46df796f5b7cd8b453047fad8f61fe88"
+    },
+    {
+      "id": "conditioning-praat7",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Conditioning/praat.json",
+      "sha256": "feb8bafe6d2af61ef61e67842704b31b04448aa628e3fe42482e3b0ab38ab32f",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/31",
+        "versionOrHash": "generator-v1-sha256:a10f1e527982979837bc070494eadadcb8a5e15161f4eee451b59b23b6b9e340"
+      },
+      "generator": {
+        "path": "Tools/Conditioning/reference.py",
+        "version": "1",
+        "sha256": "0e61d969916e161e6e42227abb9430b09ff94a1bae0ee91ebed1673a6daaf5de"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original mathematical inputs; no recordings"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 numeric resampling exports",
+        "Independent raw pre-emphasis equation; no menu peak normalization",
+        "Explicit Float32 source rounding before binary64 external reference"
+      ],
+      "expectedProfile": "praat7-whole-interval-conditioning/v1; explicit rate, depth, precision and pre-emphasis per case",
+      "referenceOutputIdentity": "sha256:feb8bafe6d2af61ef61e67842704b31b04448aa628e3fe42482e3b0ab38ab32f"
     }
   ],
   "optionalModels": []
