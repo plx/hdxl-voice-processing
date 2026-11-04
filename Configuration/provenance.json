@@ -2797,16 +2797,16 @@
     {
       "id": "fourier-direct-dft",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Fourier/oracles.json",
-      "sha256": "7822b5acc89b0c0c77318d95fe3ff345b2cb621dc73bd1b1c36d1d0b4fba71c5",
+      "sha256": "89f89706746fb81400350f6f132083eb46df796f5b7cd8b453047fad8f61fe88",
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/30",
-        "versionOrHash": "generator-v1-sha256:79f39882c7f55ebc20ea956472a284eed094ad864377fddf945ce4031a6e6b17"
+        "versionOrHash": "generator-v1-sha256:6245ab672b1428b13fb003858ebb21278fef2a0914404dd82f996d3c29b66997"
       },
       "generator": {
         "path": "Tools/Fourier/oracle.py",
         "version": "1",
-        "sha256": "79f39882c7f55ebc20ea956472a284eed094ad864377fddf945ce4031a6e6b17"
+        "sha256": "6245ab672b1428b13fb003858ebb21278fef2a0914404dd82f996d3c29b66997"
       },
       "redistribution": {
         "license": "project",
@@ -2824,7 +2824,7 @@
         "Full small vectors and independently evaluated selected bins for all supported lengths"
       ],
       "expectedProfile": "fourier-negative-forward-inverse-over-n/v1; explicit length and precision per case",
-      "referenceOutputIdentity": "sha256:7822b5acc89b0c0c77318d95fe3ff345b2cb621dc73bd1b1c36d1d0b4fba71c5"
+      "referenceOutputIdentity": "sha256:89f89706746fb81400350f6f132083eb46df796f5b7cd8b453047fad8f61fe88"
     }
   ],
   "optionalModels": []

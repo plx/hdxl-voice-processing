@@ -3,9 +3,13 @@
 `PreparedFourierTransform<Float>` and `PreparedFourierTransform<Double>` implement
 `fourier-negative-forward-inverse-over-n/v1`. The configuration explicitly records
 precision, sample rate, and transform length. The version supports **exactly powers
-of two from 2 through 65,536**, inclusive, using Accelerate's radix-2 FFT setup.
+of two from 2 through 4,194,304**, inclusive, using Accelerate's radix-2 FFT setup.
 It does not implicitly round lengths or switch precision. `lengthPadding(_:)` is
-an explicit helper when a caller chooses to pad an observed window.
+an explicit helper when a caller chooses to pad an observed interval. The separate
+`WindowSpecification` limit remains 65,536 observed samples. The larger transform
+capacity supports whole-interval conditioning: 60 seconds at 48 kHz plus two
+1,000-sample reference padding margins needs N=4,194,304. This capacity does not
+establish a real-time device budget or make the transform causal.
 
 The core target imports Accelerate, without audio capture or playback frameworks.
 The package minimum remains macOS 27 / iOS 27.
@@ -57,7 +61,11 @@ length constraints and are not this version's backend.
 
 A plan owns two N-element scalar buffers plus one precision-specific vDSP setup.
 `scalarWorkspaceBytes` reports only those two buffers, excluding opaque setup
-tables and object overhead. It is intentionally **not Sendable**. Each actor or
+tables and object overhead. At N=4,194,304 these scalar buffers alone are 32 MiB
+for Float or 64 MiB for Double. Out-of-place complex input and output add another
+64 MiB or 128 MiB respectively; vDSP setup tables, allocator retention, and the
+surrounding application are additional costs. The plan is intentionally **not
+Sendable**. Each actor or
 worker prepares its own instance, uses it synchronously, and retains it between
 frames. No mutable workspace or setup is shared globally. These are worker-side
 numerical primitives, not audio-callback APIs. Dropping the owner releases its
@@ -119,7 +127,7 @@ floor, units, and applicability rules.
 
 `Tools/Fourier/oracle.py` evaluates the direct complex exponential sum with Python
 binary64 `sin`/`cos` and `math.fsum`, without importing Accelerate, an FFT library,
-or this package. Full scalar transforms are bounded to N<=128. The committed 168
+or this package. Full scalar transforms are bounded to N<=128. The committed 192
 cases contain full small vectors and selected bins at **every supported length**,
 with precision-rounded input hashes. They include DC, impulses, Nyquist, positive
 and negative complex tones, off-bin tones, seeded noise, silence, very small
@@ -129,10 +137,13 @@ The committed absolute component error budgets are `C*u*log2(N)*||input||2` for
 forward and that value divided by N for inverse, with `(C,u)=(8,2^-24)` for Float
 and `(64,2^-53)` for Double. These are acceptance bounds for the tested input
 families, not a proof for arbitrary dynamic range. See the fixture's per-case
-limits and [measured evidence](Evidence/fourier.md). Scalar oracle rounding is
+limits, [original evidence](Evidence/fourier.md), and the
+[large-transform extension](Evidence/large-fourier.md). Scalar oracle rounding is
 included in the comparison. Separate tests cover all-length round trips, Parseval
 energy, padding, axes, window gains, failure atomicity, and concurrent independent
-workspaces. Unsupported sizes and precision mismatches fail explicitly.
+workspaces. Large cases run sequentially within one test, with compensated
+Double accumulation for energy references; their transform tolerances are unchanged.
+Unsupported sizes and precision mismatches fail explicitly.
 
 ## Diagnostics and performance
 
@@ -147,4 +158,8 @@ The [benchmark tool](../Tools/Fourier/README.md) records setup, individual real 
 complex transforms, spectrum and explicitly floored inverse-cepstrum workloads,
 bounded scalar comparisons, and four-actor sequential/concurrent timing. Allocation
 claims cover prepared core operations separately from setup and task scheduling.
-Physical-device latency and thermal evidence remain deferred under issue #74.
+The separate large-transform matrix uses one operation per sample, retains only
+the selected operation's buffers, and records sampled whole-process resident
+memory alongside explicit owned-buffer counts. See the extension evidence for
+its limitations. Physical-device latency and thermal evidence remain deferred
+under issue #74.

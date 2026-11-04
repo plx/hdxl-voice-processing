@@ -9,7 +9,7 @@ import struct
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / 'Tests/HDXLVoiceProcessingTests/Fixtures/Fourier/oracles.json'
-LENGTHS = [2 ** exponent for exponent in range(1, 17)]
+LENGTHS = [2 ** exponent for exponent in range(1, 23)]
 
 
 def quantize(x, precision):
@@ -24,7 +24,7 @@ def direct_dft(values, bins=None, inverse=False):
     scalar evaluation's trigonometric accuracy; this uses no FFT decomposition.
     """
     n = len(values)
-    if not 1 <= n <= 65536 or (bins is None and n > 128):
+    if not 1 <= n <= 4194304 or (bins is None and n > 128):
         raise ValueError('Unsupported direct-oracle size')
     bins = list(range(n)) if bins is None else list(bins)
     if n > 128 and len(bins) > 16:
@@ -57,7 +57,15 @@ def noise(n, precision, complex_input, seed=30):
 
 def input_digest(values, precision):
     code = '<ff' if precision == 'float32' else '<dd'
-    return hashlib.sha256(b''.join(struct.pack(code, z.real, z.imag) for z in values)).hexdigest()
+    result = hashlib.sha256()
+    block = bytearray()
+    for z in values:
+        block.extend(struct.pack(code, z.real, z.imag))
+        if len(block) >= 65536:
+            result.update(block)
+            block.clear()
+    result.update(block)
+    return result.hexdigest()
 
 
 def pairs(values):

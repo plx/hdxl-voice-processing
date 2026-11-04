@@ -13,8 +13,8 @@ not runtime package dependencies and do not use a network service.
 
 The matrix includes Float and Double at N=32,128,256,512,1024,2048,4096,8192,16384,
 32768,65536, all at 48 kHz. N=32/128 supply bounded direct scalar DFT comparisons;
-256...8192 cover ordinary transforms and the remaining sizes exercise maximum
-supported workspaces. Each configuration records its transform/spectrum identities,
+256...8192 cover ordinary transforms and 16384...65536 exercise larger frame
+workspaces. Each configuration records its transform/spectrum identities,
 input duration, rectangular window, precision, and operations per iteration. These
 primitives have no hop or stream buffering; input duration is N/fs.
 
@@ -49,3 +49,43 @@ The dedicated workflow runs this same matrix on relevant PRs, weekly, or manuall
 Correctness CI's Python tests independently regenerate the scalar fixture offline.
 Host measurements are engineering evidence, with no physical-device or thermal
 claim; that collection remains follow-up #74.
+
+## Whole-interval capacity matrix
+
+`python3 Tools/Fourier/large_benchmark.py timing` and `allocation` measure a
+separate Float/Double matrix at N=131072,262144,524288,1048576,2097152,4194304,
+all at 48 kHz. These sizes support the whole-interval reference conditioning
+requirement in #31/#95. They do not expand the 65,536-sample window contract.
+
+Every iteration measures **one** plan preparation/destruction or **one** prepared
+real/complex forward/inverse transform. Input seed 95, transform identity, precision,
+rate, exact scalar workspace bytes, and per-operation caller-buffer bytes appear
+in `workloads.json`. `transformBufferSeconds=N/fs` describes the synthetic buffer,
+not certified utterance duration. Only the selected operation's buffers are retained;
+there are no parallel large-plan rows. The checker independently verifies DC or
+inverse sample zero against scalar sums before measurement. The full numerical
+correctness suite separately validates selected bins, round trips, and energy.
+
+There are three warmups and up to thirty measured iterations, with a 60-second
+per-case limit and a minimum of ten actual samples. The raw histograms and p99
+exports use framework scaling one and nanoseconds per operation. All four prepared
+operations must have zero maximum malloc/object-allocation counts and gross malloc
+bytes in allocation mode; setup is exempt. Each allocation/ARC hook has a positive
+control. Timing uses no allocator interposition; diagnostic timing is not a clean
+performance baseline.
+
+Both modes also record `peakMemoryResident`. On macOS the pinned backend samples
+`proc_pidinfo` resident bytes approximately every 10 ms with jitter, across the
+benchmark process. The count unit `#` here is explicitly one byte. The observation
+includes the harness, setup, caller buffers, allocator retention, and runtime; it
+is neither exclusive workspace memory nor a precise per-operation high-water
+mark. Short-lived peaks between samples may be missed. A missing/zero observation
+fails validation, but a positive observation is not approval of a device budget.
+At maximum size the owned Double scalar workspace is 64 MiB and separate complex
+input/output total 128 MiB, before opaque vDSP setup and other process costs.
+
+Artifacts live in `Benchmarks/.build/artifacts/fourier-large-{timing,allocation}`.
+The dedicated large Fourier workflow collects both modes on relevant PRs, weekly,
+or manually. [Extension evidence](../../Documentation/Evidence/large-fourier.md)
+records host results. Physical feasibility and any resulting budget adjustments
+remain follow-up #74.

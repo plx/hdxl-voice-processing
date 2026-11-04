@@ -32,7 +32,7 @@ class FourierOracleTests(unittest.TestCase):
         saved = json.loads(oracle.OUTPUT.read_text())
         fresh = oracle.generate()
         oracle.verify(saved,fresh)
-        self.assertEqual(len(saved['cases']),168)
+        self.assertEqual(len(saved['cases']),192)
         for precision in ['float32','float64']:
             self.assertEqual({c['length'] for c in saved['cases'] if c['precision']==precision},set(oracle.LENGTHS))
         changed = copy.deepcopy(saved)

@@ -1,5 +1,9 @@
 # A02 Fourier calibration and host evidence
 
+This is the original #30 record through N=65,536. The subsequent #95 range
+extension has [separate evidence](large-fourier.md); the measurements below retain
+their original scope and fixture hashes.
+
 Collected 2026-11-04 on Mac13,1 (arm64), macOS 27.0.1 build 26A434,
 Xcode 27.0 build 27A266a, Swift 6.4 (`swiftlang-6.4.0.34.1`). This is a local
 working-tree measurement of the #30 implementation based on main
