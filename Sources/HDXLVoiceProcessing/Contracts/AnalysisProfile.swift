@@ -14,8 +14,9 @@ public enum ProfileSetting: Sendable, Hashable, Codable {
             guard value.isFinite else { throw ContractError.invalidConfiguration }
             return .real(value == 0 ? 0 : value)
         case .text(let value):
-            guard value.utf8.count <= 4096 else { throw ContractError.invalidConfiguration }
-            return self
+            let normalized = value.precomposedStringWithCanonicalMapping
+            guard normalized.utf8.count <= 4096 else { throw ContractError.invalidConfiguration }
+            return .text(normalized)
         default: return self
         }
     }
@@ -140,7 +141,7 @@ public struct AnalysisProfile: Sendable, Hashable, Codable {
     }
 
     /// Version-1 canonical bytes: compact UTF-8 JSON, sorted keys, unescaped slashes,
-    /// finite numbers, and normalized negative zero. Not an RFC 8785 implementation.
+    /// finite numbers, normalized negative zero, and NFC text. Not an RFC 8785 implementation.
     public func canonicalJSON() throws -> Data { try canonicalContractJSON(self) }
 
     /// Compute once at processor setup, not per frame; includes the entire encoded profile.

@@ -53,7 +53,7 @@ public protocol PCMProcessor {
     ) throws
 
     /// Discard partial/filter/smoothing state and require the new epoch at position zero.
-    /// The previous epoch must match this processor. Forward the event to result consumers.
+    /// The previous epoch must match this processor. The scheduler forwards the boundary.
     mutating func reset(for discontinuity: SourceDiscontinuity) throws
 
     /// Validate and allocate first; failure leaves the old configuration/state intact.

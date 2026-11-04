@@ -65,7 +65,8 @@ Reference-specific coefficients and resampling conventions belong in preprocessi
 The contract fixture contains representative settings, not a published CPPS profile.
 
 `canonicalJSON()` version 1 uses compact UTF-8 `JSONEncoder` output, sorted object
-keys, unescaped slashes, finite numbers, and normalized negative zero. It is a pinned
+keys, unescaped slashes, finite numbers, normalized negative zero, and NFC-normalized
+text settings. Canonically equivalent Swift strings have the same identity. It is a pinned
 encoding convention, not RFC 8785. A SHA-256 over every byte forms `ProfileIdentity`,
 together with the human-readable identifier/version. Compute it during setup and
 reuse it for scalar results. Dictionary insertion order does not affect identity;
@@ -130,12 +131,15 @@ the dependent framing/scheduling/lifecycle issues:
    policy and dropped-result counters belong to #54. A subscriber dropping results
    does not itself break PCM source continuity.
 4. `reset` validates the previous epoch, discards partial windows and all filter,
-   pulse, smoothing, and resampling state, emits/forwards the boundary event, and
+   pulse, smoothing, and resampling state, and
    warms up again in the new epoch. Route changes also require validating the new
    format through reconfiguration; stale old-epoch buffers must be rejected.
+   The owning scheduler forwards the boundary event to consumers; `reset` itself
+   does not emit a numeric result.
 5. `reconfigure` validates and allocates first. On failure the old profile, epoch,
-   and state are intact. On success use the next epoch, discard old state, publish
-   the profile-change boundary, and invalidate incompatible personal calibration.
+   and state are intact. On success use the next epoch and discard old state. The
+   scheduler publishes the profile-change boundary and invalidates incompatible
+   personal calibration.
 6. `finalize` flushes complete supported windows once, then either discards the final
    partial window or emits `insufficientData` over its actual support according to
    the profile. It never pads invented samples or bridges gaps. Repeated finalization

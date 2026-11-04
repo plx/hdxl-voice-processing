@@ -26,7 +26,7 @@ public struct ScalarEstimate: Sendable, Hashable, Codable {
             }
         }
         self.value = value == 0 ? 0 : value
-        self.confidence = confidence
+        self.confidence = confidence.map { $0 == 0 ? 0 : $0 }
         self.warnings = Array(Set(warnings)).sorted { $0.rawValue < $1.rawValue }
     }
 
@@ -102,7 +102,7 @@ public struct IntermediateSnapshot: Sendable, Hashable, Codable {
         self.yUnit = yUnit
         self.xOrigin = xOrigin == 0 ? 0 : xOrigin
         self.xStep = xStep
-        self.values = values
+        self.values = values.map { $0 == 0 ? 0 : $0 }
     }
 
     private enum CodingKeys: String, CodingKey, CaseIterable {

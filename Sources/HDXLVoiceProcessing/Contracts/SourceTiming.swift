@@ -109,7 +109,7 @@ public struct AnalysisTiming: Sendable, Hashable, Codable {
         }
         self.source = source
         self.includedSampleCount = includedSampleCount
-        self.sourceStartSeconds = sourceStartSeconds
+        self.sourceStartSeconds = sourceStartSeconds.map { $0 == 0 ? 0 : $0 }
         self.hostStartNanoseconds = hostStartNanoseconds
         self.completedHostNanoseconds = completedHostNanoseconds
         self.effectiveDelaySeconds = effectiveDelaySeconds == 0 ? 0 : effectiveDelaySeconds

@@ -58,6 +58,44 @@ private func changedJSON(_ data: Data, _ edit: (inout [String: Any]) -> Void) th
     #expect(result.outcome.estimate?.value == 12.5)
 }
 
+@Test func resultCanonicalizationNormalizesEverySignedZero() throws {
+    let fixture = try fixtureResult()
+    func result(zero: Double) throws -> MeasurementResult {
+        let snapshot = try IntermediateSnapshot(
+            stage: fixture.profile.identifier, source: fixture.timing.source,
+            xUnit: .hertz, yUnit: .normalizedAmplitude, xOrigin: zero, xStep: 1, values: [zero])
+        return try MeasurementResult(
+            measurement: fixture.measurement, profile: fixture.profile,
+            timing: AnalysisTiming(
+                source: fixture.timing.source, includedSampleCount: 768,
+                sourceStartSeconds: zero, effectiveDelaySeconds: zero),
+            outcome: .available(ScalarEstimate(value: zero, confidence: zero)),
+            intermediatePolicy: IntermediateOutputPolicy(maximumScalarCount: 1),
+            intermediates: [snapshot])
+    }
+    let positive = try result(zero: 0.0)
+    let negative = try result(zero: -0.0)
+    #expect(positive == negative)
+    #expect(try positive.canonicalJSON() == negative.canonicalJSON())
+    let bytes = try negative.canonicalJSON()
+    #expect(try JSONDecoder().decode(MeasurementResult.self, from: bytes).canonicalJSON() == bytes)
+}
+
+@Test func equivalentUnicodeSettingsHaveIdenticalProfileHashes() throws {
+    let original = try golden("profile-v1")
+    func profile(text: String) throws -> AnalysisProfile {
+        let bytes = try changedJSON(original) { object in
+            object["algorithmSettings"] = ["label": ["type": "text", "text": text]]
+        }
+        return try JSONDecoder().decode(AnalysisProfile.self, from: bytes)
+    }
+    let composed = try profile(text: "\u{00e9}")
+    let decomposed = try profile(text: "e\u{0301}")
+    #expect(composed == decomposed)
+    #expect(try composed.canonicalJSON() == decomposed.canonicalJSON())
+    #expect(try composed.identity() == decomposed.identity())
+}
+
 @Test func profileIdentityIgnoresDictionaryInsertionOrder() throws {
     let profile = try fixtureProfile()
     let reversed = try AnalysisProfile(
