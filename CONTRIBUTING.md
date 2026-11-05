@@ -15,6 +15,10 @@ python3 Tools/ci.py ios-simulator
 python3 Tools/ci.py ios-device
 ```
 
+Address/thread lanes run the complete suite with optimized sanitizer instrumentation
+and a bounded fault-detection capability control. Debug and ordinary release checks
+remain separate.
+
 `verify.sh` runs formatting, debug build/tests, the independent core consumer,
 and graph/link checks. Use CPython 3.14.8 for the verification scripts. Tests use
 Swift Testing. iOS builds do not require signing or a microphone. CI runs these

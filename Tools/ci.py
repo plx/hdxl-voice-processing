@@ -26,6 +26,10 @@ def capture(*command):
     return subprocess.check_output(command, cwd=ROOT, text=True, stderr=subprocess.STDOUT).strip()
 
 
+def build_configuration(lane):
+    return "release" if lane in ("release", "extended", "address", "thread") else "debug"
+
+
 def environment(lane):
     return {
         "schemaVersion": 1,
@@ -42,7 +46,7 @@ def environment(lane):
         "sdks": {sdk: capture("xcrun", "--sdk", sdk, "--show-sdk-version")
                  for sdk in ("macosx", "iphoneos", "iphonesimulator")},
         "runnerImage": {key: os.environ.get(key) for key in ("ImageOS", "ImageVersion")},
-        "configuration": "release" if lane in ("release", "extended") else "debug",
+        "configuration": build_configuration(lane),
         "sanitizer": lane if lane in ("address", "thread") else None,
         "destination": {"ios-simulator": "generic/platform=iOS Simulator",
                         "ios-device": "generic/platform=iOS"}.get(lane, "host macOS"),
@@ -72,7 +76,7 @@ def validate_environment(actual, expected):
 def commands(lane, output):
     if lane.startswith("ios-"):
         return [["bash", "Tools/build-ios.sh", lane.removeprefix("ios-")]]
-    configuration = "release" if lane in ("release", "extended") else "debug"
+    configuration = build_configuration(lane)
     test = ["swift", "test", "--configuration", configuration,
             "--xunit-output", str(output / "tests.xml")]
     if lane != "debug":
@@ -81,6 +85,8 @@ def commands(lane, output):
         test += ["--sanitize", lane]
     if lane == "extended":
         test += ["--maximum-repetitions", "10", "--repeat-until", "fail"]
+    if lane in ("address", "thread"):
+        return [[sys.executable, "Tools/sanitizer-capability.py", lane, "--output", str(output)], test]
     if lane != "debug":
         return [test]
     return [
