@@ -16,6 +16,28 @@ spec.loader.exec_module(ci)
 
 
 class CIGateTests(unittest.TestCase):
+    def test_recorded_configuration_matches_complete_sanitizer_commands(self):
+        for lane in ci.LANES:
+            if lane.startswith("ios-"):
+                continue
+            with patch.object(ci, "capture", return_value="test"):
+                environment = ci.environment(lane)
+            commands = ci.commands(lane, Path("evidence"))
+            test = next(command for command in commands if command[:2] == ["swift", "test"])
+            self.assertEqual(test[test.index("--configuration") + 1], environment["configuration"])
+            self.assertNotIn("--filter", test)
+            self.assertNotIn("--skip", test)
+            if lane in ("address", "thread"):
+                self.assertEqual(environment["configuration"], "release")
+                self.assertEqual(environment["sanitizer"], lane)
+                self.assertEqual(test[test.index("--sanitize") + 1], lane)
+                self.assertEqual(commands[0], [
+                    sys.executable, "Tools/sanitizer-capability.py", lane, "--output", "evidence"])
+            else:
+                self.assertIsNone(environment["sanitizer"])
+                self.assertNotIn("--sanitize", test)
+        self.assertEqual(ci.commands("debug", Path("evidence"))[0], ["bash", "Tools/format.sh", "--check"])
+
     def setUp(self):
         self.expected = json.loads((ci.ROOT / "Configuration/build.json").read_text())
         self.actual = {
