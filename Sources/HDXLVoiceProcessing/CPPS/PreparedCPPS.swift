@@ -318,8 +318,20 @@ public final class PreparedCPPS {
             reason = reason ?? reasons[position]
             supportStart = min(supportStart, record.context.timing.source.startSample)
             supportEnd = max(supportEnd, record.context.timing.source.endSample)
-            delay = max(delay, record.context.timing.effectiveDelaySeconds)
+            // Preview delays are relative to each dependency's frame center.
+            // Translate them to the output center before taking their maximum.
+            // Integer grid offsets avoid subtracting large floating-point times.
+            // Whole-interval timing instead refers to the common source midpoint.
+            let centerOffset =
+                profile.cepstrogram.previewHopLength == nil
+                ? 0 : Double(index - center) * hop
+            delay = max(delay, record.context.timing.effectiveDelaySeconds + centerOffset)
             extensionUsed = extensionUsed || record.context.usesBoundaryExtension
+        }
+        if profile.cepstrogram.previewHopLength != nil, let finalSource {
+            // A truncated right smoothing edge is only known when the caller
+            // finishes the source, even if its final complete frame arrived earlier.
+            delay = max(delay, finalSource.durationSeconds - raw.context.centerSecondsFromOrigin)
         }
         let support = try SourceInterval(
             epoch: origin.epoch, startSample: supportStart,
@@ -327,8 +339,7 @@ public final class PreparedCPPS {
         let timing = try AnalysisTiming(
             source: support,
             includedSampleCount: reason == nil ? support.sampleCount : 0,
-            effectiveDelaySeconds: delay
-                + (profile.cepstrogram.previewHopLength == nil ? 0 : layout.lookaheadSeconds))
+            effectiveDelaySeconds: delay)
         let context = try CepstralFrameContext(
             origin: origin, timing: timing,
             frameIndex: raw.context.frameIndex,

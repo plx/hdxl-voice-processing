@@ -52,11 +52,77 @@ private func wholeCPPS<S: BinaryFloatingPoint & Sendable>(
     var results: [CPPSFrameResult] = []
     let completion = try worker.finish { output in
         #expect(output.result.context.timing.source == source)
+        #expect(output.result.context.timing.effectiveDelaySeconds == source.durationSeconds / 2)
         #expect(output.result.profile == (try? profile.identity()))
         results.append(output.result)
     }
     #expect(try worker.finish { _ in Issue.record("Repeated finish emitted") } == completion)
     return (results, completion)
+}
+
+@Test func cppsPreviewDelayUsesDependencyDeliveryTimesAndFinishBoundary() throws {
+    let configuration = try CepstrogramConfiguration(
+        sourceSampleRate: 10_000, hopSeconds: 0.002, declaredInputBandwidthHz: 5000,
+        conditioningMethod: .streamingPreview(lobes: 16, cutoffFraction: 0.9))
+    let profile = try CPPSProfile(
+        cepstrogram: configuration,
+        settings: CPPSConfiguration(
+            timeWindowSeconds: 0.05,
+            prominence: CPPConfiguration(
+                pitchCeilingHz: 330, fitEndSeconds: 0, fitMethod: .leastSquares)))
+    let pcm = cppsSignal(Double.self, count: 5019, rate: 10_000)
+    // Include one-sample delivery and several batch sizes; the last complete
+    // dependency may precede the final source clock at the truncated right edge.
+    for chunk in [1, 63, 1000] {
+        let upstream = try PreparedPreviewCepstrogram<Double>(
+            configuration: configuration, epoch: cppsEpoch)
+        let worker = try PreparedPreviewCPPS<Double>(profile: profile, epoch: cppsEpoch)
+        var raw: [CepstralFrameContext] = []
+        var smoothed: [(CPPSFrameResult, Bool)] = []
+        try pcm.withUnsafeBufferPointer { input in
+            for start in stride(from: 0, to: pcm.count, by: chunk) {
+                let end = min(start + chunk, pcm.count)
+                let segment = try SourceInterval(
+                    epoch: cppsEpoch, startSample: Int64(start),
+                    sampleCount: Int64(end - start), sampleRate: 10_000)
+                let buffer = UnsafeBufferPointer(rebasing: input[start..<end])
+                try upstream.process(buffer, interval: segment) {
+                    if $0.unavailability == nil { raw.append($0.context) }
+                }
+                try worker.process(buffer, interval: segment) {
+                    smoothed.append(($0.result, false))
+                }
+            }
+        }
+        try upstream.finish { if $0.unavailability == nil { raw.append($0.context) } }
+        try worker.finish { smoothed.append(($0.result, true)) }
+        let available = smoothed.filter { $0.0.observation != nil }
+        #expect(available.count == raw.count)
+        let radius = worker.layout.lookaheadFrames
+        #expect(radius == 13 && abs(worker.layout.lookaheadSeconds - 0.026) < 1e-15)
+        var observedFinishWait = false
+        for (index, pair) in available.enumerated() {
+            let (output, finishing) = pair
+            let first = max(0, index - radius)
+            let last = min(raw.count - 1, index + radius)
+            // Independent absolute delivery-time calculation over the original
+            // upstream records, rather than the smoother's relative grid formula.
+            let dependencyDelivery = raw[first...last].map {
+                $0.centerSecondsFromOrigin + $0.timing.effectiveDelaySeconds
+            }.max()!
+            let delivery =
+                finishing ? max(dependencyDelivery, Double(pcm.count) / 10_000) : dependencyDelivery
+            if finishing && delivery > dependencyDelivery + 1e-9 { observedFinishWait = true }
+            let expected = delivery - output.context.centerSecondsFromOrigin
+            #expect(abs(output.context.timing.effectiveDelaySeconds - expected) < 1e-12)
+            #expect(output.lookaheadSeconds == worker.layout.lookaheadSeconds)
+        }
+        if chunk == 1 { #expect(observedFinishWait) }
+        if chunk == 1000 {
+            let frame = available[20].0
+            #expect(abs(frame.context.timing.effectiveDelaySeconds - 0.0868) < 1e-12)
+        }
+    }
 }
 
 @Test func cppsWholePCMChunksAndShortIntervals() throws {

@@ -50,7 +50,10 @@ only when `floor(window / gridStep) > 1`. A 10 ms time window on a 2 ms grid nee
 the interpolation frame 6 ms ahead. Temporal edges use available-support
 normalization; they do not insert zeros into the cepstrogram. Quefrency smoothing
 uses the same interpolated integration with the q=0 domain boundary. The declared
-lookahead is additional to preview conditioning/framing delay.
+lookahead describes the nominal smoothing requirement. Reported preview delay is
+computed from the latest dependency delivery time relative to the output frame
+center, including the final source boundary when an edge waits for finish. It does
+not add lookahead a second time to delays already reflecting those dependencies.
 
 A short PCM tail is not another sample on the complete-frame grid. Finish first
 flushes that grid with its true boundary, then emits the tail as unavailable.
