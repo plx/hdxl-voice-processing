@@ -2,7 +2,7 @@
 
 A Swift package under development for reproducible acoustic voice measurements
 on macOS 27 and iOS 27. It will provide PCM analysis, native audio adapters, and
-optional visualizations. Deterministic PCM framing, windows, Fourier transforms, spectrum conversions, profile-specific conditioning, and digital levels with K-weighted energy are implemented;
+optional visualizations. Deterministic PCM framing, windows, Fourier transforms, spectrum conversions, profile-specific conditioning, digital levels with K-weighted energy, and power-cepstral pipelines are implemented;
 voice-measurement algorithms and microphone capture are still in development.
 Measurements will retain units, validity, timing,
 and numerical-profile identity; they are not universal voice-quality or health scores.
@@ -43,6 +43,9 @@ The [conditioning guide](Documentation/Conditioning.md) defines raw pre-emphasis
 Praat compatibility, streaming preview, bandwidth checks, boundary support, and recorded delay.
 The [digital-level guide](Documentation/DigitalLevels.md) defines peak/RMS/dBFS, clipping
 diagnostics, continuous K-weighting, warm-up, numeric limits, and source timing.
+The [cepstral guide](Documentation/Cepstrum.md) defines the pinned power/log/transform recipe,
+Double arithmetic for both PCM precisions, whole-interval/preview profiles, finite-stage
+availability, borrowed data and bounded exports. CPP/CPPS consumers remain in development.
 The [licensed voice corpus](Documentation/VoiceCorpus.md) supplies pinned PVQD originals,
 sample-exact speech/vowel excerpts, simulated defects, explicit negative cases, and
 offline load/decode checks without adding resources to runtime products.

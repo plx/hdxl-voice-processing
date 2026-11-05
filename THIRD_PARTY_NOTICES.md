@@ -22,7 +22,7 @@ distribution is gated by `python3 Tools/verify-provenance.py --for-publication`.
 | malloc-interposer 1.6.1 | Optional allocation diagnostic backend in the benchmark package only | Apache-2.0; retains upstream [SwiftNIO-derived machinery notice](https://github.com/ordo-one/malloc-interposer/blob/1.6.1/NOTICE) |
 | swift-argument-parser, swift-atomics, swift-numerics, swift-system | Transitive development benchmark dependencies | Apache-2.0 with Swift Runtime Library Exception; exact selected license files and hashes in the manifest |
 | hdrhistogram-swift, TextTable | Transitive development benchmark reporting dependencies | Apache-2.0 and MIT respectively; exact revisions and license hashes in the manifest |
-| Praat 7.0.02 | Pinned external development CLI in `Tools/Reference` and the `Tools/Framing` Gaussian oracle; never vendored or linked into products | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
+| Praat 7.0.02 | Pinned external development CLI in `Tools/Reference`, the `Tools/Framing` Gaussian oracle, and `Tools/Cepstrum` stage references; never vendored or linked into products | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
 | IVoice | Design context only; no code, assets, or thresholds copied | Root `IVoice-Source/LICENSE`: MIT, copyright 2025 Iman Noferesti, in the [archive](https://tintin.cs.uiowa.edu/Pages/Software/IVoice/Documents/IVoice-Source.zip); bundled assets/tools have separate notices |
 | Brecht De Man, loudness.py | External K-filter coefficient reference in an ignored development cache; math-only compatibility shim, no NumPy/SciPy execution or runtime linkage; source not redistributed | [MIT, copyright 2018 Brecht De Man](https://github.com/BrechtDeMan/loudness.py/blob/dc0f83883d247cbeb106064784e32d8c38ce1573/LICENSE), pinned revision in the manifest |
 | Perceptual Voice Qualities Database (PVQD), version 3 | Three original recordings and explicitly modified excerpts in test resources only; not runtime resources | [CC BY 4.0 dataset](https://data.mendeley.com/datasets/9dz247gnyb/3); attribution and modification notice below |
@@ -46,6 +46,15 @@ The accompanying manifest records every modification, original/derived SHA-256,
 and source URL. No additional restriction is imposed on upstream licensed material.
 The project code and original manifest/annotation contributions remain subject to
 the pending project license decision; they do not replace the recordings' CC BY terms.
+
+`Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-*.json` contains further
+**modified** representations of eight of those excerpts: resampled and pre-emphasized
+frame samples, windowed samples, and spectral/cepstral numerical vectors. These
+speech-derived data retain the same CC BY 4.0 attribution and terms. Each file records
+its input path/hash, transformation settings, reference-tool identity, and output
+hashes; `Configuration/provenance.json` connects it to the original recording and
+excerpt transformations. The Praat executable and implementation source are not
+included in these numerical fixtures or linked into package products.
 
 Public-use consent evidence is the dataset author's coauthored
 [methods, “Study Design and Participants”](https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/).

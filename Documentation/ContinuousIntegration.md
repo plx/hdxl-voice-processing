@@ -146,3 +146,18 @@ retain raw distributions, expected failures, consumed-output checksums and exact
 identities. Metadata and sanitized logs are uploaded for 14 days; no WAV is uploaded.
 File handling has no timing threshold or claim about DSP/device performance. See
 [corpus definitions](VoiceCorpus.md) and [evidence](Evidence/voice-corpus.md).
+
+## Cepstral references and workloads
+
+Changes to the cepstral pipeline exercise the dedicated 38-case timing/allocation
+workflow and the pinned reference-regeneration workflow. Regeneration verifies
+committed fixtures, generates a fresh 41-case candidate below `.build`, validates
+its complete stage/axis/provenance contract, compares the manifest exactly, and
+runs the native 2,898-row stage comparison against the candidate. Artifacts retain
+candidate JSON and the native report; committed fixtures are never overwritten.
+
+The performance workflow retains 76 timing and 77 allocation rows with raw
+distributions, p99, profiles, input hashes, geometry, memory and positive controls.
+Prepared checksum/conversion runs require zero heap maxima; eight explicitly owned
+export runs are measured separately. These are host pre-CPP baselines for #33,
+with actual CPP pipelines required in #35. Physical evidence remains #74.

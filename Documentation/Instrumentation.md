@@ -187,3 +187,18 @@ Each trial opens a fresh worker diagnostic frame with a process-local subset tok
 transcripts or PCM. These scopes describe fixture handling, not analysis or capture
 latency. See [VoiceCorpus.md](VoiceCorpus.md) for the four stable subsets and explicit
 allocation-evidence limits. Production callback adoption remains in its own workstream.
+
+## Cepstral worker scopes
+
+The prepared power-cepstrum kernel uses sampled `analysisFrame` → `cepstrum` scopes
+with separate forward/inverse `fft` spans. Metadata uses stable token 33, frame
+sequence, supplied sample count and support availability. Spans end before the
+borrowed-output consumer executes, so owned export cost is not attributed to the
+transform. The preview pipeline additionally uses block-level `preEmphasis` and
+existing conditioning/framing scopes. Whole-interval conditioning retains its own
+whole-input scope. No PCM, participant identity or per-sample event is logged.
+
+`CepstrumDiagnosticsTests` verifies balanced nested scopes, frame sampling at
+indices 0 and 16, and consumer exclusion. The dedicated 38-case benchmark matrix
+separates construction, prepared checksum consumption and explicit owned exports;
+these observations do not replace Instruments/device capture tracked under #74.
