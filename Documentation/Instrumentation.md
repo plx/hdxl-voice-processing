@@ -176,3 +176,14 @@ consumer runs. Validation and pending input copies are outside these scopes and 
 of full-call benchmark timing. No per-sample events or PCM payloads are emitted.
 Tests check exact sampling counts, numeric metadata, exception pairing, reset epochs, and
 callback boundaries. See [the level guide](DigitalLevels.md) and [workloads](../Tools/Levels/README.md).
+
+## Voice corpus loading
+
+The test-only corpus benchmark uses `FixtureLoad` around warm-cache `Data` reads and
+`FixtureDecode` around preloaded RIFF validation and owned Float64 decoding. Preparation,
+hash checks, compilation and full-output consumption occur outside these intervals.
+Each trial opens a fresh worker diagnostic frame with a process-local subset token
+2700–2703, ordinal and aggregate sample count. Signposts contain no paths, source IDs,
+transcripts or PCM. These scopes describe fixture handling, not analysis or capture
+latency. See [VoiceCorpus.md](VoiceCorpus.md) for the four stable subsets and explicit
+allocation-evidence limits. Production callback adoption remains in its own workstream.

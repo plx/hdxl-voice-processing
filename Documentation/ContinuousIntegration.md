@@ -128,3 +128,21 @@ Only original synthetic numeric fixtures are retained. The separate `Level bench
 workflow runs 100 configurations in timing and allocation modes, checks all measured
 distributions and positive allocator controls, and retains its JSON/gzip/log evidence for
 14 days. It reports host processing batches; physical capture and device energy remain #74.
+
+## Licensed voice corpus
+
+Debug correctness CI verifies `Tools/Corpus/corpus.py verify` with no network access
+or corpus acquisition. It regenerates every derivative from the three small committed
+originals, checks licensing/consent/identity metadata, and retains invalid/unsupported
+cases in coverage. The native tests decode all source/derived bytes independently,
+check exact source excerpts and run real speech through chunk-equivalent levels.
+
+`Licensed voice corpus` adds a focused PR/manual job for corpus or diagnostic changes.
+It uses the same pinned Xcode/Python environment and runs
+`python3 Tools/Corpus/benchmark.py --output .build/corpus-evidence`.
+Four stable subsets include an explicitly prepared synthetic 60-second stream with
+declared join boundaries. Ten warm-cache load and preloaded decode trials per subset
+retain raw distributions, expected failures, consumed-output checksums and exact source
+identities. Metadata and sanitized logs are uploaded for 14 days; no WAV is uploaded.
+File handling has no timing threshold or claim about DSP/device performance. See
+[corpus definitions](VoiceCorpus.md) and [evidence](Evidence/voice-corpus.md).

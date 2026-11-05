@@ -260,6 +260,23 @@
       ],
       "redistributed": false,
       "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/32"
+    },
+    {
+      "id": "pvqd-corpus-v3",
+      "sourceURL": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+      "selectedVersion": "3 (DOI 10.17632/9dz247gnyb.3)",
+      "license": "CC-BY-4.0",
+      "licenseEvidenceURL": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+      "usedBy": [
+        "HDXLVoiceProcessingTests only",
+        "Tools/Corpus development verification and native loading benchmark"
+      ],
+      "status": "active",
+      "redistributed": true,
+      "noticePaths": [
+        "THIRD_PARTY_NOTICES.md",
+        "Documentation/VoiceCorpus.md"
+      ]
     }
   ],
   "fixtures": [
@@ -2905,6 +2922,744 @@
       ],
       "expectedProfile": "digital-level-windows/v1; bs1770-5-prewarped-tables/v1; explicit rate and precision per case",
       "referenceOutputIdentity": "sha256:3e85291e5662f67e5fd4f922a9f61328efee3d5a4ba3e0235cd60bdc35507165"
+    },
+    {
+      "id": "pvqd3-bl01-original",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/originals/pvqd3-bl01.wav",
+      "sha256": "c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; file 5183cb8f-77ff-418d-a4cc-e2eca48cb6a5; SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; THIRD_PARTY_NOTICES.md"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants: participant consent for public availability; no private forms held"
+      },
+      "transformations": [],
+      "expectedProfile": "pvqd3-engineering/v1 original PCM16 mono 44100Hz",
+      "referenceOutputIdentity": "5965a389fe27b96a42d1ec0b72755bc0ac9ef668e0fb31a34fac5fb006523c7a"
+    },
+    {
+      "id": "pvqd3-bl02-original",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/originals/pvqd3-bl02.wav",
+      "sha256": "a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; file 73f751bc-10cd-4551-9f07-479e1ef2a8ac; SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; THIRD_PARTY_NOTICES.md"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants: participant consent for public availability; no private forms held"
+      },
+      "transformations": [],
+      "expectedProfile": "pvqd3-engineering/v1 original PCM16 mono 44100Hz",
+      "referenceOutputIdentity": "40521bf904a6953d07a62978859da8aa8e51fcb3aea3fbba0a0e325a7a797320"
+    },
+    {
+      "id": "pvqd3-bl03-original",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/originals/pvqd3-bl03.wav",
+      "sha256": "989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; file 7be55d9e-a714-4aaa-a34f-f342c26adbf5; SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; THIRD_PARTY_NOTICES.md"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants: participant consent for public availability; no private forms held"
+      },
+      "transformations": [],
+      "expectedProfile": "pvqd3-engineering/v1 original PCM16 mono 44100Hz",
+      "referenceOutputIdentity": "959a7c17baff4926ceb7b3685347d0da049957350b9f37b69f55832849485c60"
+    },
+    {
+      "id": "corpus-bl01-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-vowel-a.wav",
+      "sha256": "e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437"
+    },
+    {
+      "id": "corpus-bl01-vowel-i",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-vowel-i.wav",
+      "sha256": "bb79d67948045005e72c65891a1172bc612a7b28374ae32d71ef9ee7964dd875",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"bb79d67948045005e72c65891a1172bc612a7b28374ae32d71ef9ee7964dd875\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1014300}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "bb79d67948045005e72c65891a1172bc612a7b28374ae32d71ef9ee7964dd875"
+    },
+    {
+      "id": "corpus-bl01-all-voiced",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-all-voiced.wav",
+      "sha256": "f157fb1248930edd2a1c79874dd010e66a7579918159789f4c7ee45a8ca8789f",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"f157fb1248930edd2a1c79874dd010e66a7579918159789f4c7ee45a8ca8789f\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":295470}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "f157fb1248930edd2a1c79874dd010e66a7579918159789f4c7ee45a8ca8789f"
+    },
+    {
+      "id": "corpus-bl01-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-consonant-rich.wav",
+      "sha256": "da77cee1a9600f2de8e27bc4978abce5dcb19e199dad053f7bed0961b860d5d3",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"da77cee1a9600f2de8e27bc4978abce5dcb19e199dad053f7bed0961b860d5d3\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":101430,\"startSample\":670320}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "da77cee1a9600f2de8e27bc4978abce5dcb19e199dad053f7bed0961b860d5d3"
+    },
+    {
+      "id": "corpus-bl02-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-vowel-a.wav",
+      "sha256": "9e189f1bf2fa3ab53efb9ea3375afbc1318ced3823c9e534724dddfdce0ce045",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9e189f1bf2fa3ab53efb9ea3375afbc1318ced3823c9e534724dddfdce0ce045\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":970200}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "9e189f1bf2fa3ab53efb9ea3375afbc1318ced3823c9e534724dddfdce0ce045"
+    },
+    {
+      "id": "corpus-bl02-vowel-i",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-vowel-i.wav",
+      "sha256": "140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1234800}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759"
+    },
+    {
+      "id": "corpus-bl02-all-voiced",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-all-voiced.wav",
+      "sha256": "e63fc7b2b0454b75b7d3dc2f8de1a8c58ed34ef80aaedc906f0b65dea6bea766",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"e63fc7b2b0454b75b7d3dc2f8de1a8c58ed34ef80aaedc906f0b65dea6bea766\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":105840,\"startSample\":321930}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "e63fc7b2b0454b75b7d3dc2f8de1a8c58ed34ef80aaedc906f0b65dea6bea766"
+    },
+    {
+      "id": "corpus-bl02-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-consonant-rich.wav",
+      "sha256": "9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":114660,\"startSample\":758520}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775"
+    },
+    {
+      "id": "corpus-bl03-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-vowel-a.wav",
+      "sha256": "3430ba83ca6ac0268cdbc2a1cf58b6a3349f131787731d714f103f19f6c476f3",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"3430ba83ca6ac0268cdbc2a1cf58b6a3349f131787731d714f103f19f6c476f3\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1014300}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "3430ba83ca6ac0268cdbc2a1cf58b6a3349f131787731d714f103f19f6c476f3"
+    },
+    {
+      "id": "corpus-bl03-vowel-i",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-vowel-i.wav",
+      "sha256": "0f9cf79f79aca816fc0af38224c7b86a8d87d8cc099c2367e814c98622da60bf",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"0f9cf79f79aca816fc0af38224c7b86a8d87d8cc099c2367e814c98622da60bf\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1234800}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "0f9cf79f79aca816fc0af38224c7b86a8d87d8cc099c2367e814c98622da60bf"
+    },
+    {
+      "id": "corpus-bl03-all-voiced",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-all-voiced.wav",
+      "sha256": "da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6"
+    },
+    {
+      "id": "corpus-bl03-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-consonant-rich.wav",
+      "sha256": "096266c3dfbabc4a4f3a8b5d77c5ae2d9410b61941982dc5b254ea88f8af19d0",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"096266c3dfbabc4a4f3a8b5d77c5ae2d9410b61941982dc5b254ea88f8af19d0\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":105840,\"startSample\":732060}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "096266c3dfbabc4a4f3a8b5d77c5ae2d9410b61941982dc5b254ea88f8af19d0"
+    },
+    {
+      "id": "corpus-bl01-low-level",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-low-level.wav",
+      "sha256": "ddfea4726177bec6a872c192ce681313e7caf8e801a51df81818b4a7e550bff4",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"ddfea4726177bec6a872c192ce681313e7caf8e801a51df81818b4a7e550bff4\",\"parameters\":{\"denominator\":256,\"kind\":\"integer-gain\",\"numerator\":1}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "ddfea4726177bec6a872c192ce681313e7caf8e801a51df81818b4a7e550bff4"
+    },
+    {
+      "id": "corpus-bl01-noisy",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-noisy.wav",
+      "sha256": "c68b7c874b7894f482147a16276e8a4b9ff0e693adfd16dd402ae011c8c06337",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"addedErrorSumSquaresLSB\":123428706736,\"finalState\":4221016940,\"generator\":\"xorshift32-13-17-5-modulo-inclusive/v1\",\"inputSumSquaresLSB\":1530241232091,\"measuredSNRDB\":10.933437212212},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"c68b7c874b7894f482147a16276e8a4b9ff0e693adfd16dd402ae011c8c06337\",\"parameters\":{\"amplitudeLSB\":2048,\"kind\":\"integer-noise\",\"seed\":2701}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "c68b7c874b7894f482147a16276e8a4b9ff0e693adfd16dd402ae011c8c06337"
+    },
+    {
+      "id": "corpus-bl01-clipped",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-clipped.wav",
+      "sha256": "57fe57bb1b7ae70983bfdb880c62789859bb26dd20cb76fdfe982d6f9088aa34",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"57fe57bb1b7ae70983bfdb880c62789859bb26dd20cb76fdfe982d6f9088aa34\",\"parameters\":{\"denominator\":1,\"kind\":\"integer-gain\",\"numerator\":16}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "57fe57bb1b7ae70983bfdb880c62789859bb26dd20cb76fdfe982d6f9088aa34"
+    },
+    {
+      "id": "corpus-bl01-dropout",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-dropout.wav",
+      "sha256": "b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"observedSilence\":false},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4\",\"parameters\":{\"kind\":\"replace-with-zero\",\"sampleCount\":8820,\"startSample\":22050}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4"
+    },
+    {
+      "id": "corpus-bl01-silence",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-silence.wav",
+      "sha256": "cfc6b206e99b298a229480f020e61d2b22a791e08a840fdd40ef62d8bd78b155",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"observedSilence\":false},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"cfc6b206e99b298a229480f020e61d2b22a791e08a840fdd40ef62d8bd78b155\",\"parameters\":{\"kind\":\"replace-with-zero\",\"sampleCount\":88200,\"startSample\":0}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": null, \"status\": \"available\"}",
+      "referenceOutputIdentity": "cfc6b206e99b298a229480f020e61d2b22a791e08a840fdd40ef62d8bd78b155"
+    },
+    {
+      "id": "corpus-bl01-stereo",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-stereo.wav",
+      "sha256": "f4565ed4b67fa78c280f023383909629f88bc0386231c403f9879a829c1d7883",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"f4565ed4b67fa78c280f023383909629f88bc0386231c403f9879a829c1d7883\",\"parameters\":{\"kind\":\"duplicate-channel\"}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": \"unsupportedRange\", \"status\": \"unavailable\"}",
+      "referenceOutputIdentity": "f4565ed4b67fa78c280f023383909629f88bc0386231c403f9879a829c1d7883"
+    },
+    {
+      "id": "corpus-bl01-empty",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-empty.wav",
+      "sha256": "8b8fbafe8679076454429756fa72f11d5f442c87381cc6a4285451d826a9e629",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"8b8fbafe8679076454429756fa72f11d5f442c87381cc6a4285451d826a9e629\",\"parameters\":{\"kind\":\"empty-payload\"}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": \"insufficientData\", \"status\": \"unavailable\"}",
+      "referenceOutputIdentity": "8b8fbafe8679076454429756fa72f11d5f442c87381cc6a4285451d826a9e629"
+    },
+    {
+      "id": "corpus-bl01-truncated",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-truncated.wav",
+      "sha256": "b13fa88272f0ac5937ddc81363a014c8bc0bae2b69c0240f8da50e984a48630f",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"b13fa88272f0ac5937ddc81363a014c8bc0bae2b69c0240f8da50e984a48630f\",\"parameters\":{\"kind\":\"truncate-file\",\"removeBytes\":7}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": \"invalidInput\", \"status\": \"unavailable\"}",
+      "referenceOutputIdentity": "b13fa88272f0ac5937ddc81363a014c8bc0bae2b69c0240f8da50e984a48630f"
+    },
+    {
+      "id": "corpus-bl01-nonfinite",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-nonfinite.wav",
+      "sha256": "1f0ad28fbc663766c870799bb4fb040cfd0f953fdb8892d3d2ffb4641c51c8c4",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"1f0ad28fbc663766c870799bb4fb040cfd0f953fdb8892d3d2ffb4641c51c8c4\",\"parameters\":{\"kind\":\"float32-nan\",\"sampleIndex\":123}}"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1; {\"reason\": \"invalidInput\", \"status\": \"unavailable\"}",
+      "referenceOutputIdentity": "1f0ad28fbc663766c870799bb4fb040cfd0f953fdb8892d3d2ffb4641c51c8c4"
+    },
+    {
+      "id": "voice-corpus-manifest-v1",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/manifest.json",
+      "sha256": "189aa4b7da5b01a7ed7e971e26aca9591c106c47b00fa29e859e79414fd83fd4",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/27",
+        "versionOrHash": "pvqd3-engineering/v1; generator 1835881be3465bfd5d1698da5a2af0506530bc08201d6b2146a6442e8348e8fb"
+      },
+      "generator": {
+        "path": "Tools/Corpus/corpus.py",
+        "version": "pvqd3-engineering/v1",
+        "sha256": "ba66d950724646bcabd88615cda1d17d56b59697f8b5c7798c6ff5441bb567ef"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "Original project metadata/annotations; underlying recording rights separately attributed CC-BY-4.0 in THIRD_PARTY_NOTICES.md; project license pending #78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Non-audio metadata only; source recordings have separate public-use consent records"
+      },
+      "transformations": [
+        "Deterministic catalog of pinned source files, sample-exact transformation chains, input outcomes and full coverage"
+      ],
+      "expectedProfile": "pvqd3-engineering/v1",
+      "referenceOutputIdentity": "1835881be3465bfd5d1698da5a2af0506530bc08201d6b2146a6442e8348e8fb"
     }
   ],
   "optionalModels": []

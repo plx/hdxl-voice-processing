@@ -3,7 +3,8 @@
 This is an inventory index, not a new license grant or a legal compatibility
 determination. Exact versions, uses, and hashes are recorded in
 [`Configuration/provenance.json`](Configuration/provenance.json). No third-party
-implementation source, binary, recording, model, font, or image is currently vendored.
+implementation source, binary, model, font, or image is currently vendored. The
+licensed PVQD recording subset described below is redistributed as test data.
 
 The project's own license is **pending owner decision in
 [#78](https://github.com/plx/hdxl-voice-processing/issues/78)**. Original source and
@@ -24,6 +25,33 @@ distribution is gated by `python3 Tools/verify-provenance.py --for-publication`.
 | Praat 7.0.02 | Pinned external development CLI in `Tools/Reference` and the `Tools/Framing` Gaussian oracle; never vendored or linked into products | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
 | IVoice | Design context only; no code, assets, or thresholds copied | Root `IVoice-Source/LICENSE`: MIT, copyright 2025 Iman Noferesti, in the [archive](https://tintin.cs.uiowa.edu/Pages/Software/IVoice/Documents/IVoice-Source.zip); bundled assets/tools have separate notices |
 | Brecht De Man, loudness.py | External K-filter coefficient reference in an ignored development cache; math-only compatibility shim, no NumPy/SciPy execution or runtime linkage; source not redistributed | [MIT, copyright 2018 Brecht De Man](https://github.com/BrechtDeMan/loudness.py/blob/dc0f83883d247cbeb106064784e32d8c38ce1573/LICENSE), pinned revision in the manifest |
+| Perceptual Voice Qualities Database (PVQD), version 3 | Three original recordings and explicitly modified excerpts in test resources only; not runtime resources | [CC BY 4.0 dataset](https://data.mendeley.com/datasets/9dz247gnyb/3); attribution and modification notice below |
+
+## PVQD recording attribution
+
+Walden, Patrick R. (2020), **Perceptual Voice Qualities Database (PVQD)**,
+Mendeley Data, V3, [doi:10.17632/9dz247gnyb.3](https://doi.org/10.17632/9dz247gnyb.3).
+The database was supported by The Voice Foundation's Advancing Scientific Voice
+Research Grant. Its publisher makes the dataset available under
+[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
+([legal code](https://creativecommons.org/licenses/by/4.0/legalcode.en)). The licensed
+material is supplied as-is, without warranties; the license's disclaimer applies.
+Neither the contributor nor the foundation endorses this project.
+
+`Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/originals` retains BL01 ENSS.wav,
+BL02 ENSS.wav, and BL03 ENSS.wav byte-for-byte under stable file IDs. The `samples`
+directory contains **modified** material: sample-indexed excerpts and the declared
+gain, noise, zero-fill, channel, empty, truncation, and nonfinite transformations.
+The accompanying manifest records every modification, original/derived SHA-256,
+and source URL. No additional restriction is imposed on upstream licensed material.
+The project code and original manifest/annotation contributions remain subject to
+the pending project license decision; they do not replace the recordings' CC BY terms.
+
+Public-use consent evidence is the dataset author's coauthored
+[methods, “Study Design and Participants”](https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/).
+Private consent forms, participant names, and clinical/demographic labels are not
+included. See [Voice corpus](Documentation/VoiceCorpus.md) for the annotation
+limitations, reproduction commands, and removal procedure.
 
 The inspected IVoice archive SHA-256 is
 `b72be0624623971e3a9af21698f6cdf76b009c8a764329a897fff43aa286e4dc`.

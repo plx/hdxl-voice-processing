@@ -1,0 +1,51 @@
+name: Licensed voice corpus
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Tools/Corpus/**'
+      - 'Tools/Tests/test_corpus*'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/**'
+      - 'Tests/HDXLVoiceProcessingTests/Support/VoiceCorpus.swift'
+      - 'Tests/HDXLVoiceProcessingTests/VoiceCorpusTests.swift'
+      - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
+      - 'Configuration/build.json'
+      - '.github/workflows/voice-corpus.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: corpus-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  corpus:
+    name: Offline corpus and native loading / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 20
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Verify all original and transformed artifacts offline
+        run: python3 Tools/Corpus/corpus.py verify
+      - name: Measure native file loading separately from decode
+        run: python3 Tools/Corpus/benchmark.py --output .build/corpus-evidence
+      - name: Retain identities, negative coverage, and raw distributions
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: voice-corpus-${{ github.run_attempt }}
+          path: |
+            .build/corpus-evidence/*.json
+            .build/corpus-evidence/*.log
+            .build/corpus-evidence/prepared/*.json
+          if-no-files-found: error
+          retention-days: 14

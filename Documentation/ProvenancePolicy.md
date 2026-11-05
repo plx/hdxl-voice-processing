@@ -73,6 +73,13 @@ version, and source hash.
   random seeds, and input/output hashes where relevant.
 
 #22 provides deterministic synthetic audio; #27 curates licensed corpus fixtures.
+The initial #27 corpus pins three PVQD v3 sources with their publisher hashes and
+CC BY 4.0 grant, separately records the dataset author's public-use consent evidence,
+and retains exact originals plus explicitly marked derivatives in test resources only.
+See [VoiceCorpus.md](VoiceCorpus.md). Public methods evidence is the documented
+consent basis; the project neither holds nor republishes private consent forms.
+Source IDs and required attribution are distinct from participant identifiers;
+no demographic or diagnostic spreadsheet labels are imported.
 Keep fixtures small and reproducible. Consent evidence must be safe to disclose;
 do not commit private forms/contact details. Preserve license-required attribution
 and other notices, and review distribution conditions before adding material.
