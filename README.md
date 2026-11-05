@@ -48,6 +48,9 @@ Double arithmetic for both PCM precisions, whole-interval/preview profiles, fini
 availability, borrowed data and bounded exports. The [CPP guide](Documentation/CPP.md)
 defines peak search, inspectable background fits, explicit reference versus mathematical
 robust estimators, and prepared PCM-pipeline consumption. CPPS remains in development.
+The [masking guide](Documentation/Masks.md) defines independent annotation, energy,
+and spectral-flatness sources, original-timeline coverage, separate-region routing,
+and inspectable exclusions without an implicit periodicity gate.
 The [licensed voice corpus](Documentation/VoiceCorpus.md) supplies pinned PVQD originals,
 sample-exact speech/vowel excerpts, simulated defects, explicit negative cases, and
 offline load/decode checks without adding resources to runtime products.

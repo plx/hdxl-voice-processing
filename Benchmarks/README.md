@@ -197,3 +197,9 @@ checksum consumer is explicitly replaced by actual CPP consumption in #35. Thirt
 checksum/conversion cases require zero maximum heap counters; eight owned-export cases report
 allocations separately. Full distributions, input hashes, profiles, geometry, availability,
 buffer bytes and positive controls are retained in a dedicated workflow.
+
+The A08 ten-minute mask matrix is implemented in `MaskWorkload`/`MaskBenchmarks`.
+Use `python3 Tools/Masks/benchmark.py timing --shard float32` from the repository
+root, then the `float64` and `operations` shards and separate `allocation` runs.
+See [mask workload semantics](../Tools/Masks/README.md#performance-matrix) and
+[the evidence record](../Documentation/Evidence/masks.md).
