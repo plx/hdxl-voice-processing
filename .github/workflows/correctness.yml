@@ -19,7 +19,9 @@ jobs:
   verify:
     name: ${{ matrix.lane }} / Xcode 27.0
     runs-on: xcode-27
-    timeout-minutes: 30
+    # Full per-frame CPPS references exercise ~13k robust fits on both raw and
+    # smoothed data; sanitizer lanes retain the complete numerical coverage.
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:

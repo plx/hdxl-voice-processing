@@ -3,6 +3,7 @@ import Foundation
 public enum UnavailabilityReason: String, Sendable, Hashable, Codable, CaseIterable {
     case insufficientData, silence, clipping, unsupportedRange, inapplicableTask
     case lowConfidence, invalidInput, discontinuity, analysisFailure, cancelled
+    case missingAcquisition, excluded, stale
 }
 
 /// Warnings preserve an inspectable numeric estimate without presenting it as unqualified.

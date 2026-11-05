@@ -60,7 +60,7 @@ synthetic probe does not claim to implement the named DSP algorithms.
 | flow | Overrun, Drop | Worker observation of explicit discontinuity/drop information |
 | worker | AnalysisFrame | One admitted synchronous synthetic/analysis worker turn |
 | worker | Resample, PreEmphasis, FrameAssembly | Conditioning and frame assembly work |
-| worker | FFT, Cepstrum, CPP, CPPSSmoothing, CPPSFitting | Future numerical stages |
+| worker | FFT, Cepstrum, CPP, CPPSSmoothing, CPPSFitting, CPPSAggregation | Numerical scopes; CPPS boundaries below |
 | worker | Pitch, HNR, Pulses, Perturbation | Future numerical stages |
 | worker | SpeechActivity, MaskIntervals, EnergyEligibility, MaskResolution, MaskRouting | Mask worker/control stages; precise boundaries below |
 | worker | ResultPublication | Worker-side result construction/publication work |
@@ -234,3 +234,24 @@ balanced pairing, sampling, reset epochs, consumer boundaries and identical outp
 values across all three modes. Integrated active-trace overhead and physical
 capture evidence remain in #56/#62 and #74; mask performance baselines use disabled
 diagnostics.
+
+## CPPS worker integration
+
+`PreparedCPPS` uses profile token 37 and the original frame index for
+`CPPSSmoothing`, covering time integration followed by quefrency integration.
+The final `PreparedCPP` kernel uses `CPPSFitting` with token 37. Its scope closes
+before the borrowed result is delivered. The unsmoothed diagnostic fit retains
+`CPP` and token 35. Each numerical scope has a frame sampling boundary, so sampled
+mode admits only frame indices divisible by 16, including delayed finish output.
+
+`PreparedRollingCPPS.result` uses `CPPSAggregation`, token 3701, the latest frame
+index, and retained record count. It measures mask membership, coverage unions,
+freshness decisions and the compensated mean. No PCM, cepstral arrays, labels,
+source UUIDs or user-provided strings enter diagnostic metadata. Immutable
+region-report construction is an owned control-plane operation.
+
+`CPPSDiagnosticsTests` checks disabled/sampled/detailed numerical equality,
+frame sampling, balanced scopes and completion before consumer callbacks.
+The [CPPS benchmark protocol](../Tools/CPPS/README.md#host-performance-matrix)
+measures complete pipelines with diagnostics disabled; its allocation mode is a
+separate binary. Physical capture and device traces remain tracked by #74.
