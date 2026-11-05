@@ -122,8 +122,15 @@ import Testing
             #expect(output.result.normalizationPeak == nil && output.result.rms == nil)
         }
     }
+    try [Double](repeating: 0, count: 17).withUnsafeBufferPointer { samples in
+        try worker.analyze(samples, timing: timing) { output in
+            #expect(output.result.status == .unvoiced)
+            #expect(output.values(.scaledSquaredDifference)[1] == 0)
+        }
+    }
     #expect(owned.map(\.integerLag) == [4, 8])
     #expect(snapshots.count == 2 && snapshots[0].values.count == 10)
+    #expect(abs(snapshots[0].values[1] - 8) < 1e-8)
     let result = try #require(measurement)
     #expect(result.measurement.kind == .fundamentalFrequency && result.measurement.unit == .hertz)
     #expect(
