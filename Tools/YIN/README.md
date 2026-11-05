@@ -30,10 +30,13 @@ squared differences; optimized native linear correlation is a separate route.
 Very small FFT differences are recomputed directly to avoid cancellation.
 
 Known stationary pure tones with at least eight samples per period must have
-**10 cents maximum absolute error** and **at least 90% voiced coverage** away
+**10 cents maximum absolute error** and **at least 90% voiced coverage** of
+fully observed frames away
 from the exact configured frequency boundaries. Clean identifiable harmonic and
 missing-fundamental cases must have **20 cents maximum absolute error**, no
-gross/octave errors, and at least **90% voiced coverage**. Tests intentionally
+gross/octave errors, and at least **90% voiced coverage** of fully observed frames.
+Partial-tail counts and coverage including those tails are reported separately.
+Tests intentionally
 dominated by an upper harmonic are ambiguity characterizations, not included in
 that clean identifiable subset. Boundary, transitions, modulated, irregular,
 noisy, breathy and fricative cases retain all frames and their outcomes; they do
@@ -56,7 +59,8 @@ claim; annotated voice/device follow-ups remain #102 and #74.
   squared differences in those normalized units. CMND is scale invariant.
 - The requested frequency range is continuous and inclusive. Let `a=fs/fmax`,
   `b=fs/fmin`, `lo=floor(a)` and `hi=ceil(b)`. Valid configurations have `a>=4`,
-  `hi>=lo+1`, and integration length `W>=hi`. The maximum evaluated lag is
+  `hi>=lo+1`, at least one integer lag in a...b, and integration length `W>=hi`.
+  The maximum evaluated lag is
   `hi+1`, including the interpolation neighbor. Full observed support is
   **W+hi+1 samples**. Zero-padding is only an internal convolution operation;
   it never supplies observed signal or extra periods.
