@@ -158,3 +158,6 @@ pitch truth, not invented labels. Human annotations remain
 [#102](https://github.com/plx/hdxl-voice-processing/issues/102), physical evidence
 [#74](https://github.com/plx/hdxl-voice-processing/issues/74), and profile decisions
 [#117](https://github.com/plx/hdxl-voice-processing/issues/117).
+
+The [initial evidence](Evidence/yin.md) reports reference-budget consumption,
+difficult-case denominators, lifecycle checks and host workload measurements.
