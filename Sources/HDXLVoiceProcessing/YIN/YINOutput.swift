@@ -118,3 +118,48 @@ public struct YINExecutionStatistics: Sendable, Hashable {
     public let directlyRecomputedLagCount: UInt64
     public let scalarFallbackFrameCount: UInt64
 }
+
+/// A candidate choice attached to the current raw frame, with the full history
+/// dependency retained separately. Plot against raw.timing, not the midpoint of
+/// the potentially long dependency interval. No future samples are requested.
+public struct YINTrackedFrameResult: Sendable, Hashable {
+    public let profile: ProfileIdentity
+    public let trackerProfile: ProfileIdentity
+    public let raw: YINFrameResult
+    public let observation: YINCandidate?
+    public let selectedCandidateIndex: Int?
+    public let changedSelection: Bool
+    public let dependencyTiming: AnalysisTiming
+
+    /// Persist the entire dependency footprint. The dependency's midpoint can
+    /// precede the current frame: its reported delay accounts for that difference.
+    /// Persist raw.measurementResult() too when current-frame timing is needed.
+    public func measurementResult() throws -> MeasurementResult {
+        let outcome: MeasurementOutcome
+        if let observation {
+            outcome = .available(
+                try ScalarEstimate(
+                    value: observation.frequencyHz, confidence: observation.periodicity,
+                    warnings: raw.status == .uncertain ? [.lowConfidence] : []))
+        } else {
+            guard let reason = raw.unavailability else { throw ContractError.invalidValue }
+            outcome = .unavailable(reason)
+        }
+        return try MeasurementResult(
+            measurement: MeasurementDescriptor(
+                kind: .fundamentalFrequency, unit: .hertz, algorithm: profile.identifier),
+            profile: profile, timing: dependencyTiming, outcome: outcome)
+    }
+}
+
+/// Borrowed raw curves/candidates plus an optional small owned tracking result.
+/// The tracker never edits the raw output or replaces its original selection.
+public struct BorrowedYINAnalysisOutput {
+    public let raw: BorrowedYINOutput
+    public let tracked: YINTrackedFrameResult?
+}
+
+public struct YINCompletion: Sendable, Hashable {
+    public let framing: FramingCompletion
+    public let isCancelled: Bool
+}

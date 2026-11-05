@@ -6,6 +6,16 @@ analyzer creates its own instance on a worker/control path. It defaults to
 `disabled`; applications do not acquire microphone permissions or configure
 logging by importing core. There are no external runtime dependencies.
 
+`PreparedYIN` uses a `Pitch` interval with profile token 38, frame index, observed
+sample count and full/partial geometry status. Accelerate kernel `FFT` spans nest
+inside it. Optional candidate tracking has a separate `PitchTracking` interval
+and token 3801. Framing, estimation and tracking each finish their scoped work
+before invoking downstream consumers. Whole-frame sampling admits indices 0,16,…;
+there are no per-lag/sample events or audio payloads. Streaming tests check balanced
+intervals, partial metadata, reset epochs and callback cancellation in all modes.
+See [YIN](YIN.md) for the distinction between current-frame and history-dependency
+timing; neither signpost duration is physical capture latency.
+
 The implementation follows [Apple OSSignposter](https://developer.apple.com/documentation/os/ossignposter)
 and [Recording Performance Data](https://developer.apple.com/documentation/os/recording-performance-data).
 The current macOS/iOS 27 deployment floor supports this API. `canImport(os)` and

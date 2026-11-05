@@ -29,11 +29,23 @@ private struct YINReference: Decodable {
         let reason: UnavailabilityReason?
         let normalizationPeak, rms: Double?
     }
+    struct Tracker: Decodable {
+        struct Frame: Decodable {
+            let selectedCandidateIndex: Int?
+            let changedSelection: Bool
+            let dependencyStartSample, dependencySampleCount: Int
+        }
+        let definition: String
+        let schemaVersion: Int
+        let continuityWeight: Double
+        let frames: [Frame]
+    }
     let name: String
     let source: Source
     let profile: YINConfiguration
     let input: Input
     let frames: [Frame]
+    let tracker: Tracker
 }
 
 private func yinInput(_ fixture: YINReference, directory: URL) throws -> [Double] {
@@ -90,6 +102,20 @@ private func yinInput(_ fixture: YINReference, directory: URL) throws -> [Double
     return samples
 }
 
+private struct YINReferenceCapture: Equatable {
+    let raw: YINFrameResult
+    let tracked: YINTrackedFrameResult
+    let candidates: [YINCandidate]
+    let difference, cmnd: [Double]
+    init(_ output: BorrowedYINOutput, tracked: YINTrackedFrameResult) {
+        raw = output.result
+        self.tracked = tracked
+        candidates = Array(output.candidates)
+        difference = Array(output.values(.scaledSquaredDifference))
+        cmnd = Array(output.values(.cumulativeMeanNormalizedDifference))
+    }
+}
+
 private func yinCompare<Sample: BinaryFloatingPoint & Sendable>(
     _ fixture: YINReference, samples: [Sample], backend: YINDifferenceBackend
 ) throws -> [String: Any] {
@@ -101,6 +127,14 @@ private func yinCompare<Sample: BinaryFloatingPoint & Sendable>(
         threshold: original.threshold, silenceRMSThreshold: original.silenceRMSThreshold,
         differenceBackend: backend)
     let worker = try PreparedYIN<Sample>(c)
+    #expect(
+        fixture.tracker.definition == "causal-yin-candidate-continuity"
+            && fixture.tracker.schemaVersion == 1)
+    #expect(fixture.tracker.frames.count == fixture.frames.count)
+    let tracker = try PreparedYINTracker(
+        YINProfile(
+            estimator: c,
+            tracker: YINTrackerConfiguration(continuityWeight: fixture.tracker.continuityWeight)))
     let epoch = StreamEpoch(streamID: UUID())
     var maxDifference = 0.0
     var maxCMND = 0.0
@@ -108,6 +142,9 @@ private func yinCompare<Sample: BinaryFloatingPoint & Sendable>(
     var maxHz = 0.0
     var cells = 0
     var candidateCount = 0
+    var trackedFrames = 0
+    var changedSelections = 0
+    var expectedStream: [YINReferenceCapture] = []
     for frame in fixture.frames {
         let source = try SourceInterval(
             epoch: epoch, startSample: Int64(frame.startSample),
@@ -167,6 +204,41 @@ private func yinCompare<Sample: BinaryFloatingPoint & Sendable>(
                         abs(actual.periodicity - expected.periodicity) / 1e-9)
                     candidateCount += 1
                 }
+                do {
+                    let tracked = try tracker.process(output)
+                    let expected = fixture.tracker.frames[frame.frameIndex]
+                    #expect(tracked.raw == output.result)
+                    #expect(tracked.profile != output.result.profile)
+                    #expect(
+                        tracked.selectedCandidateIndex == expected.selectedCandidateIndex,
+                        "tracker \(fixture.name)/\(backend)/\(frame.frameIndex)")
+                    #expect(tracked.changedSelection == expected.changedSelection)
+                    #expect(
+                        tracked.dependencyTiming.source.startSample
+                            == Int64(expected.dependencyStartSample))
+                    #expect(
+                        tracked.dependencyTiming.source.sampleCount
+                            == Int64(expected.dependencySampleCount))
+                    #expect(
+                        tracked.dependencyTiming.includedSampleCount
+                            == Int64(expected.dependencySampleCount))
+                    if let index = expected.selectedCandidateIndex {
+                        let hz = fixture.frames[frame.frameIndex].candidates[index].frequencyHz
+                        #expect(abs((tracked.observation?.frequencyHz ?? 0) - hz) <= 0.001)
+                    } else {
+                        #expect(tracked.observation == nil)
+                    }
+                    if frame.observedSampleCount == frame.requiredSampleCount {
+                        #expect(
+                            abs(
+                                tracked.dependencyTiming.effectiveDelaySeconds
+                                    - Double(expected.dependencySampleCount) / Double(c.sampleRate)
+                                    / 2) < 1e-12)
+                    }
+                    trackedFrames += 1
+                    if tracked.changedSelection { changedSelections += 1 }
+                    expectedStream.append(YINReferenceCapture(output, tracked: tracked))
+                } catch { Issue.record(error) }
             }
         }
     }
@@ -174,6 +246,38 @@ private func yinCompare<Sample: BinaryFloatingPoint & Sendable>(
     #expect(maxCMND <= 1, "\(fixture.name)/\(backend): CMND \(maxCMND)")
     #expect(maxPeriod <= 1, "\(fixture.name)/\(backend): period \(maxPeriod)")
     #expect(maxHz <= 1, "\(fixture.name)/\(backend): Hz \(maxHz)")
+    // Replay every oracle-checked frame through the actual PCM streaming API.
+    // Irregular chunks exercise assembly without changing any raw/tracked field.
+    let stream = try PreparedYINAnalyzer<Sample>(profile: tracker.profile, epoch: epoch)
+    var streamedFrames = 0
+    func receive(_ output: BorrowedYINAnalysisOutput) {
+        guard streamedFrames < expectedStream.count, let tracked = output.tracked else {
+            Issue.record("Unexpected streaming frame: \(fixture.name)/\(backend)")
+            return
+        }
+        #expect(
+            YINReferenceCapture(output.raw, tracked: tracked) == expectedStream[streamedFrames],
+            "stream \(fixture.name)/\(backend)/\(streamedFrames)")
+        streamedFrames += 1
+    }
+    try samples.withUnsafeBufferPointer { input in
+        let chunks = [1, 127, 17, 1024, 5]
+        var offset = 0
+        var chunkIndex = 0
+        while offset < input.count {
+            let end = min(input.count, offset + chunks[chunkIndex % chunks.count])
+            let source = try SourceInterval(
+                epoch: epoch, startSample: Int64(offset), sampleCount: Int64(end - offset),
+                sampleRate: Double(c.sampleRate))
+            try stream.process(
+                UnsafeBufferPointer(rebasing: input[offset..<end]), interval: source,
+                emit: receive)
+            offset = end
+            chunkIndex += 1
+        }
+    }
+    try stream.finish(emit: receive)
+    #expect(streamedFrames == fixture.frames.count)
     return [
         "name": fixture.name, "backend": backend.rawValue, "frameCount": fixture.frames.count,
         "inputPrecision": c.inputPrecision.rawValue, "nativeProfileSHA256": worker.identity.sha256,
@@ -183,6 +287,9 @@ private func yinCompare<Sample: BinaryFloatingPoint & Sendable>(
         "maximumFrequencyBudgetFraction": maxHz,
         "directlyRecomputedLags": worker.executionStatistics.directlyRecomputedLagCount,
         "scalarFallbackFrames": worker.executionStatistics.scalarFallbackFrameCount,
+        "trackedFrameCount": trackedFrames, "changedSelections": changedSelections,
+        "trackerProfileSHA256": tracker.identity.sha256,
+        "streamedFrameCount": streamedFrames,
     ]
 }
 
