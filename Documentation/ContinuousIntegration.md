@@ -19,7 +19,8 @@ No self-hosted runner, signing credential, or larger paid runner is provisioned.
 ## Checks and local reproduction
 
 All six lanes run on PRs and `main`, without path filters that could skip a
-correctness case. Each has a 30-minute timeout. Strategy fail-fast is off so a
+correctness case. Each has a 120-minute timeout to retain complete CPPS reference
+coverage under debug and sanitizer instrumentation. Strategy fail-fast is off so a
 failure still leaves evidence from the other lanes. These are independent jobs:
 
 | Lane / local command | What runs | Evidence scope |

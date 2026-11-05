@@ -310,6 +310,8 @@ public final class PreparedCPPS {
         var reason: UnavailabilityReason?
         var supportStart = raw.context.timing.source.startSample
         var supportEnd = raw.context.timing.source.endSample
+        var sourceAnchor: (sample: Int64, seconds: Double)?
+        var hostAnchor: (sample: Int64, nanoseconds: UInt64)?
         var delay = raw.context.timing.effectiveDelaySeconds
         var extensionUsed = raw.context.usesBoundaryExtension
         for index in first...last {
@@ -318,6 +320,19 @@ public final class PreparedCPPS {
             reason = reason ?? reasons[position]
             supportStart = min(supportStart, record.context.timing.source.startSample)
             supportEnd = max(supportEnd, record.context.timing.source.endSample)
+            let inputTiming = record.context.timing
+            // Prefer the earliest supplied anchor for each clock independently.
+            // An unanchored left dependency must not erase a later known anchor.
+            if let seconds = inputTiming.sourceStartSeconds,
+                sourceAnchor.map({ inputTiming.source.startSample < $0.sample }) ?? true
+            {
+                sourceAnchor = (inputTiming.source.startSample, seconds)
+            }
+            if let nanoseconds = inputTiming.hostStartNanoseconds,
+                hostAnchor.map({ inputTiming.source.startSample < $0.sample }) ?? true
+            {
+                hostAnchor = (inputTiming.source.startSample, nanoseconds)
+            }
             // Preview delays are relative to each dependency's frame center.
             // Translate them to the output center before taking their maximum.
             // Integer grid offsets avoid subtracting large floating-point times.
@@ -336,9 +351,27 @@ public final class PreparedCPPS {
         let support = try SourceInterval(
             epoch: origin.epoch, startSample: supportStart,
             sampleCount: supportEnd - supportStart, sampleRate: origin.sampleRate)
+        // Subtract sample positions before floating conversion, including when
+        // absolute positions exceed Double's exact integer range.
+        let sourceStartSeconds = sourceAnchor.map {
+            $0.seconds - Double($0.sample - supportStart) / origin.sampleRate
+        }
+        var hostStartNanoseconds: UInt64?
+        if let anchor = hostAnchor {
+            let offset = Double(anchor.sample - supportStart) / origin.sampleRate
+            guard
+                let nanoseconds = UInt64(
+                    exactly: (offset * 1_000_000_000).rounded(.toNearestOrEven))
+            else { throw ContractError.invalidTiming }
+            let rebased = anchor.nanoseconds.subtractingReportingOverflow(nanoseconds)
+            guard !rebased.overflow else { throw ContractError.invalidTiming }
+            hostStartNanoseconds = rebased.partialValue
+        }
         let timing = try AnalysisTiming(
             source: support,
             includedSampleCount: reason == nil ? support.sampleCount : 0,
+            sourceStartSeconds: sourceStartSeconds,
+            hostStartNanoseconds: hostStartNanoseconds,
             effectiveDelaySeconds: delay)
         let context = try CepstralFrameContext(
             origin: origin, timing: timing,

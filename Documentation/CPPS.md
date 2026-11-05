@@ -55,6 +55,14 @@ computed from the latest dependency delivery time relative to the output frame
 center, including the final source boundary when an edge waits for finish. It does
 not add lookahead a second time to delays already reflecting those dependencies.
 
+When isolated input frames carry source-clock or host-clock anchors, the smoother
+preserves each clock independently and rebases its earliest available anchor to
+the combined dependency support. Sample offsets are subtracted in integer space;
+host offsets round to the nearest nanosecond with ties to even. An unrepresentable
+host timestamp fails with `ContractError.invalidTiming`. Missing anchors remain
+absent. Upstream completion timestamps do not become CPPS completion timestamps:
+the smoother does not sample a host completion clock.
+
 A short PCM tail is not another sample on the complete-frame grid. Finish first
 flushes that grid with its true boundary, then emits the tail as unavailable.
 The strict `CPPSCompletion.meanDB` requires every emitted frame to be available.

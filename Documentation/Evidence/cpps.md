@@ -66,6 +66,20 @@ coverage without double-counting overlapping support. Legitimate numerical zero
 remains available. Diagnostic tests check numerical equality across modes, sampled
 frame admission and balanced scopes ending before consumer callbacks.
 
+Timing regressions preserve source/host anchors independently through disabled
+and active smoothing, whole-interval and preview support, missing early anchors,
+and sample positions above 2^54. Host rebasing retains exact integer anchors,
+rounds fractional nanosecond offsets explicitly, and rejects clock underflow.
+
+The full corpus remains enabled in debug, ordinary release, and optimized
+address/thread sanitizer lanes. Required infrastructure follow-up
+[#114](https://github.com/plx/hdxl-voice-processing/issues/114) added independent
+optimized fault controls and accurate configuration metadata. The complete
+pre-anchor-fix integration run (`7038a1fd1a`) passed 176 reported cases with each
+sanitizer; its ThreadSanitizer PCM comparison took 2,119.459 seconds. This is a
+development runtime observation, not a performance baseline. Final-head results
+and both review paths are retained on PR #113.
+
 ## Initial host performance evidence
 
 The [87-case protocol](../../Tools/CPPS/README.md#host-performance-matrix) measures
