@@ -43,7 +43,7 @@ Manifest SHA-256:
 Oracle implementation SHA-256:
 `ff8b4ff1d13de07c35f098b98352138d19d1ab73c4b92252935c10f174dd2265`.
 `reference-regeneration.yml` regenerates independently, checks the manifest,
-then requires the expanded 146 native comparisons with 1,326 raw, tracked and
+then requires the expanded 154 native comparisons with 1,342 raw, tracked and
 streamed frames described below.
 
 ## Applicability and denominators
@@ -148,7 +148,7 @@ Nineteen new independent cases cover tones, noise and noisy tones at AC amplitud
 1e-3/1e-4/1e-5/1e-6 on DC 0.5, negative-offset Float32 variants, 48 kHz variants,
 and a threshold-boundary case. All old numerical outputs, input bytes, profiles
 and metrics were verified unchanged before promoting the expanded catalog.
-The current catalog has **73 cases / 663 frames**, comprising 590 complete frames
+The first-review catalog has **73 cases / 663 frames**, comprising 590 complete frames
 and 73 partial tails, with 144 artifacts and 605 total provenance entries.
 
 All 13 YIN Swift tests pass after the fix. Each backend now compares 261,928
@@ -161,7 +161,41 @@ oracle tests pass, including explicit no-pitch denominators and the new uncertai
 threshold case. Initial performance results above predate this arithmetic fix;
 the implementing PR retains subsequent performance and integration evidence.
 
-Current manifest SHA-256:
+First-review manifest SHA-256:
 `41c4b2af7ca9312f2ea6dc2f93144eb4fe0d9bdb05520d548d1caf567b71fe8d`.
-Current oracle implementation SHA-256:
+First-review oracle implementation SHA-256:
 `8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f`.
+
+
+## Second review: nonadjacent global minima
+
+GitHub's second review of `bcdf752` was clean. The local cross-check found that
+nonadjacent tied global minima could round differently under FFT, changing both
+the global flag and the candidate set. The sparse 81-sample quantized regression
+has exact CMND values of 7/8 at lags 4 and 7; lag 4 is retained only as the global
+fallback. The old implementation chose lag 7 and omitted lag 4. A focused test
+reproduced four failed assertions before the fix.
+
+The ambiguity guard now compares the two smallest CMND values across the full
+integer global-search range, in addition to its local and threshold checks.
+Ambiguity triggers the existing counted full scalar recomputation before strict
+selection. It adds no prepared buffer or output allocation, and changes no
+profile, tie rule or numerical budget. This can increase fallback work, which
+remains visible in execution statistics and the performance matrix.
+
+Four new independently generated inputs retain the exact tie in Double and
+Float32 and perturb it in both directions. They explicitly have no known pitch
+label. All preceding PCM bytes, numerical values, profiles and metrics were
+verified unchanged before promotion. The catalog now has **77 cases / 671
+frames**, with 594 complete frames and 77 partial tails, 152 YIN artifacts and
+613 total provenance records. Each backend compares 262,096 difference cells and
+21,760 candidates, with every raw, tracked and streamed output checked. The
+maximum numerical budget fractions are unchanged from the first-review fix.
+The expanded FFT catalog directly recomputes 5,223 lags and takes 11 complete
+scalar fallbacks: eight boundary-700 frames, one threshold frame and the two
+exact quantized ties. Both perturbed cases retain strict ordering.
+
+Current manifest SHA-256:
+`1a55146753a64a4477f9a8f8dffbc6e3adb21a65e6fb162265d2a4549a9b7b4e`.
+Current oracle implementation SHA-256:
+`33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362`.

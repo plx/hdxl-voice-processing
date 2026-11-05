@@ -154,7 +154,26 @@ assert noise['rawMetrics']['maximumFineAbsoluteCents'] is None
     def test_complete_independent_catalog(self):
         directory = os.environ.get('HDXL_YIN_REFERENCE_DIRECTORY',
             str(ROOT / 'Tests/HDXLVoiceProcessingTests/Fixtures/YIN'))
-        result = self.isolated(f"from pathlib import Path;assert verify.verify(Path({directory!r})) == 73")
+        result = self.isolated(f"from pathlib import Path;assert verify.verify(Path({directory!r})) == 77")
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_nonadjacent_global_ties_and_strict_perturbations(self):
+        code = """
+cases={case['name']:case for case in catalog.cases()}
+for name,lags,global_lag in (
+    ('quantized-global-tie',[4,7,11,14],4),
+    ('float32-quantized-global-tie',[4,7,11,14],4),
+    ('quantized-global-tie-plus',[4,7,11,14],4),
+    ('quantized-global-tie-minus',[7,11,14],14)):
+    record,_=reference.evaluate(cases[name]); frame=record['frames'][0]
+    assert [x['integerLag'] for x in frame['candidates']]==lags
+    assert [x['integerLag'] for x in frame['candidates'] if x['isGlobalMinimum']]==[global_lag]
+    assert record['rawMetrics']['knownTargetFullSupportCount']==0
+    if not cases[name]['source']['perturbation']:
+        assert frame['difference'][4]==frame['difference'][7]==7
+        assert frame['cmnd'][4]==frame['cmnd'][7]==.875
+"""
+        result = self.isolated(code)
         self.assertEqual(result.returncode, 0, result.stderr)
 
 

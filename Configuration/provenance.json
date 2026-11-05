@@ -15166,7 +15166,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15185,20 +15185,20 @@
       ],
       "id": "yin-48000-offset-noise",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/48000-offset-noise.json",
-      "sha256": "57f1427c2a095b08c8482bb3d83825a3ad2d8aa72d9952dcf139fde7cabaf5b7",
+      "sha256": "3399c69549acaf17094c756f93138d2c96ce5a350d7ab0581d252acee13e87ab",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 0d16ca0be31953b034a0b93c7e7e32d0808d60843c3ea777933342cc0195efbf",
-      "referenceOutputIdentity": "sha256:57f1427c2a095b08c8482bb3d83825a3ad2d8aa72d9952dcf139fde7cabaf5b7"
+      "referenceOutputIdentity": "sha256:3399c69549acaf17094c756f93138d2c96ce5a350d7ab0581d252acee13e87ab"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15217,20 +15217,20 @@
       ],
       "id": "yin-48000-offset-noisy-tone",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/48000-offset-noisy-tone.json",
-      "sha256": "3b5ca78dd2cf4874e9ec5c3a0df1571eb55d9c15205e14aeafe2c03cd0c4578d",
+      "sha256": "42c66440d95ad4a73d08ecfa5cfef8b2edf82a3c71bfaea0aae249dfc244006c",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 0d16ca0be31953b034a0b93c7e7e32d0808d60843c3ea777933342cc0195efbf",
-      "referenceOutputIdentity": "sha256:3b5ca78dd2cf4874e9ec5c3a0df1571eb55d9c15205e14aeafe2c03cd0c4578d"
+      "referenceOutputIdentity": "sha256:42c66440d95ad4a73d08ecfa5cfef8b2edf82a3c71bfaea0aae249dfc244006c"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15249,20 +15249,20 @@
       ],
       "id": "yin-48000-offset-tone",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/48000-offset-tone.json",
-      "sha256": "0e4b0ce9593641224d842497d7d05869cf28006ec457c6a0898c18ba9e8d0294",
+      "sha256": "dfd9b5fa5c116d755c9208b92f128422032657ec02610bc7f7376a22b9f86e79",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 0d16ca0be31953b034a0b93c7e7e32d0808d60843c3ea777933342cc0195efbf",
-      "referenceOutputIdentity": "sha256:0e4b0ce9593641224d842497d7d05869cf28006ec457c6a0898c18ba9e8d0294"
+      "referenceOutputIdentity": "sha256:dfd9b5fa5c116d755c9208b92f128422032657ec02610bc7f7376a22b9f86e79"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15281,20 +15281,20 @@
       ],
       "id": "yin-below-silence-threshold",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/below-silence-threshold.json",
-      "sha256": "8646530fbd801b862ff2878d86386db493dfb9a45c3add7ce7d077b4d6f6dc08",
+      "sha256": "c7535f6d85c0f1cc54e1d187718b3b04dfa254ae583543f637be58bdcaaedebc",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:8646530fbd801b862ff2878d86386db493dfb9a45c3add7ce7d077b4d6f6dc08"
+      "referenceOutputIdentity": "sha256:c7535f6d85c0f1cc54e1d187718b3b04dfa254ae583543f637be58bdcaaedebc"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15313,20 +15313,20 @@
       ],
       "id": "yin-boundary-49.9",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/boundary-49.9.json",
-      "sha256": "540a948cedf7f6a7901cd46982b6208993217c255c1848ef9a5fcd0ec1f3b914",
+      "sha256": "f0785f9da660b38ed78225a3436d6839ff8f71aff251f97746d60d4815d1be4b",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:540a948cedf7f6a7901cd46982b6208993217c255c1848ef9a5fcd0ec1f3b914"
+      "referenceOutputIdentity": "sha256:f0785f9da660b38ed78225a3436d6839ff8f71aff251f97746d60d4815d1be4b"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15345,20 +15345,20 @@
       ],
       "id": "yin-boundary-50.1",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/boundary-50.1.json",
-      "sha256": "fd7e6f3a4a0e78236d9958d99c66d1731d7c5f10d40219d034c096a2762134cd",
+      "sha256": "dadcd05b4f90285197029d0697e6fa4626530ccf15b3383a87ebc7e86a84f8f6",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:fd7e6f3a4a0e78236d9958d99c66d1731d7c5f10d40219d034c096a2762134cd"
+      "referenceOutputIdentity": "sha256:dadcd05b4f90285197029d0697e6fa4626530ccf15b3383a87ebc7e86a84f8f6"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15377,20 +15377,20 @@
       ],
       "id": "yin-boundary-50",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/boundary-50.json",
-      "sha256": "3cb4577e2603d00b0b8e32bf55e9007b53bc3e417e636ed560f32fb6de571613",
+      "sha256": "d255a7d9cd6b6f015759e9c3be8d1be0fa18853792c72f60b0120a83d2e65ad2",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:3cb4577e2603d00b0b8e32bf55e9007b53bc3e417e636ed560f32fb6de571613"
+      "referenceOutputIdentity": "sha256:d255a7d9cd6b6f015759e9c3be8d1be0fa18853792c72f60b0120a83d2e65ad2"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15409,20 +15409,20 @@
       ],
       "id": "yin-boundary-699.9",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/boundary-699.9.json",
-      "sha256": "81b6389b331302913c2ca85531fe0e30fa2744c9f2138c750c42a52e6ac3818d",
+      "sha256": "cfed354681c6fa6561dd33af7fb13770cbcea50087c186cb678d2c5e2b814c60",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:81b6389b331302913c2ca85531fe0e30fa2744c9f2138c750c42a52e6ac3818d"
+      "referenceOutputIdentity": "sha256:cfed354681c6fa6561dd33af7fb13770cbcea50087c186cb678d2c5e2b814c60"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15441,20 +15441,20 @@
       ],
       "id": "yin-boundary-700.1",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/boundary-700.1.json",
-      "sha256": "4f250930bd9ef9ad154103122f5c5949717110186ac026396013b4ffde9b01f0",
+      "sha256": "07936af76ad8da51ed4b29f9f50d793dca19bc16c4d57d28e6c93f808f9e7261",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:4f250930bd9ef9ad154103122f5c5949717110186ac026396013b4ffde9b01f0"
+      "referenceOutputIdentity": "sha256:07936af76ad8da51ed4b29f9f50d793dca19bc16c4d57d28e6c93f808f9e7261"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15473,20 +15473,20 @@
       ],
       "id": "yin-boundary-700",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/boundary-700.json",
-      "sha256": "651b39c7cd94adc32a5aaee2703388df72db34b43e9b89bb40d758ea7d980eda",
+      "sha256": "2ebaa5b4511db4b445e4e004c899854c6eefd45b78fa857b2043c251b319f3cf",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:651b39c7cd94adc32a5aaee2703388df72db34b43e9b89bb40d758ea7d980eda"
+      "referenceOutputIdentity": "sha256:2ebaa5b4511db4b445e4e004c899854c6eefd45b78fa857b2043c251b319f3cf"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15505,20 +15505,20 @@
       ],
       "id": "yin-breathy",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/breathy.json",
-      "sha256": "f55bb2230c7c96fdb80212c915ded34537fb318c25ab9a9bbd88a45125ca2de5",
+      "sha256": "3025dc7710d0dfa95adf9d0a777e00df1ee8b353c7343da272def7213cee7f22",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:f55bb2230c7c96fdb80212c915ded34537fb318c25ab9a9bbd88a45125ca2de5"
+      "referenceOutputIdentity": "sha256:3025dc7710d0dfa95adf9d0a777e00df1ee8b353c7343da272def7213cee7f22"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15537,20 +15537,20 @@
       ],
       "id": "yin-chirp",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/chirp.json",
-      "sha256": "0e622c7d7430dcecf71f2f7edce1e5988744286272fe814478063e41288ba1fc",
+      "sha256": "fd85ca6fff7c6853f910df5c93d08f0e1d0d94052d2ea76b26d945e71fb7a433",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:0e622c7d7430dcecf71f2f7edce1e5988744286272fe814478063e41288ba1fc"
+      "referenceOutputIdentity": "sha256:fd85ca6fff7c6853f910df5c93d08f0e1d0d94052d2ea76b26d945e71fb7a433"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15569,20 +15569,20 @@
       ],
       "id": "yin-constant",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/constant.json",
-      "sha256": "64eb3b2376c01096dbe2bd175d9919594187c83039a2ccc56c3af8343495d91f",
+      "sha256": "8957affd2e29e7a5ea0b700f2899aefad7481bfd3c0478993a3e17309061ec77",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:64eb3b2376c01096dbe2bd175d9919594187c83039a2ccc56c3af8343495d91f"
+      "referenceOutputIdentity": "sha256:8957affd2e29e7a5ea0b700f2899aefad7481bfd3c0478993a3e17309061ec77"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15601,20 +15601,20 @@
       ],
       "id": "yin-dominant-second",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/dominant-second.json",
-      "sha256": "040099622ee2506f7c741fdfab639afa0b956da7ca68843b7952df9afa478bce",
+      "sha256": "39e72c4b125c4f7d5e5cecc776b25d2e10eea0af0b878e110654987df48cad2a",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:040099622ee2506f7c741fdfab639afa0b956da7ca68843b7952df9afa478bce"
+      "referenceOutputIdentity": "sha256:39e72c4b125c4f7d5e5cecc776b25d2e10eea0af0b878e110654987df48cad2a"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15633,20 +15633,20 @@
       ],
       "id": "yin-float32-breathy",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/float32-breathy.json",
-      "sha256": "21585d0bc1ef1361bc60d941c47b6680940733121d9222fce903c16f8cac1d85",
+      "sha256": "762c0fc023ac6fad6f04fe465964f7ffb43f342ab8caccd604e5c04c37525ec6",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 8001ff48bac7cb3bb4397ae743b85b3fb4efde90eeb448fd43e4838d01c55f92",
-      "referenceOutputIdentity": "sha256:21585d0bc1ef1361bc60d941c47b6680940733121d9222fce903c16f8cac1d85"
+      "referenceOutputIdentity": "sha256:762c0fc023ac6fad6f04fe465964f7ffb43f342ab8caccd604e5c04c37525ec6"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15665,20 +15665,20 @@
       ],
       "id": "yin-float32-offset-noise",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/float32-offset-noise.json",
-      "sha256": "0669b8042b77c6a766c15d591739a3651a89e0bcdc759507cf1862d2b0b0ec89",
+      "sha256": "e7c495b01ee3d54911ac609e98d83b0152c8b2ec2cb45e3d6ee61ef9f147ce9e",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 8001ff48bac7cb3bb4397ae743b85b3fb4efde90eeb448fd43e4838d01c55f92",
-      "referenceOutputIdentity": "sha256:0669b8042b77c6a766c15d591739a3651a89e0bcdc759507cf1862d2b0b0ec89"
+      "referenceOutputIdentity": "sha256:e7c495b01ee3d54911ac609e98d83b0152c8b2ec2cb45e3d6ee61ef9f147ce9e"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15697,20 +15697,20 @@
       ],
       "id": "yin-float32-offset-noisy-tone",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/float32-offset-noisy-tone.json",
-      "sha256": "d4499953fdd32c1f40d38067d717fae4c7d9d64c78056a36bdb4451da06f6b7d",
+      "sha256": "dfe4eb2745177cc93de3d1769e6bc35b7519481bf220f4a953fd0d55fcc28978",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 8001ff48bac7cb3bb4397ae743b85b3fb4efde90eeb448fd43e4838d01c55f92",
-      "referenceOutputIdentity": "sha256:d4499953fdd32c1f40d38067d717fae4c7d9d64c78056a36bdb4451da06f6b7d"
+      "referenceOutputIdentity": "sha256:dfe4eb2745177cc93de3d1769e6bc35b7519481bf220f4a953fd0d55fcc28978"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15729,20 +15729,52 @@
       ],
       "id": "yin-float32-offset-tone",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/float32-offset-tone.json",
-      "sha256": "5bbc3f0db1b36f99a5535537a7189c4c14f9ad991bd24c3dfeb783f1721c6d3b",
+      "sha256": "cfb140d3f8751ff725e5df3eb178d5da00d50519a998a25af6c622a91b1922c4",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 8001ff48bac7cb3bb4397ae743b85b3fb4efde90eeb448fd43e4838d01c55f92",
-      "referenceOutputIdentity": "sha256:5bbc3f0db1b36f99a5535537a7189c4c14f9ad991bd24c3dfeb783f1721c6d3b"
+      "referenceOutputIdentity": "sha256:cfb140d3f8751ff725e5df3eb178d5da00d50519a998a25af6c622a91b1922c4"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim"
+      ],
+      "id": "yin-float32-quantized-global-tie",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/float32-quantized-global-tie.json",
+      "sha256": "ad2bc59c23c5fa3e915823cbc6baf856a8be899fd7a261f48f4fecf9f2d77940",
+      "generator": {
+        "path": "Tools/YIN/reference.py",
+        "version": "yin-reference-v1",
+        "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
+      },
+      "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 2321077f459f71723ab5f1137928a7309d89bc868954694a122e6e1d416e850a",
+      "referenceOutputIdentity": "sha256:ad2bc59c23c5fa3e915823cbc6baf856a8be899fd7a261f48f4fecf9f2d77940"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15761,20 +15793,20 @@
       ],
       "id": "yin-float32-tone",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/float32-tone.json",
-      "sha256": "8659f0f8d96770ece99f033f093d86f2e5cd5a36d11c4e4407e15356ecc4a085",
+      "sha256": "05a03342835c73cdee0c984295747bc5451f84c54dd2446397534312923e91ae",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 8001ff48bac7cb3bb4397ae743b85b3fb4efde90eeb448fd43e4838d01c55f92",
-      "referenceOutputIdentity": "sha256:8659f0f8d96770ece99f033f093d86f2e5cd5a36d11c4e4407e15356ecc4a085"
+      "referenceOutputIdentity": "sha256:05a03342835c73cdee0c984295747bc5451f84c54dd2446397534312923e91ae"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15793,20 +15825,20 @@
       ],
       "id": "yin-fricative",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/fricative.json",
-      "sha256": "2cacb4a1c49d0c71127cbbf04e2bf44209b56d7b1881fa9c329bcca5a6451c0c",
+      "sha256": "61b68c0c4acabce4270c3ce38cef07a6edcdef241e1c44407469cc6274de39ad",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:2cacb4a1c49d0c71127cbbf04e2bf44209b56d7b1881fa9c329bcca5a6451c0c"
+      "referenceOutputIdentity": "sha256:61b68c0c4acabce4270c3ce38cef07a6edcdef241e1c44407469cc6274de39ad"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15825,20 +15857,20 @@
       ],
       "id": "yin-grid-16000-0.005-25",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-16000-0.005-25.json",
-      "sha256": "8c85ffc261f650a8fa076e8ca002a8a86ecd3b62da411a426288313b8f3e82b7",
+      "sha256": "ba0e090b3500dcf1580e2a342797b3eb4f390937a6626e142d5e3d383f23b72c",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 bea44271a0c18880f95159d1341cc31023fc47dd6500384fd158acf06c08809f",
-      "referenceOutputIdentity": "sha256:8c85ffc261f650a8fa076e8ca002a8a86ecd3b62da411a426288313b8f3e82b7"
+      "referenceOutputIdentity": "sha256:ba0e090b3500dcf1580e2a342797b3eb4f390937a6626e142d5e3d383f23b72c"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15857,20 +15889,20 @@
       ],
       "id": "yin-grid-16000-0.005-50",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-16000-0.005-50.json",
-      "sha256": "a785c8523d295f163c87ebdb63bf43afec8dbdd4ab5d0514feabe990aaa3f318",
+      "sha256": "9ff0dec9b75d4d23b7cf2e39eed228d350f08c854d0a34ae070a07bc5c09a027",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 35b8d10256b2cc55781e2e89911b6b7b1e00be38aa32aad58342eda738c913ce",
-      "referenceOutputIdentity": "sha256:a785c8523d295f163c87ebdb63bf43afec8dbdd4ab5d0514feabe990aaa3f318"
+      "referenceOutputIdentity": "sha256:9ff0dec9b75d4d23b7cf2e39eed228d350f08c854d0a34ae070a07bc5c09a027"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15889,20 +15921,20 @@
       ],
       "id": "yin-grid-16000-0.01-25",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-16000-0.01-25.json",
-      "sha256": "930021a36937dcbfa952c767f57c6b7f6944d3ca9061b3a2df37926bf2848091",
+      "sha256": "ead9d412cad0aa98f31ca72c90c0fa992aed3a8a80325b41ecbb806691c543dc",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 5a4818e19ee1c97ce5c264be6361652f65000fb1b80160d9821bfc1f442faeb4",
-      "referenceOutputIdentity": "sha256:930021a36937dcbfa952c767f57c6b7f6944d3ca9061b3a2df37926bf2848091"
+      "referenceOutputIdentity": "sha256:ead9d412cad0aa98f31ca72c90c0fa992aed3a8a80325b41ecbb806691c543dc"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15921,20 +15953,20 @@
       ],
       "id": "yin-grid-16000-0.01-50",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-16000-0.01-50.json",
-      "sha256": "c18e1c24397bd5c73cbd4d6ed1a8662eacf608aab487ddc5af79dae9c19eaa1b",
+      "sha256": "0b7bcd40bf4f4a838de553d7f65fcf2590cb494e8c708cd03cf46be8d6c8e018",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:c18e1c24397bd5c73cbd4d6ed1a8662eacf608aab487ddc5af79dae9c19eaa1b"
+      "referenceOutputIdentity": "sha256:0b7bcd40bf4f4a838de553d7f65fcf2590cb494e8c708cd03cf46be8d6c8e018"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15953,20 +15985,20 @@
       ],
       "id": "yin-grid-44100-0.005-25",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-44100-0.005-25.json",
-      "sha256": "e6842b6a8463f05eb792d8fb1fc151e5a7e57c19e62f5417a447c4661bc4db79",
+      "sha256": "1de2d4ed8f7e9b36b6bc5fb88698ecacce0fa507dd347a45bc96d32572df21c3",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 ce067e87b7d5957faa9fcbbd37f657f56841c338e275df3e3c9203c4a6c65f02",
-      "referenceOutputIdentity": "sha256:e6842b6a8463f05eb792d8fb1fc151e5a7e57c19e62f5417a447c4661bc4db79"
+      "referenceOutputIdentity": "sha256:1de2d4ed8f7e9b36b6bc5fb88698ecacce0fa507dd347a45bc96d32572df21c3"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -15985,20 +16017,20 @@
       ],
       "id": "yin-grid-44100-0.005-50",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-44100-0.005-50.json",
-      "sha256": "4a8c755fde07676073a82451eb48b3130019b83c9e870150fb330e53c1a970a7",
+      "sha256": "de80851e5a911d6d692668b25a5f1493eb61ff0ee5b352d52e61b8f5a17dfa10",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 76d767d41e5314727ffda069448d9331af354807e0b2d2900e60d32b50dccfc2",
-      "referenceOutputIdentity": "sha256:4a8c755fde07676073a82451eb48b3130019b83c9e870150fb330e53c1a970a7"
+      "referenceOutputIdentity": "sha256:de80851e5a911d6d692668b25a5f1493eb61ff0ee5b352d52e61b8f5a17dfa10"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16017,20 +16049,20 @@
       ],
       "id": "yin-grid-44100-0.01-25",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-44100-0.01-25.json",
-      "sha256": "324bfd2c813609ca27f927af76eb27641f665e668a54dded72111263056f1c6c",
+      "sha256": "4297e052475cf5a3e165d42c9ca4a1a868e032137b7d0de27927e865bf3220ef",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 34ba2066b04da5b4cdc7c7ec957bb99a3b2606ea8dedbf10d3eee01b2c78cf14",
-      "referenceOutputIdentity": "sha256:324bfd2c813609ca27f927af76eb27641f665e668a54dded72111263056f1c6c"
+      "referenceOutputIdentity": "sha256:4297e052475cf5a3e165d42c9ca4a1a868e032137b7d0de27927e865bf3220ef"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16049,20 +16081,20 @@
       ],
       "id": "yin-grid-44100-0.01-50",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-44100-0.01-50.json",
-      "sha256": "0e1de206f20aa6e3b57ef832f1240a54f6deaa71368ef442ae55e5011433a724",
+      "sha256": "f15ef44b51f10ed77983cfc4895edfd2a200eabb78cdfad85ed37f0eef5e8d68",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 7a373d4e1919956441cf0b9e0c9615b41626a538a365037bcd226640611befa9",
-      "referenceOutputIdentity": "sha256:0e1de206f20aa6e3b57ef832f1240a54f6deaa71368ef442ae55e5011433a724"
+      "referenceOutputIdentity": "sha256:f15ef44b51f10ed77983cfc4895edfd2a200eabb78cdfad85ed37f0eef5e8d68"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16081,20 +16113,20 @@
       ],
       "id": "yin-grid-48000-0.005-25",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-48000-0.005-25.json",
-      "sha256": "7d2458246d73502a377829354a7c3e44ba238879d70aed9dd66d32c563d011be",
+      "sha256": "1a7f7aa3fa10b47beea142217c85a0b219119f91c79f59c08f7899068cab2df0",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 2ed7145cee9405bf1487e949f8c5ebeb2e0ba9d2bfd1eb9814ae6ab2235da5d0",
-      "referenceOutputIdentity": "sha256:7d2458246d73502a377829354a7c3e44ba238879d70aed9dd66d32c563d011be"
+      "referenceOutputIdentity": "sha256:1a7f7aa3fa10b47beea142217c85a0b219119f91c79f59c08f7899068cab2df0"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16113,20 +16145,20 @@
       ],
       "id": "yin-grid-48000-0.005-50",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-48000-0.005-50.json",
-      "sha256": "537b08cc496f05eb50b7405e04c30488aec9bf1252e2e078ba4a023e19b65d23",
+      "sha256": "1a03aba0b74d02604c94da58619257582c627b5a5ec04c98731c9644e5352236",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 415b6965129bfc23ad8a2e3b906cff93bb92468277435bd6bc58f9bcfb0fdfd1",
-      "referenceOutputIdentity": "sha256:537b08cc496f05eb50b7405e04c30488aec9bf1252e2e078ba4a023e19b65d23"
+      "referenceOutputIdentity": "sha256:1a03aba0b74d02604c94da58619257582c627b5a5ec04c98731c9644e5352236"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16145,20 +16177,20 @@
       ],
       "id": "yin-grid-48000-0.01-25",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-48000-0.01-25.json",
-      "sha256": "d7d87235f6a1f5fd65ede0de8fe2565206b64d03fdb7cb12d0b437f629e99af8",
+      "sha256": "f03dc0e238f7c0cfb83a6f1cefda80925e80a7c47e7fbc51abef5a6a8859024d",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a45f5481b0811eca2eba74b463d95b90d3c787c4705efba6443f87bf76008d6a",
-      "referenceOutputIdentity": "sha256:d7d87235f6a1f5fd65ede0de8fe2565206b64d03fdb7cb12d0b437f629e99af8"
+      "referenceOutputIdentity": "sha256:f03dc0e238f7c0cfb83a6f1cefda80925e80a7c47e7fbc51abef5a6a8859024d"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16177,20 +16209,20 @@
       ],
       "id": "yin-grid-48000-0.01-50",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/grid-48000-0.01-50.json",
-      "sha256": "32675ea6a97b04affff064c20ba8b475e07c862a205d8e5a126e533c8f941927",
+      "sha256": "3e518809931024ba9017970cb308dd5d89ba34e90be68d407f39a8349c1770b3",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 0d16ca0be31953b034a0b93c7e7e32d0808d60843c3ea777933342cc0195efbf",
-      "referenceOutputIdentity": "sha256:32675ea6a97b04affff064c20ba8b475e07c862a205d8e5a126e533c8f941927"
+      "referenceOutputIdentity": "sha256:3e518809931024ba9017970cb308dd5d89ba34e90be68d407f39a8349c1770b3"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16209,20 +16241,20 @@
       ],
       "id": "yin-harmonic",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/harmonic.json",
-      "sha256": "80772ab6369d0042779a7661c9b65d3139978e08e2a5fdc95431b8de6a7528a5",
+      "sha256": "470f53792e36545bb485e2d3141661364d80637a3f03a49fac91b4fa9fe18ca2",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:80772ab6369d0042779a7661c9b65d3139978e08e2a5fdc95431b8de6a7528a5"
+      "referenceOutputIdentity": "sha256:470f53792e36545bb485e2d3141661364d80637a3f03a49fac91b4fa9fe18ca2"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16241,20 +16273,20 @@
       ],
       "id": "yin-huge-signal",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/huge-signal.json",
-      "sha256": "c5cad97105ee8cb3221b4790465689bd7c07856e65321628ca17352787a68ede",
+      "sha256": "ba2b3729d96c66b50a1effd88864c9b8950813262346f971036d1effd2cdb751",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:c5cad97105ee8cb3221b4790465689bd7c07856e65321628ca17352787a68ede"
+      "referenceOutputIdentity": "sha256:ba2b3729d96c66b50a1effd88864c9b8950813262346f971036d1effd2cdb751"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16286,7 +16318,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16318,7 +16350,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16350,7 +16382,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16382,7 +16414,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16414,7 +16446,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16446,7 +16478,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16478,7 +16510,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16510,7 +16542,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16542,7 +16574,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16574,7 +16606,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16606,7 +16638,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16638,7 +16670,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16670,7 +16702,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16702,7 +16734,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16734,7 +16766,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16766,7 +16798,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16798,7 +16830,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16830,7 +16862,39 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim"
+      ],
+      "id": "yin-input-float32-quantized-global-tie",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/inputs/float32-quantized-global-tie.wav",
+      "sha256": "ab2c67614dced6ffc4fc3d7a58eee0b860a0e5fababbfc860d75b6282f90ac9a",
+      "generator": {
+        "path": "Tools/YIN/reference.py",
+        "version": "yin-reference-v1",
+        "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
+      },
+      "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 2321077f459f71723ab5f1137928a7309d89bc868954694a122e6e1d416e850a",
+      "referenceOutputIdentity": "sha256:ab2c67614dced6ffc4fc3d7a58eee0b860a0e5fababbfc860d75b6282f90ac9a"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16862,7 +16926,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16894,7 +16958,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16926,7 +16990,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16958,7 +17022,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -16990,7 +17054,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17022,7 +17086,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17054,7 +17118,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17086,7 +17150,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17118,7 +17182,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17150,7 +17214,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17182,7 +17246,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17214,7 +17278,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17246,7 +17310,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17278,7 +17342,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17310,7 +17374,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17342,7 +17406,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17374,7 +17438,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17406,7 +17470,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17438,7 +17502,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17470,7 +17534,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17502,7 +17566,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17534,7 +17598,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17566,7 +17630,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17598,7 +17662,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17630,7 +17694,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17662,7 +17726,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17694,7 +17758,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17726,7 +17790,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17758,7 +17822,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17790,7 +17854,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17822,7 +17886,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17854,7 +17918,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17886,7 +17950,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17918,7 +17982,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17950,7 +18014,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -17982,7 +18046,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18014,7 +18078,103 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim"
+      ],
+      "id": "yin-input-quantized-global-tie-minus",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/inputs/quantized-global-tie-minus.wav",
+      "sha256": "dd4cc81ffe46eb74d8906265eccd4c8b96564b6fd91fc86abc47afe00e1c9e42",
+      "generator": {
+        "path": "Tools/YIN/reference.py",
+        "version": "yin-reference-v1",
+        "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
+      },
+      "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 02c086bdd06b42734cbbdb9cd3b3482cbf8e600361d353c2ec756040674ef9d0",
+      "referenceOutputIdentity": "sha256:dd4cc81ffe46eb74d8906265eccd4c8b96564b6fd91fc86abc47afe00e1c9e42"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim"
+      ],
+      "id": "yin-input-quantized-global-tie-plus",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/inputs/quantized-global-tie-plus.wav",
+      "sha256": "fc0114d7ca02f09f5f42dbee413d497a5858215405f5d39c5a4ee21a7c8fb66a",
+      "generator": {
+        "path": "Tools/YIN/reference.py",
+        "version": "yin-reference-v1",
+        "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
+      },
+      "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 02c086bdd06b42734cbbdb9cd3b3482cbf8e600361d353c2ec756040674ef9d0",
+      "referenceOutputIdentity": "sha256:fc0114d7ca02f09f5f42dbee413d497a5858215405f5d39c5a4ee21a7c8fb66a"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim"
+      ],
+      "id": "yin-input-quantized-global-tie",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/inputs/quantized-global-tie.wav",
+      "sha256": "ab2c67614dced6ffc4fc3d7a58eee0b860a0e5fababbfc860d75b6282f90ac9a",
+      "generator": {
+        "path": "Tools/YIN/reference.py",
+        "version": "yin-reference-v1",
+        "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
+      },
+      "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 02c086bdd06b42734cbbdb9cd3b3482cbf8e600361d353c2ec756040674ef9d0",
+      "referenceOutputIdentity": "sha256:ab2c67614dced6ffc4fc3d7a58eee0b860a0e5fababbfc860d75b6282f90ac9a"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18046,7 +18206,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18078,7 +18238,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18110,7 +18270,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18142,7 +18302,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18174,7 +18334,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18206,7 +18366,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18238,7 +18398,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18270,7 +18430,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18302,7 +18462,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18334,7 +18494,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18366,7 +18526,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18398,7 +18558,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18430,7 +18590,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18462,7 +18622,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18494,7 +18654,7 @@
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18513,20 +18673,20 @@
       ],
       "id": "yin-insufficient-1",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/insufficient-1.json",
-      "sha256": "bba57b2acffbfe8f373bb5d1db3c51e17e8a0db1cdad6a3a5dd9be2d3a7f275f",
+      "sha256": "bc91f9c9e643b88a3286d1cfd40903442e9c9fd34af0fad65e68ab1382bde7c9",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:bba57b2acffbfe8f373bb5d1db3c51e17e8a0db1cdad6a3a5dd9be2d3a7f275f"
+      "referenceOutputIdentity": "sha256:bc91f9c9e643b88a3286d1cfd40903442e9c9fd34af0fad65e68ab1382bde7c9"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18545,20 +18705,20 @@
       ],
       "id": "yin-insufficient-640",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/insufficient-640.json",
-      "sha256": "af2d35464107fab3966408b4e78765490e01a31dfad01ff01ff69b562aa43f18",
+      "sha256": "be25b9a255c52acabb5d0e14c4efc3bdc61b43f2735e82a90a0d537154b0fca8",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:af2d35464107fab3966408b4e78765490e01a31dfad01ff01ff69b562aa43f18"
+      "referenceOutputIdentity": "sha256:be25b9a255c52acabb5d0e14c4efc3bdc61b43f2735e82a90a0d537154b0fca8"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18577,20 +18737,20 @@
       ],
       "id": "yin-irregular-pulses",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/irregular-pulses.json",
-      "sha256": "8c6da4a5fd625593414292bf999ce6f8bd3afb5f1aabde3c3693044db56c132e",
+      "sha256": "1f851afcf67d347ed04e1a838f2fb703910c49c126071f9a85598b595dec8ec4",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:8c6da4a5fd625593414292bf999ce6f8bd3afb5f1aabde3c3693044db56c132e"
+      "referenceOutputIdentity": "sha256:1f851afcf67d347ed04e1a838f2fb703910c49c126071f9a85598b595dec8ec4"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18609,20 +18769,20 @@
       ],
       "id": "yin-longer-integration",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/longer-integration.json",
-      "sha256": "29e6d619280333c1321ba70991b10c5c6f99c771db7c652e4c5354930bb5b030",
+      "sha256": "5ceab046485671ba5df3a30a977c2b21dded3ee2eba0ec57e98a3fe045af1dee",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a696ab4f5964837b85f8c491820427bc16d2e9e81fdf3798f42c2447bdc01525",
-      "referenceOutputIdentity": "sha256:29e6d619280333c1321ba70991b10c5c6f99c771db7c652e4c5354930bb5b030"
+      "referenceOutputIdentity": "sha256:5ceab046485671ba5df3a30a977c2b21dded3ee2eba0ec57e98a3fe045af1dee"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18641,20 +18801,20 @@
       ],
       "id": "yin-manifest",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/manifest.json",
-      "sha256": "41c4b2af7ca9312f2ea6dc2f93144eb4fe0d9bdb05520d548d1caf567b71fe8d",
+      "sha256": "1a55146753a64a4477f9a8f8dffbc6e3adb21a65e6fb162265d2a4549a9b7b4e",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity",
-      "referenceOutputIdentity": "sha256:41c4b2af7ca9312f2ea6dc2f93144eb4fe0d9bdb05520d548d1caf567b71fe8d"
+      "referenceOutputIdentity": "sha256:1a55146753a64a4477f9a8f8dffbc6e3adb21a65e6fb162265d2a4549a9b7b4e"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18673,20 +18833,20 @@
       ],
       "id": "yin-missing-fundamental",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/missing-fundamental.json",
-      "sha256": "9d19ac3de1a0713ed23eb4849e5d7f83d6968a116a7f431b5a062d0f87d0cda8",
+      "sha256": "a99da7d1e42397fe4c677b69c46889695542933d884a34b79cfdca9748899d75",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:9d19ac3de1a0713ed23eb4849e5d7f83d6968a116a7f431b5a062d0f87d0cda8"
+      "referenceOutputIdentity": "sha256:a99da7d1e42397fe4c677b69c46889695542933d884a34b79cfdca9748899d75"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18705,20 +18865,20 @@
       ],
       "id": "yin-near-dc",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/near-dc.json",
-      "sha256": "de4953112b3ee3a05d465421550702833747ec24b4b9ff0bbcdf5de3c41fca93",
+      "sha256": "f134be648e673ad15fc606714e7be555f05fff5a329038f64bbb2d702edebb4a",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:de4953112b3ee3a05d465421550702833747ec24b4b9ff0bbcdf5de3c41fca93"
+      "referenceOutputIdentity": "sha256:f134be648e673ad15fc606714e7be555f05fff5a329038f64bbb2d702edebb4a"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18737,20 +18897,20 @@
       ],
       "id": "yin-noise",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/noise.json",
-      "sha256": "c3ef3cf8d1244f040ebeb2541e5632f8ea65d6e38a8c16a5aa5078cb37445b2b",
+      "sha256": "74996feed1897ba1b0fe0458054f6a443e1eb83d81d970027cbbbbc7b8b7d21a",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:c3ef3cf8d1244f040ebeb2541e5632f8ea65d6e38a8c16a5aa5078cb37445b2b"
+      "referenceOutputIdentity": "sha256:74996feed1897ba1b0fe0458054f6a443e1eb83d81d970027cbbbbc7b8b7d21a"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18769,20 +18929,20 @@
       ],
       "id": "yin-octave-jump",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/octave-jump.json",
-      "sha256": "1808d3d10158481685301826cb209b94c44fb736de60c0d466d6c0f5e9067b8c",
+      "sha256": "9a783b956157324f31f5533f9bfaa1a04f4156a5517d34ba8b4a86f49dbac50e",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:1808d3d10158481685301826cb209b94c44fb736de60c0d466d6c0f5e9067b8c"
+      "referenceOutputIdentity": "sha256:9a783b956157324f31f5533f9bfaa1a04f4156a5517d34ba8b4a86f49dbac50e"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18801,20 +18961,20 @@
       ],
       "id": "yin-offset-near-threshold",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-near-threshold.json",
-      "sha256": "fcfa0ec9ff2b21b620aeab6b5e46f76bb8b52a9c8aa57057882e9b599b28077e",
+      "sha256": "518f74ddb80e243224a1f5de6d6cd1bcfef07f1a9339ac24b167a5e70260d1b2",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 0f7d4ded97379153a14a903340561010bca91ff1d19a796fdbead79419c5657b",
-      "referenceOutputIdentity": "sha256:fcfa0ec9ff2b21b620aeab6b5e46f76bb8b52a9c8aa57057882e9b599b28077e"
+      "referenceOutputIdentity": "sha256:518f74ddb80e243224a1f5de6d6cd1bcfef07f1a9339ac24b167a5e70260d1b2"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18833,20 +18993,20 @@
       ],
       "id": "yin-offset-noise-0.0001",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-noise-0.0001.json",
-      "sha256": "ea1614acc7e5e50b3f9269f163ed32afe4ad3df0a60ae67509f038aeecd68508",
+      "sha256": "208cdb23d72f934bd4955ae72bc5193fb8538f882ff6ac3f2f6419ff80ae360d",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:ea1614acc7e5e50b3f9269f163ed32afe4ad3df0a60ae67509f038aeecd68508"
+      "referenceOutputIdentity": "sha256:208cdb23d72f934bd4955ae72bc5193fb8538f882ff6ac3f2f6419ff80ae360d"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18865,20 +19025,20 @@
       ],
       "id": "yin-offset-noise-0.001",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-noise-0.001.json",
-      "sha256": "4e8432ad1ff1077a5f60afe4b20e50ec99edf0e1ad283f68ce75288811e74e7c",
+      "sha256": "532863c5975bd7c33d4bf55530b64c0de92b4f809417b5d94e8ee0f67a2d0fe9",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:4e8432ad1ff1077a5f60afe4b20e50ec99edf0e1ad283f68ce75288811e74e7c"
+      "referenceOutputIdentity": "sha256:532863c5975bd7c33d4bf55530b64c0de92b4f809417b5d94e8ee0f67a2d0fe9"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18897,20 +19057,20 @@
       ],
       "id": "yin-offset-noise-1e-05",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-noise-1e-05.json",
-      "sha256": "975c0ba46cf88a29e5f28eadf540e89a4bc462917b94e7f19208b026b0560c2d",
+      "sha256": "7ae5412c367eabbcb8f335a3acd98422e998f567923a587301031a8870736abd",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:975c0ba46cf88a29e5f28eadf540e89a4bc462917b94e7f19208b026b0560c2d"
+      "referenceOutputIdentity": "sha256:7ae5412c367eabbcb8f335a3acd98422e998f567923a587301031a8870736abd"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18929,20 +19089,20 @@
       ],
       "id": "yin-offset-noise-1e-06",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-noise-1e-06.json",
-      "sha256": "39bed20a58176b80f2eedd295a41080528544e7d3c8b6f9626eb1aabba5db1d9",
+      "sha256": "95478b85afe81dc975d6d1270dc3df7d03a5ad381a6369654fb27dd31f39c0fc",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:39bed20a58176b80f2eedd295a41080528544e7d3c8b6f9626eb1aabba5db1d9"
+      "referenceOutputIdentity": "sha256:95478b85afe81dc975d6d1270dc3df7d03a5ad381a6369654fb27dd31f39c0fc"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18961,20 +19121,20 @@
       ],
       "id": "yin-offset-noisy-tone-0.0001",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-noisy-tone-0.0001.json",
-      "sha256": "a1819465d55bc128071aff1abed1e7bac2b928c14d76be0cb5aa60b0b825c10e",
+      "sha256": "19fe63f9baaab0961992d8442a7a766bfb0bd6675c2b451246682af67407af3b",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:a1819465d55bc128071aff1abed1e7bac2b928c14d76be0cb5aa60b0b825c10e"
+      "referenceOutputIdentity": "sha256:19fe63f9baaab0961992d8442a7a766bfb0bd6675c2b451246682af67407af3b"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -18993,20 +19153,20 @@
       ],
       "id": "yin-offset-noisy-tone-0.001",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-noisy-tone-0.001.json",
-      "sha256": "14f0dd7896bb34775363e881f0ce0e6269d3226629523bde2a4b149e3b912f46",
+      "sha256": "0bbbeeb2a2e84a92c25137ecab48fd6d9e88970b9feb42ba5bac51f06d73c007",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:14f0dd7896bb34775363e881f0ce0e6269d3226629523bde2a4b149e3b912f46"
+      "referenceOutputIdentity": "sha256:0bbbeeb2a2e84a92c25137ecab48fd6d9e88970b9feb42ba5bac51f06d73c007"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19025,20 +19185,20 @@
       ],
       "id": "yin-offset-noisy-tone-1e-05",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-noisy-tone-1e-05.json",
-      "sha256": "ccc3dfa16c46e25bd854921beac59d47c52204cf583188a68cc03d4ffcd3a1b9",
+      "sha256": "0f97587518bf05cc35691be26efff108c3c9aabdc0ff73776d01bd321d6e1b6e",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:ccc3dfa16c46e25bd854921beac59d47c52204cf583188a68cc03d4ffcd3a1b9"
+      "referenceOutputIdentity": "sha256:0f97587518bf05cc35691be26efff108c3c9aabdc0ff73776d01bd321d6e1b6e"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19057,20 +19217,20 @@
       ],
       "id": "yin-offset-noisy-tone-1e-06",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-noisy-tone-1e-06.json",
-      "sha256": "b12e3f077e8aaf664d7fd3b15daf2b7e6f39eca25676c5b662b98138b89224a6",
+      "sha256": "c0ab56a220c61e9c3850a28b645ca7bad23d02d4bf63f64570651c61e59ceddb",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:b12e3f077e8aaf664d7fd3b15daf2b7e6f39eca25676c5b662b98138b89224a6"
+      "referenceOutputIdentity": "sha256:c0ab56a220c61e9c3850a28b645ca7bad23d02d4bf63f64570651c61e59ceddb"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19089,20 +19249,20 @@
       ],
       "id": "yin-offset-tone-0.0001",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-tone-0.0001.json",
-      "sha256": "fa646bbc4254c7ff3487ef87dca76537c2df62d6efc69f93e500168f068d6b76",
+      "sha256": "e63b15584c8d11236308d8560baec61ab0ab45bcb34505112b737e3d29c97406",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:fa646bbc4254c7ff3487ef87dca76537c2df62d6efc69f93e500168f068d6b76"
+      "referenceOutputIdentity": "sha256:e63b15584c8d11236308d8560baec61ab0ab45bcb34505112b737e3d29c97406"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19121,20 +19281,20 @@
       ],
       "id": "yin-offset-tone-0.001",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-tone-0.001.json",
-      "sha256": "ac88ccb84aafdf6d9252f9017000c2bd79c94e7193af4a487abcb5c569237d14",
+      "sha256": "80207afe09556f34a8c55c9a896fdf82bdcb17ba383f83fa3ae5ad970740d6d4",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:ac88ccb84aafdf6d9252f9017000c2bd79c94e7193af4a487abcb5c569237d14"
+      "referenceOutputIdentity": "sha256:80207afe09556f34a8c55c9a896fdf82bdcb17ba383f83fa3ae5ad970740d6d4"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19153,20 +19313,20 @@
       ],
       "id": "yin-offset-tone-1e-05",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-tone-1e-05.json",
-      "sha256": "04835260fdf8da6f6fc519f087cc6709fc436a8f2164dda754c3adde33675e44",
+      "sha256": "db04f338d159595fb5f3b4a9ab6e90338ef08b8f5560d13dadeac862ed64b4f5",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:04835260fdf8da6f6fc519f087cc6709fc436a8f2164dda754c3adde33675e44"
+      "referenceOutputIdentity": "sha256:db04f338d159595fb5f3b4a9ab6e90338ef08b8f5560d13dadeac862ed64b4f5"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19185,20 +19345,116 @@
       ],
       "id": "yin-offset-tone-1e-06",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/offset-tone-1e-06.json",
-      "sha256": "935d7f3c5141fd2847a05232dab30a5af6f5e079084cecbb887bfa573252f843",
+      "sha256": "ded400cb318fa624ecc2b81f8afd2aabc6f16b153129123556c114465ce89058",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:935d7f3c5141fd2847a05232dab30a5af6f5e079084cecbb887bfa573252f843"
+      "referenceOutputIdentity": "sha256:ded400cb318fa624ecc2b81f8afd2aabc6f16b153129123556c114465ce89058"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim"
+      ],
+      "id": "yin-quantized-global-tie-minus",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/quantized-global-tie-minus.json",
+      "sha256": "d92ec515e076662b58b66eada4a633163324d536a7ce00d2f6e251e485a38c5b",
+      "generator": {
+        "path": "Tools/YIN/reference.py",
+        "version": "yin-reference-v1",
+        "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
+      },
+      "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 02c086bdd06b42734cbbdb9cd3b3482cbf8e600361d353c2ec756040674ef9d0",
+      "referenceOutputIdentity": "sha256:d92ec515e076662b58b66eada4a633163324d536a7ce00d2f6e251e485a38c5b"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim"
+      ],
+      "id": "yin-quantized-global-tie-plus",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/quantized-global-tie-plus.json",
+      "sha256": "54ac0320a54520f260b1b16d143e43d5466eb18fa90a7ca54673b174ca259f3a",
+      "generator": {
+        "path": "Tools/YIN/reference.py",
+        "version": "yin-reference-v1",
+        "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
+      },
+      "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 02c086bdd06b42734cbbdb9cd3b3482cbf8e600361d353c2ec756040674ef9d0",
+      "referenceOutputIdentity": "sha256:54ac0320a54520f260b1b16d143e43d5466eb18fa90a7ca54673b174ca259f3a"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim"
+      ],
+      "id": "yin-quantized-global-tie",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/quantized-global-tie.json",
+      "sha256": "6f5532671eac229ae670acba89dc135d736e2878c0ed2a56bd19c085fdfde6cb",
+      "generator": {
+        "path": "Tools/YIN/reference.py",
+        "version": "yin-reference-v1",
+        "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
+      },
+      "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 02c086bdd06b42734cbbdb9cd3b3482cbf8e600361d353c2ec756040674ef9d0",
+      "referenceOutputIdentity": "sha256:6f5532671eac229ae670acba89dc135d736e2878c0ed2a56bd19c085fdfde6cb"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19217,20 +19473,20 @@
       ],
       "id": "yin-relaxed-threshold",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/relaxed-threshold.json",
-      "sha256": "1a512d8affa22feb571024bb00872a137297cebb6473ef4ee83a3a914666f226",
+      "sha256": "67c4de38905cdaa219c915f298100bbd9cab385d9a7a903f05112e007ead1f2a",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 28f1e8884fe071f7707f154b8dcb58c0e060756f8847de1f9381988e0d8d48ee",
-      "referenceOutputIdentity": "sha256:1a512d8affa22feb571024bb00872a137297cebb6473ef4ee83a3a914666f226"
+      "referenceOutputIdentity": "sha256:67c4de38905cdaa219c915f298100bbd9cab385d9a7a903f05112e007ead1f2a"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19249,20 +19505,20 @@
       ],
       "id": "yin-silence",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/silence.json",
-      "sha256": "d5d970916dd04bb6c663e79d5217200a2412fa3c158d46c1a757307b5c2d6efe",
+      "sha256": "5410c16af211db92daa1e8a2a7e465af94e70b36bb73c64ffe6727dffb6408ea",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:d5d970916dd04bb6c663e79d5217200a2412fa3c158d46c1a757307b5c2d6efe"
+      "referenceOutputIdentity": "sha256:5410c16af211db92daa1e8a2a7e465af94e70b36bb73c64ffe6727dffb6408ea"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19281,20 +19537,20 @@
       ],
       "id": "yin-snr--10",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/snr--10.json",
-      "sha256": "4fe504132095443169046142c4063b843460103fcdf1d62f185308d767c7778f",
+      "sha256": "2950be2753b07fa535abc3ff07ea7c826af774f9d59febccb6f66db54745b5a7",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:4fe504132095443169046142c4063b843460103fcdf1d62f185308d767c7778f"
+      "referenceOutputIdentity": "sha256:2950be2753b07fa535abc3ff07ea7c826af774f9d59febccb6f66db54745b5a7"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19313,20 +19569,20 @@
       ],
       "id": "yin-snr-0",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/snr-0.json",
-      "sha256": "3b4e0710e71b0c213899397c347444c2f053fa97610e21be2256be277792b040",
+      "sha256": "0280bb2c2a5a4defc1b85aeb71588ff7bf5dffc46a49ae5c54598dcc4edb48e7",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:3b4e0710e71b0c213899397c347444c2f053fa97610e21be2256be277792b040"
+      "referenceOutputIdentity": "sha256:0280bb2c2a5a4defc1b85aeb71588ff7bf5dffc46a49ae5c54598dcc4edb48e7"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19345,20 +19601,20 @@
       ],
       "id": "yin-snr-10",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/snr-10.json",
-      "sha256": "9382da638cab40b386e1a3b2ecc1e3d610dabe20a561695a76d457a027d66126",
+      "sha256": "ad632ec796a5d90a001b93764bea439fbcbc7b0d0207f0282b537b45180f1229",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:9382da638cab40b386e1a3b2ecc1e3d610dabe20a561695a76d457a027d66126"
+      "referenceOutputIdentity": "sha256:ad632ec796a5d90a001b93764bea439fbcbc7b0d0207f0282b537b45180f1229"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19377,14 +19633,14 @@
       ],
       "id": "yin-snr-20",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/snr-20.json",
-      "sha256": "bbcfee1e2e47999e4d162eca5234fa5a75ad283243b4351a7c8f9b57906bd9e1",
+      "sha256": "78b53d0b8a26869af79e00bed1e65f294de46d54c5da5bb90dc03fe3f8b14f35",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:bbcfee1e2e47999e4d162eca5234fa5a75ad283243b4351a7c8f9b57906bd9e1"
+      "referenceOutputIdentity": "sha256:78b53d0b8a26869af79e00bed1e65f294de46d54c5da5bb90dc03fe3f8b14f35"
     },
     {
       "source": {
@@ -19411,14 +19667,14 @@
       ],
       "id": "yin-speech-bl01-vowel-a",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/speech-bl01-vowel-a.json",
-      "sha256": "a659ca6411efbafae6f5881ccb44407a158a29dfca3f882fa28c1653c8f61b60",
+      "sha256": "c20b277eddc203cd9a0e2376791b8b630ffe9b0c9f707e0418448a4ceca03d85",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 7a373d4e1919956441cf0b9e0c9615b41626a538a365037bcd226640611befa9",
-      "referenceOutputIdentity": "sha256:a659ca6411efbafae6f5881ccb44407a158a29dfca3f882fa28c1653c8f61b60"
+      "referenceOutputIdentity": "sha256:c20b277eddc203cd9a0e2376791b8b630ffe9b0c9f707e0418448a4ceca03d85"
     },
     {
       "source": {
@@ -19445,14 +19701,14 @@
       ],
       "id": "yin-speech-bl02-consonant-rich",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/speech-bl02-consonant-rich.json",
-      "sha256": "1f3da5b3fcff5ea95d5f58b9cf6644f9b05c8d238ccc17c9642f5bcef9edf88b",
+      "sha256": "b8138b4ed45454d73b4e6c9cf5d8000e4b5fab7cf24d2c36c7aa57fe5ca5cdcf",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 7a373d4e1919956441cf0b9e0c9615b41626a538a365037bcd226640611befa9",
-      "referenceOutputIdentity": "sha256:1f3da5b3fcff5ea95d5f58b9cf6644f9b05c8d238ccc17c9642f5bcef9edf88b"
+      "referenceOutputIdentity": "sha256:b8138b4ed45454d73b4e6c9cf5d8000e4b5fab7cf24d2c36c7aa57fe5ca5cdcf"
     },
     {
       "source": {
@@ -19479,20 +19735,20 @@
       ],
       "id": "yin-speech-bl03-all-voiced",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/speech-bl03-all-voiced.json",
-      "sha256": "ab4f0b2e732d420d34e9789370b6311a05527d4938e4ae5c816c270c3e2548f7",
+      "sha256": "5af68244c35656fc0f895d1f929a8c51fcbf219e3a57aee8e990001d8f6592f6",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 7a373d4e1919956441cf0b9e0c9615b41626a538a365037bcd226640611befa9",
-      "referenceOutputIdentity": "sha256:ab4f0b2e732d420d34e9789370b6311a05527d4938e4ae5c816c270c3e2548f7"
+      "referenceOutputIdentity": "sha256:5af68244c35656fc0f895d1f929a8c51fcbf219e3a57aee8e990001d8f6592f6"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19511,20 +19767,20 @@
       ],
       "id": "yin-strict-threshold",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/strict-threshold.json",
-      "sha256": "d53b7e886fa12b5521fb8e00f385a870f1dda25149d40603b9aea9fce745978e",
+      "sha256": "061474f2e1b28722e9d139bdce0bcac882b597481031d723a7a4785b8331d829",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 703264012b8823ace79da9d213383facc35dd5695e48d11dcc4f8c54f67e5045",
-      "referenceOutputIdentity": "sha256:d53b7e886fa12b5521fb8e00f385a870f1dda25149d40603b9aea9fce745978e"
+      "referenceOutputIdentity": "sha256:061474f2e1b28722e9d139bdce0bcac882b597481031d723a7a4785b8331d829"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19543,20 +19799,20 @@
       ],
       "id": "yin-tiny-signal",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/tiny-signal.json",
-      "sha256": "3b53c99c56309addce46d5d8da2d031686b1742c7b16f8ed8b49c920f981bfa0",
+      "sha256": "e89cac7fe13414861875740608b0d8f56bb603375f2f9a3d4d05a327e00ed9fc",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a25cbf0703c19bfae861452bc9a3edf407d454471eca6119554d76293ac0494d",
-      "referenceOutputIdentity": "sha256:3b53c99c56309addce46d5d8da2d031686b1742c7b16f8ed8b49c920f981bfa0"
+      "referenceOutputIdentity": "sha256:e89cac7fe13414861875740608b0d8f56bb603375f2f9a3d4d05a327e00ed9fc"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19575,20 +19831,20 @@
       ],
       "id": "yin-tone-123.45",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/tone-123.45.json",
-      "sha256": "c913227557450fe58dedd6709ac43325f11581b403c813d8b5d10272dd17eed4",
+      "sha256": "2fd7a9791098a87bda4c330d3edcdbd3148eb4a613349e17ab27c0946c65a3c9",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:c913227557450fe58dedd6709ac43325f11581b403c813d8b5d10272dd17eed4"
+      "referenceOutputIdentity": "sha256:2fd7a9791098a87bda4c330d3edcdbd3148eb4a613349e17ab27c0946c65a3c9"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19607,20 +19863,20 @@
       ],
       "id": "yin-tone-440",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/tone-440.json",
-      "sha256": "706378c19ea79a0a3c0146709b42734443aae93f63e268fea73a84c559830a6b",
+      "sha256": "c3ad31ffe8783e64143fb9ee0b6205beafa85fb23a69a0303566542d8d74737a",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:706378c19ea79a0a3c0146709b42734443aae93f63e268fea73a84c559830a6b"
+      "referenceOutputIdentity": "sha256:c3ad31ffe8783e64143fb9ee0b6205beafa85fb23a69a0303566542d8d74737a"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19639,20 +19895,20 @@
       ],
       "id": "yin-tone-51",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/tone-51.json",
-      "sha256": "c9746e656e75a6b468d0512309f586de003862206e972759f7871f0b56a5573f",
+      "sha256": "245e28b5a2e6b7ed0a891f690b6e3400bd69ceb1d8244f09dbd1f4e0db4ac812",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:c9746e656e75a6b468d0512309f586de003862206e972759f7871f0b56a5573f"
+      "referenceOutputIdentity": "sha256:245e28b5a2e6b7ed0a891f690b6e3400bd69ceb1d8244f09dbd1f4e0db4ac812"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19671,20 +19927,20 @@
       ],
       "id": "yin-tone-650",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/tone-650.json",
-      "sha256": "f7bdd13d27fb41cc3a67d7bc1b53bfc5821d5eaae870b998bac599c16263c34a",
+      "sha256": "4bb4f467a48e75e2ea134729eb8103a7b45324e289cc082f5cf5e8415a740f5f",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:f7bdd13d27fb41cc3a67d7bc1b53bfc5821d5eaae870b998bac599c16263c34a"
+      "referenceOutputIdentity": "sha256:4bb4f467a48e75e2ea134729eb8103a7b45324e289cc082f5cf5e8415a740f5f"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19703,20 +19959,20 @@
       ],
       "id": "yin-tone-80",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/tone-80.json",
-      "sha256": "b49ab52bd23a2352da40a91021e801ddc398a9b51263dc64ac29d1d5ff485baa",
+      "sha256": "2941c7a7007f98ceadad9fd27d870b37ad1613edd71f0f5e3cf317cf0dcf665c",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:b49ab52bd23a2352da40a91021e801ddc398a9b51263dc64ac29d1d5ff485baa"
+      "referenceOutputIdentity": "sha256:2941c7a7007f98ceadad9fd27d870b37ad1613edd71f0f5e3cf317cf0dcf665c"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19735,20 +19991,20 @@
       ],
       "id": "yin-vibrato",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/vibrato.json",
-      "sha256": "c1a417d0e2b3e5c94e31ab4e2c642f658eb95c206c1cb9b890386236e2658ede",
+      "sha256": "bf7aafee958d9c9eb5063623376372b26a0d6c009c73e1e86d624a0a502fb909",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
-      "referenceOutputIdentity": "sha256:c1a417d0e2b3e5c94e31ab4e2c642f658eb95c206c1cb9b890386236e2658ede"
+      "referenceOutputIdentity": "sha256:bf7aafee958d9c9eb5063623376372b26a0d6c009c73e1e86d624a0a502fb909"
     },
     {
       "source": {
         "kind": "original-generated",
         "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
-        "versionOrHash": "yin-reference-v1 implementation SHA256 8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f"
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
       },
       "redistribution": {
         "license": "project",
@@ -19767,14 +20023,14 @@
       ],
       "id": "yin-wide-high",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/YIN/wide-high.json",
-      "sha256": "5e300d21e9f2822fa774605c5ef0b8a236dbf0b5c8be9d388514e7eb595ae857",
+      "sha256": "8bd58c6c66d250faa718086d80ae001a2b4f3cf358417e6fb9b3b93bc8861757",
       "generator": {
         "path": "Tools/YIN/reference.py",
         "version": "yin-reference-v1",
         "sha256": "3355679a4a74b7e2ec862fd402272c33c0e4b82ef869b11cf9b8c4a672324717"
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 5a4818e19ee1c97ce5c264be6361652f65000fb1b80160d9821bfc1f442faeb4",
-      "referenceOutputIdentity": "sha256:5e300d21e9f2822fa774605c5ef0b8a236dbf0b5c8be9d388514e7eb595ae857"
+      "referenceOutputIdentity": "sha256:8bd58c6c66d250faa718086d80ae001a2b4f3cf358417e6fb9b3b93bc8861757"
     }
   ],
   "optionalModels": []

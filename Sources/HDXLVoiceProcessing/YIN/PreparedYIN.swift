@@ -170,9 +170,10 @@ public final class PreparedYIN<Sample: BinaryFloatingPoint & Sendable> {
             computeDirect()
         }
         normalize()
-        if !constant, transform != nil, hasAmbiguousLocalDecision() {
+        if !constant, transform != nil, hasAmbiguousDecision() {
             // Close comparisons should not create backend-dependent plateau or
-            // threshold classifications. This bounded fallback is separately counted.
+            // threshold classifications, or change the global-minimum tie winner.
+            // This bounded fallback is separately counted.
             computeDirect()
             normalize()
             fallbackFrames &+= 1
@@ -269,7 +270,7 @@ public final class PreparedYIN<Sample: BinaryFloatingPoint & Sendable> {
             cmnd[lag] = sum.value == 0 ? 1 : Double(lag) * difference[lag] / sum.value
         }
     }
-    private func hasAmbiguousLocalDecision() -> Bool {
+    private func hasAmbiguousDecision() -> Bool {
         for k in configuration.firstCandidateLag...configuration.lastCandidateLag {
             if abs(cmnd[k] - cmnd[k - 1]) < 1e-8 || abs(cmnd[k] - cmnd[k + 1]) < 1e-8 {
                 return true
@@ -279,6 +280,25 @@ public final class PreparedYIN<Sample: BinaryFloatingPoint & Sendable> {
                 if abs(error - configuration.threshold) < 1e-8 { return true }
             }
         }
+        // The global fallback searches the integer range independently of local
+        // minima. Its two smallest values can be nonadjacent, and the winner may
+        // be a boundary that would otherwise not appear in the candidate list.
+        // Recompute before making that strict comparison; never turn a near tie
+        // into an exact tie by changing the selection rule or its tolerances.
+        var smallest = Double.infinity
+        var nextSmallest = Double.infinity
+        let first = Int(ceil(configuration.minimumPeriodSamples))
+        let last = Int(floor(configuration.maximumPeriodSamples))
+        for k in first...last {
+            let value = cmnd[k]
+            if value < smallest {
+                nextSmallest = smallest
+                smallest = value
+            } else if value < nextSmallest {
+                nextSmallest = value
+            }
+        }
+        if nextSmallest - smallest < 1e-8 { return true }
         return false
     }
     private func isLocalMinimum(_ k: Int) -> Bool {

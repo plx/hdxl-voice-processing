@@ -145,7 +145,7 @@ jobs:
           HDXL_YIN_REFERENCE_DIRECTORY="$PWD/.build/reference-evidence/yin" \
           HDXL_YIN_REFERENCE_REPORT="$PWD/.build/reference-evidence/yin-native.json" \
           swift test --filter yinIndependentScalarAndFFTReferences | tee .build/reference-evidence/yin-native.log
-          python3 -c 'import json; r=json.load(open(".build/reference-evidence/yin-native.json")); assert len(r)==146; assert sum(x["frameCount"] for x in r)==1326; assert all(x["trackedFrameCount"]==x["frameCount"]==x["streamedFrameCount"] for x in r); assert max(x[k] for x in r for k in ("maximumDifferenceBudgetFraction","maximumCMNDBudgetFraction","maximumPeriodBudgetFraction","maximumFrequencyBudgetFraction"))<=1'
+          python3 -c 'import json; r=json.load(open(".build/reference-evidence/yin-native.json")); assert len(r)==154; assert sum(x["frameCount"] for x in r)==1342; assert all(x["trackedFrameCount"]==x["frameCount"]==x["streamedFrameCount"] for x in r); assert max(x[k] for x in r for k in ("maximumDifferenceBudgetFraction","maximumCMNDBudgetFraction","maximumPeriodBudgetFraction","maximumFrequencyBudgetFraction"))<=1'
       - name: Retain reference evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

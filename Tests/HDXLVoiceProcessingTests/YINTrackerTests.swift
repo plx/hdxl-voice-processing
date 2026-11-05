@@ -167,3 +167,44 @@ private func yinTrackHand(
     }
     #expect(worker.executionStatistics.scalarFallbackFrameCount == 1)
 }
+
+@Test func yinNonadjacentGlobalTiesKeepTheSmallerLag() throws {
+    // Integer-valued differences give CMND[4] == CMND[7] == 7/8 exactly.
+    // Lag 4 is not a local minimum; losing the global tie removes a candidate.
+    // Perturbations on either side must retain the strict scalar ordering.
+    for (delta, expectedLags, expectedGlobal) in [
+        (0.0, [4, 7, 11, 14], 4),
+        (1e-6, [4, 7, 11, 14], 4),
+        (-1e-6, [7, 11, 14], 14),
+    ] {
+        var samples = [Double](repeating: 0, count: 81)
+        for i in [2, 5, 6, 8, 10, 12, 13] { samples[i] = 1 }
+        samples[2] += delta
+        for backend in YINDifferenceBackend.allCases {
+            let c = try YINConfiguration(
+                sampleRate: 4000, pitchFloorHz: 100, pitchCeilingHz: 1000,
+                integrationLength: 40, hopLength: 40, differenceBackend: backend)
+            let worker = try PreparedYIN<Double>(c)
+            let source = try SourceInterval(
+                epoch: StreamEpoch(streamID: UUID()), startSample: 0,
+                sampleCount: 81, sampleRate: 4000)
+            try samples.withUnsafeBufferPointer {
+                try worker.analyze(
+                    $0, timing: AnalysisTiming(source: source, includedSampleCount: 81)
+                ) { output in
+                    #expect(output.candidates.map(\.integerLag) == expectedLags)
+                    #expect(
+                        output.candidates.filter(\.isGlobalMinimum).map(\.integerLag)
+                            == [expectedGlobal])
+                    if delta == 0 {
+                        #expect(output.values(.cumulativeMeanNormalizedDifference)[4] == 0.875)
+                        #expect(output.values(.cumulativeMeanNormalizedDifference)[7] == 0.875)
+                    }
+                }
+            }
+            if delta == 0, backend == .fft {
+                #expect(worker.executionStatistics.scalarFallbackFrameCount == 1)
+            }
+        }
+    }
+}

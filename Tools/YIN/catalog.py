@@ -47,6 +47,16 @@ def cases():
         add(f'48000-{kind}', kind=kind, dc=.5, amplitude=1e-5, rate=48000)
     add('offset-near-threshold', kind='offset-noisy-tone', dc=.5, amplitude=1e-5,
         threshold=.025731912, hop=.005)
+    # Quantized nonadjacent global ties: the boundary candidate exists only
+    # because the smaller integer lag wins. Perturb both sides of the tie too.
+    for name, precision, perturbation in (
+            ('quantized-global-tie', 'float64', 0.),
+            ('float32-quantized-global-tie', 'float32', 0.),
+            ('quantized-global-tie-plus', 'float64', 1e-6),
+            ('quantized-global-tie-minus', 'float64', -1e-6)):
+        add(name, kind='quantized-global-tie', rate=4000, floor=100., ceiling=1000.,
+            integration=40, hop=.01, duration=81/4000, precision=precision,
+            perturbation=perturbation)
     add('tiny-signal', amplitude=1e-100, silence=0, group='clean-tone')
     add('huge-signal', amplitude=1e300, group='clean-tone')
     add('below-silence-threshold', amplitude=1e-9, group='no-pitch')
@@ -113,6 +123,9 @@ def source_samples(case):
             elif kind == 'noise': value = .3 * noise
             elif kind == 'silence': value = 0.
             elif kind == 'constant': value = .25
+            elif kind == 'quantized-global-tie':
+                value = float(i in (2, 5, 6, 8, 10, 12, 13))
+                if i == 2: value += source['perturbation']
             elif kind in ('offset-tone', 'offset-noise', 'offset-noisy-tone'):
                 variation = sine if kind == 'offset-tone' else noise if kind == 'offset-noise' else sine + .2 * noise
                 value = source['dc'] + source['amplitude'] * variation
@@ -132,7 +145,7 @@ def target_hz(case, start_sample, support):
     source, rate = case['source'], case['profile']['sampleRate']
     kind = source['kind']
     t = (start_sample + support / 2) / rate
-    if kind in ('licensed-speech', 'irregular-pulses', 'silence', 'constant', 'noise', 'fricative', 'offset-noise'):
+    if kind in ('licensed-speech', 'irregular-pulses', 'silence', 'constant', 'noise', 'fricative', 'offset-noise', 'quantized-global-tie'):
         return None
     if kind == 'chirp': return 120 + 120 * t / (source['sampleCount'] / rate)
     if kind == 'vibrato': return source['frequencyHz'] + 20 * math.sin(math.tau * 5 * t)

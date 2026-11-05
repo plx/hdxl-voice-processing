@@ -302,7 +302,7 @@ private func yinCompare<Sample: BinaryFloatingPoint & Sendable>(
     struct Manifest: Decodable { let cases: [String] }
     let manifest = try JSONDecoder().decode(
         Manifest.self, from: Data(contentsOf: directory.appending(path: "manifest.json")))
-    #expect(manifest.cases.count == 73)
+    #expect(manifest.cases.count == 77)
     var reports: [[String: Any]] = []
     for name in manifest.cases {
         let fixture = try JSONDecoder().decode(
@@ -317,7 +317,7 @@ private func yinCompare<Sample: BinaryFloatingPoint & Sendable>(
             }
         }
     }
-    #expect(reports.count == 146)
+    #expect(reports.count == 154)
     if let path = env["HDXL_YIN_REFERENCE_REPORT"] {
         try JSONSerialization.data(withJSONObject: reports, options: [.sortedKeys, .prettyPrinted])
             .write(to: URL(fileURLWithPath: path))

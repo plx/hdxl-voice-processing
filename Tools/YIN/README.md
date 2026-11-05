@@ -169,6 +169,14 @@ classification regression. All prior numerical values and inputs are unchanged;
 their generator identity changes to include the expanded catalog. The new cases
 use the same independently computed differences/CMND/candidates and fixed budgets.
 
+Local review cycle 2 expanded the catalog to **77 cases and 671 frames** (594
+complete, 77 partial). Four quantized inputs cover a nonadjacent global-minimum
+tie, its Float32 equivalent, and positive/negative perturbations. The global
+minimum can introduce a nonlocal boundary candidate, so its strict comparison
+must also trigger direct recomputation when FFT results are ambiguous. Near ties
+are not rounded into exact ties. All existing input bytes and numerical reference
+outputs remain unchanged, with the expanded generator identity recorded.
+
 ## Benchmark matrix and evidence gates
 
 `Benchmarks` remains an isolated development package. Its `YINBenchmarks` target
