@@ -130,10 +130,31 @@ else: raise AssertionError('Corrupt difference accepted')
         result = self.isolated(code)
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_offset_regressions_retain_threshold_and_unknown_pitch(self):
+        code = """
+cases={case['name']:case for case in catalog.cases()}
+for kind in ('offset-tone','offset-noise','offset-noisy-tone'):
+    for amplitude in (1e-3,1e-4,1e-5,1e-6):
+        case=cases[f'{kind}-{amplitude:g}']
+        assert case['source']['dc']==.5 and case['source']['amplitude']==amplitude
+    assert cases['float32-'+kind]['profile']['inputPrecision']=='float32'
+    assert cases['48000-'+kind]['profile']['sampleRate']==48000
+record,_=reference.evaluate(cases['offset-near-threshold'])
+first=record['frames'][0]
+assert first['status']=='uncertain'
+assert first['candidates'][first['selectedCandidateIndex']]['normalizedError'] > .025731912
+noise,_=reference.evaluate(cases['offset-noise-0.0001'])
+assert noise['rawMetrics']['knownTargetFullSupportCount']==0
+assert noise['rawMetrics']['noPitchFalseVoicedCount']==0
+assert noise['rawMetrics']['maximumFineAbsoluteCents'] is None
+"""
+        result = self.isolated(code)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_complete_independent_catalog(self):
         directory = os.environ.get('HDXL_YIN_REFERENCE_DIRECTORY',
             str(ROOT / 'Tests/HDXLVoiceProcessingTests/Fixtures/YIN'))
-        result = self.isolated(f"from pathlib import Path;assert verify.verify(Path({directory!r})) == 54")
+        result = self.isolated(f"from pathlib import Path;assert verify.verify(Path({directory!r})) == 73")
         self.assertEqual(result.returncode, 0, result.stderr)
 
 

@@ -10,12 +10,12 @@ this fixed-time steps 2–5 profile from the original paper's neighboring-time s
 
 ## Independent numerical and streaming comparisons
 
-The retained catalog has 54 cases, 430 complete frames and 54 explicit partial
+The initial catalog had 54 cases, 430 complete frames and 54 explicit partial
 tails. Its 106 artifacts comprise 51 original synthetic Float64 WAVs, 54 reference
 JSON files and a manifest. Three cases read existing licensed PVQD excerpts;
 their references inherit the source attribution and do not supply human pitch
 labels. Two cases explicitly round input to Float32 before Double computation.
-The complete provenance inventory contains 567 fixtures.
+At that point the complete provenance inventory contained 567 fixtures.
 
 The independent Python oracle uses `math.fsum` on explicit squared differences.
 Swift uses compensated scalar sums or FFT linear correlation with cancellation
@@ -43,7 +43,8 @@ Manifest SHA-256:
 Oracle implementation SHA-256:
 `ff8b4ff1d13de07c35f098b98352138d19d1ab73c4b92252935c10f174dd2265`.
 `reference-regeneration.yml` regenerates independently, checks the manifest,
-then requires 108 native comparisons with 968 raw, tracked and streamed frames.
+then requires the expanded 146 native comparisons with 1,326 raw, tracked and
+streamed frames described below.
 
 ## Applicability and denominators
 
@@ -126,3 +127,41 @@ Initial timing raw-distribution SHA-256:
 `04f607c71bdb48909e8ab0fcad9917dd55ff2560a21091e59574e1c73beeee31`.
 Initial allocation raw-distribution SHA-256:
 `8322df7a8e5c236e6c15b0a34ff5ac236caf6bd5a65cd6fa912fe7aac23cd148`.
+
+## First review: DC cancellation regression
+
+GitHub's first review of `fa8dd74` was clean. The local `codex review` cross-check
+found that the absolute FFT recomputation cutoff could retain small cancellation
+errors for a tiny signal on a large DC offset; CMND normalization amplified them.
+Independent regression fixtures reproduced 32 failed assertions on the old code,
+including candidate threshold status and the downstream tracker history. Fifteen
+FFT rows exceeded the original numerical budgets. The existing extremely small
+1e-12 near-DC case had directly recomputed every lag and did not expose this gap.
+
+The fix translates both FFT operands by the compensated reference-window mean,
+whose contribution cancels algebraically from every difference. Original samples
+remain available for direct recomputation; its bound now scales with the translated
+amplitude. This reuses prepared scratch and changes neither scalar equations,
+profile settings nor tolerances. It does not filter or alter the caller's PCM.
+
+Nineteen new independent cases cover tones, noise and noisy tones at AC amplitudes
+1e-3/1e-4/1e-5/1e-6 on DC 0.5, negative-offset Float32 variants, 48 kHz variants,
+and a threshold-boundary case. All old numerical outputs, input bytes, profiles
+and metrics were verified unchanged before promoting the expanded catalog.
+The current catalog has **73 cases / 663 frames**, comprising 590 complete frames
+and 73 partial tails, with 144 artifacts and 605 total provenance entries.
+
+All 13 YIN Swift tests pass after the fix. Each backend now compares 261,928
+difference cells and 21,745 candidates, plus all 663 raw/tracked/streamed frames.
+Maximum FFT budget fractions are difference 5.29658e-6, CMND 0.0308258, period
+2.96723e-5 and Hz 2.27374e-9. Every exact status/index/flag/support check passes.
+FFT recomputes 5,187 lags and takes one full scalar fallback in this expanded
+catalog. Both backends report six changed tracker selections. Eleven independent
+oracle tests pass, including explicit no-pitch denominators and the new uncertain
+threshold case. Initial performance results above predate this arithmetic fix;
+the implementing PR retains subsequent performance and integration evidence.
+
+Current manifest SHA-256:
+`41c4b2af7ca9312f2ea6dc2f93144eb4fe0d9bdb05520d548d1caf567b71fe8d`.
+Current oracle implementation SHA-256:
+`8c902297e2babc933f06cb1a26a2e2e5e22bf0e4a610f883d17afd127f36f05f`.

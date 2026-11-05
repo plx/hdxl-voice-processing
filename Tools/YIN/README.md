@@ -28,6 +28,13 @@ numerical-equivalence budgets, not voice-health thresholds or guarantees for
 ill-conditioned acoustic ground truth. The oracle uses `math.fsum` on explicit
 squared differences; optimized native linear correlation is a separate route.
 Very small FFT differences are recomputed directly to avoid cancellation.
+Before correlation, the FFT backend translates both operands by the compensated
+mean of the reference integration window. This translation cancels algebraically
+in every squared difference; it does not change the PCM, RMS, normalization peak
+or scalar definition. It avoids recovering a tiny AC difference by subtracting
+large DC energies. Original normalized samples remain available for direct
+recomputation, and the cancellation bound scales with the translated amplitude.
+The original numerical budgets apply to this optimization without relaxation.
 
 Known stationary pure tones with at least eight samples per period must have
 **10 cents maximum absolute error** and **at least 90% voiced coverage** of
@@ -154,6 +161,13 @@ licensed PVQD corpus; their numerical references are not human pitch labels.
 Original synthetic PCM is lossless Float64 WAV, including explicitly rounded
 Float32 input cases. `manifest.json` retains raw and tracked evaluation summaries;
 the global fixture inventory records every artifact and inherited attribution.
+
+Local review cycle 1 expanded this to **73 cases and 663 frames** (590 complete,
+73 partial), adding DC-offset tones, noise and noisy tones at intermediate AC/DC
+ratios, negative-offset Float32 inputs, 48 kHz variants and a near-threshold
+classification regression. All prior numerical values and inputs are unchanged;
+their generator identity changes to include the expanded catalog. The new cases
+use the same independently computed differences/CMND/candidates and fixed budgets.
 
 ## Benchmark matrix and evidence gates
 

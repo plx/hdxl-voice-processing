@@ -207,14 +207,30 @@ public final class PreparedYIN<Sample: BinaryFloatingPoint & Sendable> {
     }
     private func computeFFT(_ transform: PreparedFourierTransform<Double>) throws {
         let w = configuration.integrationLength
+        // Translate both convolution operands by the reference window's mean.
+        // Translation cancels algebraically in (x-c) - (y-c), preserving the
+        // YIN definition rather than adding a PCM conditioning step.
+        // It avoids subtracting large DC energy terms to recover tiny differences
+        // whose errors would otherwise be amplified by CMND normalization.
+        // Keep original normalized samples for direct recomputation/refinement.
+        var referenceSum = YINSum()
+        for i in 0..<w { referenceSum.add(samples[i]) }
+        let center = referenceSum.value / Double(w)
+        var centeredPeak = 0.0
         var sum = YINSum()
         prefixEnergy[0] = 0
         for i in samples.indices {
-            sum.add(samples[i] * samples[i])
+            let centered = samples[i] - center
+            // Reuse inverse-output scratch until the forward transform consumes it.
+            correlation[i] = centered
+            centeredPeak = max(centeredPeak, abs(centered))
+            sum.add(centered * centered)
             prefixEnergy[i + 1] = sum.value
         }
-        for i in 0..<w { reversed[i] = samples[w - 1 - i] }
-        try transform.forwardReal(UnsafeBufferPointer(samples), into: firstSpectrum)
+        for i in 0..<w { reversed[i] = correlation[w - 1 - i] }
+        try transform.forwardReal(
+            UnsafeBufferPointer(start: correlation.baseAddress, count: samples.count),
+            into: firstSpectrum)
         try transform.forwardReal(UnsafeBufferPointer(reversed), into: secondSpectrum)
         for i in firstSpectrum.indices {
             let a = firstSpectrum[i]
@@ -226,6 +242,7 @@ public final class PreparedYIN<Sample: BinaryFloatingPoint & Sendable> {
         try transform.inverseReal(UnsafeBufferPointer(firstSpectrum), into: correlation)
         let cancellationBound =
             128 * Double.ulpOfOne * Double(transform.configuration.length) * Double(w)
+            * centeredPeak * centeredPeak
         difference[0] = 0
         for lag in 1..<difference.count {
             let computed =

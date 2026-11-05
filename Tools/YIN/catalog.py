@@ -38,6 +38,15 @@ def cases():
     for kind in ('silence', 'constant'):
         add(kind, kind=kind, group='no-pitch')
     add('near-dc', dc=.5, amplitude=1e-12)
+    # Review regression: absolute FFT cancellation cutoffs alone can miss these
+    # intermediate AC/DC ratios, whose residual errors are amplified by CMND.
+    for kind in ('offset-tone', 'offset-noise', 'offset-noisy-tone'):
+        for amplitude in (1e-3, 1e-4, 1e-5, 1e-6):
+            add(f'{kind}-{amplitude:g}', kind=kind, dc=.5, amplitude=amplitude)
+        add(f'float32-{kind}', kind=kind, dc=-.5, amplitude=1e-4, precision='float32')
+        add(f'48000-{kind}', kind=kind, dc=.5, amplitude=1e-5, rate=48000)
+    add('offset-near-threshold', kind='offset-noisy-tone', dc=.5, amplitude=1e-5,
+        threshold=.025731912, hop=.005)
     add('tiny-signal', amplitude=1e-100, silence=0, group='clean-tone')
     add('huge-signal', amplitude=1e300, group='clean-tone')
     add('below-silence-threshold', amplitude=1e-9, group='no-pitch')
@@ -104,6 +113,9 @@ def source_samples(case):
             elif kind == 'noise': value = .3 * noise
             elif kind == 'silence': value = 0.
             elif kind == 'constant': value = .25
+            elif kind in ('offset-tone', 'offset-noise', 'offset-noisy-tone'):
+                variation = sine if kind == 'offset-tone' else noise if kind == 'offset-noise' else sine + .2 * noise
+                value = source['dc'] + source['amplitude'] * variation
             elif kind == 'irregular-pulses': value = .4 * math.fsum(math.exp(-((t - pulse) / .0004) ** 2) for pulse in pulse_times)
             else: raise ValueError('Unknown original signal')
             samples.append(value)
@@ -120,7 +132,7 @@ def target_hz(case, start_sample, support):
     source, rate = case['source'], case['profile']['sampleRate']
     kind = source['kind']
     t = (start_sample + support / 2) / rate
-    if kind in ('licensed-speech', 'irregular-pulses', 'silence', 'constant', 'noise', 'fricative'):
+    if kind in ('licensed-speech', 'irregular-pulses', 'silence', 'constant', 'noise', 'fricative', 'offset-noise'):
         return None
     if kind == 'chirp': return 120 + 120 * t / (source['sampleCount'] / rate)
     if kind == 'vibrato': return source['frequencyHz'] + 20 * math.sin(math.tau * 5 * t)

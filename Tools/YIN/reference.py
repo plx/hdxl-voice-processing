@@ -62,7 +62,7 @@ def metrics(case, rows, tracking=None):
                                   oracle.COMPARISON['octaveRelativeHz'] for factor in (.5, 2.))
         if not is_gross:
             fine.append(error)
-    no_pitch = case['source']['kind'] in ('silence', 'constant', 'fricative', 'noise')
+    no_pitch = case['source']['kind'] in ('silence', 'constant', 'fricative', 'noise', 'offset-noise')
     return {
         'potentialFrameCount': len(rows), 'fullSupportFrameCount': len(full),
         'partialFrameCount': len(rows) - len(full), 'availableFrameCount': available,

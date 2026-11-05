@@ -35,6 +35,9 @@ and hop between one sample and full support. These are storage/numerical limits,
 not a promise that every configuration meets a device's processing deadline.
 `.scalar` sums squared differences directly with compensated arithmetic; `.fft`
 uses linear correlation and directly recomputes cancellation-sensitive lags.
+Both FFT operands are translated by the same integration-window mean to avoid
+DC cancellation; that translation cancels in the difference statistic and does
+not change the reported PCM support, input RMS or peak normalization.
 Numerically ambiguous local/threshold decisions can fall back to the scalar frame.
 `estimatorStatistics` exposes recomputation and fallback counts.
 
