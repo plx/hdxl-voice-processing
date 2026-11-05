@@ -8,6 +8,10 @@ on:
     paths:
       - 'Tools/Reference/**'
       - 'Tools/Cepstrum/**'
+      - 'Tools/CPP/**'
+      - 'Sources/HDXLVoiceProcessing/CPP/**'
+      - 'Tests/HDXLVoiceProcessingTests/CPP*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/CPP/**'
       - 'Sources/HDXLVoiceProcessing/Cepstrum/**'
       - 'Tests/HDXLVoiceProcessingTests/Cepstrum*Tests.swift'
       - 'Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/**'
@@ -80,6 +84,21 @@ jobs:
           HDXL_CEPSTRUM_REFERENCE_REPORT="$PWD/.build/reference-evidence/cepstrum-native.json" \
           swift test --filter cepstrumExternalStageReferences | tee .build/reference-evidence/cepstrum-native.log
           python3 -c 'import json; rows=json.load(open(".build/reference-evidence/cepstrum-native.json")); assert len(rows)==2898'
+      - name: Regenerate and compare CPP peaks and background fits
+        run: |
+          set -o pipefail
+          python3 Tools/CPP/verify.py | tee .build/reference-evidence/cpp-committed.log
+          python3 Tools/CPP/reference.py --output .build/reference-evidence/cpp | tee .build/reference-evidence/cpp-generation.log
+          python3 Tools/CPP/verify.py --directory .build/reference-evidence/cpp | tee .build/reference-evidence/cpp-candidate.log
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/CPP/manifest.json .build/reference-evidence/cpp/manifest.json
+          HDXL_CPP_REFERENCE_DIRECTORY="$PWD/.build/reference-evidence/cpp" \
+          HDXL_CPP_REFERENCE_REPORT="$PWD/.build/reference-evidence/cpp-native.json" \
+          swift test --filter cppExternalReferences | tee .build/reference-evidence/cpp-native.log
+          python3 -c 'import json; r=json.load(open(".build/reference-evidence/cpp-native.json")); assert r["cases"]==216 and len(r["comparisons"])==1414 and r["knownReferenceExceptions"]==32'
+          HDXL_CPP_REFERENCE_DIRECTORY="$PWD/.build/reference-evidence/cpp" \
+          HDXL_CPP_PCM_REFERENCE_REPORT="$PWD/.build/reference-evidence/cpp-pcm-native.json" \
+          swift test --filter cppWholePCMExternalSpeechReferences | tee .build/reference-evidence/cpp-pcm-native.log
+          python3 -c 'import json; r=json.load(open(".build/reference-evidence/cpp-pcm-native.json")); assert len(r)==40 and max(x["maximumBudgetFraction"] for x in r)<=1'
       - name: Retain reference evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -89,6 +108,7 @@ jobs:
             .build/reference-evidence/*.json
             .build/reference-evidence/*.log
             .build/reference-evidence/cepstrum/*.json
+            .build/reference-evidence/cpp/*.json
             .build/reference-evidence/workloads/**/reference.json
             .build/reference-evidence/workloads/**/reference.raw.txt
             .build/reference-evidence/workloads/**/execution.json

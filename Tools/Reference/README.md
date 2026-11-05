@@ -59,6 +59,13 @@ settings. `voice.recipe` defines the other complete external recipe parameters;
 their native `AnalysisProfile`s and full conformance goldens belong to the respective
 algorithm issues. They are not presented as shipped Swift algorithms.
 
+The #35 executable audit further pins the exact Praat 7 `Robust` detail: its slope
+uses only the first n−1 pointwise slope medians, while intercept uses all n fit points.
+The external profile's existing `effectiveFit` identifier names the estimator family;
+it does not promise equality with complete mathematical Siegel regression. Native
+CPP calls this pinned variant `praat7002Robust` and provides complete Siegel separately.
+See [CPP](../../Documentation/CPP.md) and [decision #107](https://github.com/plx/hdxl-voice-processing/issues/107).
+
 The HNR routes are distinct AC and CC analyses, with 10 ms hop, 75 Hz floor,
 0.1 relative silence threshold, and 4.5 periods per window. Silent raw -200 dB
 sentinels become explicit undefined entries; an undefined mean is unavailable.
