@@ -93,8 +93,8 @@ def validate_matrix(matrix, shard=None):
         if layout['source'] != source or abs(layout['firstCenterSeconds']-.01) > 1e-12:
             raise ValueError('Incorrect original source timeline')
         # Scalar storage includes all interval buffers (24-byte stride), complex
-        # bins, compensated sums, counts and FFT scratch. No PCM/object/setup table claim.
-        workspace = (3*length + 73*bins + 13 + 2*frames)*8 + (fft//2+1)*16 + bins*40 + fft*16 + 4*(frames+1)*24
+        # bins, compensated sums, maximum-power caches, counts and FFT scratch. No PCM/object/setup table claim.
+        workspace = (3*length + 73*bins + 13 + 2*frames)*8 + (fft//2+1)*16 + bins*48 + fft*16 + 4*(frames+1)*24
         if row['preparedInputBytes'] != (count * (4 if precision == 'float32' else 8) if pcm else 0) or row['preparedScalarWorkspaceBytes'] != (workspace if spectral else 0):
             raise ValueError('Incorrect prepared scalar/input storage')
         for key, family in [('ltsfIdentity','praat-7.0.02-ltsf-supported-domain'), ('energyIdentity','absolute-rms-eligibility-confirmed-windows')]:

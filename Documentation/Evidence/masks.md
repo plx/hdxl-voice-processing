@@ -63,7 +63,7 @@ The 26-case matrix separates preparation/destruction, 600-second LTSF, energy an
 routing passes, dense interval resolution, canonical metadata export and repeated
 reset operations. Each input and plan is hashed; all 26 cases reproduce their output
 checksums/counts under a second chunk size. A 600-second 16 kHz LTSF run emits 59,999
-frames and owns 6,991,928 scalar/interval bytes, excluding opaque FFT setup and object
+frames and owns 6,995,000 scalar/interval bytes, excluding opaque FFT setup and object
 overhead. It retains neither the complete PCM nor the complete spectrogram.
 The routing plan has 30,000 observations, 5.96 seconds of missing acquisition and
 297.02 selected seconds. Dense resolution and JSON export allocate on the control
@@ -90,3 +90,21 @@ Initial timing raw-distribution SHA-256:
 Workloads and instrumentation are registered under
 [#25](https://github.com/plx/hdxl-voice-processing/issues/25#issuecomment-6653413515) and
 [#18](https://github.com/plx/hdxl-voice-processing/issues/18#issuecomment-6653413907).
+
+## Review correction
+
+The first local Codex review identified cancellation in rolling power sums after
+all loud values retire. A 0.5-second amplitude-one sine followed by more than a
+long window at amplitude 1e-100 could fail despite positive finite powers. A less
+extreme 1e-10 segment also exposed positive but inaccurate residues, so merely
+checking for a nonpositive sum would not fix the full problem.
+
+The implementation now rebuilds from retained history whenever the current maximum
+power expires without an equal/larger replacement, as well as at the periodic
+rebase. This adds one prepared Double maximum per frequency bin and keeps ordinary
+updates constant-size; a maximum-expiration rebuild visits the bounded long history.
+The regression independently recomputes each temporal window, with short averaging
+both enabled and disabled, checks every feature under the unchanged numerical
+budget, and repeats after reset with 64-sample delivery. The original short alternating
+test never expired every loud value within a 300 ms long window; the new quiet
+section deliberately lasts one second. Final performance runs include this correction.

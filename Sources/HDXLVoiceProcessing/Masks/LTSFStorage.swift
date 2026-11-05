@@ -1,7 +1,7 @@
 import Foundation
 
-/// Compensated signed updates preserve small positive powers when much larger
-/// values leave a rolling window. Periodic rebuilding bounds accumulated error.
+/// Compensated signed updates reduce rounding between fresh-history rebuilds.
+/// Compensation alone cannot recover arbitrarily small powers after cancellation.
 private struct MaskCompensatedSum {
     var sum = 0.0
     var correction = 0.0
@@ -29,6 +29,7 @@ final class LTSFStorage {
     private let powerSums: UnsafeMutableBufferPointer<MaskCompensatedSum>
     private let logSums: UnsafeMutableBufferPointer<MaskCompensatedSum>
     private let positiveCounts: UnsafeMutableBufferPointer<Int>
+    private let maximumPowers: UnsafeMutableBufferPointer<Double>
     let flatness: UnsafeMutableBufferPointer<Double>
     let intensity: UnsafeMutableBufferPointer<Double>
     let spectralIntervals: ActivityIntervalBuffer
@@ -46,6 +47,7 @@ final class LTSFStorage {
         let doubles =
             pcm.count + window.count + frame.count + spectra.count + rawIntensity.count
             + shortPowers.count + shortLogs.count + flatness.count + intensity.count
+            + maximumPowers.count
         return doubles * MemoryLayout<Double>.stride + bins.count
             * MemoryLayout<FourierBin<Double>>.stride
             + (powerSums.count + logSums.count) * MemoryLayout<MaskCompensatedSum>.stride
@@ -76,6 +78,7 @@ final class LTSFStorage {
         rawIntensity = doubles(g.spectralRingFrameCount)
         shortPowers = doubles(g.longFrameCount * g.frequencyBinCount)
         shortLogs = doubles(g.longFrameCount * g.frequencyBinCount)
+        maximumPowers = doubles(g.frequencyBinCount)
         powerSums = .allocate(capacity: g.frequencyBinCount)
         logSums = .allocate(capacity: g.frequencyBinCount)
         powerSums.initialize(repeating: MaskCompensatedSum())
@@ -113,6 +116,8 @@ final class LTSFStorage {
         powerSums.deallocate()
         logSums.deinitialize()
         logSums.deallocate()
+        maximumPowers.deinitialize()
+        maximumPowers.deallocate()
         positiveCounts.deinitialize()
         positiveCounts.deallocate()
     }
@@ -191,29 +196,41 @@ final class LTSFStorage {
                 power = spectra[(index % g.spectralRingFrameCount) * g.frequencyBinCount + band]
             }
             let offset = ringOffset + band
-            if !rebase, index >= g.longFrameCount, shortPowers[offset] > 0 {
+            // A stale compensation residue may be positive, zero, or negative
+            // after the largest power expires. Rebuild before that old scale can
+            // dominate the smaller retained history; checking only <=0 is too late.
+            // Equal/larger incoming powers retain a safe scale and need no rebuild.
+            let rebuild =
+                rebase
+                || (index >= g.longFrameCount
+                    && shortPowers[offset] >= maximumPowers[band]
+                    && power < maximumPowers[band])
+            if !rebuild, index >= g.longFrameCount, shortPowers[offset] > 0 {
                 powerSums[band].add(-shortPowers[offset])
                 logSums[band].add(-shortLogs[offset])
                 positiveCounts[band] -= 1
             }
             shortPowers[offset] = power
             shortLogs[offset] = power > 0 ? log10(power) : 0
-            if rebase {
+            if rebuild {
                 powerSums[band] = MaskCompensatedSum()
                 logSums[band] = MaskCompensatedSum()
                 positiveCounts[band] = 0
+                maximumPowers[band] = 0
                 for previous in max(0, index - g.longFrameCount + 1)...index {
                     let location = (previous % g.longFrameCount) * g.frequencyBinCount + band
                     if shortPowers[location] > 0 {
                         powerSums[band].add(shortPowers[location])
                         logSums[band].add(shortLogs[location])
                         positiveCounts[band] += 1
+                        maximumPowers[band] = max(maximumPowers[band], shortPowers[location])
                     }
                 }
             } else if power > 0 {
                 powerSums[band].add(power)
                 logSums[band].add(shortLogs[offset])
                 positiveCounts[band] += 1
+                maximumPowers[band] = max(maximumPowers[band], power)
             }
             let count = positiveCounts[band]
             if count > 0 {

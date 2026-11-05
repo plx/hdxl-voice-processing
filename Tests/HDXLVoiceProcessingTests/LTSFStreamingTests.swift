@@ -140,3 +140,73 @@ private func ltsfCapture(_ worker: PreparedLTSFDetector<Double>, _ samples: [Dou
     #expect(abs(peak - 4.225) < 1e-14)
     #expect([3.0, 3, 3].withUnsafeBufferPointer { interpolatedIntensityMaximum($0) } == 3)
 }
+
+@Test func ltsfRetiringLoudHistoryMatchesFreshWindowArithmeticAtTinyPositiveEnergy() throws {
+    let rate = 16000
+    let source = try SourceInterval(
+        epoch: StreamEpoch(streamID: UUID()), startSample: 37,
+        sampleCount: 32000, sampleRate: Double(rate))
+    for shortWindow in [0.001, 0.1] {
+        for quietAmplitude in [1e-10, 1e-100] {
+            let configuration = try LTSFConfiguration(
+                sampleRate: rate,
+                declaredInputBandwidthHz: 8000, shortWindowSeconds: shortWindow,
+                relativeIntensityThresholdDB: nil)
+            let worker = try PreparedLTSFDetector<Double>(
+                configuration: configuration, source: source)
+            // The quiet section is longer than both temporal windows. The former
+            // 100ms alternating test never expired every loud power in a 300ms window.
+            let pcm = (0..<32000).map { index in
+                let amplitude = (8000..<24000).contains(index) ? quietAmplitude : 1.0
+                return amplitude * sin(2 * .pi * 173 * Double(index) / Double(rate))
+            }
+            var spectra: [[Double]] = []
+            _ = try pcm.withUnsafeBufferPointer { samples in
+                try worker.append(samples, interval: source) { spectra.append(Array($0.powers)) }
+            }
+            var observed: [Double] = []
+            try worker.finish { observed = Array($0.flatness) }
+            let geometry = worker.layout.spectral
+            #expect(observed.count == 199 && spectra.count == observed.count)
+            var powers = spectra
+            if geometry.shortAveragingEnabled {
+                // Independent closed-form trapezoid weights for a ten-hop width;
+                // clipped sample-domain ends include constant half-cell caps.
+                for index in spectra.indices {
+                    let lower = max(0, index - 5)
+                    let upper = min(spectra.count - 1, index + 5)
+                    for band in geometry.firstFlatnessBin...geometry.lastFlatnessBin {
+                        var numerator = 0.0
+                        var denominator = 0.0
+                        for frame in lower...upper {
+                            let weight = frame == index - 5 || frame == index + 5 ? 0.5 : 1.0
+                            numerator += weight * spectra[frame][band]
+                            denominator += weight
+                        }
+                        powers[index][band] = numerator / denominator
+                    }
+                }
+            }
+            for index in observed.indices {
+                var expected = 0.0
+                for band in geometry.firstFlatnessBin...geometry.lastFlatnessBin {
+                    var sum = 0.0
+                    var logs = 0.0
+                    var count = 0
+                    for frame in max(0, index - geometry.longFrameCount + 1)...index {
+                        let value = powers[frame][band]
+                        if value > 0 {
+                            sum += value
+                            logs += log10(value)
+                            count += 1
+                        }
+                    }
+                    if count > 0 { expected += logs / Double(count) - log10(sum / Double(count)) }
+                }
+                #expect(abs(observed[index] - expected) <= 1e-8 + 1e-10 * abs(expected))
+            }
+            try worker.reset(source: source)
+            #expect(try ltsfCapture(worker, pcm, chunk: 64).flatness == observed)
+        }
+    }
+}
