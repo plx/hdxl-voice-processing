@@ -1,0 +1,60 @@
+name: YIN benchmarks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '53 11 * * 3'
+  pull_request:
+    paths:
+      - 'Sources/HDXLVoiceProcessing/YIN/**'
+      - 'Sources/HDXLVoiceProcessing/Framing/**'
+      - 'Sources/HDXLVoiceProcessing/Fourier/**'
+      - 'Sources/HDXLVoiceProcessing/Contracts/**'
+      - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
+      - 'Benchmarks/**'
+      - 'Tools/YIN/benchmark.py'
+      - 'Tools/Tests/test_yin_benchmark.py'
+      - 'Tools/benchmark.py'
+      - '.github/workflows/yin-benchmarks.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: yin-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    name: YIN / ${{ matrix.shard }} / Xcode 27.0
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [rate16000, rate44100, rate48000, float32, support, long-scalar, long-fft, export]
+    runs-on: xcode-27
+    timeout-minutes: 120
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Timing without allocator instrumentation
+        run: python3 Tools/YIN/benchmark.py timing --shard "${{ matrix.shard }}"
+      - name: Allocation diagnostics with positive controls
+        run: python3 Tools/YIN/benchmark.py allocation --shard "${{ matrix.shard }}"
+      - name: Retain host YIN evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: yin-benchmarks-${{ matrix.shard }}-${{ github.run_attempt }}
+          path: |
+            Benchmarks/.build/artifacts/yin-*/*.json
+            Benchmarks/.build/artifacts/yin-*/*.json.gz
+            Benchmarks/.build/artifacts/yin-*/*.log
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

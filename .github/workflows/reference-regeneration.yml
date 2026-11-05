@@ -10,6 +10,11 @@ on:
       - 'Tools/Cepstrum/**'
       - 'Tools/CPP/**'
       - 'Tools/CPPS/**'
+      - 'Tools/YIN/**'
+      - 'Tools/Tests/test_yin*'
+      - 'Sources/HDXLVoiceProcessing/YIN/**'
+      - 'Tests/HDXLVoiceProcessingTests/YIN*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/YIN/**'
       - 'Tools/Masks/**'
       - 'Sources/HDXLVoiceProcessing/Masks/**'
       - 'Tests/HDXLVoiceProcessingTests/LTSF*Tests.swift'
@@ -130,6 +135,17 @@ jobs:
           HDXL_CPPS_REFERENCE_REPORT="$PWD/.build/reference-evidence/cpps-native" \
           swift test -c release --filter 'cppsExternalIsolatedReferences|cppsWholePCMExternalReferences' | tee .build/reference-evidence/cpps-native.log
           python3 -c 'import json; i=json.load(open(".build/reference-evidence/cpps-native-isolated.json")); p=json.load(open(".build/reference-evidence/cpps-native-pcm.json")); assert len(i)==18 and len(p)==18; assert sum(x["frameCount"] for x in i)==222; g=[x for x in p if x["gatedWholeCPPSParity"]]; assert len(g)==17 and sum(x["frameCount"] for x in g)==12923; assert [x["name"] for x in p if not x["gatedWholeCPPSParity"]]==["speech-bl01-dropout"]; assert all(x["meetsFinalCPPSBudget"] for x in i+g); assert max(x["maximumPowerBudgetFraction"] for x in i)<=1'
+      - name: Regenerate and compare YIN candidates, tracking and streamed frames
+        run: |
+          set -o pipefail
+          python3 Tools/YIN/verify.py | tee .build/reference-evidence/yin-committed.log
+          python3 Tools/YIN/reference.py --output .build/reference-evidence/yin | tee .build/reference-evidence/yin-generation.log
+          python3 Tools/YIN/verify.py .build/reference-evidence/yin | tee .build/reference-evidence/yin-candidate.log
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/YIN/manifest.json .build/reference-evidence/yin/manifest.json
+          HDXL_YIN_REFERENCE_DIRECTORY="$PWD/.build/reference-evidence/yin" \
+          HDXL_YIN_REFERENCE_REPORT="$PWD/.build/reference-evidence/yin-native.json" \
+          swift test --filter yinIndependentScalarAndFFTReferences | tee .build/reference-evidence/yin-native.log
+          python3 -c 'import json; r=json.load(open(".build/reference-evidence/yin-native.json")); assert len(r)==154; assert sum(x["frameCount"] for x in r)==1342; assert all(x["trackedFrameCount"]==x["frameCount"]==x["streamedFrameCount"] for x in r); assert max(x[k] for x in r for k in ("maximumDifferenceBudgetFraction","maximumCMNDBudgetFraction","maximumPeriodBudgetFraction","maximumFrequencyBudgetFraction"))<=1'
       - name: Retain reference evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -138,6 +154,7 @@ jobs:
           path: |
             .build/reference-evidence/*.json
             .build/reference-evidence/*.log
+            .build/reference-evidence/yin/**
             .build/reference-evidence/masks/**
             .build/reference-evidence/cepstrum/*.json
             .build/reference-evidence/cpp/*.json
