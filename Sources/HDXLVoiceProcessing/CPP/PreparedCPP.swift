@@ -18,18 +18,25 @@ public final class PreparedCPP {
     private let scratch: UnsafeMutableBufferPointer<Double>
     private let medians: UnsafeMutableBufferPointer<Double>
     private let diagnostics: WorkerDiagnostics
+    private let diagnosticStage: DiagnosticStage
+    private let diagnosticProfileToken: UInt64
     private var busy = false
 
     public convenience init(_ profile: CPPProfile) throws {
         try self.init(profile, diagnostics: WorkerDiagnostics())
     }
-    package init(_ profile: CPPProfile, diagnostics: WorkerDiagnostics) throws {
+    package init(
+        _ profile: CPPProfile, diagnostics: WorkerDiagnostics,
+        diagnosticStage: DiagnosticStage = .cpp, diagnosticProfileToken: UInt64 = 35
+    ) throws {
         let layout = try CPPLayout(profile: profile)
         self.profile = profile
         self.identity = try profile.identity()
         self.sourceIdentity = try profile.sourceIdentity()
         self.layout = layout
         self.diagnostics = diagnostics
+        self.diagnosticStage = diagnosticStage
+        self.diagnosticProfileToken = diagnosticProfileToken
         func allocate(_ count: Int) -> UnsafeMutableBufferPointer<Double> {
             let result = UnsafeMutableBufferPointer<Double>.allocate(capacity: count)
             result.initialize(repeating: 0)
@@ -99,12 +106,12 @@ public final class PreparedCPP {
         busy = true
         defer { busy = false }
         var metadata = DiagnosticMetadata()
-        metadata.profileToken = 35
+        metadata.profileToken = diagnosticProfileToken
         metadata.frameSequence = context.frameIndex
         metadata.sampleCount = UInt32(power.count)
         metadata.validity = layout.unavailability == nil ? .available : .failed
         let observation = diagnostics.withFrame(metadata) {
-            diagnostics.withInterval(.cpp) { compute(power) }
+            diagnostics.withInterval(diagnosticStage) { compute(power) }
         }
         emitOutput(
             observation,

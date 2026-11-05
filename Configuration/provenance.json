@@ -13939,6 +13939,1215 @@
       },
       "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
       "referenceOutputIdentity": "sha256:7e9eb9e346224f1f87de9f91b8d97c6a239ce019767e721812eec7a0fdb5ab3e"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-affine-both",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/affine-both.json",
+      "sha256": "b864e73e47c0d0b1511feb60b20202281a59f510b60631a710efe3ccfbfb8d84",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:b864e73e47c0d0b1511feb60b20202281a59f510b60631a710efe3ccfbfb8d84"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"observedSilence\":false},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4\",\"parameters\":{\"kind\":\"replace-with-zero\",\"sampleCount\":8820,\"startSample\":22050}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112",
+        "Independent acquired source slice: startSample=30870, sampleCount=57330"
+      ],
+      "id": "cpps-dropout-acquired-after",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/dropout-acquired-after.json",
+      "sha256": "ba03a2f72c9ccbda4f303426d73e0d955b14944bc3c128e0745ed8664f5d8ed1",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:ba03a2f72c9ccbda4f303426d73e0d955b14944bc3c128e0745ed8664f5d8ed1"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"observedSilence\":false},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4\",\"parameters\":{\"kind\":\"replace-with-zero\",\"sampleCount\":8820,\"startSample\":22050}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112",
+        "Independent acquired source slice: startSample=0, sampleCount=22050"
+      ],
+      "id": "cpps-dropout-acquired-before",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/dropout-acquired-before.json",
+      "sha256": "cc637171cc3df7462cfa277adf437b3f82c44a24080ec0487b06d30fc1340cce",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:cc637171cc3df7462cfa277adf437b3f82c44a24080ec0487b06d30fc1340cce"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-manifest",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/manifest.json",
+      "sha256": "ff4afbbf0bdd1d24ee1de434947990a03f59fde58741ae7e928df2d00ab30577",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:ff4afbbf0bdd1d24ee1de434947990a03f59fde58741ae7e928df2d00ab30577"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/26",
+        "versionOrHash": "generator-v1-sha256:a479cc1c4a3a3ed9c7a51c50becc9b9da89561c0316f3387fe36b79f45e1e79d"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM and mathematical/reference outputs; no human voice or personal information"
+      },
+      "transformations": [
+        "Integer-arithmetic 200Hz saw or exact silence; division by 32768 is exact binary scaling",
+        "Original mono Float64 RIFF WAVE at 16kHz; no recordings, trim, noise, or external content",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-pcm-120ms",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/pcm-120ms.json",
+      "sha256": "3c76ecacf61aad3298866c3b615087940a2a935f793defdb6469221cae21a03e",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:3c76ecacf61aad3298866c3b615087940a2a935f793defdb6469221cae21a03e"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-q-1ms",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/q-1ms.json",
+      "sha256": "c7bccfd6081ed77bf3cc2db2b81226b796d476021a3274dac48260d7f34593e7",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:c7bccfd6081ed77bf3cc2db2b81226b796d476021a3274dac48260d7f34593e7"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-q-5ms",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/q-5ms.json",
+      "sha256": "c448ae845ba1a014fdb7a17a19c2bbb3a271a7d087e307550ae5eb792d03c83f",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:c448ae845ba1a014fdb7a17a19c2bbb3a271a7d087e307550ae5eb792d03c83f"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-q-above2",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/q-above2.json",
+      "sha256": "d90272531fc2a8bd30d46c5c462d525c427c44a5709226b8aa683928808ae8cc",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:d90272531fc2a8bd30d46c5c462d525c427c44a5709226b8aa683928808ae8cc"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-q-at2",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/q-at2.json",
+      "sha256": "9ecc283442989a2754d6e28137b7dfbd38dd18ef0be92269d308963cea28d83e",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:9ecc283442989a2754d6e28137b7dfbd38dd18ef0be92269d308963cea28d83e"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-q-below2",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/q-below2.json",
+      "sha256": "43d0b603a56153a7abba2473ac7b9eb8d71b779bcb94f9cafaa8d28e6337b92b",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:43d0b603a56153a7abba2473ac7b9eb8d71b779bcb94f9cafaa8d28e6337b92b"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-q-edge",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/q-edge.json",
+      "sha256": "603699b48c090af9796bd7b110cbcd2f34eaee9b778917a63cbdf237c817ffe1",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:603699b48c090af9796bd7b110cbcd2f34eaee9b778917a63cbdf237c817ffe1"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-singleton",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/singleton.json",
+      "sha256": "b788ef75a7a647d5ef8cf8f606c8df7e14cdcdb4a9b942941b543121f791bb13",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:b788ef75a7a647d5ef8cf8f606c8df7e14cdcdb4a9b942941b543121f791bb13"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-5ms-q-comparison",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-5ms-q-comparison.json",
+      "sha256": "559ae04bee357f6ccbbe71ec7c03036aa8bf9545b3fb74b7db68dd213ef3117b",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:559ae04bee357f6ccbbe71ec7c03036aa8bf9545b3fb74b7db68dd213ef3117b"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"da77cee1a9600f2de8e27bc4978abce5dcb19e199dad053f7bed0961b860d5d3\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":101430,\"startSample\":670320}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-bl01-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-bl01-consonant-rich.json",
+      "sha256": "d5548bf5ac0533518de062b5b755a155ce01691760765a4d8e36386fe52f3ed3",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:d5548bf5ac0533518de062b5b755a155ce01691760765a4d8e36386fe52f3ed3"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"observedSilence\":false},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4\",\"parameters\":{\"kind\":\"replace-with-zero\",\"sampleCount\":8820,\"startSample\":22050}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-bl01-dropout",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-bl01-dropout.json",
+      "sha256": "a0bb71b42a391505ed1d63f5ab2f9c99c0a9e0f5dfb82a2246a3e2c63972ea4d",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:a0bb71b42a391505ed1d63f5ab2f9c99c0a9e0f5dfb82a2246a3e2c63972ea4d"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"addedErrorSumSquaresLSB\":123428706736,\"finalState\":4221016940,\"generator\":\"xorshift32-13-17-5-modulo-inclusive/v1\",\"inputSumSquaresLSB\":1530241232091,\"measuredSNRDB\":10.933437212212},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"c68b7c874b7894f482147a16276e8a4b9ff0e693adfd16dd402ae011c8c06337\",\"parameters\":{\"amplitudeLSB\":2048,\"kind\":\"integer-noise\",\"seed\":2701}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-bl01-noisy",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-bl01-noisy.json",
+      "sha256": "23927eef81392fc90cc0ef318d24774c73a7bac3eddfe992b63c5c5595d91997",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:23927eef81392fc90cc0ef318d24774c73a7bac3eddfe992b63c5c5595d91997"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-bl01-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-bl01-vowel-a.json",
+      "sha256": "81889d0714c1de8a3121a7a53fc4a8976bca8290cace058321589ab4f3d5f2f7",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:81889d0714c1de8a3121a7a53fc4a8976bca8290cace058321589ab4f3d5f2f7"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":114660,\"startSample\":758520}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-bl02-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-bl02-consonant-rich.json",
+      "sha256": "41661c0b81bcfaf69c538da2c2ce8514decedb02ec9e7420488a87b9473b2f9c",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:41661c0b81bcfaf69c538da2c2ce8514decedb02ec9e7420488a87b9473b2f9c"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1234800}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-bl02-vowel-i",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-bl02-vowel-i.json",
+      "sha256": "d36146be12efaa6035d13a66c66a674a728b269d84aba460db609ae18445465a",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:d36146be12efaa6035d13a66c66a674a728b269d84aba460db609ae18445465a"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-bl03-all-voiced",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-bl03-all-voiced.json",
+      "sha256": "1f71561d842490de7009916b71a692987ab46cd12b5c7bf88ad61ca2b3131443",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:1f71561d842490de7009916b71a692987ab46cd12b5c7bf88ad61ca2b3131443"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"3430ba83ca6ac0268cdbc2a1cf58b6a3349f131787731d714f103f19f6c476f3\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1014300}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-bl03-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-bl03-vowel-a.json",
+      "sha256": "2c02d07e6ed41252c2e1876516a5b04c5110256a1d902b91fe25c69136e9aaad",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:2c02d07e6ed41252c2e1876516a5b04c5110256a1d902b91fe25c69136e9aaad"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-hop-0.005",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-hop-0.005.json",
+      "sha256": "9d74d86e1a981522d6e3607d83322a2134c128f5719e85aec88465344ed85fd7",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:9d74d86e1a981522d6e3607d83322a2134c128f5719e85aec88465344ed85fd7"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-hop-0.01",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-hop-0.01.json",
+      "sha256": "91d8d77c5d6f9dc2cbcb2e608c7b09ddc1a59f8214dee41e90bfcee4a2d696d2",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:91d8d77c5d6f9dc2cbcb2e608c7b09ddc1a59f8214dee41e90bfcee4a2d696d2"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-hop-0.03",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-hop-0.03.json",
+      "sha256": "c2b30e921ecdd03ff7795e573409ae354b83bdd428fb3e81733e9f05f57d6cf3",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:c2b30e921ecdd03ff7795e573409ae354b83bdd428fb3e81733e9f05f57d6cf3"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-pretrend",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-pretrend.json",
+      "sha256": "8054ab2c3539d5eecf8d79eb8856b2af93a44b53d2a3348e97fa1ee3cff85897",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:8054ab2c3539d5eecf8d79eb8856b2af93a44b53d2a3348e97fa1ee3cff85897"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-time-0.02",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-time-0.02.json",
+      "sha256": "08b5b7eaf20e3f04ccf2c90e7a1fe04b98b8bf6131bb2da595b79b558afb6956",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:08b5b7eaf20e3f04ccf2c90e7a1fe04b98b8bf6131bb2da595b79b558afb6956"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-speech-time-0.05",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/speech-time-0.05.json",
+      "sha256": "480728be050ee9b421777b107f598fefc0354ba5bbcc1b395a27a679804a209f",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:480728be050ee9b421777b107f598fefc0354ba5bbcc1b395a27a679804a209f"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-tilted-no-smooth",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/tilted-no-smooth.json",
+      "sha256": "d26359bba220ffc90abe424d7b7330bec0063dc605dc2428a0443ae760ec3755",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:d26359bba220ffc90abe424d7b7330bec0063dc605dc2428a0443ae760ec3755"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-tilted-pretrend-no-smooth",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/tilted-pretrend-no-smooth.json",
+      "sha256": "2d785cb74c9c5821ed0bd7035f1d0c2235073943a8df185a75f3aeb593aa1fcb",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:2d785cb74c9c5821ed0bd7035f1d0c2235073943a8df185a75f3aeb593aa1fcb"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-tilted-pretrend-smoothed",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/tilted-pretrend-smoothed.json",
+      "sha256": "2e5644cac307fdcb0766023d65cd4d81257f09994201dd35c282341f5d7e9457",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:2e5644cac307fdcb0766023d65cd4d81257f09994201dd35c282341f5d7e9457"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-tilted-smoothed",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/tilted-smoothed.json",
+      "sha256": "cbf05bb0f740feab7027f7c6d6b708ad4b0749e446c170d735051757611e5fb7",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:cbf05bb0f740feab7027f7c6d6b708ad4b0749e446c170d735051757611e5fb7"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-time-10ms",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/time-10ms.json",
+      "sha256": "b06b6a169287c397d99196a21288730e273b0035f910ad8a05c48917c4a5a7bc",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:b06b6a169287c397d99196a21288730e273b0035f910ad8a05c48917c4a5a7bc"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-time-above2",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/time-above2.json",
+      "sha256": "aab0ed3a3ca2d95edeb8d724fb092c8550ad8f98fe72d69c87ae4a0a7a3be25e",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:aab0ed3a3ca2d95edeb8d724fb092c8550ad8f98fe72d69c87ae4a0a7a3be25e"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-time-at2",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/time-at2.json",
+      "sha256": "686850e3a5c2d108fc7c2d9b682bace644a1050947bb423665f2ab5c58f20ce9",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:686850e3a5c2d108fc7c2d9b682bace644a1050947bb423665f2ab5c58f20ce9"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-time-below2",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/time-below2.json",
+      "sha256": "8f67d68994565294cfd48c64578916fab525400378082406fe9d6d7cfdc500ff",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:8f67d68994565294cfd48c64578916fab525400378082406fe9d6d7cfdc500ff"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-tolerance-high",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/tolerance-high.json",
+      "sha256": "e88a711b2708eee72bf0867f5480c8c4f37a432d02e158ab87ba028283db2efb",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:e88a711b2708eee72bf0867f5480c8c4f37a432d02e158ab87ba028283db2efb"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/37",
+        "versionOrHash": "cpps-reference-v1 implementation SHA256 7a148a68cdbe8afad21ddac4061341c447b2a6db9e7ddb0fec5eb113da73eb6b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original constructed power matrices or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 explicit CPPS, raw/prepared/smoothed power and per-frame fit queries; complete settings/seed/input/output identities retained; no native Swift golden values",
+        "Original independent triangle-basis integration and pretrend cross-check; no GPL implementation or binary copied into products",
+        "Declared dropout remains a characterized unmasked comparison, not a parity pass; acquired regions conditioned independently at original positions under decision #112"
+      ],
+      "id": "cpps-tolerance-low",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/tolerance-low.json",
+      "sha256": "cdbf4f3f77d0a28350bc91793957c654329c370375c5c35bfe9895ad1e6c01c5",
+      "generator": {
+        "path": "Tools/CPPS/reference.py",
+        "version": "cpps-reference-v1",
+        "sha256": "9154621ea879e2151059e14bc929dd57abd3b1e4d2e78279123be0bcfe3b1457"
+      },
+      "expectedProfile": "Praat 7.0.02 CPPS: explicit linear-power time/quefrency smoothing, optional clipped pretrend, pinned robust/autowindow CPP, per-frame and equal-frame interval aggregate; named diagnostic scope retained",
+      "referenceOutputIdentity": "sha256:cdbf4f3f77d0a28350bc91793957c654329c370375c5c35bfe9895ad1e6c01c5"
     }
   ],
   "optionalModels": []

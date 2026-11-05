@@ -22,7 +22,7 @@ distribution is gated by `python3 Tools/verify-provenance.py --for-publication`.
 | malloc-interposer 1.6.1 | Optional allocation diagnostic backend in the benchmark package only | Apache-2.0; retains upstream [SwiftNIO-derived machinery notice](https://github.com/ordo-one/malloc-interposer/blob/1.6.1/NOTICE) |
 | swift-argument-parser, swift-atomics, swift-numerics, swift-system | Transitive development benchmark dependencies | Apache-2.0 with Swift Runtime Library Exception; exact selected license files and hashes in the manifest |
 | hdrhistogram-swift, TextTable | Transitive development benchmark reporting dependencies | Apache-2.0 and MIT respectively; exact revisions and license hashes in the manifest |
-| Praat 7.0.02 | Pinned external development CLI in `Tools/Reference`, the `Tools/Framing` Gaussian oracle, `Tools/Cepstrum` stage references, `Tools/CPP` peak/fit references, and `Tools/Masks` speech-activity references; never vendored or linked into products | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
+| Praat 7.0.02 | Pinned external development CLI in `Tools/Reference`, the `Tools/Framing` Gaussian oracle, `Tools/Cepstrum` stage references, `Tools/CPP` peak/fit references, `Tools/CPPS` smoothing/aggregation references, and `Tools/Masks` speech-activity references; never vendored or linked into products | [Distributed application's GPL-3.0-or-later](https://praat.org/manual/License.html) and [component notices](https://praat.org/manual/Acknowledgments.html) |
 | IVoice | Design context only; no code, assets, or thresholds copied | Root `IVoice-Source/LICENSE`: MIT, copyright 2025 Iman Noferesti, in the [archive](https://tintin.cs.uiowa.edu/Pages/Software/IVoice/Documents/IVoice-Source.zip); bundled assets/tools have separate notices |
 | Brecht De Man, loudness.py | External K-filter coefficient reference in an ignored development cache; math-only compatibility shim, no NumPy/SciPy execution or runtime linkage; source not redistributed | [MIT, copyright 2018 Brecht De Man](https://github.com/BrechtDeMan/loudness.py/blob/dc0f83883d247cbeb106064784e32d8c38ce1573/LICENSE), pinned revision in the manifest |
 | Perceptual Voice Qualities Database (PVQD), version 3 | Three original recordings and explicitly modified excerpts in test resources only; not runtime resources | [CC BY 4.0 dataset](https://data.mendeley.com/datasets/9dz247gnyb/3); attribution and modification notice below |
@@ -71,6 +71,14 @@ intervals. These derivatives retain the same CC BY 4.0 attribution and public-us
 consent evidence. The provenance inventory preserves their original recording and
 excerpt transformations. Detector labels are not independently annotated phonation
 or health labels. Original synthetic mask inputs contain no human recording.
+
+The speech-derived files in `Tests/HDXLVoiceProcessingTests/Fixtures/CPPS/` add
+**modified** numerical representations: selected original/pretrend/smoothed power
+vectors, per-frame CPP/CPPS fits and interval means. They retain the same CC BY 4.0
+attribution and consent evidence. Acquired dropout-region slices retain original
+positions and the full transformation chain in the provenance inventory. Explicit
+unmasked dropout characterization is not represented as numerical parity success.
+Constructed CPPS power probes and catalog metadata contain no human recording.
 
 Public-use consent evidence is the dataset author's coauthored
 [methods, “Study Design and Participants”](https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/).

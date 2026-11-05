@@ -47,7 +47,9 @@ The [cepstral guide](Documentation/Cepstrum.md) defines the pinned power/log/tra
 Double arithmetic for both PCM precisions, whole-interval/preview profiles, finite-stage
 availability, borrowed data and bounded exports. The [CPP guide](Documentation/CPP.md)
 defines peak search, inspectable background fits, explicit reference versus mathematical
-robust estimators, and prepared PCM-pipeline consumption. CPPS remains in development.
+robust estimators, and prepared PCM-pipeline consumption. The [CPPS guide](Documentation/CPPS.md)
+defines the pinned smoothing recipe, whole-interval and preview PCM paths, selected-region
+statistics, bounded rolling windows, and explicit freshness/coverage.
 The [masking guide](Documentation/Masks.md) defines independent annotation, energy,
 and spectral-flatness sources, original-timeline coverage, separate-region routing,
 and inspectable exclusions without an implicit periodicity gate.

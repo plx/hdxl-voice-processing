@@ -153,7 +153,8 @@ struct CorpusPCM {
         let byteRate = Int(u32(format.lowerBound + 8))
         let alignment = Int(u16(format.lowerBound + 12))
         let bits = Int(u16(format.lowerBound + 14))
-        guard channels == 1, encoding == 1 && bits == 16 || encoding == 3 && bits == 32,
+        guard channels == 1,
+            encoding == 1 && bits == 16 || encoding == 3 && (bits == 32 || bits == 64),
             (4000...192000).contains(rate)
         else { throw CorpusInputError(.unsupportedRange) }
         guard alignment == bits / 8, byteRate == rate * alignment, payload.count % alignment == 0
@@ -164,10 +165,19 @@ struct CorpusPCM {
         var samples = [Double]()
         samples.reserveCapacity(count)
         for position in stride(from: payload.lowerBound, to: payload.upperBound, by: alignment) {
-            let value =
-                encoding == 1
-                ? Double(Int16(bitPattern: u16(position))) / 32768
-                : Double(Float(bitPattern: u32(position)))
+            let value: Double
+            if encoding == 1 {
+                value = Double(Int16(bitPattern: u16(position))) / 32768
+            } else if bits == 32 {
+                value = Double(Float(bitPattern: u32(position)))
+            } else {
+                value = data.withUnsafeBytes {
+                    Double(
+                        bitPattern: UInt64(
+                            littleEndian:
+                                $0.loadUnaligned(fromByteOffset: position, as: UInt64.self)))
+                }
+            }
             guard value.isFinite, abs(value) <= 1 else { throw CorpusInputError(.invalidInput) }
             samples.append(value)
         }

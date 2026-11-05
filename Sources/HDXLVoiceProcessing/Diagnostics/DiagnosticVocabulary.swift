@@ -21,7 +21,8 @@ package enum DiagnosticValidity: UInt8, Sendable {
 
 package enum DiagnosticStage: String, CaseIterable, Sendable {
     case initialize, reset, analysisFrame, captureHandoff, queueWait, dequeue, referenceValidation
-    case resample, preEmphasis, frameAssembly, fft, cepstrum, cpp, cppsSmoothing, cppsFitting
+    case resample, preEmphasis, frameAssembly, fft, cepstrum, cpp, cppsSmoothing, cppsFitting,
+        cppsAggregation
     case pitch, hnr, pulses, perturbation, resultPublication, levelEnergy, kWeighting
     case fixtureLoad, fixtureDecode
     case speechActivity, maskIntervals, energyEligibility, maskResolution, maskRouting
@@ -53,6 +54,7 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
         case .cpp: "CPP"
         case .cppsSmoothing: "CPPSSmoothing"
         case .cppsFitting: "CPPSFitting"
+        case .cppsAggregation: "CPPSAggregation"
         case .pitch: "Pitch"
         case .hnr: "HNR"
         case .pulses: "Pulses"
