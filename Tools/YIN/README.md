@@ -83,11 +83,20 @@ claim; annotated voice/device follow-ups remain #102 and #74.
   range. Add the discrete global minimum over ceil(a)...floor(b) if it is not
   already a local candidate. Ties choose the smaller lag. Candidates report
   integer and refined period, Hz, normalized error, local/global provenance,
-  exact range membership and threshold eligibility.
+  range membership and threshold eligibility. Preserve the unbounded interpolated
+  period separately. Within **2e-6 samples** of either continuous range boundary,
+  canonicalize the period to that boundary and flag the adjustment. This is the
+  already-frozen period-equivalence allowance, not a frequency acceptance margin.
+  Outside that numerical band, never clamp a period into the range. The FFT path
+  directly recomputes candidate-neighbor differences near this band before the
+  boundary decision. This amendment follows the independent oracle's exact-50-Hz
+  roundoff finding, before any native implementation; preliminary candidates
+  remain unpromoted evidence, not accepted goldens.
 - Select the smallest-lag **in-range local** candidate whose interpolated error
   is strictly below the configured threshold (default 0.1). Otherwise select
   the in-range candidate with the lowest error, ties by smaller lag, as an
-  **uncertain** fallback. Do not clamp F0 to a boundary. If interpolation moves
+  **uncertain** fallback. Apart from the explicit numerical canonicalization,
+  do not clamp F0 to a boundary. If interpolation moves
   every candidate outside the exact range, report unsupportedRange and preserve
   diagnostics. This explicitly includes exact-boundary interpolation bias.
 - A frame RMS at or below the configured unit-peak silence threshold (default
@@ -98,7 +107,8 @@ claim; annotated voice/device follow-ups remain #102 and #74.
 
 Frequency limits, integration and hop counts, threshold, silence threshold,
 input/arithmetic precision, difference backend, refinement/selection/support
-conventions and tail policy participate in the estimator's serialized identity.
+conventions, numerical boundary tolerance and tail policy participate in the
+estimator's serialized identity.
 No pitch result gates CPP/CPPS; callers retain their PCM and other measurements.
 
 ## Optional causal candidate continuity
