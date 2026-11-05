@@ -140,3 +140,17 @@ separate from construction and owned export. Retain hardware, toolchain,
 precision, support/hop, input duration, counters, allocation and timing
 distributions; amortized frame cost is not worst-case delivery latency.
 Register results under #25 and the bounded Pitch stage instrumentation under #18.
+
+```sh
+python3 Tools/YIN/reference.py --output .build/yin-candidates
+python3 Tools/YIN/verify.py .build/yin-candidates
+python3 Tools/YIN/verify.py
+python3 -m unittest discover -s Tools/Tests -p 'test_yin_reference.py'
+```
+
+The initial retained catalog has 54 cases and 484 frames (430 fully observed,
+54 explicit partial tails). Three cases use bounded excerpts of the already
+licensed PVQD corpus; their numerical references are not human pitch labels.
+Original synthetic PCM is lossless Float64 WAV, including explicitly rounded
+Float32 input cases. `manifest.json` retains raw and tracked evaluation summaries;
+the global fixture inventory records every artifact and inherited attribution.
