@@ -262,3 +262,85 @@ private func capturePreviewCepstrum<S: BinaryFloatingPoint & Sendable>(
     try worker.finish(emit: receive)
     #expect(rows == baseline.rows.count)
 }
+
+private func checkPositiveSourceWithNoAnalysisSamples<S: BinaryFloatingPoint & Sendable>(
+    _: S.Type, precision: AnalysisPrecision
+) throws {
+    let config = try CepstrogramConfiguration(
+        sourceSampleRate: 48_000, inputPrecision: precision, hopSeconds: 0.005,
+        declaredInputBandwidthHz: 24_000,
+        conditioningMethod: .streamingPreview(lobes: 16, cutoffFraction: 0.9))
+    let origin: Int64 = (1 << 54) + 11
+    for count in 0...6 {
+        let worker = try PreparedPreviewCepstrogram<S>(
+            configuration: config, epoch: cepstralEpoch, startSample: origin)
+        let source = try SourceInterval(
+            epoch: cepstralEpoch, startSample: origin, sampleCount: Int64(count), sampleRate: 48_000
+        )
+        let samples = [S](repeating: 0.25, count: count)
+        _ = try samples.withUnsafeBufferPointer {
+            try worker.process($0, interval: source) { _ in Issue.record("Short PCM emitted early")
+            }
+        }
+        var delivered = 0
+        let result = try worker.finish { output in
+            delivered += 1
+            #expect(output.unavailability == .insufficientData)
+            #expect(output.context.timing.source == source)
+            #expect(output.context.timing.includedSampleCount == Int64(count))
+            #expect(output.context.origin.startSample == origin)
+            #expect(output.context.frameIndex == 0 && output.context.firstAnalysisSampleIndex == 0)
+            #expect(output.context.suppliedAnalysisSampleCount == count * 10_000 / 48_000)
+            if count < 5 {
+                #expect(output.context.centerSecondsFromOrigin == source.durationSeconds / 2)
+                #expect(output.context.timing.effectiveDelaySeconds == source.durationSeconds / 2)
+                #expect(!output.context.usesBoundaryExtension)
+            }
+            for stage in CepstralStage.allCases {
+                #expect(output.stage(stage).values.isEmpty)
+                #expect(output.stage(stage).unavailability == .insufficientData)
+            }
+            #expect(throws: CepstrumError.reentrantCall) { try worker.finish { _ in } }
+        }
+        #expect(delivered == (count == 0 ? 0 : 1))
+        #expect(result.source == source && result.completeFrameCount == 0)
+        #expect(
+            result.emittedFrameCount == UInt64(delivered)
+                && result.unavailableFrameCount == UInt64(delivered))
+        #expect(try worker.finish { _ in Issue.record("Repeated short result") } == result)
+        try worker.reset(
+            for: SourceDiscontinuity(
+                previousEpoch: cepstralEpoch, nextEpoch: cepstralEpoch.successor(),
+                reason: .explicitReset))
+        let empty = try worker.finish { _ in Issue.record("Reset fabricated source support") }
+        #expect(empty.source.sampleCount == 0 && empty.emittedFrameCount == 0)
+    }
+}
+
+@Test func cepstralPositiveSourceBelowOneTargetSampleRemainsUnavailable() throws {
+    try checkPositiveSourceWithNoAnalysisSamples(Float.self, precision: .float32)
+    try checkPositiveSourceWithNoAnalysisSamples(Double.self, precision: .float64)
+}
+
+@Test func cepstralCancellationFromZeroTargetSampleResultIsTerminal() throws {
+    let config = try CepstrogramConfiguration(
+        sourceSampleRate: 48_000, declaredInputBandwidthHz: 24_000,
+        conditioningMethod: .streamingPreview(lobes: 16, cutoffFraction: 0.9))
+    let worker = try PreparedPreviewCepstrogram<Double>(configuration: config, epoch: cepstralEpoch)
+    let source = try SourceInterval(
+        epoch: cepstralEpoch, startSample: 0, sampleCount: 1, sampleRate: 48_000)
+    _ = try [0.25].withUnsafeBufferPointer { try worker.process($0, interval: source) { _ in } }
+    let result = try worker.finish { output in
+        worker.cancel()
+        #expect(worker.scalarWorkspaceBytes == 0)
+        #expect(
+            output.unavailability == .insufficientData && output.context.timing.source == source)
+        #expect(output.stage(.powerCepstrum).values.isEmpty)
+    }
+    #expect(result.isCancelled && result.source == source)
+    #expect(
+        result.emittedFrameCount == 1 && result.unavailableFrameCount == 1
+            && result.completeFrameCount == 0)
+    #expect(worker.receivedSampleCount == 1)
+    #expect(throws: CepstrumError.invalidState) { try worker.finish { _ in } }
+}

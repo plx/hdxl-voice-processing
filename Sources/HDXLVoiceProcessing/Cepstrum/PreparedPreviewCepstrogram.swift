@@ -177,7 +177,32 @@ public final class PreparedPreviewCepstrogram<Sample: BinaryFloatingPoint & Send
                 }
             }
             if let finalizationError { throw finalizationError }
-            if state != .cancelled {
+            if state != .cancelled && storage.conditioner.receivedSampleCount > 0
+                && storage.conditioner.emittedSampleCount == 0
+            {
+                // A positive source interval can floor to zero target samples. The
+                // empty framer cannot report it, so preserve its original support here.
+                let source = try SourceInterval(
+                    epoch: origin.epoch, startSample: origin.startSample,
+                    sampleCount: storage.conditioner.receivedSampleCount,
+                    sampleRate: origin.sampleRate)
+                let context = try CepstralFrameContext(
+                    origin: origin,
+                    timing: AnalysisTiming(
+                        source: source, includedSampleCount: source.sampleCount,
+                        effectiveDelaySeconds: source.durationSeconds / 2),
+                    frameIndex: 0, firstAnalysisSampleIndex: 0,
+                    suppliedAnalysisSampleCount: 0,
+                    centerSecondsFromOrigin: source.durationSeconds / 2)
+                try storage.kernel.analyze(
+                    UnsafeBufferPointer<Double>(start: nil, count: 0),
+                    context: context, profile: identity
+                ) { output in
+                    emitted += 1
+                    unavailable += 1
+                    emit(output)
+                }
+            } else if state != .cancelled {
                 try storage.framer.finish { buffer, support in
                     do {
                         try analyze(
