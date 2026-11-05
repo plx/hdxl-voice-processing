@@ -26,10 +26,34 @@ failure still leaves evidence from the other lanes. These are independent jobs:
 | --- | --- | --- |
 | `bash Tools/verify.sh` (`python3 Tools/ci.py debug`) | Format, provenance and gate tests, debug build and all tests, independent consumer, graph/link checks, network-denied consumer run | Native macOS correctness and consumer isolation |
 | `python3 Tools/ci.py release` | All tests compiled with optimization | Native macOS optimized correctness; future numerical tests join this suite automatically |
-| `python3 Tools/ci.py address` | All tests with Address Sanitizer | Native macOS instrumented memory accesses |
-| `python3 Tools/ci.py thread` | All tests with Thread Sanitizer | Native macOS exercised concurrency paths |
+| `python3 Tools/ci.py address` | Optimized Address Sanitizer capability control, then all tests in Release with Address Sanitizer | Native macOS instrumented memory accesses |
+| `python3 Tools/ci.py thread` | Optimized Thread Sanitizer capability control, then all tests in Release with Thread Sanitizer | Native macOS exercised concurrency paths |
 | `python3 Tools/ci.py ios-simulator` | All three products and independent core consumer, generic iOS Simulator destination, Debug | Compile/link only; no simulator execution or microphone capture claim |
 | `python3 Tools/ci.py ios-device` | All three products and independent core consumer, generic iOS destination, Debug, signing disabled | Device-target compile only; no installed app or physical execution claim |
+
+Address/thread lanes use `--configuration release --sanitize <mode>` so the full
+scientific corpus remains practical under instrumentation. Every test and numerical
+budget stays enabled. Ordinary debug and uninstrumented release lanes remain
+separate; optimized sanitizer success does not substitute for either. Environment
+artifacts record the actual configuration and sanitizer mode.
+
+Before each sanitizer suite, `Tools/sanitizer-capability.py` compiles an independent
+Swift control with `-O` and the same sanitizer. The address control deliberately
+reads freed storage; the thread control deliberately races two workers after a
+start barrier. These faults execute only in separate development subprocesses,
+never in runtime products or the ordinary test process. The expected diagnostic
+and configured nonzero exit code are mandatory: an unexpected success, unrelated
+crash, unsupported runtime, compilation failure or timeout fails the lane.
+
+Each compiler invocation is limited to 180 seconds and each fault process to
+30 seconds; timeout terminates its process group. Each subprocess has a 1 MiB output
+budget. Controls use fresh temporary binaries and record source/binary hashes,
+exact commands, compiler/environment metadata and fixed probe runtime options.
+The probe options do not propagate into the test process. Sanitizer/runtime
+injection environment overrides are rejected before the suite. Reports are
+`sanitizer-capability.json` and `sanitizer-capability.log` alongside the existing
+lane artifacts, with the same redaction and retention policy. They establish
+instrumentation availability, not exhaustive detection of every possible bug.
 
 Do not combine address and thread sanitizers in one build. They have separate
 scratch directories, as do release and extended runs. Sanitizers currently cover
