@@ -6,6 +6,8 @@ let package = Package(
     name: "VoiceBenchmarks",
     platforms: [.macOS("27.0")],
     products: [
+        .executable(name: "YINBenchmarks", targets: ["YINBenchmarks"]),
+        .executable(name: "YINWorkloadCheck", targets: ["YINWorkloadCheck"]),
         .executable(name: "CPPSBenchmarks", targets: ["CPPSBenchmarks"]),
         .executable(name: "CPPSWorkloadCheck", targets: ["CPPSWorkloadCheck"]),
         .executable(name: "MaskBenchmarks", targets: ["MaskBenchmarks"]),
@@ -41,6 +43,15 @@ let package = Package(
             ]),
     ],
     targets: [
+        .target(
+            name: "YINWorkload",
+            dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
+        .executableTarget(name: "YINWorkloadCheck", dependencies: ["YINWorkload"]),
+        .executableTarget(
+            name: "YINBenchmarks",
+            dependencies: ["YINWorkload", .product(name: "Benchmark", package: "benchmark")],
+            path: "Benchmarks/YINBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .target(
             name: "CPPSWorkload",
             dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
