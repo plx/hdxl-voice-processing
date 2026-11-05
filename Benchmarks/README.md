@@ -5,6 +5,11 @@ consumers do not resolve Benchmark, build its plugins, or link its allocators.
 The initial original gain/energy loop verifies the harness; it is not a production
 voice metric or a performance claim about algorithms not yet implemented.
 
+Algorithm-specific matrices now include [CPP](../Tools/CPP/README.md#host-performance-matrix):
+77 cases covering four fit methods and actual 1/60-second PCM-to-CPP pipelines.
+Its five explicit groups keep long robust-fit measurements bounded per CI job;
+each produces independently validated timing and allocation artifacts.
+
 ## One-command modes
 
 From the repository root with Xcode 27.0 (27A266a), Swift 6.4 and Python 3.14.8:

@@ -45,7 +45,9 @@ The [digital-level guide](Documentation/DigitalLevels.md) defines peak/RMS/dBFS,
 diagnostics, continuous K-weighting, warm-up, numeric limits, and source timing.
 The [cepstral guide](Documentation/Cepstrum.md) defines the pinned power/log/transform recipe,
 Double arithmetic for both PCM precisions, whole-interval/preview profiles, finite-stage
-availability, borrowed data and bounded exports. CPP/CPPS consumers remain in development.
+availability, borrowed data and bounded exports. The [CPP guide](Documentation/CPP.md)
+defines peak search, inspectable background fits, explicit reference versus mathematical
+robust estimators, and prepared PCM-pipeline consumption. CPPS remains in development.
 The [licensed voice corpus](Documentation/VoiceCorpus.md) supplies pinned PVQD originals,
 sample-exact speech/vowel excerpts, simulated defects, explicit negative cases, and
 offline load/decode checks without adding resources to runtime products.

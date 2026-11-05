@@ -1,0 +1,61 @@
+name: CPP benchmarks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '31 11 * * 3'
+  pull_request:
+    paths:
+      - 'Sources/HDXLVoiceProcessing/CPP/**'
+      - 'Sources/HDXLVoiceProcessing/Cepstrum/**'
+      - 'Sources/HDXLVoiceProcessing/Conditioning/**'
+      - 'Sources/HDXLVoiceProcessing/Framing/**'
+      - 'Sources/HDXLVoiceProcessing/Fourier/**'
+      - 'Sources/HDXLVoiceProcessing/Contracts/**'
+      - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
+      - 'Benchmarks/**'
+      - 'Tools/CPP/benchmark.py'
+      - 'Tools/benchmark.py'
+      - '.github/workflows/cpp-benchmarks.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cpp-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    name: CPP / ${{ matrix.shard }} / Xcode 27.0
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [kernels, float32-16000, float32-48000, float64-16000, float64-48000]
+    runs-on: xcode-27
+    timeout-minutes: 120
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Timing without allocator instrumentation
+        run: python3 Tools/CPP/benchmark.py timing --shard "${{ matrix.shard }}"
+      - name: Allocation diagnostics with positive controls
+        run: python3 Tools/CPP/benchmark.py allocation --shard "${{ matrix.shard }}"
+      - name: Retain host cpp evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cpp-benchmarks-${{ matrix.shard }}-${{ github.run_attempt }}
+          path: |
+            Benchmarks/.build/artifacts/cpp-*/*.json
+            Benchmarks/.build/artifacts/cpp-*/*.json.gz
+            Benchmarks/.build/artifacts/cpp-*/*.log
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
