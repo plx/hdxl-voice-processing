@@ -7,6 +7,10 @@ on:
   pull_request:
     paths:
       - 'Tools/Reference/**'
+      - 'Tools/Cepstrum/**'
+      - 'Sources/HDXLVoiceProcessing/Cepstrum/**'
+      - 'Tests/HDXLVoiceProcessingTests/Cepstrum*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/**'
       - 'Tools/Levels/reference.py'
       - 'Sources/HDXLVoiceProcessing/Levels/**'
       - 'Tests/HDXLVoiceProcessingTests/Level*Tests.swift'
@@ -65,7 +69,18 @@ jobs:
           python3 Tools/Levels/reference.py acquire
           python3 Tools/Levels/reference.py verify | tee .build/reference-evidence/levels.log
           cp Tests/HDXLVoiceProcessingTests/Fixtures/Levels/k-weighting.json .build/reference-evidence/levels-reference.json
-      - name: Retain original-synthetic reference evidence
+      - name: Regenerate and compare pinned cepstral intermediates
+        run: |
+          set -o pipefail
+          python3 Tools/Cepstrum/verify.py | tee .build/reference-evidence/cepstrum-committed.log
+          python3 Tools/Cepstrum/reference.py --output .build/reference-evidence/cepstrum | tee .build/reference-evidence/cepstrum-generation.log
+          python3 Tools/Cepstrum/verify.py --directory .build/reference-evidence/cepstrum | tee .build/reference-evidence/cepstrum-candidate.log
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/manifest.json .build/reference-evidence/cepstrum/manifest.json
+          HDXL_CEPSTRUM_REFERENCE_DIRECTORY="$PWD/.build/reference-evidence/cepstrum" \
+          HDXL_CEPSTRUM_REFERENCE_REPORT="$PWD/.build/reference-evidence/cepstrum-native.json" \
+          swift test --filter cepstrumExternalStageReferences | tee .build/reference-evidence/cepstrum-native.log
+          python3 -c 'import json; rows=json.load(open(".build/reference-evidence/cepstrum-native.json")); assert len(rows)==2898'
+      - name: Retain reference evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -73,6 +88,7 @@ jobs:
           path: |
             .build/reference-evidence/*.json
             .build/reference-evidence/*.log
+            .build/reference-evidence/cepstrum/*.json
             .build/reference-evidence/workloads/**/reference.json
             .build/reference-evidence/workloads/**/reference.raw.txt
             .build/reference-evidence/workloads/**/execution.json

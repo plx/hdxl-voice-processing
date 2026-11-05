@@ -58,6 +58,8 @@ public enum MeasurementKind: String, Sendable, Hashable, Codable, CaseIterable {
 /// dBFS, calibrated SPL, and dimensionless dB ratios have distinct references.
 public enum MeasurementUnit: String, Sendable, Hashable, Codable, CaseIterable {
     case hertz, seconds, samples, normalizedAmplitude, normalizedSquaredAmplitude
+    case normalizedAmplitudeSeconds, normalizedSquaredAmplitudeSecondsSquared
+    case inverseSeconds, inverseSecondsSquared
     case decibelsRatio, decibelsFullScale, decibelsSPL, decibelsPerOctave, decibelsPerHertz
     case fraction, percent, dimensionless
 }

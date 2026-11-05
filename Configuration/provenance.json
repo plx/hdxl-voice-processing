@@ -67,7 +67,8 @@
       "licenseEvidenceURL": "https://github.com/praat/praat.github.io/blob/6f3da9ef1d8cce0d5684afc104d02888dfc71b25/docs/manual/License.html",
       "usedBy": [
         "Tools/Reference explicit developer-only CLI; official binary downloaded to ignored .build only; no source copying or runtime linkage",
-        "Tools/Framing/reference.py: black-box Gaussian coefficient oracle only; no runtime linkage"
+        "Tools/Framing/reference.py: black-box Gaussian coefficient oracle only; no runtime linkage",
+        "Tools/Cepstrum/reference.py: explicit black-box full cepstrogram and intermediate references; no runtime linkage or copied implementation"
       ],
       "redistributed": false,
       "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/26",
@@ -269,7 +270,8 @@
       "licenseEvidenceURL": "https://data.mendeley.com/datasets/9dz247gnyb/3",
       "usedBy": [
         "HDXLVoiceProcessingTests only",
-        "Tools/Corpus development verification and native loading benchmark"
+        "Tools/Corpus development verification and native loading benchmark",
+        "Derived conditioned samples and cepstral stage vectors in Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-*.json; same CC-BY-4.0 attribution"
       ],
       "status": "active",
       "redistributed": true,
@@ -3660,6 +3662,1358 @@
       ],
       "expectedProfile": "pvqd3-engineering/v1",
       "referenceOutputIdentity": "1835881be3465bfd5d1698da5a2af0506530bc08201d6b2146a6442e8348e8fb"
+    },
+    {
+      "id": "cepstrum-synthetic-silence",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-silence.json",
+      "sha256": "509652341efa0cf2b765948c8975d8162755eeef52691f3cfa5b5a683d20b076",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:509652341efa0cf2b765948c8975d8162755eeef52691f3cfa5b5a683d20b076"
+    },
+    {
+      "id": "cepstrum-synthetic-regular-pulses",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-regular-pulses.json",
+      "sha256": "fc04d20b08013f10299edb59da8faf897aea8df80c6892cffd1d0a0045243de8",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:fc04d20b08013f10299edb59da8faf897aea8df80c6892cffd1d0a0045243de8"
+    },
+    {
+      "id": "cepstrum-synthetic-harmonic-low",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-harmonic-low.json",
+      "sha256": "4f454bfb5d934d16828c9428351b4a9628bf7eeeac2ae3fffc63f0bc4bd889c2",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:4f454bfb5d934d16828c9428351b4a9628bf7eeeac2ae3fffc63f0bc4bd889c2"
+    },
+    {
+      "id": "cepstrum-synthetic-harmonic-high",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-harmonic-high.json",
+      "sha256": "a1a53cd962a6f7c7daffbd6f7957a12b7953608ae9f162cf9507bbc0796e3204",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:a1a53cd962a6f7c7daffbd6f7957a12b7953608ae9f162cf9507bbc0796e3204"
+    },
+    {
+      "id": "cepstrum-synthetic-missing-fundamental",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-missing-fundamental.json",
+      "sha256": "525f4c27ac2abf38967cd2a955f4f324db3acd007c44119632ef58cb8d2df2f3",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:525f4c27ac2abf38967cd2a955f4f324db3acd007c44119632ef58cb8d2df2f3"
+    },
+    {
+      "id": "cepstrum-synthetic-dominant-upper",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-dominant-upper.json",
+      "sha256": "48a4df3c15c4052b9a409c79a430ef0754e54784df04eedceebd70c8ea317b3c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:48a4df3c15c4052b9a409c79a430ef0754e54784df04eedceebd70c8ea317b3c"
+    },
+    {
+      "id": "cepstrum-synthetic-inharmonic",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-inharmonic.json",
+      "sha256": "71343495e040ec1ffbbe3999cdf328aa1d6df18e88301cef2fa9a276158d9668",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:71343495e040ec1ffbbe3999cdf328aa1d6df18e88301cef2fa9a276158d9668"
+    },
+    {
+      "id": "cepstrum-synthetic-vowel-low",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-vowel-low.json",
+      "sha256": "bb31f7cce42c9c577de24ce11d9a3ba7335a0c782d401c589e3f170a5a65a141",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:bb31f7cce42c9c577de24ce11d9a3ba7335a0c782d401c589e3f170a5a65a141"
+    },
+    {
+      "id": "cepstrum-synthetic-vowel-high",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-vowel-high.json",
+      "sha256": "b4f633e21d34acd3936a9c04e19893867ac2b35bb14710abdcd026715205a5d7",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:b4f633e21d34acd3936a9c04e19893867ac2b35bb14710abdcd026715205a5d7"
+    },
+    {
+      "id": "cepstrum-synthetic-noise-seed-zero",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-noise-seed-zero.json",
+      "sha256": "d1700de697a6e2db39233597c06c32e6bad0c0fe6cfce7fed20865a5eaf244d9",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:d1700de697a6e2db39233597c06c32e6bad0c0fe6cfce7fed20865a5eaf244d9"
+    },
+    {
+      "id": "cepstrum-synthetic-noise-seed-seven",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-noise-seed-seven.json",
+      "sha256": "af35d665b9b2e695cfed557bd6d2502e38a670a0b16bca9db60f5680d6dc7fb6",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:af35d665b9b2e695cfed557bd6d2502e38a670a0b16bca9db60f5680d6dc7fb6"
+    },
+    {
+      "id": "cepstrum-synthetic-noise-mixture-0db",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-noise-mixture-0db.json",
+      "sha256": "efbd7d9d03117c483f4d80dbbe005d9c4ccda22864663afc582c1868a1c7ecc3",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:efbd7d9d03117c483f4d80dbbe005d9c4ccda22864663afc582c1868a1c7ecc3"
+    },
+    {
+      "id": "cepstrum-synthetic-noise-mixture-20db",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/synthetic-noise-mixture-20db.json",
+      "sha256": "ff28655e281d9d65287821bbadb6e17ad94a4fe312696234a09de7a467b58ee1",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:ff28655e281d9d65287821bbadb6e17ad94a4fe312696234a09de7a467b58ee1"
+    },
+    {
+      "id": "cepstrum-speech-bl01-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-bl01-vowel-a.json",
+      "sha256": "239213425ca165f635a747223130dc8b1dbd1215b8be9405083f80e03ee044a7",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62; source excerpt Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-vowel-a.wav SHA256 e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:239213425ca165f635a747223130dc8b1dbd1215b8be9405083f80e03ee044a7"
+    },
+    {
+      "id": "cepstrum-speech-bl01-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-bl01-consonant-rich.json",
+      "sha256": "24fa97089e6e9483ee949870ba2dbd66f0fbdd689e1b7cbe95d6959bc441cd44",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62; source excerpt Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-consonant-rich.wav SHA256 da77cee1a9600f2de8e27bc4978abce5dcb19e199dad053f7bed0961b860d5d3"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"da77cee1a9600f2de8e27bc4978abce5dcb19e199dad053f7bed0961b860d5d3\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":101430,\"startSample\":670320}}",
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:24fa97089e6e9483ee949870ba2dbd66f0fbdd689e1b7cbe95d6959bc441cd44"
+    },
+    {
+      "id": "cepstrum-speech-bl02-vowel-i",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-bl02-vowel-i.json",
+      "sha256": "897c1daf2ee7ec64693614cc5b625befe0046a82aaff7795ac1414b517c5d185",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b; source excerpt Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-vowel-i.wav SHA256 140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1234800}}",
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:897c1daf2ee7ec64693614cc5b625befe0046a82aaff7795ac1414b517c5d185"
+    },
+    {
+      "id": "cepstrum-speech-bl02-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-bl02-consonant-rich.json",
+      "sha256": "3bf8058ec125561c00c151b8c81cd34d40f3f63d4fc075b7d72af67d1c849e42",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b; source excerpt Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-consonant-rich.wav SHA256 9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":114660,\"startSample\":758520}}",
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:3bf8058ec125561c00c151b8c81cd34d40f3f63d4fc075b7d72af67d1c849e42"
+    },
+    {
+      "id": "cepstrum-speech-bl03-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-bl03-vowel-a.json",
+      "sha256": "5c15a15fa8ca7e49e5986a629a59279f72a70bbe3396ad8c7da1bc714ad41853",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c; source excerpt Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-vowel-a.wav SHA256 3430ba83ca6ac0268cdbc2a1cf58b6a3349f131787731d714f103f19f6c476f3"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"3430ba83ca6ac0268cdbc2a1cf58b6a3349f131787731d714f103f19f6c476f3\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1014300}}",
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:5c15a15fa8ca7e49e5986a629a59279f72a70bbe3396ad8c7da1bc714ad41853"
+    },
+    {
+      "id": "cepstrum-speech-bl03-all-voiced",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-bl03-all-voiced.json",
+      "sha256": "7882302bd5cf3401e00b216e08a0647658b6e44e03af3e49034798e30ea97192",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c; source excerpt Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-all-voiced.wav SHA256 da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:7882302bd5cf3401e00b216e08a0647658b6e44e03af3e49034798e30ea97192"
+    },
+    {
+      "id": "cepstrum-speech-bl01-noisy",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-bl01-noisy.json",
+      "sha256": "4d976896d6898e8a69ad29f8e453c6cda1786cdd4d214bfc4245b4f61412e91d",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62; source excerpt Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-noisy.wav SHA256 c68b7c874b7894f482147a16276e8a4b9ff0e693adfd16dd402ae011c8c06337"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"addedErrorSumSquaresLSB\":123428706736,\"finalState\":4221016940,\"generator\":\"xorshift32-13-17-5-modulo-inclusive/v1\",\"inputSumSquaresLSB\":1530241232091,\"measuredSNRDB\":10.933437212212},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"c68b7c874b7894f482147a16276e8a4b9ff0e693adfd16dd402ae011c8c06337\",\"parameters\":{\"amplitudeLSB\":2048,\"kind\":\"integer-noise\",\"seed\":2701}}",
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:4d976896d6898e8a69ad29f8e453c6cda1786cdd4d214bfc4245b4f61412e91d"
+    },
+    {
+      "id": "cepstrum-speech-bl01-dropout",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/speech-bl01-dropout.json",
+      "sha256": "d5fff4dedaec2fed53c239d8777f7ac98fd4fbc01e29b3a3f08f66078bcf2488",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62; source excerpt Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-dropout.wav SHA256 b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"observedSilence\":false},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4\",\"parameters\":{\"kind\":\"replace-with-zero\",\"sampleCount\":8820,\"startSample\":22050}}",
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:d5fff4dedaec2fed53c239d8777f7ac98fd4fbc01e29b3a3f08f66078bcf2488"
+    },
+    {
+      "id": "cepstrum-equivalent-harmonics-10000",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/equivalent-harmonics-10000.json",
+      "sha256": "ad059eb39025f8c85bfc09d16916fb13654d58891d1ed20a6852c6f3c40bef35",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:ad059eb39025f8c85bfc09d16916fb13654d58891d1ed20a6852c6f3c40bef35"
+    },
+    {
+      "id": "cepstrum-equivalent-harmonics-16000",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/equivalent-harmonics-16000.json",
+      "sha256": "fcae0e72acbaef9f9125ab1f6c970fbb020a8a06d4da9bc7b361985843f37f0f",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:fcae0e72acbaef9f9125ab1f6c970fbb020a8a06d4da9bc7b361985843f37f0f"
+    },
+    {
+      "id": "cepstrum-equivalent-harmonics-44100",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/equivalent-harmonics-44100.json",
+      "sha256": "101b73f9dc487a4f0e04682dc064423b3a39b3170aa8f905367516b7472eefa7",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:101b73f9dc487a4f0e04682dc064423b3a39b3170aa8f905367516b7472eefa7"
+    },
+    {
+      "id": "cepstrum-equivalent-harmonics-48000",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/equivalent-harmonics-48000.json",
+      "sha256": "190def3a0650cbf1a5d6f5de911aba4851a11d7d64a6199a2716ae15ac52a9cb",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:190def3a0650cbf1a5d6f5de911aba4851a11d7d64a6199a2716ae15ac52a9cb"
+    },
+    {
+      "id": "cepstrum-grid-1000",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/grid-1000.json",
+      "sha256": "ed4d6f0539c38f3203f628d67f5689be1f7f9454d4c85e102dbcc0f528457af1",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:ed4d6f0539c38f3203f628d67f5689be1f7f9454d4c85e102dbcc0f528457af1"
+    },
+    {
+      "id": "cepstrum-grid-1001",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/grid-1001.json",
+      "sha256": "75a444eb1c12e065bd81bfcb69306d1a3394a7d45e23495bec359c30de1de853",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:75a444eb1c12e065bd81bfcb69306d1a3394a7d45e23495bec359c30de1de853"
+    },
+    {
+      "id": "cepstrum-grid-1100",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/grid-1100.json",
+      "sha256": "9dc8b0a37357f7d6dd553dbbf55bfa30ac884a0fe6e8cdc6aded2420b207ddc8",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:9dc8b0a37357f7d6dd553dbbf55bfa30ac884a0fe6e8cdc6aded2420b207ddc8"
+    },
+    {
+      "id": "cepstrum-grid-1101",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/grid-1101.json",
+      "sha256": "7dc4986a7e19f8e8e1290109bd7359b6845be7a9ef7afa9f50cde5ee88b686d2",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:7dc4986a7e19f8e8e1290109bd7359b6845be7a9ef7afa9f50cde5ee88b686d2"
+    },
+    {
+      "id": "cepstrum-impulse",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/impulse.json",
+      "sha256": "8115344446a1052bd22e69d863efef1b0ab4661691d6b432888f7ebc55e6e658",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:8115344446a1052bd22e69d863efef1b0ab4661691d6b432888f7ebc55e6e658"
+    },
+    {
+      "id": "cepstrum-dc",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/dc.json",
+      "sha256": "1a6c94254bd9e2c7f9896369eff4aa51f7a22ed9366a555d22808daee2fd15db",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:1a6c94254bd9e2c7f9896369eff4aa51f7a22ed9366a555d22808daee2fd15db"
+    },
+    {
+      "id": "cepstrum-noise-gain-0.5",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/noise-gain-0.5.json",
+      "sha256": "535138736d4e28a05f45ebab9f55d22527d8e987fdddf7cdc125c071e44cc1fa",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:535138736d4e28a05f45ebab9f55d22527d8e987fdddf7cdc125c071e44cc1fa"
+    },
+    {
+      "id": "cepstrum-noise-gain-2.0",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/noise-gain-2.0.json",
+      "sha256": "020880329256ad01f702ab7c23ccbba3c8efa63a0d54c1a5b2e830c02fabfe02",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:020880329256ad01f702ab7c23ccbba3c8efa63a0d54c1a5b2e830c02fabfe02"
+    },
+    {
+      "id": "cepstrum-noise-gain-1e-140",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/noise-gain-1e-140.json",
+      "sha256": "de0520f86bdb3bc745647f208cf4d2c09de7b13a2dd98b350eae3b39622de7d1",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:de0520f86bdb3bc745647f208cf4d2c09de7b13a2dd98b350eae3b39622de7d1"
+    },
+    {
+      "id": "cepstrum-noise-gain-1e-160",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/noise-gain-1e-160.json",
+      "sha256": "a5d7eb9d65b6e4375a311aca360cd0f137bdff27e991a71b46179da5cf760478",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:a5d7eb9d65b6e4375a311aca360cd0f137bdff27e991a71b46179da5cf760478"
+    },
+    {
+      "id": "cepstrum-reference-hop-0.005",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/reference-hop-0.005.json",
+      "sha256": "c2f3401bbc23b2199352e060561f5ef053c753d2cba2836245f940709cf36a11",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:c2f3401bbc23b2199352e060561f5ef053c753d2cba2836245f940709cf36a11"
+    },
+    {
+      "id": "cepstrum-reference-hop-0.01",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/reference-hop-0.01.json",
+      "sha256": "a1029face6f8466584ac4e14c7a2d7e6357b25e36309a4b63619eb0e63512e9c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:a1029face6f8466584ac4e14c7a2d7e6357b25e36309a4b63619eb0e63512e9c"
+    },
+    {
+      "id": "cepstrum-floor-40",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/floor-40.json",
+      "sha256": "75d9f9491919b1114b7acde53095b8d70a48b0f8fb37a3723c36deb4a0dc7448",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:75d9f9491919b1114b7acde53095b8d70a48b0f8fb37a3723c36deb4a0dc7448"
+    },
+    {
+      "id": "cepstrum-floor-100",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/floor-100.json",
+      "sha256": "6a8f38ffc80ac016fe58054c4d99e1418f5384132292410a72314b204f65b24f",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:6a8f38ffc80ac016fe58054c4d99e1418f5384132292410a72314b204f65b24f"
+    },
+    {
+      "id": "cepstrum-float32-input-noise",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/float32-input-noise.json",
+      "sha256": "25cc0dc0256e6913596b58e6f732f60840e1a18436c1d9c51fdfac613d062db4",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:25cc0dc0256e6913596b58e6f732f60840e1a18436c1d9c51fdfac613d062db4"
+    },
+    {
+      "id": "cepstrum-float32-input-harmonics",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/float32-input-harmonics.json",
+      "sha256": "9904fe197203c67f2827353b0a1bf99eabe6a100b24d54651df0a70eb6943670",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Pinned Praat 7.0.02 whole-interval resampling and full power-cepstrogram export; exact tool identity in fixture",
+        "Original fused raw pre-emphasis and frame selection; public Praat mean removal, Gaussian2, spectrum and inverse commands; every selected quefrency bin retained",
+        "Explicit undefined values, stage units, normalization, comparison budgets, input and external-output hashes; numerical output only, no reference source code"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:9904fe197203c67f2827353b0a1bf99eabe6a100b24d54651df0a70eb6943670"
+    },
+    {
+      "id": "cepstrum-manifest",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Cepstrum/manifest.json",
+      "sha256": "adfe18b0e02563cb1afe4f7f15809045875d81d1febaf5fc40bdae012078e2c0",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/33",
+        "versionOrHash": "cepstrum-reference-v1 implementation SHA256 8353a2bd78034bab107380437dc6ee6acf46c763e64235c5fd05c78038f369a0"
+      },
+      "generator": {
+        "path": "Tools/Cepstrum/reference.py",
+        "version": "cepstrum-reference-v1",
+        "sha256": "523bb9dbbe11b70b292c7c09b64ba85bd466ca5e52528fcb30d21336d6ff6713"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic equations or non-audio manifest metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Manifest of independently generated reference fixture identities and numerical verification policy"
+      ],
+      "expectedProfile": "praat-7.0.02-cepstrogram/v1; explicit source encoding, frame/hop, conditioning, and Float64 arithmetic",
+      "referenceOutputIdentity": "sha256:adfe18b0e02563cb1afe4f7f15809045875d81d1febaf5fc40bdae012078e2c0"
     }
   ],
   "optionalModels": []

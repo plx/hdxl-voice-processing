@@ -183,3 +183,12 @@ both input precisions, explicit warm-up, silence, denormals, and separately conf
 Preparation/destruction and prepared Analyze are separate operations. Both modes retain
 complete raw distributions; allocation mode requires positive controls and zero maximum
 prepared heap counters. Batch latency and throughput have explicit per-analyzer input durations.
+
+The [cepstrum matrix](../Tools/Cepstrum/README.md#host-performance-matrix) covers 38 cases:
+isolated frames, explicit Float-to-Double conversion, 1/60-second 16/48 kHz pipelines at
+2/5/10 ms hops, and separately owned stage/matrix exports. Both source precisions use Double
+analysis. Preparation/destruction and prepared Run are separate operations. The pre-CPP
+checksum consumer is explicitly replaced by actual CPP consumption in #35. Thirty prepared
+checksum/conversion cases require zero maximum heap counters; eight owned-export cases report
+allocations separately. Full distributions, input hashes, profiles, geometry, availability,
+buffer bytes and positive controls are retained in a dedicated workflow.
