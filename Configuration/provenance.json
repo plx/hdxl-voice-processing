@@ -12169,6 +12169,1776 @@
       },
       "expectedProfile": "Pinned Praat 7.0.02 least squares/praat7002Robust; separately identified complete mathematical Theil-Sen; explicit none/parabolic search and requested/effective fit geometry",
       "referenceOutputIdentity": "sha256:00fec8002425492b77cfd3008bd177274b9eee5f68dbd1da30457fa63c7a4798"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-breathy-surrogate",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/breathy-surrogate.json",
+      "sha256": "5736f6b6cf9e8c7d9147efb5a4bc105a6784a6f7c8a97eab539687e294dd9ee0",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:5736f6b6cf9e8c7d9147efb5a4bc105a6784a6f7c8a97eab539687e294dd9ee0"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-float32-input",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/float32-input.json",
+      "sha256": "d2859e642cf1ba56b62555803237dc0ae4ecb546b162d8251d0d415a758236f6",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:d2859e642cf1ba56b62555803237dc0ae4ecb546b162d8251d0d415a758236f6"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-fractional-short-window",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/fractional-short-window.json",
+      "sha256": "35a37b084fb86c57071d8e3cce5a4668597248ba1c7280ee83b55eb2b0df1976",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:35a37b084fb86c57071d8e3cce5a4668597248ba1c7280ee83b55eb2b0df1976"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-fricative-surrogate",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/fricative-surrogate.json",
+      "sha256": "904170c0f9cab245b83bf3efdf72cc95861cc4ff3dd5a8e5ea1962117bb6fd98",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:904170c0f9cab245b83bf3efdf72cc95861cc4ff3dd5a8e5ea1962117bb6fd98"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-grid-44100",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/grid-44100.json",
+      "sha256": "d40097af415c739771677d0f95952624d2b2075a45a41c5125b25a0910770940",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:d40097af415c739771677d0f95952624d2b2075a45a41c5125b25a0910770940"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-grid-48000",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/grid-48000.json",
+      "sha256": "3da9ef52fe24427e659fb856ed96563e8f0be810686178926b57bad05eec1c38",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:3da9ef52fe24427e659fb856ed96563e8f0be810686178926b57bad05eec1c38"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-grid-8000",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/grid-8000.json",
+      "sha256": "df9bd5ef2a06c5795b13403cd5ef72bd31b71a91d45e968ec9908d873e466fab",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:df9bd5ef2a06c5795b13403cd5ef72bd31b71a91d45e968ec9908d873e466fab"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-hop-0.002",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/hop-0.002.json",
+      "sha256": "0e450ff6dea01342c62c136531778d42cebab66b705302b7268c5eb0ab901dcf",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:0e450ff6dea01342c62c136531778d42cebab66b705302b7268c5eb0ab901dcf"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-hop-0.005",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/hop-0.005.json",
+      "sha256": "674e93d88b437e6fa9a0e7997c4ad36dc20f4e0335279b4da5300d21450852fd",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:674e93d88b437e6fa9a0e7997c4ad36dc20f4e0335279b4da5300d21450852fd"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-hop-0.03",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/hop-0.03.json",
+      "sha256": "fd935880eb304600b31554ea3df039af879ca12e73a8e7641eacb64bf6f1b312",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:fd935880eb304600b31554ea3df039af879ca12e73a8e7641eacb64bf6f1b312"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-breathy-surrogate-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/breathy-surrogate.wav",
+      "sha256": "07a7e4bc4c2f222d5ad06650546c42ae70ddeeeb460889056a73cf2b61e7445c",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:07a7e4bc4c2f222d5ad06650546c42ae70ddeeeb460889056a73cf2b61e7445c"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-float32-input-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/float32-input.wav",
+      "sha256": "46d65707c5283375f080352dc5333b43ca0e5783b1a9bc51f89284c5c2c4e2d5",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:46d65707c5283375f080352dc5333b43ca0e5783b1a9bc51f89284c5c2c4e2d5"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-fractional-short-window-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/fractional-short-window.wav",
+      "sha256": "b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-fricative-surrogate-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/fricative-surrogate.wav",
+      "sha256": "4fe882a7c34c44fe06b6a34e6275e4bdf2c17ad4a5926e1bd27b1613c24c4b41",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:4fe882a7c34c44fe06b6a34e6275e4bdf2c17ad4a5926e1bd27b1613c24c4b41"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-grid-44100-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/grid-44100.wav",
+      "sha256": "b87c108e1ee13e1915497a8256409f0031587f9347539539e21358a71fda1b5f",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b87c108e1ee13e1915497a8256409f0031587f9347539539e21358a71fda1b5f"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-grid-48000-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/grid-48000.wav",
+      "sha256": "0e2763b23a80f1c6638de23c8ce7f23ec348e72cb608289d2e6695d1503f4c04",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:0e2763b23a80f1c6638de23c8ce7f23ec348e72cb608289d2e6695d1503f4c04"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-grid-8000-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/grid-8000.wav",
+      "sha256": "06d80269011b561a3701808eb93cc55b2375c5160dd480ced33bac34323abb4a",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:06d80269011b561a3701808eb93cc55b2375c5160dd480ced33bac34323abb4a"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-hop-0.002-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/hop-0.002.wav",
+      "sha256": "b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-hop-0.005-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/hop-0.005.wav",
+      "sha256": "b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-hop-0.03-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/hop-0.03.wav",
+      "sha256": "b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-irregular-surrogate-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/irregular-surrogate.wav",
+      "sha256": "894501264b62170ba10841d3bc136a4a15f7686e84a3249ea2250332fb4eb977",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:894501264b62170ba10841d3bc136a4a15f7686e84a3249ea2250332fb4eb977"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-murton-mask-settings-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/murton-mask-settings.wav",
+      "sha256": "07a7e4bc4c2f222d5ad06650546c42ae70ddeeeb460889056a73cf2b61e7445c",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:07a7e4bc4c2f222d5ad06650546c42ae70ddeeeb460889056a73cf2b61e7445c"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-no-relative-intensity-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/no-relative-intensity.wav",
+      "sha256": "b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-one-frame-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/one-frame.wav",
+      "sha256": "4f0df09e02ec5d0a8e8e1927f205405fc41773328bdaf980ceb02bfaeeb58380",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:4f0df09e02ec5d0a8e8e1927f205405fc41773328bdaf980ceb02bfaeeb58380"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-quiet-vowel-surrogate-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/quiet-vowel-surrogate.wav",
+      "sha256": "5262c5f71fbeea834ca301dd68b3f22431a676a0392fb8bb009bc2c0bd743b58",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:5262c5f71fbeea834ca301dd68b3f22431a676a0392fb8bb009bc2c0bd743b58"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-rolling-rebase-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/rolling-rebase.wav",
+      "sha256": "0b1dec4c2d623950a1e2bcea6be5afc287a17193e6c2e66fb8fcd1632e5fe7f5",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:0b1dec4c2d623950a1e2bcea6be5afc287a17193e6c2e66fb8fcd1632e5fe7f5"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-short-averaging-disabled-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/short-averaging-disabled.wav",
+      "sha256": "b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-inputs-tone-envelope-pcm",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/inputs/tone-envelope.wav",
+      "sha256": "b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b40c535fc1a8625048624affc154716c5de07ab8610071519273ce41f53fa2cd"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-irregular-surrogate",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/irregular-surrogate.json",
+      "sha256": "65b815ec81dcb3ce602aba725348830ef060b3d6bf6fdd5187cace1fcb71b4ad",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:65b815ec81dcb3ce602aba725348830ef060b3d6bf6fdd5187cace1fcb71b4ad"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-manifest",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/manifest.json",
+      "sha256": "6abf62964d6dd08c2bbff3c9dddb28a3cceb95aa62ebdfbf7f1413cd90936a89",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:6abf62964d6dd08c2bbff3c9dddb28a3cceb95aa62ebdfbf7f1413cd90936a89"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-murton-mask-settings",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/murton-mask-settings.json",
+      "sha256": "62c5029df7c126b3ed4efb742fad6c33c3fa6c6da014121becf8b6fb1cdc8717",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:62c5029df7c126b3ed4efb742fad6c33c3fa6c6da014121becf8b6fb1cdc8717"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-no-relative-intensity",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/no-relative-intensity.json",
+      "sha256": "9517bd875b6066f9b17d9d2687951227d8236ab0f9138c79b3ff873785651345",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:9517bd875b6066f9b17d9d2687951227d8236ab0f9138c79b3ff873785651345"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-one-frame",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/one-frame.json",
+      "sha256": "53f5f1620356dada98ee1d15633ad9240a8319911c9be6804d628f094fccf480",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:53f5f1620356dada98ee1d15633ad9240a8319911c9be6804d628f094fccf480"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-quiet-vowel-surrogate",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/quiet-vowel-surrogate.json",
+      "sha256": "0e753095e026580d7a74a56a7ebd10fe6d39f8eb70afdb4d789ed9e09361b62a",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:0e753095e026580d7a74a56a7ebd10fe6d39f8eb70afdb4d789ed9e09361b62a"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-reference-anomalies",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/reference-anomalies.json",
+      "sha256": "dd84aeaef50aa05c9ffecbfcc8877e92d768dbedb04ad703d3483098b2f16380",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:dd84aeaef50aa05c9ffecbfcc8877e92d768dbedb04ad703d3483098b2f16380"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-rolling-rebase",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/rolling-rebase.json",
+      "sha256": "743c564f26abd36f53be5083aae52a684e91b3edb67c252abb042009e793c1a1",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:743c564f26abd36f53be5083aae52a684e91b3edb67c252abb042009e793c1a1"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-short-averaging-disabled",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/short-averaging-disabled.json",
+      "sha256": "ee0188fe87e16a2508817c99a8ddc0a42a207a5cbaab5fa936ce334cf0ccd72b",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:ee0188fe87e16a2508817c99a8ddc0a42a207a5cbaab5fa936ce334cf0ccd72b"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"da77cee1a9600f2de8e27bc4978abce5dcb19e199dad053f7bed0961b860d5d3\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":101430,\"startSample\":670320}}",
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-speech-bl01-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/speech-bl01-consonant-rich.json",
+      "sha256": "6f8353ab53bb19faa85db01494f5af86944ac46a64f828726ca1eaa8e45d76aa",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:6f8353ab53bb19faa85db01494f5af86944ac46a64f828726ca1eaa8e45d76aa"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"observedSilence\":false},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"b82f7341847329ab170c8688ee9cba157bacd75f6b7bcd31a52f12403d7be3b4\",\"parameters\":{\"kind\":\"replace-with-zero\",\"sampleCount\":8820,\"startSample\":22050}}",
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-speech-bl01-dropout",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/speech-bl01-dropout.json",
+      "sha256": "2d18b8d750bfbbb74030df354a9e7c5ee40349cfd7f0b5835a1563f5fe3c8cf0",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:2d18b8d750bfbbb74030df354a9e7c5ee40349cfd7f0b5835a1563f5fe3c8cf0"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"details\":{\"addedErrorSumSquaresLSB\":123428706736,\"finalState\":4221016940,\"generator\":\"xorshift32-13-17-5-modulo-inclusive/v1\",\"inputSumSquaresLSB\":1530241232091,\"measuredSNRDB\":10.933437212212},\"inputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"outputSHA256\":\"c68b7c874b7894f482147a16276e8a4b9ff0e693adfd16dd402ae011c8c06337\",\"parameters\":{\"amplitudeLSB\":2048,\"kind\":\"integer-noise\",\"seed\":2701}}",
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-speech-bl01-noisy",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/speech-bl01-noisy.json",
+      "sha256": "72d936590774195507c7dc31112ee154a64c646c79c821568aaea22f7a30e405",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:72d936590774195507c7dc31112ee154a64c646c79c821568aaea22f7a30e405"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-speech-bl01-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/speech-bl01-vowel-a.json",
+      "sha256": "b8bb2bb78ad3fa7014ff8ea79c2d76d918dfb5a49183d9cdd1cded80c4b94521",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b8bb2bb78ad3fa7014ff8ea79c2d76d918dfb5a49183d9cdd1cded80c4b94521"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":114660,\"startSample\":758520}}",
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-speech-bl02-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/speech-bl02-consonant-rich.json",
+      "sha256": "edb0004ef85eb5491089a807cdc44f1206589eb0363acc45d2376ed617c05214",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:edb0004ef85eb5491089a807cdc44f1206589eb0363acc45d2376ed617c05214"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1234800}}",
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-speech-bl02-vowel-i",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/speech-bl02-vowel-i.json",
+      "sha256": "aae6451a30d37dadacba6dc4a7f5b614f8af608b95fbe3d7158024e828ed98aa",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:aae6451a30d37dadacba6dc4a7f5b614f8af608b95fbe3d7158024e828ed98aa"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-speech-bl03-all-voiced",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/speech-bl03-all-voiced.json",
+      "sha256": "b97a358628b850c12ac85866ca1c9fe5e71b29b3adf2b01c948d3c82ea1f554b",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:b97a358628b850c12ac85866ca1c9fe5e71b29b3adf2b01c948d3c82ea1f554b"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"3430ba83ca6ac0268cdbc2a1cf58b6a3349f131787731d714f103f19f6c476f3\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1014300}}",
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-speech-bl03-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/speech-bl03-vowel-a.json",
+      "sha256": "11b293f8275051288c38f2051873ec4b9db49939fb5d7494d07417a2e3060114",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:11b293f8275051288c38f2051873ec4b9db49939fb5d7494d07417a2e3060114"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-harmonic-high",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-harmonic-high.json",
+      "sha256": "11fa7058591a820c0240a1e11688263c8ee512b26869deb463b64e43d5e62122",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:11fa7058591a820c0240a1e11688263c8ee512b26869deb463b64e43d5e62122"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-harmonic-low",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-harmonic-low.json",
+      "sha256": "cfc247bd8f2bbee42d1ebb982baff9d1095577c39eb01046695d1d477bd5d287",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:cfc247bd8f2bbee42d1ebb982baff9d1095577c39eb01046695d1d477bd5d287"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-missing-fundamental",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-missing-fundamental.json",
+      "sha256": "e8684385e0e1f88ad1ff12d00ea13461738075d8beba839e96ff7328e51bd3f4",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:e8684385e0e1f88ad1ff12d00ea13461738075d8beba839e96ff7328e51bd3f4"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-noise-mixture-0db",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-noise-mixture-0db.json",
+      "sha256": "bd321696dcb89a2199b525b81759995d78b0b58f5052e4ecb3a849f90f21b0ef",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:bd321696dcb89a2199b525b81759995d78b0b58f5052e4ecb3a849f90f21b0ef"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-noise-seed-zero",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-noise-seed-zero.json",
+      "sha256": "804f578ca665490e4bc24c634b952de3e69eb10e5bd375d81a636b38cf78f319",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:804f578ca665490e4bc24c634b952de3e69eb10e5bd375d81a636b38cf78f319"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-regular-pulses",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-regular-pulses.json",
+      "sha256": "4968a978dad0456b08127e497af82ba202a7a36c0a590ed704f55536a967798e",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:4968a978dad0456b08127e497af82ba202a7a36c0a590ed704f55536a967798e"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-silence",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-silence.json",
+      "sha256": "52e0ac6b3a28d5fc1f790a524d2b86a8b67f0a999041eac03ff81416c4e1a365",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:52e0ac6b3a28d5fc1f790a524d2b86a8b67f0a999041eac03ff81416c4e1a365"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-vowel-high",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-vowel-high.json",
+      "sha256": "f424697df8142954ab0a4dd9d00b6b99b09439b718736f518957690df46844e2",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:f424697df8142954ab0a4dd9d00b6b99b09439b718736f518957690df46844e2"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-synthetic-vowel-low",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/synthetic-vowel-low.json",
+      "sha256": "a6bdf86dfa885b6c1215e3b9f4ef9ee966241d0e141be671325b0edabcd0d1ed",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:a6bdf86dfa885b6c1215e3b9f4ef9ee966241d0e141be671325b0edabcd0d1ed"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/34",
+        "versionOrHash": "mask-reference-v1 implementation SHA256 a1d2c78d35573d6a8f0d78db26305443f258d8d5864c1d077358ba0d025494ab"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, numerical reference output, or manifest/anomaly metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original synthetic inputs or governed source fixture decoded without joining intervals; exact normalized PCM and external input hashes retained",
+        "Pinned Praat 7.0.02 spectrogram, temporal flatness and TextGrid output; independent Python temporal integration/GM-AM cross-check and intensity oracle; no Swift-generated golden values",
+        "Reference-only row-1 mutation, short-input nontermination and early-return evidence explicitly separated under decision #109; no GPL implementation copied into products"
+      ],
+      "id": "mask-tone-envelope",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Masks/tone-envelope.json",
+      "sha256": "7e9eb9e346224f1f87de9f91b8d97c6a239ce019767e721812eec7a0fdb5ab3e",
+      "generator": {
+        "path": "Tools/Masks/reference.py",
+        "version": "mask-reference-v1",
+        "sha256": "ee1087fea3e6f6029a86137d482dc2b9473979ee466cdebc842853b15cb7988c"
+      },
+      "expectedProfile": "praat-7.0.02-ltsf-supported-domain/v1; explicit band, centered grid, temporal windows, fixed threshold, optional relative intensity, ordered interval cleanup; negative receipts are not successful native outputs",
+      "referenceOutputIdentity": "sha256:7e9eb9e346224f1f87de9f91b8d97c6a239ce019767e721812eec7a0fdb5ab3e"
     }
   ],
   "optionalModels": []

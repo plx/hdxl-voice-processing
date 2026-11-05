@@ -62,6 +62,7 @@ synthetic probe does not claim to implement the named DSP algorithms.
 | worker | Resample, PreEmphasis, FrameAssembly | Conditioning and frame assembly work |
 | worker | FFT, Cepstrum, CPP, CPPSSmoothing, CPPSFitting | Future numerical stages |
 | worker | Pitch, HNR, Pulses, Perturbation | Future numerical stages |
+| worker | SpeechActivity, MaskIntervals, EnergyEligibility, MaskResolution, MaskRouting | Mask worker/control stages; precise boundaries below |
 | worker | ResultPublication | Worker-side result construction/publication work |
 | worker | Error, Cancelled | Worker outcomes with numeric validity reasons |
 
@@ -202,3 +203,34 @@ whole-input scope. No PCM, participant identity or per-sample event is logged.
 indices 0 and 16, and consumer exclusion. The dedicated 38-case benchmark matrix
 separates construction, prepared checksum consumption and explicit owned exports;
 these observations do not replace Instruments/device capture tracked under #74.
+
+## Mask worker integration
+
+`PreparedLTSFDetector` uses token 34. Each instantaneous spectrum and the temporal
+features that become ready during it are enclosed in `SpeechActivity`, with the
+existing nested `FFT` span. `MaskIntervals` encloses final feature flushing,
+relative-intensity thresholding and interval cleanup/combination. Its frame
+sequence is zero so sampled mode admits finalization. Final selection still waits
+for the complete declared source; these spans measure worker computation, not
+acoustic or capture latency.
+
+`PreparedEnergyEligibility` uses token 3401. `EnergyEligibility` encloses each
+consumed window fragment, its scaled energy update and any completed-window state
+transition. The diagnostic sequence counts consumed fragments, so chunk delivery
+changes diagnostic sampling, while numerical windows and outputs remain invariant.
+`PreparedMaskCursor` uses token 3402. `MaskRouting` encloses construction of each
+borrowed slice's source/region context, with a monotonic slice sequence. It excludes
+input validation, skipped-region scanning and consumer analysis. Full routing cost
+is measured by the complete benchmark operation. `MaskResolution` uses token 3403
+and encloses the complete allocating event sweep, region construction and coverage
+calculation on the control path; its sequence is zero.
+
+Every stage is nested in `AnalysisFrame`. The `samples` field counts the physical
+frame, consumed energy fragment, routed slice or complete source, respectively;
+whole-source counts saturate at UInt32.max. These numeric tokens carry no labels,
+model identifiers, PCM or paths. All intervals end before borrowed output callbacks;
+reset and idempotent cancellation use the existing lifecycle events. Tests cover
+balanced pairing, sampling, reset epochs, consumer boundaries and identical output
+values across all three modes. Integrated active-trace overhead and physical
+capture evidence remain in #56/#62 and #74; mask performance baselines use disabled
+diagnostics.

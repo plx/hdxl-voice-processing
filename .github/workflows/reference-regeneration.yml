@@ -9,6 +9,12 @@ on:
       - 'Tools/Reference/**'
       - 'Tools/Cepstrum/**'
       - 'Tools/CPP/**'
+      - 'Tools/Masks/**'
+      - 'Sources/HDXLVoiceProcessing/Masks/**'
+      - 'Tests/HDXLVoiceProcessingTests/LTSF*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Mask*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/EnergyEligibilityTests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Masks/**'
       - 'Sources/HDXLVoiceProcessing/CPP/**'
       - 'Tests/HDXLVoiceProcessingTests/CPP*Tests.swift'
       - 'Tests/HDXLVoiceProcessingTests/Fixtures/CPP/**'
@@ -99,6 +105,17 @@ jobs:
           HDXL_CPP_PCM_REFERENCE_REPORT="$PWD/.build/reference-evidence/cpp-pcm-native.json" \
           swift test --filter cppWholePCMExternalSpeechReferences | tee .build/reference-evidence/cpp-pcm-native.log
           python3 -c 'import json; r=json.load(open(".build/reference-evidence/cpp-pcm-native.json")); assert len(r)==40 and max(x["maximumBudgetFraction"] for x in r)<=1'
+      - name: Regenerate and compare speech-activity masks
+        run: |
+          set -o pipefail
+          python3 Tools/Masks/verify.py | tee .build/reference-evidence/masks-committed.log
+          python3 Tools/Masks/reference.py --output .build/reference-evidence/masks | tee .build/reference-evidence/masks-generation.log
+          python3 Tools/Masks/verify.py --directory .build/reference-evidence/masks | tee .build/reference-evidence/masks-candidate.log
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/Masks/manifest.json .build/reference-evidence/masks/manifest.json
+          HDXL_MASK_REFERENCE_DIRECTORY="$PWD/.build/reference-evidence/masks" \
+          HDXL_MASK_REFERENCE_REPORT="$PWD/.build/reference-evidence/masks-native.json" \
+          swift test --filter ltsfReferenceCatalog | tee .build/reference-evidence/masks-native.log
+          python3 -c 'import json; r=json.load(open(".build/reference-evidence/masks-native.json"))["comparisons"]; assert len(r)==35 and sum(x["frameCount"] for x in r)==5088 and sum(x["comparedPowers"] for x in r)==103571 and max(v for x in r for v in x["maximumBudgetFractions"].values())<=1'
       - name: Retain reference evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -107,6 +124,7 @@ jobs:
           path: |
             .build/reference-evidence/*.json
             .build/reference-evidence/*.log
+            .build/reference-evidence/masks/**
             .build/reference-evidence/cepstrum/*.json
             .build/reference-evidence/cpp/*.json
             .build/reference-evidence/workloads/**/reference.json
