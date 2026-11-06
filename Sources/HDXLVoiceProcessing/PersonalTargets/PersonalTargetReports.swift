@@ -26,6 +26,11 @@ public struct PersonalTargetClassificationReport: Sendable, Hashable, Encodable 
     public let classifiedGroups: Int
     public let abstainedGroups: Int
     public let classificationCoverage: Double?
+    // Compute from counts: subtracting coverage can round an exact policy
+    // boundary upward. Nil preserves the explicit empty-partition behavior.
+    var abstentionFraction: Double? {
+        totalGroups == 0 ? nil : Double(abstainedGroups) / Double(totalGroups)
+    }
     /// Includes abstentions as failures to recognize the actual class. Conditional
     /// accuracy among answered examples alone must not hide discarded hard cases.
     public let preferredRecall: Double?

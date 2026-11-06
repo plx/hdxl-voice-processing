@@ -3,6 +3,55 @@ import Testing
 
 @testable import HDXLVoiceProcessing
 
+@Test(arguments: [CalibrationSplitRole.fitting, .recordingEvaluation, .sessionEvaluation])
+func personalTargetAbstentionThresholdIncludesExactCountFraction(role: CalibrationSplitRole) throws
+{
+    let fixture = try TargetTestFixture(dataset: targetTestDataset(takesPerSession: 20))
+    #expect(
+        try fixture.evaluate(
+            fixture.fit(policy: PersonalTargetPolicy(maximumAbstentionFraction: 0))
+        ).activated != nil)
+    var training = fixture.training
+    var evaluation = fixture.evaluation
+    let members: [CalibrationAssignedTake]
+    switch role {
+    case .fitting: members = fixture.partition.fitting
+    case .recordingEvaluation: members = fixture.partition.recordingEvaluation
+    case .sessionEvaluation:
+        let sessionID = try #require(fixture.partition.sessionEvaluation.first?.sessionID)
+        members = fixture.partition.sessionEvaluation.filter { $0.sessionID == sessionID }
+    }
+    try #require(members.count > 10)
+    let missing = try #require(members.first?.take.id)
+    if role == .fitting { training[missing] = nil } else { evaluation[missing] = nil }
+    // The split hashes whole groups, so role counts need not be equal. Set the
+    // limit to exactly one missing group. For the session case this is 5%,
+    // versus 2.5% pooled abstention, so the per-session gate is decisive.
+    let threshold = 1 / Double(members.count)
+    for limit in [threshold.nextDown, threshold, threshold.nextUp] {
+        let fit = try fixture.fit(
+            training: training, policy: PersonalTargetPolicy(maximumAbstentionFraction: limit))
+        let result = try fixture.evaluate(fit, analyses: evaluation)
+        let counts: PersonalTargetClassificationReport
+        switch role {
+        case .fitting: counts = fit.training.inScopeClassification
+        case .recordingEvaluation: counts = result.recordingEvaluation.inScopeClassification
+        case .sessionEvaluation:
+            counts = try #require(
+                result.laterSessions.first { $0.sessionID == members[0].sessionID }
+            ).inScopeClassification
+        }
+        #expect(counts.totalGroups == members.count && counts.abstainedGroups == 1)
+        if limit < threshold {
+            #expect(result.activated == nil)
+            #expect(result.reasons == [.excessiveAbstention])
+        } else {
+            #expect(result.reasons.isEmpty)
+            #expect(result.activated != nil)
+        }
+    }
+}
+
 @Test func personalTargetAliasesDoNotMultiplySamplesOrChangeNumericalFit() throws {
     let original = try TargetTestFixture(dataset: targetTestDataset())
     let baseline = try original.fit()
@@ -191,6 +240,7 @@ import Testing
     #expect(PersonalTargetConditionalInterval(successes: 0, trials: 0) == nil)
     let empty = PersonalTargetClassificationReport([])
     #expect(empty.balancedAccuracy == nil && empty.classificationCoverage == nil)
+    #expect(empty.abstentionFraction == nil)
     #expect(empty.preferredConditionalInterval == nil && empty.usualConditionalInterval == nil)
     let allCorrect = try #require(PersonalTargetConditionalInterval(successes: 4, trials: 4))
     #expect(abs(allCorrect.lower - 0.5101091635454027) < 1e-14)

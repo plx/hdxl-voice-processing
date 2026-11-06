@@ -54,7 +54,7 @@ public enum PersonalTargetFitter {
             if (counts.balancedAccuracy ?? 0) < policy.minimumBalancedAccuracy {
                 reasons.append(.nonSeparatingTraining)
             }
-            if 1 - (counts.classificationCoverage ?? 0) > policy.maximumAbstentionFraction {
+            if (counts.abstentionFraction ?? 1) > policy.maximumAbstentionFraction {
                 reasons.append(.excessiveAbstention)
             }
             reasons += targetConfoundReasons(report.context)

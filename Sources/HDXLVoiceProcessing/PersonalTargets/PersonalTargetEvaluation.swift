@@ -62,7 +62,7 @@ extension PersonalTargetFitter {
             {
                 reasons.append(.poorSessionSeparation)
             }
-            if 1 - (counts.classificationCoverage ?? 0) > fit.policy.maximumAbstentionFraction {
+            if (counts.abstentionFraction ?? 1) > fit.policy.maximumAbstentionFraction {
                 reasons.append(.excessiveAbstention)
             }
             reasons += targetConfoundReasons(report.context)
@@ -111,7 +111,7 @@ private func targetEvaluationReasons(
     if (counts.balancedAccuracy ?? 0) < policy.minimumBalancedAccuracy {
         reasons.append(.poorHeldOutSeparation)
     }
-    if 1 - (counts.classificationCoverage ?? 0) > policy.maximumAbstentionFraction {
+    if (counts.abstentionFraction ?? 1) > policy.maximumAbstentionFraction {
         reasons.append(.excessiveAbstention)
     }
     return reasons
