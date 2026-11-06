@@ -34,6 +34,12 @@ own permissions, audio sessions, sandbox entitlements, and lifecycle.
 from memory, files, isolated file batches and worker-side PCM transfer. Matching profiles
 share numerical execution, with explicit gaps, masks, coverage and timing requirements.
 
+[Personal calibration records](Documentation/Calibration.md) separate production
+instructions from listening labels, preserve acquisition conditions and raw metrics,
+and freeze whole-recording/session holdouts. The Audio product verifies file hashes
+before analysis or cache reuse. A [synthetic workflow example](Examples/CalibrationWorkflow/README.md)
+demonstrates collection, labeling, comparisons and evaluation without private recordings.
+
 See [contribution instructions](CONTRIBUTING.md),
 [architecture](Documentation/Architecture/0001-package-boundaries.md), and the
 [roadmap](https://github.com/plx/hdxl-voice-processing/issues/1).
