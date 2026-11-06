@@ -1,0 +1,56 @@
+name: Shared scheduler benchmarks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 11 * * 3'
+  pull_request:
+    paths:
+      - 'Sources/HDXLVoiceProcessing/**'
+      - 'Benchmarks/**'
+      - 'Tools/Scheduling/**'
+      - 'Tools/Tests/test_schedule_benchmark.py'
+      - 'Tools/YIN/benchmark.py'
+      - 'Tools/CPPS/benchmark.py'
+      - 'Tools/Reference/common.py'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Levels/k-weighting.json'
+      - 'Tools/benchmark.py'
+      - '.github/workflows/scheduling-benchmarks.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scheduling-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    name: Scheduler timing and allocations / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Timing without allocator instrumentation
+        run: python3 Tools/Scheduling/benchmark.py timing
+      - name: Allocation diagnostics with positive controls
+        run: python3 Tools/Scheduling/benchmark.py allocation
+      - name: Retain host scheduling evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: scheduling-benchmarks-${{ github.run_attempt }}
+          path: |
+            Benchmarks/.build/artifacts/schedule-*/*.json
+            Benchmarks/.build/artifacts/schedule-*/*.json.gz
+            Benchmarks/.build/artifacts/schedule-*/*.log
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

@@ -10,6 +10,10 @@ Algorithm-specific matrices now include [CPP](../Tools/CPP/README.md#host-perfor
 Its five explicit groups keep long robust-fit measurements bounded per CI job;
 each produces independently validated timing and allocation artifacts.
 
+The [shared scheduler matrix](../Tools/Scheduling/README.md) adds 20 explicit light/full
+compositions with direct native-kernel reference checks, source coverage, reset/replay,
+stereo layouts and separate whole-interval/preview conditioning.
+
 ## One-command modes
 
 From the repository root with Xcode 27.0 (27A266a), Swift 6.4 and Python 3.14.8:
