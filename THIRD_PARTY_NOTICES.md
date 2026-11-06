@@ -101,6 +101,17 @@ redistributed here. Praat's own source and its complete distribution also have
 distinct license considerations; review the exact selected release and its notices.
 
 There are no external SwiftPM consumer dependencies or optional pretrained models.
+
+`Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/` contains original
+synthetic software scenarios and numerical derivatives of the original C01
+calibration PCM. The exact-profile fixtures retain pinned Praat 7.0.02 CPPS raw
+output and reference identities, plus independently calculated Python F0 and
+unweighted level values. The fitting fixtures contain fabricated labels and
+summaries, independent quartiles/confusion counts, and numerical inversion of
+the Wilson score inequality. They contain no human voice, real listening labels,
+copied paper content or upstream implementation. All input, generator, artifact
+and profile identities are inventoried in `Configuration/provenance.json`.
+
 Papers and algorithm descriptions are cited as methods; a citation does not grant
 rights to their text, figures, recordings, or source. Original implementations of
 mathematics are recorded separately from copied/modified third-party code, which

@@ -107,7 +107,7 @@ public struct CalibrationTakeAssessment: Sendable, Hashable {
 }
 
 extension CalibrationRecordingConditions {
-    fileprivate func comparisonValue(_ field: CalibrationConditionField) -> [String:
+    func comparisonValue(_ field: CalibrationConditionField) -> [String:
         ProfileSetting]?
     {
         switch field {
