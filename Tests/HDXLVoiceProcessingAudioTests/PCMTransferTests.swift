@@ -6,6 +6,14 @@ import Testing
 
 @testable import HDXLVoiceProcessingAudio
 
+// These synthetic callbacks must progress while Swift Testing holds a gate or
+// borrow. Global dispatch queues share the cooperative pool and can be starved
+// by its blocked test tasks on small runners. Native threads make that progress
+// independent of the test executor; no production callback creates a thread.
+private func startTransferTestThread(_ body: @escaping @Sendable () -> Void) {
+    Thread.detachNewThread(body)
+}
+
 private func transferConfiguration(
     encoding: PCMEncoding = .float32, layout: PCMLayout = .interleaved,
     channels: Int = 1, frames: UInt32 = 16, slots: Int = 2,
@@ -368,25 +376,32 @@ private func offer(
 
 @Test func transferDelayedCollisionPublishesBeforeTerminalDrain() throws {
     let queue = PCMTransfer(configuration: try transferConfiguration())
-    let suspended = DispatchSemaphore(value: 0)
-    let resume = DispatchSemaphore(value: 0)
+    let admitted = DispatchSemaphore(value: 0)
+    let releaseAdmission = DispatchSemaphore(value: 0)
     let completed = DispatchSemaphore(value: 0)
-    queue.withHeldProducerAdmissionForTesting {
-        DispatchQueue.global().async {
-            queue.withSuspendedRejectedProducerForTesting {
-                suspended.signal()
-                #expect(resume.wait(timeout: .now() + 5) == .success)
-            }
-            completed.signal()
+    // Even a failed startup prerequisite releases the native holder. It cannot
+    // expire on its own and invalidate the rejected-caller precondition below.
+    defer { releaseAdmission.signal() }
+    startTransferTestThread {
+        queue.withHeldProducerAdmissionForTesting {
+            admitted.signal()
+            releaseAdmission.wait()
         }
-        #expect(suspended.wait(timeout: .now() + 5) == .success)
+        completed.signal()
     }
-    // The admitted producer has finished, but the rejected caller has not yet
-    // published its violation. Closing and draining must not overtake that report.
-    queue.close()
-    #expect(queue.withNext { _ in Issue.record("Premature event") } == .empty)
-    resume.signal()
-    #expect(completed.wait(timeout: .now() + 5) == .success)
+    try #require(admitted.wait(timeout: .now() + 5) == .success)
+    var holderFinished = false
+    queue.withSuspendedRejectedProducerForTesting {
+        releaseAdmission.signal()
+        holderFinished = completed.wait(timeout: .now() + 5) == .success
+        if holderFinished {
+            // Admission has ended, but this rejected caller still owes its
+            // violation. Terminal drain must not overtake that publication.
+            queue.close()
+            #expect(queue.withNext { _ in Issue.record("Premature event") } == .empty)
+        }
+    }
+    try #require(holderFinished)
     queue.withNext { event in
         guard case .gap(let gap) = event else {
             Issue.record("Missing delayed fault")
@@ -459,42 +474,47 @@ func transferAllNativeRepresentationsPreserveChannelBytes(
     let queue = PCMTransfer(configuration: try transferConfiguration())
     let producerResult = Mutex<PCMTransferOfferResult?>(nil)
     let producerDone = DispatchSemaphore(value: 0)
+    var producerCompleted = false
     queue.withHeldProducerAdmissionForTesting {
-        DispatchQueue.global().async {
+        startTransferTestThread {
             let result = offer(queue, [1], start: 0)
             producerResult.withLock { $0 = result }
             producerDone.signal()
         }
-        #expect(producerDone.wait(timeout: .now() + 5) == .success)
-        #expect(producerResult.withLock { $0 } == .concurrentProducer)
+        producerCompleted = producerDone.wait(timeout: .now() + 5) == .success
     }
+    try #require(producerCompleted)
+    #expect(producerResult.withLock { $0 } == .concurrentProducer)
     #expect(queue.snapshot().producerContractViolated)
 
     let other = PCMTransfer(configuration: try transferConfiguration())
     offer(other, [7], start: 0)
     let consumerResult = Mutex<PCMTransferReadResult?>(nil)
     let consumerDone = DispatchSemaphore(value: 0)
+    var consumerCompleted = false
     other.withNext { _ in
-        DispatchQueue.global().async {
-            let result = other.withNext { _ in Issue.record("Second consumer entered") }
+        startTransferTestThread {
+            let result = other.withNext { _ in }
             consumerResult.withLock { $0 = result }
             other.close()
             consumerDone.signal()
         }
-        #expect(consumerDone.wait(timeout: .now() + 5) == .success)
-        #expect(consumerResult.withLock { $0 } == .concurrentConsumer)
+        consumerCompleted = consumerDone.wait(timeout: .now() + 5) == .success
     }
+    try #require(consumerCompleted)
+    #expect(consumerResult.withLock { $0 } == .concurrentConsumer)
     #expect(other.withNext { _ in } == .finished)
 }
 
 @Test func transferConcurrentCloseRacesFinalPublicationWithoutLosingAcceptedPCM() throws {
     for trial in 0..<100 {
         let queue = PCMTransfer(configuration: try transferConfiguration(frames: 16, slots: 32))
+        defer { queue.close() }
         let result = Mutex(StressResult())
         let start = DispatchSemaphore(value: 0)
         let group = DispatchGroup()
         group.enter()
-        DispatchQueue.global().async {
+        startTransferTestThread {
             start.signal()
             var local = StressResult()
             for i in 0..<1000 {
@@ -511,7 +531,7 @@ func transferAllNativeRepresentationsPreserveChannelBytes(
             }
             group.leave()
         }
-        #expect(start.wait(timeout: .now() + 5) == .success)
+        try #require(start.wait(timeout: .now() + 5) == .success)
         if trial % 2 == 0 { Thread.sleep(forTimeInterval: 0.00001) }
         queue.close()
         var blocks = 0
@@ -524,7 +544,7 @@ func transferAllNativeRepresentationsPreserveChannelBytes(
                 break
             }
         }
-        #expect(group.wait(timeout: .now() + 5) == .success)
+        try #require(group.wait(timeout: .now() + 5) == .success)
         let actual = result.withLock { $0 }
         #expect(finished && actual.errors == 0)
         #expect(blocks == actual.accepted)
@@ -558,10 +578,11 @@ func transferAllNativeRepresentationsPreserveChannelBytes(
 
 @Test func transferConcurrentBurstsPreserveBytesAndExplicitCoverage() throws {
     let queue = PCMTransfer(configuration: try transferConfiguration(frames: 17, slots: 8))
+    defer { queue.close() }
     let result = Mutex(StressResult())
     let group = DispatchGroup()
     group.enter()
-    DispatchQueue.global().async {
+    startTransferTestThread {
         var local = StressResult()
         var position: Int64 = 0
         for i in 0..<10_000 {
@@ -586,7 +607,7 @@ func transferAllNativeRepresentationsPreserveChannelBytes(
         group.leave()
     }
     group.enter()
-    DispatchQueue.global().async {
+    startTransferTestThread {
         var local = StressResult()
         var nextPosition: Int64 = 0
         let deadline = Date().addingTimeInterval(10)
@@ -628,7 +649,7 @@ func transferAllNativeRepresentationsPreserveChannelBytes(
         }
         group.leave()
     }
-    #expect(group.wait(timeout: .now() + 15) == .success)
+    try #require(group.wait(timeout: .now() + 15) == .success)
     let actual = result.withLock { $0 }
     #expect(actual.finished && actual.errors == 0)
     #expect(actual.blocks == actual.accepted && actual.frames == actual.acceptedFrames)

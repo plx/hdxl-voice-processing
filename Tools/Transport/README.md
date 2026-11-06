@@ -50,5 +50,11 @@ concurrent producer rejection, consumer contention, slow worker bursts, 100 clos
 races, delayed collision publication before terminal drain, and final-owner release
 during a borrow. The ordinary correctness workflow runs
 these under Debug, Release, Address Sanitizer and Thread Sanitizer, including sanitizer
-positive controls. Native callback serialization and teardown still belong to #28/#29;
+positive controls. Synthetic producers and consumers use dedicated native threads so
+they can progress while a test holds an admission gate or borrow. A global dispatch
+queue can be starved by blocked Swift Testing tasks sharing its underlying pool;
+see Apple's [forward-progress contract](https://developer.apple.com/videos/play/wwdc2021/10254/).
+Synchronization prerequisites fail the test before dependent assertions run, and the
+delayed-collision holder is explicitly released even when startup fails.
+Native callback serialization and teardown still belong to #28/#29;
 physical latency, allocation tracing under native capture, power and tuning remain #74/#121.
