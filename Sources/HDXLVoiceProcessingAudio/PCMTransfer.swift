@@ -13,7 +13,7 @@ import Synchronization
 /// - producer state is exclusive under `producerControl`'s active bit;
 /// - consumer state is exclusive under `consumerActive`;
 /// - release/acquire cursors transfer ownership of each slot's bytes and metadata;
-/// - final producer state is read only after acquiring closed-and-inactive control;
+/// - final producer state is read only after acquiring closed-and-quiescent control;
 /// - storage lives until the final strong reference, after all borrowed calls return.
 public final class PCMTransfer: @unchecked Sendable {
     public let configuration: PCMTransferConfiguration
@@ -30,12 +30,14 @@ public final class PCMTransfer: @unchecked Sendable {
         let interleaved: Bool
     }
 
-    // A single word prevents shutdown from observing stale "inactive" independently
-    // of closure. Admission is one compare-exchange, never a spin/retry loop.
-    private static let active: UInt32 = 1
-    private static let closed: UInt32 = 2
-    private static let violation: UInt32 = 4
-    private let producerControl = Atomic<UInt32>(0)
+    // Upper 61 bits count registered attempts, including rejected producers that
+    // have not published their fault yet. Sharing one word with the flags prevents
+    // terminal drain from overtaking a delayed collision report.
+    private static let active: UInt64 = 1
+    private static let closed: UInt64 = 2
+    private static let violation: UInt64 = 4
+    private static let participant: UInt64 = 8
+    private let producerControl = Atomic<UInt64>(0)
     private let consumerActive = Atomic<Bool>(false)
     private let published = Atomic<UInt64>(0)
     private let released = Atomic<UInt64>(0)
@@ -76,6 +78,7 @@ public final class PCMTransfer: @unchecked Sendable {
         var blockGapDelivered = false
         var finalGapDelivered = false
         var faultHandled = false
+        var finished = false
     }
     private struct PendingGap {
         let reasons: PCMTransferGap.Reasons
@@ -155,10 +158,10 @@ public final class PCMTransfer: @unchecked Sendable {
         planes: UnsafeBufferPointer<UnsafeRawBufferPointer>?, frameCount: UInt32,
         sourceStartSample start: Int64, token: PCMTransferEpochToken, host: UInt64?
     ) -> PCMTransferOfferResult {
-        let admission = producerControl.compareExchange(
-            expected: 0, desired: Self.active, ordering: .acquiring)
-        guard admission.exchanged else {
-            if admission.original & Self.closed != 0 { return .closed }
+        let admission = registerAndTryAdmission()
+        defer { producerControl.wrappingSubtract(Self.participant, ordering: .releasing) }
+        guard admission == .admitted else {
+            if admission == .closed { return .closed }
             producerControl.bitwiseOr(
                 Self.closed | Self.violation, ordering: .acquiringAndReleasing)
             return .concurrentProducer
@@ -240,6 +243,21 @@ public final class PCMTransfer: @unchecked Sendable {
         return .accepted(sequence: sequence)
     }
 
+    private enum Admission { case admitted, closed, overlapping }
+
+    @inline(__always)
+    private func registerAndTryAdmission() -> Admission {
+        let prior = producerControl.wrappingAdd(
+            Self.participant, ordering: .acquiringAndReleasing
+        ).oldValue
+        if prior & Self.closed != 0 { return .closed }
+        let admission = producerControl.compareExchange(
+            expected: Self.participant, desired: Self.participant | Self.active,
+            ordering: .acquiring)
+        if admission.exchanged { return .admitted }
+        return admission.original & Self.closed != 0 ? .closed : .overlapping
+    }
+
     @inline(__always)
     private func appendGap(
         _ reasons: PCMTransferGap.Reasons, interval: PCMTransferLostInterval?
@@ -292,10 +310,15 @@ public final class PCMTransfer: @unchecked Sendable {
             ).exchanged
         else { return .concurrentConsumer }
         defer { consumerActive.store(false, ordering: .releasing) }
+        if consumer.pointee.finished { return .finished }
         let control = producerControl.load(ordering: .acquiring)
+        let quiescent = control & ~(Self.closed | Self.violation) == 0
         if control & Self.violation != 0 {
-            guard control & Self.active == 0 else { return .empty }
-            guard !consumer.pointee.faultHandled else { return .finished }
+            guard quiescent else { return .empty }
+            guard !consumer.pointee.faultHandled else {
+                consumer.pointee.finished = true
+                return .finished
+            }
             // No future admission is possible. Discard pending PCM instead of
             // claiming temporal ordering after an unsupported producer collision.
             let head = published.load(ordering: .acquiring)
@@ -314,16 +337,17 @@ public final class PCMTransfer: @unchecked Sendable {
             return .delivered
         }
         let tail = released.load(ordering: .relaxed)
-        // This acquire follows the closed/inactive observation, so an admitted
+        // This acquire follows the closed/quiescent observation, so an admitted
         // final publication cannot be mistaken for an empty completed queue.
         let head = published.load(ordering: .acquiring)
         guard head != tail else {
-            guard control & (Self.active | Self.closed) == Self.closed else { return .empty }
+            guard control & Self.closed != 0, quiescent else { return .empty }
             if !consumer.pointee.finalGapDelivered, let gap = producer.pointee.gap {
                 consumer.pointee.finalGapDelivered = true
                 body(.gap(publicGap(gap)))
                 return .delivered
             }
+            consumer.pointee.finished = true
             return .finished
         }
         let index = Int(tail & UInt64(configuration.slotCount - 1))
@@ -400,11 +424,23 @@ public final class PCMTransfer: @unchecked Sendable {
     }
 
     func withHeldProducerAdmissionForTesting(_ body: () -> Void) {
-        precondition(
-            producerControl.compareExchange(
-                expected: 0, desired: Self.active, ordering: .acquiring
-            ).exchanged)
-        defer { producerControl.bitwiseAnd(~Self.active, ordering: .releasing) }
+        precondition(registerAndTryAdmission() == .admitted)
+        defer {
+            producerControl.bitwiseAnd(~Self.active, ordering: .releasing)
+            producerControl.wrappingSubtract(Self.participant, ordering: .releasing)
+        }
+        body()
+    }
+
+    // Pauses after failed admission but before fault publication. The production
+    // admission primitive is shared; no callback hook exists on the offer path.
+    func withSuspendedRejectedProducerForTesting(_ body: () -> Void) {
+        precondition(registerAndTryAdmission() == .overlapping)
+        defer {
+            producerControl.bitwiseOr(
+                Self.closed | Self.violation, ordering: .acquiringAndReleasing)
+            producerControl.wrappingSubtract(Self.participant, ordering: .releasing)
+        }
         body()
     }
 }

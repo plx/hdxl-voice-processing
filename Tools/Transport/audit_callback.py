@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 
@@ -77,9 +78,9 @@ def audit(assembly, architecture):
             raise ValueError("Exclusive retry instructions require a new boundedness audit")
         cas = next(i for i, line in enumerate(body.splitlines()) if re.search(r"\bcasa\s", line))
     else:
-        if len(re.findall(r"\bcmpxchgl\s", body)) != 1:
+        if len(re.findall(r"\bcmpxchgq\s", body)) != 1:
             raise ValueError("Admission must contain exactly one native strong CAS")
-        cas = next(i for i, line in enumerate(body.splitlines()) if "cmpxchgl" in line)
+        cas = next(i for i, line in enumerate(body.splitlines()) if "cmpxchgq" in line)
     # Admission occurs before any loop. No branch may target an instruction at or
     # before it; channel validation/copy loops are bounded by the checked <=32 count.
     lines = body.splitlines()
@@ -97,6 +98,8 @@ def audit(assembly, architecture):
 
 def main():
     output = ROOT / ".build/transport-audit"
+    if output.exists():
+        shutil.rmtree(output)
     output.mkdir(parents=True, exist_ok=True)
     result = {"schemaVersion": 1, "status": "failed", "targets": {}, "commands": []}
     try:

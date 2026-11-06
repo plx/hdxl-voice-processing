@@ -366,6 +366,39 @@ private func offer(
     #expect(observed == nil)
 }
 
+@Test func transferDelayedCollisionPublishesBeforeTerminalDrain() throws {
+    let queue = PCMTransfer(configuration: try transferConfiguration())
+    let suspended = DispatchSemaphore(value: 0)
+    let resume = DispatchSemaphore(value: 0)
+    let completed = DispatchSemaphore(value: 0)
+    queue.withHeldProducerAdmissionForTesting {
+        DispatchQueue.global().async {
+            queue.withSuspendedRejectedProducerForTesting {
+                suspended.signal()
+                #expect(resume.wait(timeout: .now() + 5) == .success)
+            }
+            completed.signal()
+        }
+        #expect(suspended.wait(timeout: .now() + 5) == .success)
+    }
+    // The admitted producer has finished, but the rejected caller has not yet
+    // published its violation. Closing and draining must not overtake that report.
+    queue.close()
+    #expect(queue.withNext { _ in Issue.record("Premature event") } == .empty)
+    resume.signal()
+    #expect(completed.wait(timeout: .now() + 5) == .success)
+    queue.withNext { event in
+        guard case .gap(let gap) = event else {
+            Issue.record("Missing delayed fault")
+            return
+        }
+        #expect(gap.reasons == .producerViolation && gap.missingSource == nil)
+    }
+    #expect(queue.withNext { _ in Issue.record("Extra event") } == .finished)
+    #expect(offer(queue, [1], start: 0) == .closed)
+    #expect(queue.withNext { _ in Issue.record("Event after finished") } == .finished)
+}
+
 private struct StressResult: Sendable {
     var accepted = 0
     var acceptedFrames: UInt64 = 0

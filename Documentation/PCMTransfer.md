@@ -71,7 +71,7 @@ advertised dropped frames, depth, high water and closure/fault state. Fields are
 independently sampled; depth may be nil under sustained concurrent changes.
 
 Overlapping or reentrant producer calls return `.concurrentProducer` and permanently
-close admission. After the admitted producer finishes, the worker discards unread PCM
+close admission. After admitted and rejected attempts have finished, the worker discards unread PCM
 and emits an unknown producer-violation gap. This is an explicit failed precondition,
 not an MPSC transport. Each native adapter must demonstrate serialization or implement
 a separately audited bounded adaptation. Concurrent/reentrant consumer calls return
@@ -79,7 +79,8 @@ a separately audited bounded adaptation. Concurrent/reentrant consumer calls ret
 
 Call `close()` from control or worker code to stop new admission. An admitted producer
 can finish its copy. Continue draining until `.finished`, including a possible final
-gap; `.empty` can still mean the last producer is active. Close never waits or frees
+gap; `.empty` can still mean a producer is active or a rejected caller owes its fault
+report. Once returned, `.finished` stays terminal. Close never waits or frees
 storage. Retain the transport until native callbacks are quiescent and all worker
 borrows finish, then release the final owner off the capture thread. Format changes
 prepare a new transport and explicit epoch boundary; an existing transport is immutable.

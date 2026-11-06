@@ -62,12 +62,20 @@ sampled. Depth uses three bounded attempts and may be nil under continuous conte
 
 ## Ownership, admission and memory ordering
 
-The producer contract is one nonoverlapping producer, including reentrancy. A single
-strong compare-exchange acquires an active bit in a combined control word. Failure never
-spins or waits. If admission was already closed, return closed. Otherwise an overlapping
-producer permanently sets closed plus violation and returns concurrentProducer. The
-active producer releases its bit without clearing closure/fault bits. Consumers wait
-for quiescence by returning empty, not by blocking. They then discard unread PCM and
+The producer contract is one nonoverlapping producer, including reentrancy. Each attempt
+first registers in the upper 61 bits of a UInt64 control word with one native atomic add.
+The low bits hold active, closed and violation flags. An already-closed attempt returns
+closed; otherwise one strong compare-exchange admits the sole registered caller and
+sets active. Failure never spins or waits. An overlapping producer permanently sets
+closed plus violation and returns concurrentProducer. Every attempt unregisters with
+one release subtraction, after any fault publication; an admitted producer also releases
+active without clearing the other bits. The counter cannot wrap with the number of
+simultaneous synchronous call frames addressable in a supported 64-bit process.
+
+Registration includes rejected producers: if one is descheduled between failed admission
+and fault publication, close/drain must still observe an outstanding participant. Merely
+tracking the admitted producer permits a fault to arrive after finished. Consumers wait
+for all registered attempts to leave by returning empty, not by blocking. They then discard unread PCM and
 emit an unknown producer-violation gap; they do not claim ordering for these samples.
 An already borrowed block can finish before the fault is observed. Native adapters
 #28/#29 must prove the precondition or supply their own reviewed bounded adaptation.
@@ -85,10 +93,13 @@ private mutable state each have a separately owned stable allocation, so synchro
 does not straddle an overlapping Swift inout access. Diagnostics use separate atomics.
 
 Close atomically sets the closed bit and returns without waiting or freeing. Combined
-closed/inactive observation is essential: separate booleans could observe a stale idle
-value while an admitted producer is writing. After acquiring closed-and-inactive, the
+closed/quiescent observation is essential: separate booleans could observe stale idle
+state while an admitted producer is writing or a rejected producer owes a fault report.
+After acquiring closed with no active or registered participants, the
 consumer reloads the published cursor before deciding that the queue is empty, and can
-safely read final pending producer state. No subsequent producer can gain admission.
+safely read final pending producer state. No subsequent producer can gain admission or
+publish a new fault. Finished is sticky on the consumer; later already-closed offers
+cannot temporarily make it empty again while registering and unregistering.
 
 The controller retains the object until native callbacks are quiescent and worker calls
 have returned. Final release belongs on a control/worker thread. Close is **not** a native

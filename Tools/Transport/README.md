@@ -47,7 +47,8 @@ or 1,000 offers, recorded per workload. Batch p99 is not individual-callback p99
 Swift tests cover FIFO wraparound, buffer expiry, all native representations, exact and
 unknown gaps, oversized/invalid input, epoch replacement, sequence exhaustion, reentrancy,
 concurrent producer rejection, consumer contention, slow worker bursts, 100 close/publication
-races and final-owner release during a borrow. The ordinary correctness workflow runs
+races, delayed collision publication before terminal drain, and final-owner release
+during a borrow. The ordinary correctness workflow runs
 these under Debug, Release, Address Sanitizer and Thread Sanitizer, including sanitizer
 positive controls. Native callback serialization and teardown still belong to #28/#29;
 physical latency, allocation tracing under native capture, power and tuning remain #74/#121.
