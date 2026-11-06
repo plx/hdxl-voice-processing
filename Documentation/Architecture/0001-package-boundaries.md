@@ -48,6 +48,12 @@ Windows, tvOS, and visionOS are unqualified. Physical-device evidence is deferre
 by the owner to #74; build/simulator evidence cannot establish capture or energy
 behavior. Public release authorization remains a separate final decision.
 
+The [#20 platform and host contract](../HostCaptureIntegration.md) now separates
+SDK availability, implemented capabilities, cross-compilation, software execution
+and pending physical evidence. It preserves these minimums and product boundaries.
+Capture preflight, typed capture errors, authorization queries and session ownership
+live in Audio. Core measurement failures do not acquire microphone-policy meanings.
+
 Sources checked: [Apple Xcode SDK/compiler matrix](https://developer.apple.com/xcode/system-requirements),
 [SwiftPM manifest reference](https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html),
 and [GitHub runner images](https://github.com/actions/runner-images).
