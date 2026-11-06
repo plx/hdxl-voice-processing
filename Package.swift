@@ -24,6 +24,8 @@ let package = Package(
         .testTarget(
             name: "ProductBoundaryTests",
             dependencies: ["HDXLVoiceProcessingAudio", "HDXLVoiceProcessingVisualization"]),
+        .testTarget(
+            name: "HDXLVoiceProcessingAudioTests", dependencies: ["HDXLVoiceProcessingAudio"]),
     ],
     swiftLanguageModes: [.v6]
 )

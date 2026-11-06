@@ -13,3 +13,7 @@ separate conversion/export costs. Candidate generation never overwrites reviewed
 robust-regression oracles, verify full-PCM speech comparisons, and measure isolated
 fits plus actual 1/60-second PCM-to-CPP workloads. Five explicit benchmark groups
 cover all fit methods, source precisions, rates and 2/5/10 ms hops.
+
+[The PCM transport tools](Transport/README.md) audit optimized capture entry points on
+the supported architectures and measure accepted/rejected offers with independent
+timing and allocation binaries, positive controls and retained raw histograms.
