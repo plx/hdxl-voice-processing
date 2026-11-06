@@ -21,7 +21,8 @@
         "HDXLVoiceProcessingAudio: AVFAudio, Swift Synchronization atomics",
         "HDXLVoiceProcessingVisualization: SwiftUI",
         "All tests and Examples/CoreConsumer; bundled swift-format",
-        "Examples/CalibrationWorkflow: separate public-API consumer and macOS peak-resident-memory evidence; no runtime dependency added"
+        "Examples/CalibrationWorkflow: separate public-API consumer and macOS peak-resident-memory evidence; no runtime dependency added",
+        "Examples/PersonalTargetWorkflow: separate public-core-API synthetic fit/evaluation and macOS process RSS evidence; no runtime dependency added"
       ],
       "redistributed": false
     },
@@ -42,7 +43,8 @@
         "Tools/Synthetic: original standard-library generators, mathematical oracles and generation benchmarks",
         "Tools/Framing: original Decimal window oracle and isolated host benchmark evidence validation",
         "Tools/YIN: original bounded fixed-time YIN scalar oracle, original synthetic inputs and candidate-tracking references; standard library only",
-        "Tools/Calibration: original integer PCM generators and independent workflow/memory evidence validation; standard library only"
+        "Tools/Calibration: original integer PCM generators and independent workflow/memory evidence validation; standard library only",
+        "Tools/PersonalTargets: independent exact-profile and fitting reference generation/verification; standard library only"
       ],
       "redistributed": false
     },
@@ -72,7 +74,8 @@
         "Tools/Reference explicit developer-only CLI; official binary downloaded to ignored .build only; no source copying or runtime linkage",
         "Tools/Framing/reference.py: black-box Gaussian coefficient oracle only; no runtime linkage",
         "Tools/Cepstrum/reference.py: explicit black-box full cepstrogram and intermediate references; no runtime linkage or copied implementation",
-        "Tools/CPP/reference.py: explicit black-box peak/background references and independent robust-fit audit; no runtime linkage or copied implementation"
+        "Tools/CPP/reference.py: explicit black-box peak/background references and independent robust-fit audit; no runtime linkage or copied implementation",
+        "Tools/PersonalTargets/profile_reference.py: black-box CPPS output on original synthetic PCM; no runtime linkage or copied implementation"
       ],
       "redistributed": false,
       "implementationIssue": "https://github.com/plx/hdxl-voice-processing/issues/26",
@@ -20559,6 +20562,836 @@
       ],
       "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
       "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1600-praat-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1600-praat/reference.json",
+      "sha256": "bbdf4cc3bcc2aac0994a1aa067bb774066f8ebda89c61d7b4371e52e667ee607",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1600-praat-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1600-praat/reference.raw.txt",
+      "sha256": "7643d617b35700c2e762b3a0fe723f0b52fbc3778a56c945d5b55c5f2b094150",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1600-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1600.wav",
+      "sha256": "594dae5d090b5df71be2036b50ae119356d6d7cf1f4ba32f299665087b22645c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1601-praat-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1601-praat/reference.json",
+      "sha256": "640c30546f6ff6a5090b24bf08c43260ab1dd68374318984f4494058a04cbc63",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1601-praat-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1601-praat/reference.raw.txt",
+      "sha256": "d1c833ffae2c98bdcb867fa6ecbecb375ab9a0de92965353b21d59a7eb282ee9",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1601-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1601.wav",
+      "sha256": "d1d29f288c2d7b42e689fdea7b8fc4d58262c8bfc1329277f97a3547f4df8b3f",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1632-praat-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1632-praat/reference.json",
+      "sha256": "0b8edee524e1d01cd0e48fcfc86e3f362ad00c04ffed193a84d65b0c028744ef",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1632-praat-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1632-praat/reference.raw.txt",
+      "sha256": "d86ffdc7902d872c3e96ab50327496c766e5740dda8b6a34f3e85b0d7f871f9a",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1632-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1632.wav",
+      "sha256": "f61f9fde9a526c19674f8003975e1ea30161a22eb6804421c7fc6a1f36aef3f3",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1920-praat-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1920-praat/reference.json",
+      "sha256": "fd4d0804a65701d8203fc259245d62c3ecd36a65f744ce5adbda321cf0560bc2",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1920-praat-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1920-praat/reference.raw.txt",
+      "sha256": "dc06bec1efafdba448755a163ea5728be75e856d57e2d664186bcff6a427703b",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-boundary-1920-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/boundary-1920.wav",
+      "sha256": "ddbcd0dc7e16237abdda2276cdc64caea51dd492d436c1c89480f8bd95eab889",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-profile-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/profile-reference.json",
+      "sha256": "edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-01-praat-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-01-praat/reference.json",
+      "sha256": "0bbf3649d442f40baa8e97cd630aa90c827cf5bad4f9f60e15629dc6ab0c2b25",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-01-praat-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-01-praat/reference.raw.txt",
+      "sha256": "440a530134f5bc2c71717f678559a95e80ec3f06923ede77bc28810ce6e4bd67",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-01-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-01.wav",
+      "sha256": "09effb60d50362b9030af37f9e00dc98a4a35f9560d755cf83a0878f105d5acb",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-02-praat-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-02-praat/reference.json",
+      "sha256": "fcd6baf1d6f50f998f0ceb77c8a75ff24887948efeb40bc569dbcabbc7e66182",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-02-praat-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-02-praat/reference.raw.txt",
+      "sha256": "f8b061d1e9e0f7c27b866c88cb1f11686b329d2be1dcd45cd318ee1f73cec97d",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-02-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-02.wav",
+      "sha256": "06708dfcf35df08c1d95a2d5f377e18f9743bf1ca24fd5d33b8178431f54a04f",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-09-praat-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-09-praat/reference.json",
+      "sha256": "80f12962f3fe0758bf3f10a356466db2857348fbc711350ca3fc03a969f35b62",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-09-praat-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-09-praat/reference.raw.txt",
+      "sha256": "d44588ac971afd9ec53b39a602d36db042855e9149fec909aca72771e8105129",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-09-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-09.wav",
+      "sha256": "e4bf6211645e12d3d2d6774c84d705b8d537fd7e34a1e797cc8ad88aa028fd22",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-10-praat-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-10-praat/reference.json",
+      "sha256": "a78235b808ea9ee974f8181acecbbbcf6f7993cd234e586c4bbad514bcfaa0ca",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-10-praat-reference-raw-txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-10-praat/reference.raw.txt",
+      "sha256": "5ca85c1de49d5258563ce22e8eec8e03a25251aec6564ca10071a97395641205",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-profile-take-10-wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/Profile/take-10.wav",
+      "sha256": "c38b996675818daae5da530d1e088887a8ffd4c1983011966c6754489f785409",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/profile_reference.py",
+        "version": "1",
+        "sha256": "96f06341aedf4301a712189bdf0edf373af5d0ed48d03ccc7735b66608993a13"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Original C01 integer PCM fixtures, exact prefix selection, lossless normalized Float64 WAVE conversion; original source hashes retained",
+        "Pinned external Praat 7.0.02 CPPS raw output and strict manifest parsing; independent scalar Python YIN and math.fsum unweighted level oracle",
+        "Exact finite boundary contracts; no unavailable value imputed as zero; no native measurement used to generate expected values"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b",
+      "referenceOutputIdentity": "sha256:edb00cfac6cf03010e14a36e5441f8d21f4b27825b0529ba450d5b42eece02a0"
+    },
+    {
+      "id": "personal-target-v1-fitting-reference-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/fitting-reference.json",
+      "sha256": "3f9d8a299237c3f520b44d9710231e7c6e468eb3f46942ba67fb18b30d2d6d99",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/53",
+        "versionOrHash": "generator-v1-sha256:6bb531ec4d31f6cf6885a293ed704c634a130926196e00557089ab4047da8810"
+      },
+      "generator": {
+        "path": "Tools/PersonalTargets/fitting_reference.py",
+        "version": "1",
+        "sha256": "6bb531ec4d31f6cf6885a293ed704c634a130926196e00557089ab4047da8810"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic inputs and scripted labels; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Explicit synthetic CPPS/F0/level group inputs; independent Python quantiles, split hashing, confusion counts and numerical score inversion; no Swift output read"
+      ],
+      "expectedProfile": "personal-cpps-iqr-band/v1; synthetic contract fixtures; not listening evidence",
+      "referenceOutputIdentity": "sha256:3f9d8a299237c3f520b44d9710231e7c6e468eb3f46942ba67fb18b30d2d6d99"
     }
   ],
   "optionalModels": []

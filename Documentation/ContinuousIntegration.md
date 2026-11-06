@@ -186,3 +186,24 @@ distributions, p99, profiles, input hashes, geometry, memory and positive contro
 Prepared checksum/conversion runs require zero heap maxima; eight explicitly owned
 export runs are measured separately. These are host pre-CPP baselines for #33,
 with actual CPP pipelines required in #35. Physical evidence remains #74.
+
+## Personal target fitting
+
+The `Personal target evidence` workflow runs on core/profile/target-fixture changes
+and manually. It uses committed original synthetic references without downloading
+Praat, executes the exact-profile native test, and validates all frame, boundary,
+chunk, identity and error-budget fields before constructing fitting receipts.
+It then runs the separate public-API example in twenty fresh Release processes:
+nine synthetic scenarios per process and either one or four 512-take, 32-session
+fitting/evaluation passes. Independent Python expectations check numerical rules,
+confusion counts, group identities, conditional uncertainty and activation/refusal.
+Eleven corruption controls must fail validation.
+
+The workflow retains synthetic JSON, redacted command logs and the profile xUnit
+report for 14 days. It reports fitting/evaluation time separately from input setup,
+and process RSS with its stated runtime/input/report overhead. Median RSS growth
+between the one-pass and four-pass groups must stay within the declared 32 MiB
+host smoke allowance. Every model is bounded to 64 KiB. These are offline software
+checks; human listening, useful personal feedback and physical-device measurements
+remain follow-up evidence. See [the target example](../Examples/PersonalTargetWorkflow/README.md)
+and [reference definitions](../Tools/PersonalTargets/README.md).

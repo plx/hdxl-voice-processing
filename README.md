@@ -69,6 +69,9 @@ periodicity, actual observed support, optional causal tracking and separate hist
 The [masking guide](Documentation/Masks.md) defines independent annotation, energy,
 and spectral-flatness sources, original-timeline coverage, separate-region routing,
 and inspectable exclusions without an implicit periodicity gate.
+The [personal-target guide](Documentation/PersonalTargets.md) defines training-only
+CPPS intervals, exact-profile validation, held-out recording/session evaluation,
+confound checks, abstention and the limits of personal-label associations.
 The [licensed voice corpus](Documentation/VoiceCorpus.md) supplies pinned PVQD originals,
 sample-exact speech/vowel excerpts, simulated defects, explicit negative cases, and
 offline load/decode checks without adding resources to runtime products.
