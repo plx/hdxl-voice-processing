@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewedDate": "2026-11-05",
+  "reviewedDate": "2026-11-06",
   "projectLicense": {
     "status": "pending-owner-decision",
     "identifier": null,
@@ -20,7 +20,8 @@
         "HDXLVoiceProcessing: Swift, Foundation, CryptoKit",
         "HDXLVoiceProcessingAudio: AVFAudio, Swift Synchronization atomics",
         "HDXLVoiceProcessingVisualization: SwiftUI",
-        "All tests and Examples/CoreConsumer; bundled swift-format"
+        "All tests and Examples/CoreConsumer; bundled swift-format",
+        "Examples/CalibrationWorkflow: separate public-API consumer and macOS peak-resident-memory evidence; no runtime dependency added"
       ],
       "redistributed": false
     },
@@ -40,7 +41,8 @@
         "Tools/Reference: standard library only; no third-party Python packages",
         "Tools/Synthetic: original standard-library generators, mathematical oracles and generation benchmarks",
         "Tools/Framing: original Decimal window oracle and isolated host benchmark evidence validation",
-        "Tools/YIN: original bounded fixed-time YIN scalar oracle, original synthetic inputs and candidate-tracking references; standard library only"
+        "Tools/YIN: original bounded fixed-time YIN scalar oracle, original synthetic inputs and candidate-tracking references; standard library only",
+        "Tools/Calibration: original integer PCM generators and independent workflow/memory evidence validation; standard library only"
       ],
       "redistributed": false
     },
@@ -20031,6 +20033,532 @@
       },
       "expectedProfile": "hdxl-yin-fixed-time-2002-steps2to5 version 1; separately identified causal candidate continuity; estimator settings SHA256 5a4818e19ee1c97ce5c264be6361652f65000fb1b80160d9821bfc1f442faeb4",
       "referenceOutputIdentity": "sha256:8bd58c6c66d250faa718086d80ae001a2b4f3cf358417e6fb9b3b93bc8861757"
+    },
+    {
+      "id": "calibration-v1-manifest",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/manifest.json",
+      "sha256": "c11738d5cd6d1b24826d9cbfd1a99bbd2e4d6105d7109f4007d1858c91bc9cf0",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Python standard-library JSON: sorted keys, compact separators, UTF-8, trailing LF"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-01",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-01.wav",
+      "sha256": "f63c9c6749b7894c924cb25faa3dc3a6246a568841663b454729f84246c41b09",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-02",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-02.wav",
+      "sha256": "10ec3caad0d767b78ff89ae80f7f967ca98caea9fe6020d365f3bfedecd5ef2a",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-03",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-03.wav",
+      "sha256": "4a0fc2ab1ae20432fe2a7a30e2da0c02a84cd0e0dd78a7ded4e7fb56da5104d5",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-04",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-04.wav",
+      "sha256": "1bfae923f5febc2f1f1130e6c76103175821e24a94c545e7eaaa6b8ed55601d0",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-05",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-05.wav",
+      "sha256": "7a505923f5f0f9fa7a128547eecffd2ed5c9737f2bbe79ffb0283e1e63ececcf",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-06",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-06.wav",
+      "sha256": "0b18b238947b12165111a79ea644da4ef67f551c6d5e6d30156da0ff892d9989",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-07",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-07.wav",
+      "sha256": "d5fef44869c53415892bcdca652c7d35879c59ad46ddb6812894ef2e31752d61",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-08",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-08.wav",
+      "sha256": "96a509df02f86f6cf17899af4d4a99172e16f2100b22e21ef3edf42022c3cbef",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-09",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-09.wav",
+      "sha256": "88c69e8d919384807733475a2b7e293f2c39441d596ed39088bdb38d818dc20c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-10",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-10.wav",
+      "sha256": "44ed247a014279df894f3e411b96ceab270420ed851dc229283ea7b67504028b",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-11",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-11.wav",
+      "sha256": "711381b9ddbbf5838c2b3e90918dff42500716928ef1f4fb44dde89ab3095dbc",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-12",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-12.wav",
+      "sha256": "81dbb1d384e4c68a659dd4163b87e9d76266c1aa696d0ac49666cf672d0bce50",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-13",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-13.wav",
+      "sha256": "48eef975d5184c8b3850c2fc91134366c7ca4c73b02e0cda982a08b408179625",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-14",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-14.wav",
+      "sha256": "56cd0e77b5b8da3f9c185022885988dbd532409ae295a83c116bdd789c028b4f",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-15",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-15.wav",
+      "sha256": "3da75501f226bcbfc73d5228865afe5d1e91b00ba6912a8a42c465db740b7cf9",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
+    },
+    {
+      "id": "calibration-v1-take-16",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Calibration/take-16.wav",
+      "sha256": "386ed0c089850d0213fdc673f41a634099f40ef872245a557f31ad4a5a39689e",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/47",
+        "versionOrHash": "generator-v1-sha256:db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "generator": {
+        "path": "Tools/Calibration/generate.py",
+        "version": "1",
+        "sha256": "db6dd937237a1417cb200d9264ef2476609ac7298d6c2c41b89bf2294b39a50b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original integer-generated synthetic audio and scripted metadata; no human recording or actual listening study."
+      },
+      "transformations": [
+        "Integer triangle waveform plus seeded LCG noise; artificial task-dependent gaps",
+        "PCM16 little-endian mono at 16000 Hz; no normalization or resampling"
+      ],
+      "expectedProfile": "shared-pcm-analysis-schedule/v1:5bf396a88af81ad37a14cddb4451cb0def196f1d9384b22c720227d8e835a7df",
+      "referenceOutputIdentity": "calibration-workflow/v1; structural/numerical integration example, no personal target validity claim"
     }
   ],
   "optionalModels": []

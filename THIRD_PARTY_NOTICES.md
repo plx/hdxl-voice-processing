@@ -12,6 +12,14 @@ generated contract fixtures are not represented as licensed for redistribution w
 that decision is pending. Public visibility alone is not a license grant. Actual
 distribution is gated by `python3 Tools/verify-provenance.py --for-publication`.
 
+The 16 PCM files and manifest under
+`Tests/HDXLVoiceProcessingTests/Fixtures/Calibration` are original outputs of
+`Tools/Calibration/generate.py` version 1. They use integer triangle waveforms,
+deterministic noise and artificial gaps, with scripted metadata and labels. They
+contain no human voice, participant information or listening-study evidence and
+inherit the pending project-license decision. Exact generator/artifact hashes and
+the example's executable analysis-profile identity are in the provenance inventory.
+
 | Component | Use and current status | Upstream terms/evidence |
 | --- | --- | --- |
 | Xcode 27.0 / SDKs 27.0 / Swift 6.4 | System toolchain/frameworks, not vendored | [Xcode and Apple SDKs agreement](https://developer.apple.com/support/terms/) and notices distributed with the tools |
