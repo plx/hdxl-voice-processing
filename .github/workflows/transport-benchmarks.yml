@@ -1,0 +1,50 @@
+name: PCM transport callback evidence
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'ci-probe/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: transport-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  callback:
+    name: PCM callback audit and allocations / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Audit optimized callbacks on supported architectures
+        run: python3 Tools/Transport/audit_callback.py
+      - name: Capture timing with allocator instrumentation disabled
+        run: python3 Tools/Transport/benchmark.py timing
+      - name: Validate every capture-path allocation histogram and capability control
+        run: python3 Tools/Transport/benchmark.py allocation
+      - name: Retain public transport evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: transport-callback-${{ github.run_attempt }}
+          path: |
+            .build/transport-audit/*.json
+            .build/transport-audit/*.log
+            .build/transport-audit/*/capture.s
+            Benchmarks/.build/artifacts/transport-*/*.json
+            Benchmarks/.build/artifacts/transport-*/*.json.gz
+            Benchmarks/.build/artifacts/transport-*/*.log
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14

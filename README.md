@@ -23,6 +23,10 @@ swift run --package-path Examples/CoreConsumer CoreConsumer
 
 The independent consumer demonstrates the current `PCMFormat` value. Importing
 core does not link capture/UI frameworks or require reference/benchmark tooling.
+
+The Audio product now includes [bounded PCM transfer](Documentation/PCMTransfer.md)
+between a capture adapter and a serial worker, with explicit loss intervals and fixed
+storage. Native microphone adapters remain separate roadmap work.
 This library has no app bundle and does not start microphones. Host applications
 own permissions, audio sessions, sandbox entitlements, and lifecycle.
 

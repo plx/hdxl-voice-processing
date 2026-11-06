@@ -18,7 +18,7 @@
       "licenseEvidenceURL": "https://developer.apple.com/support/terms/",
       "usedBy": [
         "HDXLVoiceProcessing: Swift, Foundation, CryptoKit",
-        "HDXLVoiceProcessingAudio: AVFAudio",
+        "HDXLVoiceProcessingAudio: AVFAudio, Swift Synchronization atomics",
         "HDXLVoiceProcessingVisualization: SwiftUI",
         "All tests and Examples/CoreConsumer; bundled swift-format"
       ],
