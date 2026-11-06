@@ -114,9 +114,10 @@ def main():
                 folder.mkdir(exist_ok=True)
                 sdk = ci.capture("xcrun", "--sdk", sdk_name, "--show-sdk-path")
                 common = ["xcrun", "swiftc", "-swift-version", "6", "-O", "-target", target,
-                          "-sdk", sdk, "-module-cache-path", str(folder / "module-cache")]
-                ci.run_command([*common, "-emit-module", "-parse-as-library", "-package-name",
-                                "HDXLVoiceProcessing", "-module-name", "HDXLVoiceProcessing",
+                          "-sdk", sdk, "-module-cache-path", str(folder / "module-cache"),
+                          "-package-name", "HDXLVoiceProcessing"]
+                ci.run_command([*common, "-emit-module", "-parse-as-library",
+                                "-module-name", "HDXLVoiceProcessing",
                                 "-emit-module-path", str(folder / "HDXLVoiceProcessing.swiftmodule"),
                                 *map(str, sources)], log, result["commands"])
                 assembly = folder / "audio.s"

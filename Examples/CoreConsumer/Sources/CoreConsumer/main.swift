@@ -4,7 +4,7 @@ import HDXLVoiceProcessing
 let source = try PCMFormat(sampleRate: 48_000, channelCount: 1)
 print("PCM: \(source.sampleRate) Hz, \(source.channelCount) channel(s)")
 
-// This demonstrates metadata and unavailable results, not an implemented RMS algorithm.
+// A metadata-only example; the prepared scheduler below executes the level algorithm.
 let profile = try AnalysisProfile(
     identifier: VersionedIdentifier(name: "consumer-example", version: 1),
     measurement: MeasurementDescriptor(
@@ -54,5 +54,29 @@ precondition(mask.selectedRegions.first?.startSample == 12_480)
 print(
     "Energy selection: \(mask.coverage.selectedSampleCount)/\(mask.coverage.sourceSampleCount) original samples"
 )
-// A stateful downstream kernel resets at each selected region boundary; see the
-// mask/CPP integration tests for end-to-end processing without joining regions.
+// The scheduler consumes the prepared mask and resets all state between regions.
+let scheduleProfile = try AnalysisScheduleProfile(
+    inputFormat: PCMFormat(sampleRate: 48_000, channelCount: 1, encoding: .float64),
+    channels: PCMChannelSelection(channelIndex: 0),
+    levels: LevelConfiguration(
+        sampleRate: 48_000, inputPrecision: .float64,
+        windowLength: 480, hopLength: 240, accumulation: .compensatedSliding, weighting: .none))
+let scheduleOrigin = try AnalysisScheduleOrigin(
+    source: SourceInterval(
+        epoch: maskSource.epoch, startSample: maskSource.startSample,
+        sampleCount: 0, sampleRate: maskSource.sampleRate), continuityEpoch: maskSource.epoch)
+let scheduler = try PreparedMaskedAnalysisSchedule<Double>(
+    profile: scheduleProfile, origin: scheduleOrigin, mode: .finite,
+    mask: PreparedAnalysisMask(timeline: mask, scope: .selected))
+var scheduledFrames = 0
+_ = try examplePCM.withUnsafeBufferPointer {
+    try scheduler.processInterleaved($0, interval: maskSource) { frame in
+        scheduledFrames += 1
+        precondition(frame.coverage.selected == frame.coverage.source)
+    }
+}
+let scheduled = try scheduler.finish()
+precondition(scheduled.analyzedSampleCount == 960)
+print(
+    "Scheduled \(scheduledFrames) level frames from \(scheduled.analyzedSampleCount) selected samples"
+)

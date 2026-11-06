@@ -21,7 +21,7 @@ swift test
 swift run --package-path Examples/CoreConsumer CoreConsumer
 ```
 
-The independent consumer demonstrates the current `PCMFormat` value. Importing
+The independent consumer demonstrates contracts, masks and selected-region scheduling. Importing
 core does not link capture/UI frameworks or require reference/benchmark tooling.
 
 The Audio product now includes [bounded PCM transfer](Documentation/PCMTransfer.md)
@@ -29,6 +29,10 @@ between a capture adapter and a serial worker, with explicit loss intervals and 
 storage. Native microphone adapters remain separate roadmap work.
 This library has no app bundle and does not start microphones. Host applications
 own permissions, audio sessions, sandbox entitlements, and lifecycle.
+
+[Shared scheduling](Documentation/SharedScheduling.md) now feeds Levels, YIN and CPP/CPPS
+from memory, files, isolated file batches and worker-side PCM transfer. Matching profiles
+share numerical execution, with explicit gaps, masks, coverage and timing requirements.
 
 See [contribution instructions](CONTRIBUTING.md),
 [architecture](Documentation/Architecture/0001-package-boundaries.md), and the
