@@ -167,46 +167,48 @@
             state = .configuring
             publish(.state(state, epoch: op.epoch))
             do {
-                let observed = try await withTaskCancellationHandler {
-                    try await startup.value
+                return try await withTaskCancellationHandler {
+                    let observed = try await startup.value
+                    guard isCurrent(op), !Task.isCancelled else { throw cancelled(epoch: op.epoch) }
+                    op.startup = nil
+                    op.published = true
+                    nextEpoch = successor
+                    let previous = lastConfiguration
+                    lastConfiguration = observed
+                    configuration = observed
+                    state = .running
+                    publish(.configured(observed))
+                    guard isCurrent(op), !Task.isCancelled else { throw cancelled(epoch: op.epoch) }
+                    if let calibration {
+                        publish(
+                            .calibrationConfiguration(calibration.compare(with: observed.capture)))
+                    }
+                    guard isCurrent(op), !Task.isCancelled else { throw cancelled(epoch: op.epoch) }
+                    if let previous {
+                        let change: CaptureLifecycleChange?
+                        if previous.analysisIdentity != observed.analysisIdentity {
+                            change = .analysisConfiguration
+                        } else if previous.capture.input != observed.capture.input {
+                            change = .route
+                        } else if previous.capture.processing != observed.capture.processing {
+                            change = .sessionConfiguration
+                        } else {
+                            change = nil
+                        }
+                        if let change {
+                            publish(
+                                .calibrationRevalidationRequired(previous.capture.epoch, change))
+                        }
+                    }
+                    guard isCurrent(op), !Task.isCancelled else { throw cancelled(epoch: op.epoch) }
+                    publish(.state(.running, epoch: op.epoch))
+                    guard isCurrent(op), !Task.isCancelled else { throw cancelled(epoch: op.epoch) }
+                    startPump(op, worker: worker)
+                    return observed
                 } onCancel: { [weak self] in
                     startup.cancel()
                     Task { @MainActor in self?.cancel(generation: token.generation) }
                 }
-                guard isCurrent(op), !Task.isCancelled else { throw cancelled(epoch: op.epoch) }
-                op.startup = nil
-                op.published = true
-                nextEpoch = successor
-                let previous = lastConfiguration
-                lastConfiguration = observed
-                configuration = observed
-                state = .running
-                publish(.configured(observed))
-                guard isCurrent(op) else { throw cancelled(epoch: op.epoch) }
-                if let calibration {
-                    publish(.calibrationConfiguration(calibration.compare(with: observed.capture)))
-                }
-                guard isCurrent(op) else { throw cancelled(epoch: op.epoch) }
-                if let previous {
-                    let change: CaptureLifecycleChange?
-                    if previous.analysisIdentity != observed.analysisIdentity {
-                        change = .analysisConfiguration
-                    } else if previous.capture.input != observed.capture.input {
-                        change = .route
-                    } else if previous.capture.processing != observed.capture.processing {
-                        change = .sessionConfiguration
-                    } else {
-                        change = nil
-                    }
-                    if let change {
-                        publish(.calibrationRevalidationRequired(previous.capture.epoch, change))
-                    }
-                }
-                guard isCurrent(op) else { throw cancelled(epoch: op.epoch) }
-                publish(.state(.running, epoch: op.epoch))
-                guard isCurrent(op) else { throw cancelled(epoch: op.epoch) }
-                startPump(op, worker: worker)
-                return observed
             } catch {
                 let problem = lifecycleFailure(error, stage: .captureStart, epoch: op.epoch)
                 if !problem.expectedDuringStop { record(problem, in: op) }

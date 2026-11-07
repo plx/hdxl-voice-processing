@@ -96,6 +96,8 @@ public struct CaptureLifecycleConfiguration: Sendable, Hashable {
     public let audioSession: IOSAudioSessionObservation?
     public let analysis: AnalysisScheduleProfile
     public let analysisIdentity: ProfileIdentity
+    /// Fresh stream identity for this worker; PCM gaps advance its sequence only.
+    public let initialAnalysisContinuityEpoch: StreamEpoch
 }
 
 /// A stop discards pending analysis, rather than certifying a complete recording.

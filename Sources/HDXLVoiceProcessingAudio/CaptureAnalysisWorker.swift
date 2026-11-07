@@ -1,4 +1,5 @@
 #if os(macOS) || (os(iOS) && !targetEnvironment(macCatalyst))
+    import Foundation
     import HDXLVoiceProcessing
 
     struct CaptureLifecycleBatch: Sendable {
@@ -55,11 +56,12 @@
             else { throw AnalysisScheduleError.invalidConfiguration }
             try profile.validate(mode: .continuous)
             let identity = try profile.identity()
+            let initialAnalysisEpoch = StreamEpoch(streamID: UUID())
             let origin = try AnalysisScheduleOrigin(
                 source: SourceInterval(
                     epoch: observation.epoch, startSample: 0, sampleCount: 0,
                     sampleRate: observation.effectiveFormat.sampleRate),
-                continuityEpoch: observation.epoch)
+                continuityEpoch: initialAnalysisEpoch)
             if observation.effectiveFormat.encoding == .float32 {
                 schedule = .float(
                     try PreparedPCMTransferSchedule(
@@ -75,7 +77,7 @@
             try Task.checkCancellation()
             return CaptureLifecycleConfiguration(
                 capture: observation, audioSession: input.audioSession, analysis: profile,
-                analysisIdentity: identity)
+                analysisIdentity: identity, initialAnalysisContinuityEpoch: initialAnalysisEpoch)
         }
 
         func next() throws -> CaptureLifecycleBatch {

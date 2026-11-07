@@ -105,33 +105,34 @@
             init(signal: @escaping @MainActor @Sendable (CaptureLifecycleSignal) -> Void) {
                 capture = IOSCaptureController(
                     authorization: SystemMicrophoneAuthorization(),
-                    makeBackend: { SystemIOSCaptureBackend() }
-                ) { event in
-                    switch event {
-                    case .configurationChanged(_, let change, _):
-                        let reason: CaptureLifecycleChange
-                        switch change {
-                        case .route: reason = .route
-                        case .systemInterruption: reason = .interruption
-                        case .hostDeactivatedSession, .hostLeaseInvalidated: reason = .hostOwnership
-                        case .mediaServicesLost: reason = .mediaServicesLost
-                        case .mediaServicesReset: reason = .mediaServicesReset
-                        case .engineConfiguration: reason = .engineConfiguration
-                        case .sessionConfiguration: reason = .sessionConfiguration
-                        case .enteredBackground: reason = .enteredBackground
+                    makeBackend: { SystemIOSCaptureBackend() },
+                    onEvent: { event in
+                        switch event {
+                        case .configurationChanged(_, let change, _):
+                            let reason: CaptureLifecycleChange
+                            switch change {
+                            case .route: reason = .route
+                            case .systemInterruption: reason = .interruption
+                            case .hostDeactivatedSession, .hostLeaseInvalidated:
+                                reason = .hostOwnership
+                            case .mediaServicesLost: reason = .mediaServicesLost
+                            case .mediaServicesReset: reason = .mediaServicesReset
+                            case .engineConfiguration: reason = .engineConfiguration
+                            case .sessionConfiguration: reason = .sessionConfiguration
+                            case .enteredBackground: reason = .enteredBackground
+                            }
+                            signal(.changed(reason))
+                        case .failed(let failure):
+                            signal(
+                                .failed(
+                                    lifecycleFailure(
+                                        failure, stage: .capture,
+                                        epoch: failure.observation?.capture.epoch)))
+                        case .sessionDisposition(let disposition):
+                            signal(.sessionDisposition(disposition))
+                        default: break
                         }
-                        signal(.changed(reason))
-                    case .failed(let failure):
-                        signal(
-                            .failed(
-                                lifecycleFailure(
-                                    failure, stage: .capture,
-                                    epoch: failure.observation?.capture.epoch)))
-                    case .sessionDisposition(let disposition):
-                        signal(.sessionDisposition(disposition))
-                    default: break
-                    }
-                }
+                    })
             }
             func start(
                 request: CaptureRequest, buffering: CaptureBuffering, epoch: StreamEpoch,

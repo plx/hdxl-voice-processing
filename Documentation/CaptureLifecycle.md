@@ -105,12 +105,18 @@ increasing epoch. Stop/change announces its exact successor before any future va
 value. New format, route, processing request, selected channels or analysis recipe
 use fresh capture storage and a newly prepared scheduler. Unpublished failed starts
 do not skip a published epoch. Old callbacks and late worker batches are rejected
-by operation generation, even while an earlier cleanup is suspended.
+by operation generation, even while an earlier cleanup is suspended. Cancelling
+the task awaiting `start` also stops the operation when cancellation comes from
+a synchronous configuration/calibration/running handler; publication is part of startup.
 
 PCM loss is different from configuration change. The transfer scheduler emits its
 gap and analysis-reset events before subsequent frames, preserving original source
 positions. Its analysis continuity epoch advances while the capture configuration
-epoch remains unchanged. Missing duration is unknown unless the transfer actually
+epoch remains unchanged. Each prepared worker receives a fresh analysis stream
+identity, announced as `initialAnalysisContinuityEpoch` in its configuration. A
+gap advances that worker's continuity sequence; a later configuration uses a new
+analysis stream, so native result intervals can never alias a prior gap region.
+Missing duration is unknown unless the transfer actually
 measured the missing interval; no zero-filled audio or concatenated continuity is
 invented. See [shared scheduling](SharedScheduling.md).
 

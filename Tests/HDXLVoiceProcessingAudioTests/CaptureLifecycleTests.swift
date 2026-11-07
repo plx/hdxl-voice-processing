@@ -192,9 +192,10 @@
                 origin: AnalysisScheduleOrigin(
                     source: SourceInterval(
                         epoch: epoch, startSample: 0, sampleCount: 0, sampleRate: 44100),
-                    continuityEpoch: epoch), mode: .continuous, sourceTileCapacity: 128)
+                    continuityEpoch: configuration.initialAnalysisContinuityEpoch),
+                mode: .continuous, sourceTileCapacity: 128)
             let driver = try #require(h.drivers.last)
-            weak var transfer = try #require(driver.input?.transfer)
+            weak let transfer = try #require(driver.input?.transfer)
             var expected: [ScheduledFrame] = []
             for offset in stride(from: 0, to: 9000, by: 300) {
                 let input: [Float] = (offset..<(offset + 300)).flatMap { index in
@@ -485,6 +486,61 @@
             Issue.record("Reentrant stop ignored")
         } catch let failure as CaptureLifecycleFailure { #expect(failure.reason == .cancelled) }
         #expect(h.frames.isEmpty && h.lifecycle.state == .stopped && h.completions.count == 1)
+    }
+
+    @MainActor @Test func lifecycleCallerCancellationFromPublicationRetiresStartup() async throws {
+        for cancelFromRunning in [false, true] {
+            let h = LifecycleHarness()
+            var starting: Task<CaptureLifecycleConfiguration, any Error>?
+            h.eventHook = { event in
+                switch event {
+                case .configured where !cancelFromRunning: starting?.cancel()
+                case .state(.running, _) where cancelFromRunning: starting?.cancel()
+                default: break
+                }
+            }
+            starting = Task { try await h.start() }
+            do {
+                _ = try await starting!.value
+                Issue.record("Caller cancellation during publication returned success")
+            } catch let failure as CaptureLifecycleFailure {
+                #expect(failure.reason == .cancelled)
+            }
+            #expect(h.lifecycle.state == .stopped && h.completions.count == 1)
+            #expect(h.drivers[0].input == nil && h.drivers[0].signal == nil)
+            #expect(h.frames.isEmpty)
+            _ = await h.lifecycle.finish()
+        }
+    }
+
+    @MainActor @Test func lifecycleAnalysisIdentityCannotAliasGapRegionAfterRestart() async throws {
+        let h = LifecycleHarness()
+        let first = try await h.start()
+        try h.drivers[0].offer(Array(repeating: 0.25, count: 8))
+        try await lifecycleEventually { h.frames.count == 2 }
+        try h.drivers[0].offer(Array(repeating: 0.5, count: 8), at: 16, gap: true)
+        try await lifecycleEventually { h.frames.count == 4 }
+        let old = h.frames[2].frame
+        _ = await h.lifecycle.finish()
+        let second = try await h.start()
+        try h.drivers[1].offer(Array(repeating: 0.5, count: 8))
+        try await lifecycleEventually { h.frames.count == 6 }
+        let new = h.frames[4].frame
+        #expect(new.origin.continuityEpoch == second.initialAnalysisContinuityEpoch)
+        #expect(
+            first.initialAnalysisContinuityEpoch.streamID
+                != second.initialAnalysisContinuityEpoch.streamID)
+        #expect(second.capture.epoch == (try first.capture.epoch.successor()))
+        #expect(old.origin.continuityEpoch != new.origin.continuityEpoch)
+        if case .levels(let before) = old.value, case .levels(let after) = new.value {
+            #expect(before.source != after.source)
+            #expect(throws: AnalysisScheduleError.unexpectedInput) {
+                try new.origin.sourceInterval(for: before.source)
+            }
+        } else {
+            Issue.record("Expected level results")
+        }
+        _ = await h.lifecycle.finish()
     }
 
     @MainActor @Test func lifecycleCallerTaskCancellationStopsSuspendedStart() async throws {
