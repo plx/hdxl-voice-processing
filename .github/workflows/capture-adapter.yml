@@ -1,0 +1,49 @@
+name: macOS capture adapter evidence
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'ci-probe/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: capture-adapter-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    name: Native buffer callback and signed host / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Build and verify ad-hoc signed development host without launching
+        run: python3 Tools/Capture/host.py
+      - name: Measure synthetic tap duration without allocator instrumentation
+        run: python3 Tools/Capture/benchmark.py timing
+      - name: Verify production bridge allocation histograms and capability controls
+        run: python3 Tools/Capture/benchmark.py allocation
+      - name: Retain software evidence only
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: capture-adapter-${{ github.run_attempt }}
+          path: |
+            .build/capture-host-evidence/*.json
+            .build/capture-host-evidence/*.log
+            Benchmarks/.build/artifacts/capture-*/*.json
+            Benchmarks/.build/artifacts/capture-*/*.json.gz
+            Benchmarks/.build/artifacts/capture-*/*.log
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14

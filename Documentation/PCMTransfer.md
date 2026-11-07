@@ -89,3 +89,5 @@ The [ownership and memory-ordering decision](Architecture/0003-pcm-transfer.md) 
 the atomics, loss semantics and audit boundaries. [Developer evidence tools](../Tools/Transport/README.md)
 check optimized callbacks and measured allocation behavior. Synthetic checks do not
 replace the deferred [physical-device measurements](https://github.com/plx/hdxl-voice-processing/issues/74).
+
+Native capture adapters may attach an optional signed `deviceSampleTime` without replacing the nonnegative epoch-local `sourceStartSample`. Nil device timing is unknown. An explicit `sourceDiscontinuity` offer flag publishes a gap even when logical sample positions remain adjacent (for example, a device clock reset or loss of timestamp validity).

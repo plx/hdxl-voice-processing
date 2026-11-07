@@ -184,3 +184,5 @@ Run the six local lanes in [CONTRIBUTING](../CONTRIBUTING.md). Physical host evi
 is explicitly pending [#74](https://github.com/plx/hdxl-voice-processing/issues/74).
 Follow-up [#130](https://github.com/plx/hdxl-voice-processing/issues/130) records the
 preflight, delegation, error-layering and metadata decisions for owner review.
+
+The [macOS capture adapter](MacOSCapture.md) implements this boundary using native input taps, explicit ownership, and bounded PCM handoff.
