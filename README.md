@@ -3,7 +3,8 @@
 A Swift package under development for reproducible acoustic voice measurements
 on macOS 27 and iOS 27. It will provide PCM analysis, native audio adapters, and
 optional visualizations. Deterministic PCM framing, windows, Fourier transforms, spectrum conversions, profile-specific conditioning, digital levels with K-weighted energy, and power-cepstral pipelines are implemented;
-voice-measurement algorithms and microphone capture are still in development.
+voice-measurement algorithms and native capture adapters are being brought up
+through the roadmap; physical capture validation remains pending.
 Measurements will retain units, validity, timing,
 and numerical-profile identity; they are not universal voice-quality or health scores.
 
@@ -26,7 +27,9 @@ core does not link capture/UI frameworks or require reference/benchmark tooling.
 
 The Audio product now includes [bounded PCM transfer](Documentation/PCMTransfer.md)
 between a capture adapter and a serial worker, with explicit loss intervals and fixed
-storage. Native microphone adapters remain separate roadmap work.
+storage. Native [macOS](Documentation/MacOSCapture.md) and
+[iOS](Documentation/IOSCapture.md) adapters provide explicit foreground capture
+and effective acquisition metadata, with physical evidence pending #74.
 This library has no app bundle and does not start microphones. Host applications
 own permissions, audio sessions, sandbox entitlements, and lifecycle.
 The [host integration contract](Documentation/HostCaptureIntegration.md) defines

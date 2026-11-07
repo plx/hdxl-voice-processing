@@ -1,0 +1,42 @@
+name: iOS capture host evidence
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'ci-probe/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-capture-host-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host:
+    name: iOS 27 host build and synthetic Simulator execution
+    runs-on: xcode-27
+    timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Build the device host and exercise the synthetic Simulator path
+        run: python3 Tools/Capture/ios_host.py --install-runtime
+      - name: Retain software evidence only
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ios-capture-host-${{ github.run_attempt }}
+          path: |
+            .build/ios-capture-host-evidence/*.json
+            .build/ios-capture-host-evidence/*.log
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
