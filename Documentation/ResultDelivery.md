@@ -22,6 +22,9 @@ These bounds count publications. Generic callers must also bound payload content
 and retained downstream history. There is one additional value in a pending handoff
 and at most one optional publisher replay. Native snapshots retain at most three
 scalar metric results and bounded current control state, with no PCM or scratch.
+Eviction and cancellation release generic payloads outside mailbox locks, allowing
+their destructors to inspect or cancel subscriptions. Payload destruction remains
+caller-controlled work; these queue bounds do not bound arbitrary destructor cost.
 
 The mailbox implements overflow explicitly. Compare Apple's [AsyncStream buffering
 policies](https://developer.apple.com/documentation/swift/asyncstream/continuation/bufferingpolicy);

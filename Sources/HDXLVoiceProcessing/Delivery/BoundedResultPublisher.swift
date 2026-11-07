@@ -231,6 +231,10 @@ private final class ResultMailbox<Value: Sendable>: Sendable {
 
     func offer(_ publication: ResultPublication<Value>) -> Offer {
         var waiter: Waiter?
+        // Generic payload destruction can call back into a subscription. Keep the
+        // replaced value alive until the mailbox mutex has been released.
+        var evicted: ResultPublication<Value>?
+        defer { withExtendedLifetime(evicted) {} }
         let outcome: Offer = state.withLock { state in
             guard state.terminal == nil else { return .terminated }
             if let pending = state.waiter {
@@ -243,6 +247,7 @@ private final class ResultMailbox<Value: Sendable>: Sendable {
             if state.count == state.slots.count {
                 switch policy {
                 case .newest:
+                    evicted = state.slots[state.head]
                     state.slots[state.head] = nil
                     state.head = (state.head + 1) % state.slots.count
                     state.count -= 1
@@ -266,11 +271,17 @@ private final class ResultMailbox<Value: Sendable>: Sendable {
 
     func finish(_ reason: ResultDeliveryTermination, discard: Bool = false) {
         var response: (Waiter, Result<ResultPublication<Value>?, any Error>)?
+        var discarded: [ResultPublication<Value>?]?
+        defer { withExtendedLifetime(discarded) {} }
         state.withLock { state in
             if state.terminal == nil { state.terminal = reason }
-            if discard {
+            if discard && state.count > 0 {
                 state.discarded = saturatingAdd(state.discarded, UInt64(state.count))
-                for index in state.slots.indices { state.slots[index] = nil }
+                // Move ownership of the old storage out of the locked state. ARC
+                // must not run any user payload destructor under this mutex.
+                discarded = state.slots
+                state.slots = Array(repeating: nil, count: state.slots.count)
+                state.head = 0
                 state.count = 0
             }
             if let waiter = state.waiter {

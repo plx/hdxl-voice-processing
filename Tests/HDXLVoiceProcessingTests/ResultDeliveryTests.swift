@@ -169,6 +169,69 @@ import Testing
 
 private final class DeliveryLifetimeProbe: Sendable {}
 
+private final class DeliveryReentrantPayload: Sendable {
+    let onRelease: @Sendable () -> Void
+    init(onRelease: @escaping @Sendable () -> Void = {}) { self.onRelease = onRelease }
+    deinit { onRelease() }
+}
+
+@Test(arguments: [false, true])
+func deliveryEvictionReleasesPayloadOutsideMailbox(cancelOnRelease: Bool) async throws {
+    let publisher = try BoundedResultPublisher<DeliveryReentrantPayload>()
+    let subscription = try publisher.subscribe(.newest(capacity: 1))
+    let released = Mutex(0)
+    publisher.publish(
+        DeliveryReentrantPayload {
+            // Before the fix, even reading statistics aborts on a recursive lock.
+            #expect(subscription.statistics.coalesced == 1)
+            if cancelOnRelease { subscription.cancel() }
+            released.withLock { $0 += 1 }
+        })
+    let outcome = publisher.publish(DeliveryReentrantPayload())
+    #expect(released.withLock { $0 } == 1)
+    #expect(outcome.acceptedSubscribers == 1 && outcome.coalescedSubscribers == 1)
+    #expect(subscription.statistics.accepted == 2)
+    #expect(subscription.statistics.discardedOnCancellation == (cancelOnRelease ? 1 : 0))
+    #expect(subscription.statistics.buffered == (cancelOnRelease ? 0 : 1))
+    var iterator = subscription.makeAsyncIterator()
+    if cancelOnRelease {
+        await #expect(throws: ResultDeliveryError.cancelled) { try await iterator.next() }
+    } else {
+        publisher.finish()
+        #expect(try await iterator.next()?.publication == 1)
+    }
+    #expect(try await iterator.next() == nil)
+    #expect(publisher.activeSubscriberCount == 0)
+}
+
+@Test(arguments: [false, true])
+func deliveryCancellationReleasesPayloadsOutsideMailbox(alreadyFinished: Bool) async throws {
+    let publisher = try BoundedResultPublisher<DeliveryReentrantPayload>()
+    let subscription = try publisher.subscribe(.failOnOverflow(capacity: 4))
+    let released = Mutex(0)
+    for _ in 0..<4 {
+        publisher.publish(
+            DeliveryReentrantPayload {
+                #expect(subscription.statistics.buffered == 0)
+                #expect(subscription.statistics.discardedOnCancellation == 4)
+                subscription.cancel()
+                released.withLock { $0 += 1 }
+            })
+    }
+    if alreadyFinished { publisher.finish() }
+    subscription.cancel()
+    #expect(released.withLock { $0 } == 4)
+    #expect(subscription.statistics.capacity == 4)
+    #expect(subscription.statistics.discardedOnCancellation == 4)
+    #expect(subscription.termination == (alreadyFinished ? .finished : .failed(.cancelled)))
+    #expect(publisher.activeSubscriberCount == 0)
+    var iterator = subscription.makeAsyncIterator()
+    if !alreadyFinished {
+        await #expect(throws: ResultDeliveryError.cancelled) { try await iterator.next() }
+    }
+    #expect(try await iterator.next() == nil)
+}
+
 @Test func deliveryAbandonedSubscriptionReleasesBufferedPayloads() throws {
     let publisher = try BoundedResultPublisher<DeliveryLifetimeProbe>()
     var subscription: ResultSubscription<DeliveryLifetimeProbe>? = try publisher.subscribe()
