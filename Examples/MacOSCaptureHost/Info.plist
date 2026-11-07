@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleIdentifier</key><string>org.hdxl.voice-processing.capture-development-host</string>
+<key>CFBundleName</key><string>Voice Capture Development Host</string>
+<key>CFBundleExecutable</key><string>MacOSCaptureHost</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleVersion</key><string>1</string>
+<key>CFBundleShortVersionString</key><string>0.1</string>
+<key>LSMinimumSystemVersion</key><string>27.0</string>
+<key>NSMicrophoneUsageDescription</key><string>Record an explicitly requested local development sample to validate the voice-processing capture adapter.</string>
+</dict></plist>

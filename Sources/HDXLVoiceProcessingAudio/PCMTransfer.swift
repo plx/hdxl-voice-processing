@@ -60,6 +60,7 @@ public final class PCMTransfer: @unchecked Sendable {
         let start: Int64
         let frames: UInt32
         let host: UInt64?
+        let deviceSampleTime: Int64?
         let gap: PendingGap?
     }
     private struct Producer {
@@ -130,12 +131,14 @@ public final class PCMTransfer: @unchecked Sendable {
     /// closes admission, rejects the overlapping call, and invalidates queued PCM.
     public func offerInterleaved(
         _ bytes: UnsafeRawBufferPointer, frameCount: UInt32, sourceStartSample: Int64,
-        configurationToken: PCMTransferEpochToken, hostStartNanoseconds: UInt64? = nil
+        configurationToken: PCMTransferEpochToken, hostStartNanoseconds: UInt64? = nil,
+        deviceSampleTime: Int64? = nil, sourceDiscontinuity: Bool = false
     ) -> PCMTransferOfferResult {
         offer(
             interleaved: bytes, planes: nil, frameCount: frameCount,
             sourceStartSample: sourceStartSample, token: configurationToken,
-            host: hostStartNanoseconds)
+            host: hostStartNanoseconds, deviceSampleTime: deviceSampleTime,
+            sourceDiscontinuity: sourceDiscontinuity)
     }
 
     /// One borrowed byte-buffer descriptor per channel, in configured channel order.
@@ -144,19 +147,22 @@ public final class PCMTransfer: @unchecked Sendable {
     public func offerPlanar(
         _ planes: UnsafeBufferPointer<UnsafeRawBufferPointer>, frameCount: UInt32,
         sourceStartSample: Int64, configurationToken: PCMTransferEpochToken,
-        hostStartNanoseconds: UInt64? = nil
+        hostStartNanoseconds: UInt64? = nil,
+        deviceSampleTime: Int64? = nil, sourceDiscontinuity: Bool = false
     ) -> PCMTransferOfferResult {
         offer(
             interleaved: nil, planes: planes, frameCount: frameCount,
             sourceStartSample: sourceStartSample, token: configurationToken,
-            host: hostStartNanoseconds)
+            host: hostStartNanoseconds, deviceSampleTime: deviceSampleTime,
+            sourceDiscontinuity: sourceDiscontinuity)
     }
 
     @inline(never)
     private func offer(
         interleaved: UnsafeRawBufferPointer?,
         planes: UnsafeBufferPointer<UnsafeRawBufferPointer>?, frameCount: UInt32,
-        sourceStartSample start: Int64, token: PCMTransferEpochToken, host: UInt64?
+        sourceStartSample start: Int64, token: PCMTransferEpochToken, host: UInt64?,
+        deviceSampleTime: Int64?, sourceDiscontinuity: Bool
     ) -> PCMTransferOfferResult {
         let admission = registerAndTryAdmission()
         defer { producerControl.wrappingSubtract(Self.participant, ordering: .releasing) }
@@ -173,6 +179,7 @@ public final class PCMTransfer: @unchecked Sendable {
             producer.pointee.expectedSourceEnd = nil
             return drop(.configurationMismatch, frames: frameCount, interval: nil)
         }
+        if sourceDiscontinuity { appendGap(.sourceDiscontinuity, interval: nil) }
         if frameCount == 0 { return .empty }
         guard producer.pointee.sequence < UInt64.max else {
             appendGap(.sequenceExhausted, interval: nil)
@@ -233,6 +240,7 @@ public final class PCMTransfer: @unchecked Sendable {
         }
         metadata[index] = Chunk(
             sequence: sequence, start: start, frames: frameCount, host: host,
+            deviceSampleTime: deviceSampleTime,
             gap: producer.pointee.gap)
         producer.pointee.gap = nil
         published.store(head &+ 1, ordering: .releasing)
@@ -366,7 +374,8 @@ public final class PCMTransfer: @unchecked Sendable {
                 .init(
                     sequence: chunk.sequence, sourceStartSample: chunk.start,
                     frameCount: chunk.frames,
-                    hostStartNanoseconds: chunk.host, configurationEpoch: configuration.epoch,
+                    hostStartNanoseconds: chunk.host, deviceSampleTime: chunk.deviceSampleTime,
+                    configurationEpoch: configuration.epoch,
                     bytes: bytes)))
         consumer.pointee.blockGapDelivered = false
         released.store(tail &+ 1, ordering: .releasing)

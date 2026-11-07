@@ -83,3 +83,5 @@ Dependency and fixture provenance is documented in [the policy](Documentation/Pr
 and [third-party notices](THIRD_PARTY_NOTICES.md). The project license is pending
 [owner decision #78](https://github.com/plx/hdxl-voice-processing/issues/78); no
 redistribution license is granted by the public development repository alone.
+
+The [macOS capture adapter guide](Documentation/MacOSCapture.md) describes native input, explicit start/stop, worker channel selection, timing, and the signed development host.

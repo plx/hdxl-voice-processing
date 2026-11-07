@@ -207,3 +207,5 @@ Use `python3 Tools/Masks/benchmark.py timing --shard float32` from the repositor
 root, then the `float64` and `operations` shards and separate `allocation` runs.
 See [mask workload semantics](../Tools/Masks/README.md#performance-matrix) and
 [the evidence record](../Documentation/Evidence/masks.md).
+
+The macOS native-buffer bridge uses `python3 Tools/Capture/benchmark.py timing` and `allocation`. Its 40 cases measure one prepared production tap invocation, with buffer creation/worker verification excluded. These synthetic distributions exclude device delivery and SDK work before the callback; see [the capture guide](../Documentation/MacOSCapture.md).

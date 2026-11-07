@@ -113,6 +113,9 @@ public struct PCMTransferBlock {
     public let sourceStartSample: Int64
     public let frameCount: UInt32
     public let hostStartNanoseconds: UInt64?
+    /// The device's signed sample timestamp when actually supplied by a capture
+    /// API. Nil means unknown; `sourceStartSample` remains an epoch-local index.
+    public let deviceSampleTime: Int64?
     public let configurationEpoch: StreamEpoch
     public let bytes: UnsafeRawBufferPointer
 }
