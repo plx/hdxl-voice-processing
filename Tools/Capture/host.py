@@ -53,7 +53,8 @@ def main():
                                        "sanitizedStderr": probe.stderr.decode(), "stdoutEmpty": True}
         lifecycle = subprocess.run([str(binary), "--self-test-lifecycle"], capture_output=True, timeout=30)
         expected_lifecycle = {"schemaVersion": 1, "status": "passed",
-                              "checks": ["late-lifecycle-intent-rejected", "idempotent-lifecycle-finish"],
+                              "checks": ["late-lifecycle-intent-rejected", "idempotent-lifecycle-finish",
+                                         "bounded-lifecycle-display-completion", "independent-lifecycle-strict-delivery"],
                               "evidence": "synthetic lifecycle intent and completion; no permission/session/engine/capture"}
         if lifecycle.returncode != 0 or lifecycle.stderr or json.loads(lifecycle.stdout) != expected_lifecycle:
             raise ValueError("Public lifecycle host smoke failed or produced unexpected diagnostics")

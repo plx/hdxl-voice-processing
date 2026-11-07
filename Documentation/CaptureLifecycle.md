@@ -35,9 +35,9 @@ per callback or per frame.
 Only Stop/cancel and background forwarding are supported synchronously from the
 event handler. Queue start, resume or reconfiguration commands for a later control
 turn. Other reentrant commands report a conflict. The handler must return promptly
-and bound any retained history. Result subscription/coalescing policy belongs to
-#54; this coordinator provides synchronous delivery and a single completion per
-operation, rather than an implicit unbounded stream.
+and bound any retained history. [Bounded result subscriptions](ResultDelivery.md)
+provide independent newest-snapshot or explicit-overflow policies alongside this
+synchronous hook. They complete once per operation and preserve gap/fault state.
 
 ## Starting and choosing a recipe
 

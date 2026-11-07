@@ -5,7 +5,7 @@
     import Testing
     @testable import HDXLVoiceProcessingAudio
 
-    @MainActor private final class LifecycleDriverDouble: CaptureLifecycleDriver {
+    @MainActor final class LifecycleDriverDouble: CaptureLifecycleDriver {
         var signal: (@MainActor @Sendable (CaptureLifecycleSignal) -> Void)?
         var input: CaptureLifecycleInput?
         var holdStart = false
@@ -60,12 +60,16 @@
             }
             if let finishFailure { throw finishFailure }
         }
-        func offer(_ values: [Float], at start: Int64 = 0, gap: Bool = false) throws {
+        func offer(
+            _ values: [Float], at start: Int64 = 0, gap: Bool = false,
+            hostTime: UInt64? = nil
+        ) throws {
             let input = try #require(input)
             let result = values.withUnsafeBytes {
                 input.transfer.offerInterleaved(
                     $0, frameCount: UInt32(values.count / channels), sourceStartSample: start,
                     configurationToken: input.transfer.configuration.captureToken,
+                    hostStartNanoseconds: hostTime,
                     sourceDiscontinuity: gap)
             }
             if case .accepted = result {
@@ -87,14 +91,19 @@
                 weighting: .none))
     }
 
-    @MainActor private final class LifecycleHarness {
+    @MainActor final class LifecycleHarness {
         var events: [CaptureLifecycleEvent] = []
         var drivers: [LifecycleDriverDouble] = []
         var configureDriver: ((LifecycleDriverDouble) -> Void)?
         var eventHook: ((CaptureLifecycleEvent) -> Void)?
         let workerFactory: @Sendable () -> any CaptureLifecycleWorking
-        init(worker: (any CaptureLifecycleWorking)? = nil) {
-            workerFactory = { worker ?? CaptureAnalysisWorker() }
+        let diagnosticsMode: RuntimeDiagnosticMode
+        init(
+            worker: (any CaptureLifecycleWorking)? = nil,
+            diagnostics: RuntimeDiagnosticMode = .disabled
+        ) {
+            diagnosticsMode = diagnostics
+            workerFactory = { worker ?? CaptureAnalysisWorker(diagnostics: diagnostics) }
         }
         lazy var lifecycle = CaptureLifecycle(
             makeDriver: { [unowned self] signal in
@@ -102,7 +111,7 @@
                 configureDriver?(driver)
                 drivers.append(driver)
                 return driver
-            }, makeWorker: workerFactory,
+            }, makeWorker: workerFactory, diagnostics: diagnosticsMode,
             onEvent: { [unowned self] event in
                 events.append(event)
                 eventHook?(event)
@@ -133,7 +142,7 @@
         }
     }
 
-    @MainActor private func lifecycleEventually(_ condition: () -> Bool) async throws {
+    @MainActor func lifecycleEventually(_ condition: () -> Bool) async throws {
         let clock = ContinuousClock()
         let deadline = clock.now.advanced(by: .seconds(3))
         while !condition() {
@@ -145,8 +154,11 @@
         }
     }
 
-    @MainActor @Test func lifecycleFullRecipeMatchesMemoryAcrossReconfiguration() async throws {
-        let h = LifecycleHarness()
+    @MainActor @Test(arguments: RuntimeDiagnosticMode.allCases)
+    func lifecycleFullRecipeMatchesMemoryAcrossReconfiguration(mode: RuntimeDiagnosticMode)
+        async throws
+    {
+        let h = LifecycleHarness(diagnostics: mode)
         h.configureDriver = { driver in
             driver.sampleRate = 44100
             driver.channels = 2
@@ -156,6 +168,8 @@
         for selection in [
             PCMChannelSelection.arithmeticMean, try PCMChannelSelection(channelIndex: 1),
         ] {
+            let display = try h.lifecycle.subscribeResults()
+            let strict = try h.lifecycle.subscribeResults(.failOnOverflow(capacity: 4096))
             let configuration = try await h.lifecycle.start(
                 intent: nextIntent,
                 request: CaptureRequest(channelSelection: selection, processing: .measurement),
@@ -230,7 +244,35 @@
                     }
                 })
             #expect(transfer?.snapshot().overflowChunks == 0)
+            var displayIterator = display.makeAsyncIterator()
+            let displayResult = try #require(await displayIterator.next())
+            #expect(displayResult.statistics.coalesced > 0)
+            #expect(displayResult.value.configuration == configuration)
+            #expect(displayResult.value.runtime.mode == mode)
+            if mode == .disabled {
+                #expect(displayResult.value.runtime.processing.samples == 0)
+            } else {
+                #expect(displayResult.value.runtime.processing.samples > 0)
+                #expect(displayResult.value.runtime.workerToPublication.samples > 0)
+                #expect(
+                    displayResult.value.runtime.captureBlockStartToWorker.unavailableSamples > 0)
+            }
+            #expect(
+                displayResult.value.frames.levels == actual.last { $0.frame.algorithm == .levels })
+            #expect(displayResult.value.frames.pitch == actual.last { $0.frame.algorithm == .yin })
+            #expect(displayResult.value.frames.cpps == actual.last { $0.frame.algorithm == .cpps })
             nextIntent = try await h.lifecycle.prepareReconfiguration()
+            var subscribedFrames: [ScheduledFrame] = []
+            var subscribedCompletions = 0
+            for try await receipt in strict {
+                switch receipt.value.event {
+                case .analysis(.frame(let frame)): subscribedFrames.append(frame.frame)
+                case .completed: subscribedCompletions += 1
+                default: break
+                }
+            }
+            #expect(subscribedFrames == expected)
+            #expect(subscribedCompletions == 1 && strict.statistics.rejected == 0)
             #expect(transfer == nil && driver.signal == nil)
             #expect(h.completions.last?.failures.isEmpty == true)
             previous = configuration

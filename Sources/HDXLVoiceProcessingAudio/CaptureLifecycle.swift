@@ -1,4 +1,5 @@
 #if os(macOS) || (os(iOS) && !targetEnvironment(macCatalyst))
+    import Dispatch
     import Foundation
     import HDXLVoiceProcessing
 
@@ -9,6 +10,21 @@
     @MainActor public final class CaptureLifecycle {
         public private(set) var state: CaptureLifecycleState = .idle
         public private(set) var configuration: CaptureLifecycleConfiguration?
+        private let resultDelivery: CaptureResultDelivery
+        private let diagnosticMode: RuntimeDiagnosticMode
+
+        /// Snapshot subscriptions belong to one capture operation. Call prepareStart
+        /// (or prepareResume/reconfiguration) before subscribing to a subsequent one.
+        /// A maximum of 16 independent subscribers can be active. Slow consumers
+        /// never execute on the capture callback or in the lifecycle's event handler.
+        public func subscribeResults(
+            _ policy: ResultDeliveryPolicy = .newest(capacity: 1)
+        ) throws -> ResultSubscription<CaptureResultSnapshot> {
+            try resultDelivery.subscribe(policy)
+        }
+
+        public var latestResultSnapshot: CaptureResultSnapshot { resultDelivery.snapshot }
+        public var activeResultSubscriberCount: Int { resultDelivery.activeSubscriberCount }
         private let owner = UUID()
         private var intent: UUID?
         private var controlRevision = UUID()
@@ -39,6 +55,7 @@
             var cleanup: CaptureLifecycleFailure?
             var disposition: IOSCaptureSessionDisposition?
             var recoveryIntent: CaptureLifecycleRecoveryIntent?
+            var transfer: PCMTransfer?
             init(generation: UUID, epoch: StreamEpoch) {
                 self.generation = generation
                 self.epoch = epoch
@@ -46,6 +63,7 @@
         }
 
         public convenience init(
+            diagnostics: RuntimeDiagnosticMode = .disabled,
             onEvent: @escaping @MainActor (CaptureLifecycleEvent) -> Void = { _ in }
         ) {
             self.init(
@@ -55,7 +73,8 @@
                     #else
                         IOSLifecycleDriver(signal: signal)
                     #endif
-                }, makeWorker: { CaptureAnalysisWorker() }, onEvent: onEvent)
+                }, makeWorker: { CaptureAnalysisWorker(diagnostics: diagnostics) },
+                diagnostics: diagnostics, onEvent: onEvent)
         }
 
         init(
@@ -65,14 +84,18 @@
             makeWorker: @escaping @Sendable () -> any CaptureLifecycleWorking = {
                 CaptureAnalysisWorker()
             },
+            diagnostics: RuntimeDiagnosticMode = .disabled,
             onEvent: @escaping @MainActor (CaptureLifecycleEvent) -> Void = { _ in }
         ) {
             self.makeDriver = makeDriver
             self.makeWorker = makeWorker
             self.onEvent = onEvent
+            self.diagnosticMode = diagnostics
+            self.resultDelivery = CaptureResultDelivery(mode: diagnostics)
         }
 
         isolated deinit {
+            resultDelivery.ownerReleased()
             if let operation {
                 beginStop(operation, change: .explicitStop, explicit: true, reportEvents: false)
             }
@@ -86,6 +109,7 @@
             controlRevision = UUID()
             intent = controlRevision
             completion = nil
+            resultDelivery.beginOperation()
             state = .permissionPending
             let token = CaptureLifecycleStartIntent(owner: owner, generation: controlRevision)
             publish(.state(state, epoch: nil))
@@ -156,6 +180,7 @@
                     throw CaptureLifecycleFailure(
                         stage: .captureStart, reason: .invalidConfiguration, epoch: op.epoch)
                 }
+                op.transfer = input.transfer
                 do {
                     return try await worker.prepare(
                         input: input, analysis: analysis, limits: workerLimits)
@@ -282,6 +307,12 @@
             guard let op = operation, op.generation == generation, isCurrent(op) else {
                 return false
             }
+            if let observation = batch.observation {
+                let publicationTime =
+                    diagnosticMode == .disabled || batch.events.isEmpty
+                    ? nil : DispatchTime.now().uptimeNanoseconds
+                resultDelivery.observe(observation, publicationTime: publicationTime)
+            }
             for event in batch.events {
                 guard isCurrent(op) else { return false }
                 publish(.analysis(event))
@@ -376,6 +407,10 @@
                 }
                 await op.pump?.value
                 await op.worker?.close()
+                if let capture = op.transfer?.snapshot() {
+                    self?.resultDelivery.observeFinalCapture(capture)
+                }
+                op.transfer = nil
                 op.startup = nil
                 op.pump = nil
                 op.driver = nil
@@ -424,6 +459,7 @@
         private func publish(_ event: CaptureLifecycleEvent) {
             let prior = delivering
             delivering = true
+            resultDelivery.accept(event)
             onEvent(event)
             delivering = prior
         }

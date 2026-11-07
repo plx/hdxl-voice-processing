@@ -74,6 +74,8 @@ synthetic probe does not claim to implement the named DSP algorithms.
 | worker | Pitch, HNR, Pulses, Perturbation | Future numerical stages |
 | worker | SpeechActivity, MaskIntervals, EnergyEligibility, MaskResolution, MaskRouting | Mask worker/control stages; precise boundaries below |
 | worker | ResultPublication | Worker-side result construction/publication work |
+| delivery | ResultDelivery | Consumer observation bookkeeping; subscriber lag is timestamp-derived |
+| rendering | Rendering | Explicit synchronous host rendering work, not display presentation |
 | worker | Error, Cancelled | Worker outcomes with numeric validity reasons |
 
 Begin/event payloads use only the following numeric fields. Ends carry no extra

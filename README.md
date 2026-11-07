@@ -38,6 +38,8 @@ and requested versus observed acquisition metadata.
 The [capture lifecycle coordinator](Documentation/CaptureLifecycle.md) owns native
 capture and a serial analysis worker, with explicit reconfiguration, cancellation
 and host-controlled recovery.
+Its [bounded result subscriptions](Documentation/ResultDelivery.md) preserve current
+metric and fault state through display coalescing, with explicit overflow and runtime diagnostics.
 
 [Shared scheduling](Documentation/SharedScheduling.md) now feeds Levels, YIN and CPP/CPPS
 from memory, files, isolated file batches and worker-side PCM transfer. Matching profiles

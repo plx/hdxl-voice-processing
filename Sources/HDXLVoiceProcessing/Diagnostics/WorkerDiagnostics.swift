@@ -66,8 +66,10 @@ package final class WorkerDiagnostics {
 
     /// Sampling admits whole frames. Suppressed scopes still execute their bodies.
     /// Nested frame entry is ignored diagnostically, preserving the enclosing scope.
-    package func withFrame<T>(_ metadata: DiagnosticMetadata, _ body: () throws -> T) rethrows -> T
-    {
+    package func withFrame<T>(
+        _ metadata: DiagnosticMetadata, stage: DiagnosticStage = .analysisFrame,
+        _ body: () throws -> T
+    ) rethrows -> T {
         guard mode != .disabled else { return try body() }
         guard frame == nil else {
             counts.suppressed = saturatingAdd(counts.suppressed)
@@ -80,7 +82,7 @@ package final class WorkerDiagnostics {
             frame = nil
             selected = true
         }
-        return try withInterval(.analysisFrame, body)
+        return try withInterval(stage, body)
     }
 
     /// Synchronous lexical lifetime means return, throw and cooperative cancellation

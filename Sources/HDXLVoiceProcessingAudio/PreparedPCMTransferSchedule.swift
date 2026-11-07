@@ -1,3 +1,4 @@
+import Dispatch
 import HDXLVoiceProcessing
 
 public struct PCMTransferScheduledFrame: Sendable, Hashable {
@@ -20,6 +21,11 @@ public struct PCMTransferScheduleDrain: Sendable, Equatable {
     public let emittedFrames: Int
     public let reachedEnd: Bool
     public let isCancelled: Bool
+    public let dequeuedBlocks: Int
+    /// Present only when worker diagnostic timing was enabled. The supplied source
+    /// anchor and actual dequeue observation are separate; neither is an enqueue time.
+    public let firstBlockHostStartNanoseconds: UInt64?
+    public let firstBlockDequeuedHostNanoseconds: UInt64?
 }
 
 /// Single-owner worker adapter. Drain work is bounded by an explicit event limit
@@ -50,10 +56,26 @@ public final class PreparedPCMTransferSchedule<Sample: BinaryFloatingPoint & Sen
     private var callbackError: (any Error)?
     private var consumedInDrain: Int64 = 0
     private var emittedInDrain = 0
+    private let measureBlockTimes: Bool
+    private let clock: @Sendable () -> UInt64
+    private var blocksInDrain = 0
+    private var firstBlockHostStart: UInt64?
+    private var firstBlockDequeued: UInt64?
 
-    public init(
+    public convenience init(
         transfer: PCMTransfer, profile: AnalysisScheduleProfile,
         origin: AnalysisScheduleOrigin, sourceTileCapacity: Int = 256
+    ) throws {
+        try self.init(
+            transfer: transfer, profile: profile, origin: origin,
+            sourceTileCapacity: sourceTileCapacity, measureBlockTimes: false)
+    }
+
+    package init(
+        transfer: PCMTransfer, profile: AnalysisScheduleProfile,
+        origin: AnalysisScheduleOrigin, sourceTileCapacity: Int,
+        measureBlockTimes: Bool,
+        clock: @escaping @Sendable () -> UInt64 = { DispatchTime.now().uptimeNanoseconds }
     ) throws {
         guard profile.inputFormat == transfer.configuration.format,
             origin.source.epoch == transfer.configuration.epoch
@@ -61,6 +83,8 @@ public final class PreparedPCMTransferSchedule<Sample: BinaryFloatingPoint & Sen
         self.transfer = transfer
         self.profile = profile
         self.initialOrigin = origin
+        self.measureBlockTimes = measureBlockTimes
+        self.clock = clock
         schedule = try PreparedAnalysisSchedule(
             profile: profile, origin: origin,
             mode: .continuous, sourceTileCapacity: sourceTileCapacity)
@@ -94,11 +118,16 @@ public final class PreparedPCMTransferSchedule<Sample: BinaryFloatingPoint & Sen
         if state != .prepared {
             return PCMTransferScheduleDrain(
                 deliveredEvents: 0, consumedSourceSamples: 0,
-                emittedFrames: 0, reachedEnd: state == .finished, isCancelled: isCancelled)
+                emittedFrames: 0, reachedEnd: state == .finished, isCancelled: isCancelled,
+                dequeuedBlocks: 0, firstBlockHostStartNanoseconds: nil,
+                firstBlockDequeuedHostNanoseconds: nil)
         }
         busy = true
         consumedInDrain = 0
         emittedInDrain = 0
+        blocksInDrain = 0
+        firstBlockHostStart = nil
+        firstBlockDequeued = nil
         callbackError = nil
         defer {
             busy = false
@@ -139,7 +168,9 @@ public final class PreparedPCMTransferSchedule<Sample: BinaryFloatingPoint & Sen
     private func report(events: Int) -> PCMTransferScheduleDrain {
         PCMTransferScheduleDrain(
             deliveredEvents: events, consumedSourceSamples: consumedInDrain,
-            emittedFrames: emittedInDrain, reachedEnd: state == .finished, isCancelled: isCancelled)
+            emittedFrames: emittedInDrain, reachedEnd: state == .finished, isCancelled: isCancelled,
+            dequeuedBlocks: blocksInDrain, firstBlockHostStartNanoseconds: firstBlockHostStart,
+            firstBlockDequeuedHostNanoseconds: firstBlockDequeued)
     }
 
     private func deliver(_ frame: ScheduledFrame, emit: (PCMTransferScheduleEvent) -> Void) {
@@ -168,6 +199,11 @@ public final class PreparedPCMTransferSchedule<Sample: BinaryFloatingPoint & Sen
 
     private func accept(block: PCMTransferBlock, emit: (PCMTransferScheduleEvent) -> Void) throws {
         guard state == .prepared else { return }
+        if blocksInDrain == 0, measureBlockTimes {
+            firstBlockHostStart = block.hostStartNanoseconds
+            firstBlockDequeued = clock()
+        }
+        blocksInDrain += 1
         let count = Int(block.frameCount)
         let channels = profile.inputFormat.channelCount
         guard block.configurationEpoch == transfer.configuration.epoch,

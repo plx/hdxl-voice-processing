@@ -6,11 +6,15 @@
         private let lifecycle = OSSignposter(subsystem: subsystem, category: "lifecycle")
         private let flow = OSSignposter(subsystem: subsystem, category: "flow")
         private let worker = OSSignposter(subsystem: subsystem, category: "worker")
+        private let delivery = OSSignposter(subsystem: subsystem, category: "delivery")
+        private let rendering = OSSignposter(subsystem: subsystem, category: "rendering")
 
         private func poster(_ stage: DiagnosticStage) -> OSSignposter {
             switch stage.category {
             case "lifecycle": lifecycle
             case "flow": flow
+            case "delivery": delivery
+            case "rendering": rendering
             default: worker
             }
         }
