@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build the iOS host and run synthetic-only probes on a disposable Simulator."""
+import argparse
 import hashlib
 import json
 import plistlib
@@ -19,6 +20,28 @@ BUNDLE = "org.hdxl.voice-processing.capture-host"
 CHECKS = ["late-start-intent-rejected", "private-error-redacted", "permission-states-distinct", "bounded-pcm-samples-preserved",
           "closed-transfer-drained", "worker-rejects-gap"]
 EVIDENCE = "synthetic iOS host execution; no permission request, session activation or microphone capture"
+
+
+def installed_runtime():
+    runtimes = json.loads(ci.capture("xcrun", "simctl", "list", "runtimes", "--json"))["runtimes"]
+    return next((r for r in runtimes if r.get("isAvailable") and r.get("version") == "27.0"
+                 and r["identifier"].startswith("com.apple.CoreSimulator.SimRuntime.iOS-")), None)
+
+
+def ensure_runtime(install, log, commands):
+    runtime = installed_runtime()
+    if runtime is not None:
+        return runtime
+    if not install:
+        raise RuntimeError("iOS 27.0 Simulator is unavailable; rerun with --install-runtime")
+    # Xcode can exit 70 when content is already downloaded. Do not call the
+    # downloader for a runtime that CoreSimulator already reports as available.
+    ci.run_command(["xcodebuild", "-downloadPlatform", "iOS", "-buildVersion", "27.0",
+                    "-architectureVariant", "arm64"], log, commands)
+    runtime = installed_runtime()
+    if runtime is None:
+        raise RuntimeError("Download completed without an available iOS 27.0 Simulator runtime")
+    return runtime
 
 
 def validate_probe(probe):
@@ -54,6 +77,10 @@ def validate_app(app):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--install-runtime", action="store_true",
+                        help="Ask Xcode to install iOS 27.0 Simulator only if unavailable")
+    args = parser.parse_args()
     output = ROOT / ".build/ios-capture-host-evidence"
     scratch = ROOT / ".build/ios-capture-host-ci"
     if output.exists():
@@ -70,11 +97,8 @@ def main():
         ci.validate_environment(environment, json.loads((ROOT / "Configuration/build.json").read_text()))
         environment.update(execution=EVIDENCE, configuration="Debug", destination="isolated iOS 27.0 Simulator")
         (output / "environment.json").write_text(ci.redact(json.dumps(environment, indent=2)) + "\n")
-        runtimes = json.loads(ci.capture("xcrun", "simctl", "list", "runtimes", "--json"))["runtimes"]
-        runtime = next((r for r in runtimes if r.get("isAvailable") and r.get("version") == "27.0"
-                        and r["identifier"].startswith("com.apple.CoreSimulator.SimRuntime.iOS-")), None)
-        if runtime is None:
-            raise RuntimeError("Install iOS 27.0 Simulator with xcodebuild -downloadPlatform iOS -buildVersion 27.0 -architectureVariant arm64")
+        with (output / "runtime.log").open("w") as log:
+            runtime = ensure_runtime(args.install_runtime, log, result["commands"])
         simulator = ci.capture("xcrun", "simctl", "create", "HDXL Capture CI " + uuid.uuid4().hex,
                                "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro", runtime["identifier"])
         result["simulatorRuntime"] = {k: runtime[k] for k in ("name", "version", "buildversion")}

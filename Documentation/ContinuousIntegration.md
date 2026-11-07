@@ -158,9 +158,9 @@ distributions and positive allocator controls, and retains its JSON/gzip/log evi
 
 The `iOS capture host evidence` workflow builds the development app for an unsigned
 device destination and runs its synthetic test plus app-launch probe on an isolated
-iOS 27.0 Simulator. `python3 Tools/Capture/ios_host.py` reproduces the lane; install
-the declared runtime first with Xcode's `-downloadPlatform iOS -buildVersion 27.0
--architectureVariant arm64` command. The wrapper owns and deletes only its temporary
+iOS 27.0 Simulator. `python3 Tools/Capture/ios_host.py --install-runtime` reproduces
+the lane, downloading the declared runtime only when CoreSimulator does not already
+report it available. The wrapper owns and deletes only its temporary
 device. The shared package's generic iOS lanes remain compile/link checks.
 
 No permission prompts, session activation or microphone capture occur in the host's

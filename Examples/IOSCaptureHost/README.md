@@ -23,10 +23,11 @@ descriptions are not rendered. [Adapter contract](../../Documentation/IOSCapture
 ## Automated software checks
 
 ```sh
-xcodebuild -downloadPlatform iOS -buildVersion 27.0 -architectureVariant arm64
-python3 Tools/Capture/ios_host.py
+python3 Tools/Capture/ios_host.py --install-runtime
 ```
 
+The optional flag asks Xcode to download iOS 27.0 only if CoreSimulator does not
+already report it available; an existing runtime is reused without downloading.
 The script builds unsigned device code, creates its own disposable Simulator, runs
 the host test and launches with `--self-test`, validates fresh evidence, and deletes
 only its own device. Xcode 27.0 and Python 3.14.8 are required. The synthetic mode
