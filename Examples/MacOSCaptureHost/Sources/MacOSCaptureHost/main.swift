@@ -1,5 +1,6 @@
 import AVFAudio
 import AVFoundation
+import Darwin
 import Foundation
 import HDXLVoiceProcessing
 import HDXLVoiceProcessingAudio
@@ -11,8 +12,22 @@ private enum HostError: Error {
 /// Development-only executable wrapped in an independently signed app bundle.
 /// Neither the default invocation nor the build script requests microphone access.
 @main struct CaptureHost {
-    @MainActor static func main() async throws {
+    @MainActor static func main() async {
+        do { try await run() } catch {
+            let message = "Capture host failed: \(HostErrorReport.message(for: error)).\n"
+            FileHandle.standardError.write(Data(message.utf8))
+            exit(EXIT_FAILURE)
+        }
+    }
+
+    @MainActor private static func run() async throws {
         let args = Array(CommandLine.arguments.dropFirst())
+        if args == ["--self-test-error-reporting"] {
+            // A pure error-boundary probe: no engine, permission, input, or file access.
+            throw NSError(
+                domain: "SYNTHETIC-PRIVATE-DEVICE-UID", code: 28,
+                userInfo: [NSLocalizedDescriptionKey: "SYNTHETIC-PRIVATE-DESCRIPTION"])
+        }
         if args == ["--request-permission"] {
             let allowed = await AVCaptureDevice.requestAccess(for: .audio)
             print(allowed ? "Microphone authorized" : "Microphone denied")

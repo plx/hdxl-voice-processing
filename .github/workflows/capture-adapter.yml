@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.14.8'
-      - name: Build and verify ad-hoc signed development host without launching
+      - name: Build signed host and test the redacted error boundary without capture
         run: python3 Tools/Capture/host.py
       - name: Measure synthetic tap duration without allocator instrumentation
         run: python3 Tools/Capture/benchmark.py timing
@@ -41,6 +41,7 @@ jobs:
           path: |
             .build/capture-host-evidence/*.json
             .build/capture-host-evidence/*.log
+            .build/capture-host-evidence/*.xml
             Benchmarks/.build/artifacts/capture-*/*.json
             Benchmarks/.build/artifacts/capture-*/*.json.gz
             Benchmarks/.build/artifacts/capture-*/*.log

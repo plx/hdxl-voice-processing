@@ -9,5 +9,6 @@ let package = Package(
             name: "MacOSCaptureHost",
             dependencies: [
                 .product(name: "HDXLVoiceProcessingAudio", package: "HDXLVoiceProcessing")
-            ])
+            ]),
+        .testTarget(name: "MacOSCaptureHostTests", dependencies: ["MacOSCaptureHost"]),
     ], swiftLanguageModes: [.v6])

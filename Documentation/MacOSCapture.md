@@ -72,14 +72,20 @@ observes the replacement input rather than guessing it.
 ## Signed development host
 
 `Examples/MacOSCaptureHost` is a separate package, not a runtime product. Build and
-verify its app bundle with `python3 Tools/Capture/host.py`. The default identity is
+verify its app bundle with `python3 Tools/Capture/host.py`. This also runs two
+error-privacy unit tests and launches only the synthetic error-reporting probe;
+the probe performs no engine, permission, or recording operation. The default identity is
 ad-hoc; set `CAPTURE_HOST_SIGN_IDENTITY` to an existing development identity when
 stable TCC identity is needed. No signing credentials are stored. The host uses
 Hardened Runtime's `com.apple.security.device.audio-input` entitlement and an
 explicit microphone usage description. It is not sandboxed; a sandboxed host
 requires its own `com.apple.security.device.microphone` entitlement and file access.
 
-The build never launches the host. To conduct an explicitly authorized local test:
+The build script never launches the host. The evidence wrapper's synthetic probe
+checks that the entry point exits unsuccessfully with a sanitized category, without
+throwing a recovery object containing device identifiers into crash diagnostics.
+System error domains and arbitrary localized descriptions are omitted; recoverable
+details remain available programmatically. To conduct an explicitly authorized local test:
 
 ```sh
 open -W -n .build/macos-capture-host/MacOSCaptureHost.app --args --request-permission
@@ -98,7 +104,8 @@ private recordings or machine-specific metadata.
 
 ## Evidence
 
-The dedicated CI lane builds/ad-hoc-signs the fixture without launching it and
+The dedicated CI lane builds/ad-hoc-signs the fixture, runs only its synthetic
+error-boundary probe (no permission or capture), and
 measures the exact `PreparedCaptureTap.accept` path using prepared native buffers.
 Forty workloads cover both floating encodings/layouts, 64/4096 frames, accepted and
 unknown-clock input, overflow, oversized buffers, and format changes. Timing runs
