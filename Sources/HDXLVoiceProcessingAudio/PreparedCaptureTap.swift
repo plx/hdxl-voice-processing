@@ -1,4 +1,4 @@
-#if os(macOS)
+#if os(macOS) || (os(iOS) && !targetEnvironment(macCatalyst))
     import AVFAudio
     import Darwin
     import HDXLVoiceProcessing

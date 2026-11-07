@@ -154,6 +154,22 @@ workflow runs 100 configurations in timing and allocation modes, checks all meas
 distributions and positive allocator controls, and retains its JSON/gzip/log evidence for
 14 days. It reports host processing batches; physical capture and device energy remain #74.
 
+## iOS capture host
+
+The `iOS capture host evidence` workflow builds the development app for an unsigned
+device destination and runs its synthetic test plus app-launch probe on an isolated
+iOS 27.0 Simulator. `python3 Tools/Capture/ios_host.py` reproduces the lane; install
+the declared runtime first with Xcode's `-downloadPlatform iOS -buildVersion 27.0
+-architectureVariant arm64` command. The wrapper owns and deletes only its temporary
+device. The shared package's generic iOS lanes remain compile/link checks.
+
+No permission prompts, session activation or microphone capture occur in the host's
+synthetic mode. The wrapper requires the host test to run and pass without skips,
+checks six named app-probe outcomes, validates the built usage description/minimum
+OS/no-background declaration, and retains compact redacted JSON/log receipts with
+binary hashes. Raw xcresults stay local. Physical callback/route evidence is #74;
+see [iOS capture](IOSCapture.md) for policy and evidence limits.
+
 ## Licensed voice corpus
 
 Debug correctness CI verifies `Tools/Corpus/corpus.py verify` with no network access

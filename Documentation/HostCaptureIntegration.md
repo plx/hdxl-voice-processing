@@ -18,8 +18,8 @@ is promised. macOS here means native macOS; Mac Catalyst is not qualified.
 | --- | --- | --- | --- |
 | DSP-only processing | Core implemented; native software tests | Core cross-compiled for device and Simulator | Unqualified; subset decision in #60 |
 | File decoding | Audio product implemented with native fixture tests | Audio product cross-compiled; device decoding evidence pending | SDK APIs are insufficient to claim support; #60 |
-| Live capture | Host contract here; adapter #28 pending | Host contract here; adapter #29 pending | Unsupported by the current package; evaluate in #60 |
-| Shared-session configuration | Unsupported; native macOS has no AVAudioSession path | Host owns the shared session; explicit delegation contract here, concrete adapter configuration in #29 | SDK has session APIs; package integration unqualified |
+| Live capture | [Native adapter](MacOSCapture.md), fake-engine tests and synthetic callback profiling; physical validation pending | [Foreground adapter](IOSCapture.md), policy tests, native builds and synthetic host execution; physical validation pending | Unsupported by the current package; evaluate in #60 |
+| Shared-session configuration | Unsupported; native macOS has no AVAudioSession path | Host-managed or explicitly delegated operation under a cooperative host lease; see [iOS contract](IOSCapture.md) | SDK has session APIs; package integration unqualified |
 | Playback | Application-owned; no package playback implementation | Application-owned; no package playback implementation | Unqualified |
 | Visualization | Optional target compiles; UI implementation remains roadmap work | Optional target cross-compiles; UI implementation remains roadmap work | Unqualified |
 | Background execution | Host controls process lifetime; no capture deadline or continuous-runtime guarantee | Foreground baseline; background audio needs host declarations, policy and later evidence | Unqualified; no continuous-recording promise |
@@ -27,9 +27,9 @@ is promised. macOS here means native macOS; Mac Catalyst is not qualified.
 | Evidence level | What is established | What remains unproven |
 | --- | --- | --- |
 | SDK inspection | Xcode 27 lists macOS, iOS, iOS Simulator, watchOS and Watch Simulator 27 SDKs; current permission APIs compile on selected targets | Package support, entitlement correctness and hardware behavior |
-| Native macOS software execution | Core/file/transport tests, fake capture providers, consumer graph/link checks; Debug, Release, ASan and TSan lanes | Signed microphone-host journeys, callback timing and route behavior |
+| Native macOS software execution | Core/file/transport tests, fake capture providers, consumer graph/link checks; Debug, Release, ASan and TSan lanes; native-buffer callback profiling and signed host synthetic error probe | Physical microphone-host journeys, SDK/device callback delivery and route behavior |
 | iOS device build | All three products plus an independent core consumer compile with the declared 27.0 minimum, without signing | Execution or physical recording |
-| iOS Simulator build | Same product/consumer compilation for the Simulator destination | Runtime tests or a physical iPhone/iPad signal path |
+| iOS Simulator software evidence | Product/consumer compilation for both architectures; iOS 27 development host synthetic test and app-launch probe | Native microphone signal path, real interruptions/routes and a physical iPhone/iPad signal path |
 | Physical devices | **Pending physical validation** under owner-approved #74 | Permission journeys, routes, processing, background operation, latency, energy and sustained capture |
 | Watch | SDK availability only; no package build/execution qualification here | #60 must publish an explicit supported subset or deferral |
 
@@ -44,7 +44,7 @@ simulator build or fake provider into device evidence.
 Both supported hosts provide a meaningful `NSMicrophoneUsageDescription` in their
 **app** Info.plist. A SwiftPM resource bundle cannot supply the executable's privacy
 usage string. Missing required configuration can terminate the host when it requests
-access. Keep signed host fixtures outside `Sources/`; #28/#29 introduce those apps,
+access. Keep host fixtures outside `Sources/`; #28/#29 introduce those apps,
 with #68 extending their user interface. [Apple usage-string reference](https://developer.apple.com/documentation/bundleresources/information-property-list/nsmicrophoneusagedescription),
 [macOS capture authorization](https://developer.apple.com/documentation/bundleresources/requesting-authorization-for-media-capture-on-macos).
 
