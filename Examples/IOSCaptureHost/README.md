@@ -29,7 +29,8 @@ python3 Tools/Capture/ios_host.py --install-runtime
 The optional flag asks Xcode to download iOS 27.0 only if CoreSimulator does not
 already report it available; an existing runtime is reused without downloading.
 The script builds unsigned device code, creates its own disposable Simulator, runs
-the host test and launches with `--self-test`, validates fresh evidence, and deletes
+the host test and launches with `--self-test`, validates eight named synthetic
+checks (including public lifecycle late-intent rejection and idempotent finish), and deletes
 only its own device. Xcode 27.0 and Python 3.14.8 are required. The synthetic mode
 disables capture controls and persists only its allowlisted synthetic result in
 the app's local Documents directory. No microphone permission prompt, shared-session

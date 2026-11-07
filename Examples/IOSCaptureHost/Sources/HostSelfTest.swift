@@ -32,6 +32,29 @@ enum HostSelfTest {
         }
         try await owner.finish()
         checks.append("late-start-intent-rejected")
+        let lifecycle = CaptureLifecycle()
+        let lifecycleIntent = try lifecycle.prepareStart()
+        lifecycle.stop()
+        do {
+            _ = try await lifecycle.start(
+                intent: lifecycleIntent,
+                request: CaptureRequest(
+                    channelSelection: .arithmeticMean, processing: .measurement),
+                buffering: CaptureBuffering(), workerLimits: CaptureLifecycleWorkerLimits(),
+                lease: IOSCaptureHostLease(activity: .unknown),
+                analysis: { _, _ in throw AnalysisScheduleError.invalidState })
+            throw HostProbeError.failed
+        } catch let failure as CaptureLifecycleFailure {
+            guard failure.reason == .invalidStartIntent else { throw HostProbeError.failed }
+        }
+        checks.append("late-lifecycle-intent-rejected")
+        let firstFinish = await lifecycle.finish()
+        let secondFinish = await lifecycle.finish()
+        guard firstFinish == secondFinish, firstFinish.failures.isEmpty, lifecycle.state == .stopped
+        else {
+            throw HostProbeError.failed
+        }
+        checks.append("idempotent-lifecycle-finish")
         let privateError = NSError(
             domain: "SYNTHETIC-PRIVATE-ROUTE", code: 29,
             userInfo: [NSLocalizedDescriptionKey: "SYNTHETIC-PRIVATE-DESCRIPTION"])

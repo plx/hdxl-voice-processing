@@ -9,7 +9,8 @@ final class IOSCaptureHostTests: XCTestCase {
         XCTAssertEqual(
             result.checks,
             [
-                "late-start-intent-rejected", "private-error-redacted",
+                "late-start-intent-rejected", "late-lifecycle-intent-rejected",
+                "idempotent-lifecycle-finish", "private-error-redacted",
                 "permission-states-distinct",
                 "bounded-pcm-samples-preserved",
                 "closed-transfer-drained", "worker-rejects-gap",

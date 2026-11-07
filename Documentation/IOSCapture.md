@@ -98,7 +98,10 @@ missing sample extent stays nil. Route changes use `routeChange`, settings/engin
 changes use `profileChange`, media-services changes use `explicitReset`, and
 stops/interruption/background use `pause`. A resumption recommendation is
 informational. The host must prepare a new intent, resolve session ownership and
-explicitly start again. Full automatic recovery belongs to #43/#59.
+explicitly start again. The [lifecycle coordinator](CaptureLifecycle.md) adds
+owner-bound recovery intents so delayed host resumption cannot undo Stop, and
+rebuilds the analysis worker for each accepted configuration. Broader native
+acceptance remains #59; physical recovery measurements remain #74.
 
 `stop()` is synchronous admission closure. Always await `finish()` **and** the
 worker's completion before accepting an outcome. `finish()` waits for suspended

@@ -165,7 +165,8 @@ device. The shared package's generic iOS lanes remain compile/link checks.
 
 No permission prompts, session activation or microphone capture occur in the host's
 synthetic mode. The wrapper requires the host test to run and pass without skips,
-checks six named app-probe outcomes, validates the built usage description/minimum
+checks eight named app-probe outcomes (including rejected late lifecycle intent
+and idempotent lifecycle finish), validates the built usage description/minimum
 OS/no-background declaration, and retains compact redacted JSON/log receipts with
 binary hashes. Raw xcresults stay local. Physical callback/route evidence is #74;
 see [iOS capture](IOSCapture.md) for policy and evidence limits.
@@ -223,3 +224,22 @@ host smoke allowance. Every model is bounded to 64 KiB. These are offline softwa
 checks; human listening, useful personal feedback and physical-device measurements
 remain follow-up evidence. See [the target example](../Examples/PersonalTargetWorkflow/README.md)
 and [reference definitions](../Tools/PersonalTargets/README.md).
+
+## Lifecycle recovery and reclamation
+
+The macOS capture evidence job also runs `python3 Tools/Capture/lifecycle.py`.
+This release-only probe uses injected capture drivers and the real serial analysis
+worker; it never accesses a microphone or audio session. Eight configurations
+(Float/Double, mono/stereo, two ring capacities) each repeat ten initial starts,
+interruptions, host-approved resumptions and stops. It retains 80 raw trials,
+nearest-rank timing distributions, numerical profile and source hashes, toolchain
+metadata and the single executed Swift test report for 14 days. Functional gates
+require 160 retired transfers, released fake observer callbacks, successful
+completions and expected level values; duration has no universal threshold.
+
+These timings include coordinator scheduling and worker setup/reclamation. Analysis
+of the synthetic PCM occurs outside the timed phases. The process is already
+initialized and each group's first trial is retained. This is software resource
+evidence, not native route recovery, physical callback timing, energy, or a hardware
+acceptance result. See [lifecycle verification](CaptureLifecycle.md); #74 tracks
+physical measurements and any resulting policy adjustments.

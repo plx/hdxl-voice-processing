@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build/sign a development bundle; run only synthetic error probes, never capture."""
+"""Build/sign a development bundle; run synthetic error/lifecycle probes, never capture."""
 import hashlib
 import json
 import plistlib
@@ -31,8 +31,8 @@ def main():
                            log, result["commands"])
             ci.run_command(["bash", "Tools/build-macos-capture-host.sh"], log, result["commands"])
         result["testReports"] = ci.test_reports(output)
-        if sum(r["testCases"] for r in result["testReports"]) != 2:
-            raise ValueError("Expected both host error privacy regressions")
+        if sum(r["testCases"] for r in result["testReports"]) != 3:
+            raise ValueError("Expected both privacy regressions and the public lifecycle smoke test")
         for report in output.glob("*.xml"):
             ci.redact_report(report)
         bundle = ROOT / ".build/macos-capture-host/MacOSCaptureHost.app"
@@ -45,12 +45,19 @@ def main():
             raise ValueError("Unexpected hardened-runtime development host entitlements")
         binary = bundle / "Contents/MacOS/MacOSCaptureHost"
         result["launched"] = True
-        result["execution"] = "synthetic error-boundary probe only; no engine/permission/file capture"
+        result["execution"] = "synthetic error-boundary and lifecycle probes only; no engine/permission/file capture"
         probe = subprocess.run([str(binary), "--self-test-error-reporting"], capture_output=True, timeout=30)
         if probe.returncode != 1 or probe.stdout or probe.stderr != b"Capture host failed: operation failed.\n":
             raise ValueError("Host error boundary crashed, leaked details, or returned the wrong exit status")
         result["errorBoundaryProbe"] = {"expectedExitCode": 1, "actualExitCode": probe.returncode,
                                        "sanitizedStderr": probe.stderr.decode(), "stdoutEmpty": True}
+        lifecycle = subprocess.run([str(binary), "--self-test-lifecycle"], capture_output=True, timeout=30)
+        expected_lifecycle = {"schemaVersion": 1, "status": "passed",
+                              "checks": ["late-lifecycle-intent-rejected", "idempotent-lifecycle-finish"],
+                              "evidence": "synthetic lifecycle intent and completion; no permission/session/engine/capture"}
+        if lifecycle.returncode != 0 or lifecycle.stderr or json.loads(lifecycle.stdout) != expected_lifecycle:
+            raise ValueError("Public lifecycle host smoke failed or produced unexpected diagnostics")
+        result["lifecycleProbe"] = expected_lifecycle
         result.update(status="passed", entitlements=entitlements, minimumOS=info["LSMinimumSystemVersion"],
                       binarySHA256=hashlib.sha256(binary.read_bytes()).hexdigest())
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError, ET.ParseError) as error:

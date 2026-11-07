@@ -5,8 +5,9 @@ Status: MVP implementation in #40; owner attention #123. Physical evidence remai
 The numerical worker composes existing prepared kernels rather than duplicating their
 framing, conditioning or statistics in each input path. File/batch and PCMTransfer
 adapters belong to Audio; scheduling and immutable mask consumption remain in Core.
-All work is synchronous and single-owner. Actor/session/subscriber lifecycle remains
-the responsibility of subsequent roadmap work and host applications.
+Numerical work is synchronous and single-owner. The [capture lifecycle owner](../CaptureLifecycle.md)
+places the live scheduler on a serial worker actor and coordinates native capture
+and cleanup. Bounded subscriber policy remains #54 and host applications.
 
 Fixed source tiles make dispatch order deterministic under caller chunking, at the cost
 of separately declared bounded batching. Tile size is a resource/delivery choice, not

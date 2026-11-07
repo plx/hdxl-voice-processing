@@ -28,6 +28,17 @@ private enum HostError: Error {
                 domain: "SYNTHETIC-PRIVATE-DEVICE-UID", code: 28,
                 userInfo: [NSLocalizedDescriptionKey: "SYNTHETIC-PRIVATE-DESCRIPTION"])
         }
+        if args == ["--self-test-lifecycle"] {
+            let checks = try await HostLifecycleProbe.run()
+            let data = try JSONSerialization.data(
+                withJSONObject: [
+                    "schemaVersion": 1, "status": "passed", "checks": checks,
+                    "evidence":
+                        "synthetic lifecycle intent and completion; no permission/session/engine/capture",
+                ], options: [.sortedKeys])
+            print(String(decoding: data, as: UTF8.self))
+            return
+        }
         if args == ["--request-permission"] {
             let allowed = await AVCaptureDevice.requestAccess(for: .audio)
             print(allowed ? "Microphone authorized" : "Microphone denied")

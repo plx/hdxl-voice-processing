@@ -93,6 +93,13 @@
         @discardableResult public func start(
             request: CaptureRequest, buffering: MacOSCaptureBuffering
         ) throws -> MacOSCaptureSession {
+            try start(request: request, buffering: buffering, epoch: StreamEpoch(streamID: UUID()))
+        }
+
+        /// The integrated lifecycle owner assigns the configuration epoch before capture.
+        func start(
+            request: CaptureRequest, buffering: MacOSCaptureBuffering, epoch: StreamEpoch
+        ) throws -> MacOSCaptureSession {
             guard session == nil else {
                 throw MacOSCaptureFailure(
                     reason: .alreadyRunning, request: request,
@@ -118,7 +125,6 @@
                 let backend = makeEngine()
                 engine = backend
                 let configuration = try backend.configure(request: request)
-                let epoch = StreamEpoch(streamID: UUID())
                 let observed = try CaptureConfigurationObservation(
                     epoch: epoch, request: request, effectiveFormat: configuration.format,
                     input: configuration.input, processing: configuration.processing)

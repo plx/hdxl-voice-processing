@@ -27,8 +27,10 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.14.8'
-      - name: Build signed host and test the redacted error boundary without capture
+      - name: Build signed host and test error and lifecycle boundaries without capture
         run: python3 Tools/Capture/host.py
+      - name: Measure synthetic lifecycle setup, recovery and resource retirement
+        run: python3 Tools/Capture/lifecycle.py
       - name: Measure synthetic tap duration without allocator instrumentation
         run: python3 Tools/Capture/benchmark.py timing
       - name: Verify production bridge allocation histograms and capability controls
@@ -42,6 +44,9 @@ jobs:
             .build/capture-host-evidence/*.json
             .build/capture-host-evidence/*.log
             .build/capture-host-evidence/*.xml
+            .build/capture-lifecycle-evidence/*.json
+            .build/capture-lifecycle-evidence/*.log
+            .build/capture-lifecycle-evidence/*.xml
             Benchmarks/.build/artifacts/capture-*/*.json
             Benchmarks/.build/artifacts/capture-*/*.json.gz
             Benchmarks/.build/artifacts/capture-*/*.log

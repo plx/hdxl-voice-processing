@@ -9,8 +9,9 @@ observes the current input, and creates a fresh stream epoch and transport.
 The owner emits typed start, stop, failure, and configuration-change events on the
 main actor. A configuration notification schedules owner work outside the engine's
 internal callback, closes the transport, and stops capture. The host explicitly
-starts again to accept the new route/format. Automatic recovery, interruption
-coordination, and comprehensive cross-platform races remain #43/#59.
+starts again to accept the new route/format. The [lifecycle coordinator](CaptureLifecycle.md)
+composes capture with serial analysis, reconfiguration and host-approved recovery.
+Broader native acceptance remains #59, with physical evidence pending #74.
 
 ## Format and ownership
 
@@ -132,3 +133,8 @@ The installed Xcode 27.0 AVFAudio Swift interface declares the throwing
 `installAudioTap(onBus:bufferSize:format:tapProvider:)` and scoped `withAudioUnit`
 APIs. Core Audio's `kAudioDevicePropertyDeviceUID` header documents caller ownership
 of the returned CF object; the native backend releases that object after reading it.
+
+`python3 Tools/Capture/host.py` builds and ad-hoc signs the development host,
+runs its privacy tests and synthetic public-lifecycle test, then executes
+`--self-test-error-reporting` and `--self-test-lifecycle`. These modes request no
+permission and create no native capture operation; they do not qualify TCC or hardware.

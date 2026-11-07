@@ -37,3 +37,10 @@ import Testing
         userInfo: [NSLocalizedDescriptionKey: "SYNTHETIC-PRIVATE-DESCRIPTION"])
     #expect(HostErrorReport.message(for: other) == "operation failed")
 }
+
+@Test @MainActor func publicLifecycleIntentAndFinishSmokeNeedsNoMicrophone() async throws {
+    #expect(
+        try await HostLifecycleProbe.run() == [
+            "late-lifecycle-intent-rejected", "idempotent-lifecycle-finish",
+        ])
+}
