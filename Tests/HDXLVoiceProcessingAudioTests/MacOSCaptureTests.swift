@@ -500,4 +500,16 @@
         #expect(failures.count == 1)
         #expect(completed)
     }
+    @MainActor @Test func lifecycleMacOSAdapterUsesAssignedEpochBeforeTapPublication() async throws
+    {
+        let authorization = MacAuthorization()
+        let engine = MacEngineDouble()
+        let capture = MacOSMicrophoneCapture(authorization: authorization, makeEngine: { engine })
+        let epoch = StreamEpoch(streamID: UUID(), sequence: 42)
+        let session = try capture.start(
+            request: macRequest(), buffering: MacOSCaptureBuffering(), epoch: epoch)
+        #expect(session.observation.epoch == epoch && session.transfer.configuration.epoch == epoch)
+        try await capture.finish()
+        #expect(engine.tap == nil && engine.changed == nil)
+    }
 #endif

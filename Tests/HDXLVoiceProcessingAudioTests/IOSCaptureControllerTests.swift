@@ -452,4 +452,24 @@
                     lease: IOSCaptureHostLease(activity: .active), calibration: nil)
             } == .invalidStartIntent)
     }
+    @MainActor @Test func lifecycleIOSAdapterUsesAssignedEpochAndReleasesQueuedObservers()
+        async throws
+    {
+        let h = IOSCaptureHarness()
+        let epoch = StreamEpoch(streamID: UUID(), sequence: 19)
+        let session = try await h.controller.start(
+            intent: h.controller.prepareStart(), request: iosRequest(),
+            buffering: CaptureBuffering(), lease: IOSCaptureHostLease(activity: .active),
+            calibration: nil, epoch: epoch)
+        #expect(
+            session.observation.capture.epoch == epoch
+                && session.transfer.configuration.epoch == epoch)
+        let stale = h.native.handler
+        try await h.controller.finish()
+        h.controller.releaseLifecycleObservers()
+        let count = h.events.count
+        stale?(.becameActive)
+        stale?(.resumptionRecommended(true))
+        #expect(h.events.count == count && h.native.handler == nil)
+    }
 #endif

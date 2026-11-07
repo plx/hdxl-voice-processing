@@ -138,8 +138,9 @@ does not import or reference AVAudioSession.
 
 Explicit `.delegated(CaptureSessionDelegation(...))` permits negotiation of session
 configuration; activation and deactivation are separately permitted by two required
-booleans. No implicit exclusive ownership follows. #29 adds concrete iOS session
-settings and applies only an accepted request; #43 coordinates changes/teardown.
+booleans. No implicit exclusive ownership follows. The iOS adapter applies only
+an accepted concrete session request; [CaptureLifecycle](CaptureLifecycle.md)
+coordinates changes, worker ownership and teardown.
 An adapter must not undo a host change by blindly restoring a stale snapshot.
 The host forwards lifecycle decisions (stop, interruption/resumption, route change,
 media-service reset, foreground/background), and chooses whether capture may resume.
@@ -166,8 +167,8 @@ Unknown device/route identity is explicit. Observed strings are nonempty, exclud
 NUL and are bounded to 1024 UTF-8 bytes. No metadata here is automatically persisted
 or encoded; stable device identifiers can be private. Later export code must use
 explicit consent/redaction policy. Format, route, channel selection, processing or
-analysis changes require a new configuration epoch; the coordinator in #43 will
-publish the boundary before measurements under the new conditions.
+analysis changes require a new configuration epoch; the lifecycle coordinator
+publishes the boundary before measurements under the new conditions.
 
 ## Verification and deferred work
 
@@ -186,3 +187,5 @@ Follow-up [#130](https://github.com/plx/hdxl-voice-processing/issues/130) record
 preflight, delegation, error-layering and metadata decisions for owner review.
 
 The [macOS capture adapter](MacOSCapture.md) implements this boundary using native input taps, explicit ownership, and bounded PCM handoff.
+
+The [lifecycle coordinator](CaptureLifecycle.md) composes native capture and the prepared analysis worker with generation-safe start, stop, reconfiguration and host-controlled resumption.

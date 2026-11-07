@@ -35,6 +35,9 @@ own permissions, audio sessions, sandbox entitlements, and lifecycle.
 The [host integration contract](Documentation/HostCaptureIntegration.md) defines
 platform/evidence limits, read-only capture preflight, explicit session delegation,
 and requested versus observed acquisition metadata.
+The [capture lifecycle coordinator](Documentation/CaptureLifecycle.md) owns native
+capture and a serial analysis worker, with explicit reconfiguration, cancellation
+and host-controlled recovery.
 
 [Shared scheduling](Documentation/SharedScheduling.md) now feeds Levels, YIN and CPP/CPPS
 from memory, files, isolated file batches and worker-side PCM transfer. Matching profiles

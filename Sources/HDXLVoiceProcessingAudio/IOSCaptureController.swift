@@ -77,7 +77,7 @@
         func start(
             intent token: IOSCaptureStartIntent, request: CaptureRequest,
             buffering: CaptureBuffering, lease: IOSCaptureHostLease,
-            calibration: CaptureCalibrationContext?
+            calibration: CaptureCalibrationContext?, epoch: StreamEpoch? = nil
         ) async throws -> IOSCaptureSession {
             guard startup == nil, session == nil, !finishing else {
                 throw failure(.alreadyRunning, request: request)
@@ -86,6 +86,7 @@
                 throw failure(.invalidStartIntent, request: request)
             }
             intent = nil
+            if let epoch { nextEpoch = epoch }
             generation = token.generation
             pendingChange = nil
             completion = nil
@@ -264,6 +265,13 @@
             let terminal = completion
             if let starting { _ = try await starting.value }
             if let problem = await terminal?.value { throw problem }
+        }
+
+        /// Only after finish has reconciled suspended startup and teardown.
+        func releaseLifecycleObservers() {
+            monitorGeneration = UUID()
+            lifecycleBackend?.stopObserving()
+            lifecycleBackend = nil
         }
 
         func enteredBackground() {
