@@ -29,6 +29,9 @@ between a capture adapter and a serial worker, with explicit loss intervals and 
 storage. Native microphone adapters remain separate roadmap work.
 This library has no app bundle and does not start microphones. Host applications
 own permissions, audio sessions, sandbox entitlements, and lifecycle.
+The [host integration contract](Documentation/HostCaptureIntegration.md) defines
+platform/evidence limits, read-only capture preflight, explicit session delegation,
+and requested versus observed acquisition metadata.
 
 [Shared scheduling](Documentation/SharedScheduling.md) now feeds Levels, YIN and CPP/CPPS
 from memory, files, isolated file batches and worker-side PCM transfer. Matching profiles
