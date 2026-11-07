@@ -26,7 +26,7 @@
 
     public enum MacOSCaptureFailureReason: Sendable, Hashable {
         case integration(CaptureIntegrationError)
-        case alreadyRunning
+        case alreadyRunning, configurationChanged
         case preparation
         case tapInstallation(domain: String, code: Int)
         case engineStart(domain: String, code: Int)
@@ -84,6 +84,7 @@
         private var tap: PreparedCaptureTap?
         private var timer: Timer?
         private var generation = UUID()
+        private var completion: Task<MacOSCaptureFailure?, Never>?
 
         public convenience init(
             onEvent: @escaping @MainActor (MacOSCaptureEvent) -> Void = { _ in }
@@ -116,6 +117,7 @@
                     reason: .alreadyRunning, request: request,
                     observation: session?.observation)
             }
+            completion = nil
             var observation: CaptureConfigurationObservation?
             var stage: MacOSCaptureFailureReason = .preparation
             do {
@@ -184,46 +186,82 @@
                 tearDown()
                 let failure = MacOSCaptureFailure(
                     reason: reason, request: request, observation: observation)
+                completion = Task { failure }
                 onEvent(.failed(failure))
                 throw failure
             }
         }
 
-        /// Idempotent. Already admitted copies may finish; the worker drains to `.finished`.
-        public func stop() {
-            guard let previous = session else { return }
-            tearDown()
-            onEvent(.stopped(previous.observation))
+        /// Closes admission immediately. Pending callback failures are preserved;
+        /// a stopped event does not certify successful completion. Await `finish()`
+        /// before accepting a recording or other whole-session result as successful.
+        public func stop() { _ = stopCurrent() }
+
+        /// Stops the current session, or reconciles the last stopped session, and
+        /// waits for outstanding callback references before reporting its outcome.
+        /// This does not block the main actor or capture, and does not drain the
+        /// worker. A caller accepting a recording must also finish its worker.
+        public func finish() async throws {
+            let terminal = stopCurrent() ?? completion
+            if let failure = await terminal?.value { throw failure }
+        }
+
+        private func stopCurrent() -> Task<MacOSCaptureFailure?, Never>? {
+            guard let previous = session else { return nil }
+            let known = tap?.failure.map {
+                MacOSCaptureFailure(
+                    reason: .callback($0), request: previous.observation.request,
+                    observation: previous.observation)
+            }
+            let retired = tearDown()
+            let handler = onEvent
+            let terminal = Task { @MainActor in
+                guard let fault = await retired?.value else { return known }
+                let failure = MacOSCaptureFailure(
+                    reason: .callback(fault),
+                    request: previous.observation.request, observation: previous.observation)
+                if known == nil { handler(.failed(failure)) }
+                return failure
+            }
+            completion = terminal
+            if let known {
+                onEvent(.failed(known))
+            } else {
+                onEvent(.stopped(previous.observation))
+            }
+            return terminal
         }
 
         /// Also called by the active control timer. Failure publication is constant
         /// size and atomic on capture; engine teardown and events occur only here.
         public func poll() {
-            guard let previous = session, let failure = tap?.failure else { return }
-            tearDown()
-            onEvent(
-                .failed(
-                    MacOSCaptureFailure(
-                        reason: .callback(failure),
-                        request: previous.observation.request, observation: previous.observation)))
+            guard session != nil, tap?.failure != nil else { return }
+            stop()
         }
 
         private func configurationChanged(generation: UUID) {
             guard generation == self.generation, let previous = session else { return }
-            tearDown()
+            let retired = tearDown()
+            completion = Task { @MainActor in
+                let fault = await retired?.value
+                return MacOSCaptureFailure(
+                    reason: fault.map { .callback($0) } ?? .configurationChanged,
+                    request: previous.observation.request, observation: previous.observation)
+            }
             onEvent(.configurationChanged(previous.observation))
         }
 
-        private func tearDown() {
+        @discardableResult private func tearDown() -> Task<CaptureTapFailure?, Never>? {
             generation = UUID()
             timer?.invalidate()
             timer = nil
             tap?.close()
             engine?.stop()
             engine = nil
-            if let tap { RetiredCaptureTap.releaseWhenUnreferenced(tap) }
+            let retired = tap.map { RetiredCaptureTap.releaseWhenUnreferenced($0) }
             tap = nil
             session = nil
+            return retired
         }
     }
 
@@ -235,13 +273,17 @@
         var tap: PreparedCaptureTap?
         init(_ tap: PreparedCaptureTap) { self.tap = tap }
 
-        static func releaseWhenUnreferenced(_ tap: PreparedCaptureTap) {
+        static func releaseWhenUnreferenced(_ tap: PreparedCaptureTap) -> Task<
+            CaptureTapFailure?, Never
+        > {
             let owner = RetiredCaptureTap(tap)
-            Task { @MainActor in
+            return Task { @MainActor in
                 while !isKnownUniquelyReferenced(&owner.tap) {
                     try? await Task.sleep(for: .milliseconds(10))
                 }
+                let failure = owner.tap?.failure
                 owner.tap = nil
+                return failure
             }
         }
     }

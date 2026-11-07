@@ -55,8 +55,10 @@ Format mismatches, malformed buffers, overlapping callback admission, and clock
 overflow close the transport and publish an atomic fault. A 50 ms main-run-loop
 control timer (or explicit `poll`) reports that fault and tears down the engine.
 Timer delivery can be delayed by a busy host main loop. The tap already stops
-accepting data; no per-buffer task is created. The worker drains to `.finished`.
+accepting data; no per-buffer task is created. The worker drains to `.finished`. Transport completion alone is not capture success: await the owner's `finish()` before accepting a recording. This reconciles pending and late callback faults after outstanding callback references return, including when an explicit stop/deadline beats the polling timer.
 After native tap removal, the control actor retains retired bridge storage until outstanding callback references have returned; a cleared admission flag alone does not prove the callback ARC epilogue has finished. This retirement never blocks capture.
+
+A stopped event acknowledges closed admission, not a successful whole-session outcome. Late failures retain the prior epoch and can be delivered after a new explicit start.
 
 Queued valid audio remains valid before terminal failure; the failure does not
 assert a successful complete recording.

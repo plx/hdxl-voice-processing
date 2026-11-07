@@ -50,6 +50,7 @@ private enum HostError: Error {
         defer { deadline.cancel() }
         do {
             let frames = try await writer.value
+            try await capture.finish()
             guard !stoppedUnexpectedly else { throw HostError.callbackFailure }
             let observed = session.observation
             // Only the explicitly requested local recording destination receives this receipt.

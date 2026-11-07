@@ -199,6 +199,9 @@
             nextSample = initialSourceSample
         }
 
+        // Models an admitted callback publishing its fault after control-side stop.
+        func publishFailureForTesting(_ failure: CaptureTapFailure) { fail(failure) }
+
         func withHeldAdmissionForTesting(_ body: () -> Void) {
             precondition(
                 active.compareExchange(expected: false, desired: true, ordering: .acquiring)

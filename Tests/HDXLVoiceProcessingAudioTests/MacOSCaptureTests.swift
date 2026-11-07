@@ -429,8 +429,9 @@
             authorization: MacAuthorization(), makeEngine: { engine })
         try capture.start(request: macRequest(), buffering: MacOSCaptureBuffering())
         // Model an invocation retaining its closure after native tap removal.
-        var outstanding: PreparedCaptureTap? = try #require(engine.tap)
-        weak var retired = outstanding
+        var outstanding = engine.tap
+        #expect(outstanding != nil)
+        weak let retired = outstanding
         capture.stop()
         try await Task.sleep(for: .milliseconds(25))
         #expect(retired != nil)
@@ -442,5 +443,61 @@
             try await Task.sleep(for: .milliseconds(10))
         }
         #expect(retired == nil)
+    }
+    @Test @MainActor func macCaptureStopPreservesFailureBeforePollingTimer() async throws {
+        let engine = MacEngineDouble()
+        var failures: [MacOSCaptureFailure] = []
+        var stopped = false
+        let capture = MacOSMicrophoneCapture(
+            authorization: MacAuthorization(), makeEngine: { engine },
+            onEvent: {
+                if case .failed(let failure) = $0 { failures.append(failure) }
+                if case .stopped = $0 { stopped = true }
+            })
+        let session = try capture.start(request: macRequest(), buffering: MacOSCaptureBuffering())
+        engine.tap?.accept(try nativeCaptureBuffer(frames: 3, channels: 1), at: captureTime())
+        #expect(session.transfer.withNext { _ in } == .finished)
+        #expect(failures.isEmpty)
+        capture.stop()  // Models the recording deadline beating the 50 ms control timer.
+        #expect(failures.count == 1)
+        #expect(!stopped)
+        do {
+            try await capture.finish()
+            Issue.record("A failed capture must not permit a completed recording receipt")
+        } catch let failure as MacOSCaptureFailure {
+            #expect(failure.reason == .callback(.formatChanged))
+            #expect(failure.observation == session.observation)
+        }
+        #expect(failures.count == 1)
+    }
+
+    @Test @MainActor func macCaptureFinishWaitsForLateFaultPublication() async throws {
+        let engine = MacEngineDouble()
+        var failures: [MacOSCaptureFailure] = []
+        let capture = MacOSMicrophoneCapture(
+            authorization: MacAuthorization(), makeEngine: { engine },
+            onEvent: { if case .failed(let failure) = $0 { failures.append(failure) } })
+        let session = try capture.start(request: macRequest(), buffering: MacOSCaptureBuffering())
+        var outstanding = engine.tap
+        #expect(outstanding != nil)
+        capture.stop()
+        var completed = false
+        let finishing = Task { @MainActor in
+            defer { completed = true }
+            try await capture.finish()
+        }
+        try await Task.sleep(for: .milliseconds(25))
+        #expect(!completed)
+        outstanding?.publishFailureForTesting(.invalidBuffer)
+        outstanding = nil
+        do {
+            try await finishing.value
+            Issue.record("A late callback fault must reject success")
+        } catch let failure as MacOSCaptureFailure {
+            #expect(failure.reason == .callback(.invalidBuffer))
+            #expect(failure.observation == session.observation)
+        }
+        #expect(failures.count == 1)
+        #expect(completed)
     }
 #endif
