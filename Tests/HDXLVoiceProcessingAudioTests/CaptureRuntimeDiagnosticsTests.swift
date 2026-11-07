@@ -65,4 +65,45 @@
         #expect(CaptureWorkerObservation.difference(1, 1) == 0)
         #expect(CaptureWorkerObservation.difference(.max, 0) == .max)
     }
+
+    @MainActor @Test func captureRuntimeCancelledSuspendedStartRetainsFinalLoss() async throws {
+        let h = LifecycleHarness()
+        h.configureDriver = { $0.holdStart = true }
+        let subscription = try h.lifecycle.subscribeResults()
+        let startup = Task { @MainActor in try await h.start() }
+        try await lifecycleEventually { h.drivers.first?.startGate != nil }
+        let driver = try #require(h.drivers.first)
+        var transfer: PCMTransfer? = try #require(driver.input).transfer
+        weak let retiredTransfer = transfer
+        let samples = Array(repeating: Float(0.25), count: 4)
+        for block in 0..<10 {
+            let current = try #require(transfer)
+            _ = samples.withUnsafeBytes {
+                current.offerInterleaved(
+                    $0, frameCount: 4, sourceStartSample: Int64(block * 4),
+                    configurationToken: current.configuration.captureToken)
+            }
+        }
+        #expect(transfer?.snapshot().droppedFrames == 24)
+        h.lifecycle.stop()
+        driver.startGate?.resume()
+        driver.startGate = nil
+        do {
+            _ = try await startup.value
+            Issue.record("Cancelled suspended startup succeeded")
+        } catch {}
+        _ = await h.lifecycle.finish()
+        var iterator = subscription.makeAsyncIterator()
+        let snapshot = try #require(await iterator.next()).value
+        let capture = try #require(snapshot.runtime.capture)
+        #expect(capture.isClosed && capture.acceptedChunks == 4 && capture.overflowChunks == 6)
+        #expect(capture.droppedFrames == 24 && snapshot.hasReportedAcquisitionLoss)
+        #expect(snapshot.configuration == nil && snapshot.frames == CaptureResultFrames())
+        #expect(snapshot.loss.gapEvents == 0 && snapshot.runtime.workerTurns == 0)
+        #expect(snapshot.completion != nil && snapshot.state == .stopped)
+        #expect(try await iterator.next() == nil)
+        #expect(h.lifecycle.activeResultSubscriberCount == 0)
+        transfer = nil
+        #expect(retiredTransfer == nil)
+    }
 #endif

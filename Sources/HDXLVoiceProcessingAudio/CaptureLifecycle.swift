@@ -175,12 +175,14 @@
                     input = try await driver.start(
                         request: request, buffering: buffering, epoch: op.epoch, lease: lease)
                 } catch { throw lifecycleFailure(error, stage: .captureStart, epoch: op.epoch) }
+                // A cancelled suspended start can still return an active transfer.
+                // Retirement must retain and sample it even when preparation is skipped.
+                op.transfer = input.transfer
                 try Task.checkCancellation()
                 guard input.observation.epoch == op.epoch else {
                     throw CaptureLifecycleFailure(
                         stage: .captureStart, reason: .invalidConfiguration, epoch: op.epoch)
                 }
-                op.transfer = input.transfer
                 do {
                     return try await worker.prepare(
                         input: input, analysis: analysis, limits: workerLimits)

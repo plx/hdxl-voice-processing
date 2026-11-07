@@ -139,18 +139,27 @@ import Testing
 @MainActor @Test func deliveryRejectsConcurrentIteratorsWithoutStealingWaiter() async throws {
     let publisher = try BoundedResultPublisher<Int>()
     let subscription = try publisher.subscribe()
-    var entered = false
+    let watchdog = Task { @MainActor in
+        do { try await Task.sleep(for: .seconds(3)) } catch { return }
+        subscription.cancel()
+    }
+    defer {
+        watchdog.cancel()
+        subscription.cancel()
+    }
+    // Complete a handoff before starting the competing calls. This binds the first
+    // iterator identity inside the mailbox, regardless of later task scheduling.
+    var iterator = subscription.makeAsyncIterator()
+    publisher.publish(0)
+    #expect(try await iterator.next()?.value == 0)
     let consumer = Task { @MainActor in
-        var iterator = subscription.makeAsyncIterator()
-        entered = true
         return try await iterator.next()
     }
-    while !entered { await Task.yield() }
+    defer { consumer.cancel() }
     var other = subscription.makeAsyncIterator()
     await #expect(throws: ResultDeliveryError.concurrentIteration) { try await other.next() }
     publisher.publish(42)
     #expect(try await consumer.value?.value == 42)
-    subscription.cancel()
 }
 
 @Test func deliveryPublisherDeinitDrainsThenReportsReleaseOnce() async throws {
