@@ -139,14 +139,7 @@ import Testing
 @MainActor @Test func deliveryRejectsConcurrentIteratorsWithoutStealingWaiter() async throws {
     let publisher = try BoundedResultPublisher<Int>()
     let subscription = try publisher.subscribe()
-    let watchdog = Task { @MainActor in
-        do { try await Task.sleep(for: .seconds(3)) } catch { return }
-        subscription.cancel()
-    }
-    defer {
-        watchdog.cancel()
-        subscription.cancel()
-    }
+    defer { subscription.cancel() }
     // Complete a handoff before starting the competing calls. This binds the first
     // iterator identity inside the mailbox, regardless of later task scheduling.
     var iterator = subscription.makeAsyncIterator()
@@ -156,10 +149,21 @@ import Testing
         return try await iterator.next()
     }
     defer { consumer.cancel() }
-    var other = subscription.makeAsyncIterator()
-    await #expect(throws: ResultDeliveryError.concurrentIteration) { try await other.next() }
+    let competitor = Task { @MainActor in
+        var other = subscription.makeAsyncIterator()
+        await #expect(throws: ResultDeliveryError.concurrentIteration) { try await other.next() }
+    }
+    // Finish before awaiting either task. Even an incorrect iterator admission
+    // returns a value or terminal result instead of waiting on a wall-clock guard.
+    // The primed identity makes this independent of which task resumes first.
     publisher.publish(42)
+    publisher.finish()
+    await competitor.value
     #expect(try await consumer.value?.value == 42)
+    var later = subscription.makeAsyncIterator()
+    await #expect(throws: ResultDeliveryError.concurrentIteration) { try await later.next() }
+    #expect(subscription.statistics.delivered == 2)
+    #expect(subscription.termination == .finished)
 }
 
 @Test func deliveryPublisherDeinitDrainsThenReportsReleaseOnce() async throws {
@@ -313,7 +317,7 @@ func deliveryCancellationReleasesPayloadsOutsideMailbox(alreadyFinished: Bool) a
 
 @MainActor @Test func deliveryIteratorCopiesCannotOverlapObservation() async throws {
     let shouldPause = Mutex(false)
-    let entered = Mutex(false)
+    let (entered, arrival) = AsyncStream<Void>.makeStream(bufferingPolicy: .bufferingNewest(1))
     let release = DispatchSemaphore(value: 0)
     let publisher = try BoundedResultPublisher<Int>(
         maximumSubscribers: 1, replayLatest: false,
@@ -324,7 +328,7 @@ func deliveryCancellationReleasesPayloadsOutsideMailbox(alreadyFinished: Bool) a
                 return pause
             }
             if pause {
-                entered.withLock { $0 = true }
+                arrival.yield(())
                 release.wait()
             }
             return 100
@@ -337,19 +341,21 @@ func deliveryCancellationReleasesPayloadsOutsideMailbox(alreadyFinished: Bool) a
         var iterator = original
         return try await iterator.next()
     }
-    defer { release.signal() }
-    let clock = ContinuousClock()
-    let deadline = clock.now.advanced(by: .seconds(3))
-    while !entered.withLock({ $0 }) {
-        guard clock.now < deadline else { throw CancellationError() }
-        try await Task.sleep(for: .milliseconds(1))
+    defer {
+        arrival.finish()
+        release.signal()
     }
+    var readiness = entered.makeAsyncIterator()
+    let ready: Void? = await readiness.next()
+    try #require(ready != nil)
+    // Producer progress is independent of the suspended observation. Queue the
+    // second value before testing admission so an incorrect admission can finish.
+    #expect(publisher.publish(2).acceptedSubscribers == 1)
     var copy = original
     await #expect(throws: ResultDeliveryError.concurrentIteration) { try await copy.next() }
-    // Observation diagnostics/consumer work cannot hold the producer's mailbox lock.
-    #expect(publisher.publish(2).acceptedSubscribers == 1)
     release.signal()
     #expect(try await first.value?.value == 1)
-    #expect(try await copy.next()?.value == 2)
     publisher.finish()
+    #expect(try await copy.next()?.value == 2)
+    #expect(try await copy.next() == nil)
 }
