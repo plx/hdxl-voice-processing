@@ -130,6 +130,24 @@ through a periodic track. A seed in a silent gap can also reacquire a different
 waveform phase; usable timing does not guarantee a usable cycle amplitude.
 These observations do not establish arbitrary-waveform timing accuracy.
 
+The separate YIN integration recipe uses complete raw YIN frames, places their
+frequencies at the midpoint of their observed support, and retains the original
+uniform hop. Only `.voiced` frames supply a positive frequency; uncertain,
+unvoiced, and unavailable frames supply explicit unvoiced entries. Partial tails
+are omitted and unsupported edges are preserved. If no complete frame exists,
+report insufficient upstream support rather than inventing an F0 contour. This
+is a documented caller choice, not an automatic gate inside the pulse tracker.
+The contour records the supplying YIN profile, while its own identity binds the
+actual selected frequencies and grid. Persist the recipe choice as part of a
+combined pipeline configuration.
+
+Sixteen integration cases compare native scalar and FFT YIN plus pulses with
+independent YIN equations plus the pinned external pulse route. Both whole-input
+and irregular YIN chunk delivery produce identical pulse snapshots. Upstream
+frequency error and downstream pulse error are reported separately. Licensed
+speech and noisy cases retain unavailable results; this catalog is not a claim
+of complete voicing coverage or human-labeled pitch accuracy.
+
 Worker diagnostics expose bounded `PulseMatching`, `PulseInterpolation`, and
 `PulseSequences` spans inside `Pulses`. Consumer callbacks run outside `Pulses`.
 The shared record budget and every-sixteenth-frame sampling policy still apply;

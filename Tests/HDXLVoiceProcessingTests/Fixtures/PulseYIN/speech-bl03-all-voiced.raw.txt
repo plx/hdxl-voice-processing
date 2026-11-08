@@ -1,0 +1,15 @@
+begin	pulse-reference-v2
+input	44100	5292
+periodSettings	0.0001	0.02	1.3
+pitch	8	0.020011337868480725	0.01	0	0.12
+f0	1	0.020011337868480725	--undefined--
+f0	2	0.030011337868480724	--undefined--
+f0	3	0.040011337868480726	--undefined--
+f0	4	0.05001133786848073	--undefined--
+f0	5	0.06001133786848073	--undefined--
+f0	6	0.07001133786848072	--undefined--
+f0	7	0.08001133786848072	--undefined--
+f0	8	0.09001133786848073	--undefined--
+count	0
+amplitudes	insufficientData	0
+end	pulse-reference-v2

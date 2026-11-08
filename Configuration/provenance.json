@@ -67038,6 +67038,2330 @@
       },
       "expectedProfile": "decimalPulseHistoryConnectedComponents-v1; exact integer-period binary templates; schema and full policy in manifest/case metadata",
       "referenceOutputIdentity": "sha256:69886c483d75eb5bf9bcdbaf171118f0c51d43fe0ca9401674a7ae325aa50fdc"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-breathy.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/breathy.Pitch",
+      "sha256": "c2ed683ec465ff3997022a6b99195d641625ba260b5df990415a362e597ab9e3",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:c2ed683ec465ff3997022a6b99195d641625ba260b5df990415a362e597ab9e3"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-breathy.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/breathy.json",
+      "sha256": "56b45d7736db6d90a01abeb312b09ec2bbe8f93dbc2297ca01b56c7fa0adce72",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:56b45d7736db6d90a01abeb312b09ec2bbe8f93dbc2297ca01b56c7fa0adce72"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-breathy.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/breathy.raw.txt",
+      "sha256": "0fc65ab99dda6baf1490a644818aadb1b02c49455420d45a919b9f70a4fc590b",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:0fc65ab99dda6baf1490a644818aadb1b02c49455420d45a919b9f70a4fc590b"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-breathy.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/breathy.wav",
+      "sha256": "b4fe89422f77dd36057521da030eda52c483e41873cf4e79e2a63cea1188d6e5",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:b4fe89422f77dd36057521da030eda52c483e41873cf4e79e2a63cea1188d6e5"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-chirp.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/chirp.Pitch",
+      "sha256": "31bb24cb78762124bbf1f41165fbdfc390d99058c9f6fa1e9283c1252d245692",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:31bb24cb78762124bbf1f41165fbdfc390d99058c9f6fa1e9283c1252d245692"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-chirp.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/chirp.json",
+      "sha256": "7287d5129a055f83dd215a9849c65ae36da337bc9cc10384adc1f1acd38599b8",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:7287d5129a055f83dd215a9849c65ae36da337bc9cc10384adc1f1acd38599b8"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-chirp.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/chirp.raw.txt",
+      "sha256": "86ac07756f4dd815a43cad14d4e0e06e0ea5b231d1a52cd71377487e38d0c35f",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:86ac07756f4dd815a43cad14d4e0e06e0ea5b231d1a52cd71377487e38d0c35f"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-chirp.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/chirp.wav",
+      "sha256": "26d7254975fc85ce268defea503a3e454beb315b6e8fc97b1f9f387b230d1615",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:26d7254975fc85ce268defea503a3e454beb315b6e8fc97b1f9f387b230d1615"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-constant.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/constant.Pitch",
+      "sha256": "f785613c673d7fe7bbf7ba58f5826c0cccfd6af62fdf9e6475d39c8aef863102",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:f785613c673d7fe7bbf7ba58f5826c0cccfd6af62fdf9e6475d39c8aef863102"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-constant.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/constant.json",
+      "sha256": "5493dc19051dcc961abeab47ba99f860aeb79232584a9a206999b26af292eeb7",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:5493dc19051dcc961abeab47ba99f860aeb79232584a9a206999b26af292eeb7"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-constant.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/constant.raw.txt",
+      "sha256": "b55d348e381d455f6be6e3bd5293781121b16e8184569bfa2d57dbfd46b7c657",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:b55d348e381d455f6be6e3bd5293781121b16e8184569bfa2d57dbfd46b7c657"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-constant.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/constant.wav",
+      "sha256": "a7d16d73521d5e7ccbb0eaaa5e18bfee0f2934a51a6ee310a1c305985279666b",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:a7d16d73521d5e7ccbb0eaaa5e18bfee0f2934a51a6ee310a1c305985279666b"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Integration manifest and development execution metadata; no recording"
+      },
+      "transformations": [
+        "Manifest of exact recipe, sources and artifact hashes; development generation timings are separate from native performance."
+      ],
+      "id": "pulse-yin-execution.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/execution.json",
+      "sha256": "031fab49d0fc7d17edf2715e9c343eabc5b990982dfd796856616c3b4cc5ccb2",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:031fab49d0fc7d17edf2715e9c343eabc5b990982dfd796856616c3b4cc5ccb2"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-float32-breathy.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/float32-breathy.Pitch",
+      "sha256": "f785613c673d7fe7bbf7ba58f5826c0cccfd6af62fdf9e6475d39c8aef863102",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:f785613c673d7fe7bbf7ba58f5826c0cccfd6af62fdf9e6475d39c8aef863102"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-float32-breathy.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/float32-breathy.json",
+      "sha256": "d0df8e143ef04e5633057cf79619725777af7d55b945ff2d8d6d49da6ba3773c",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:d0df8e143ef04e5633057cf79619725777af7d55b945ff2d8d6d49da6ba3773c"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-float32-breathy.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/float32-breathy.raw.txt",
+      "sha256": "b55d348e381d455f6be6e3bd5293781121b16e8184569bfa2d57dbfd46b7c657",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:b55d348e381d455f6be6e3bd5293781121b16e8184569bfa2d57dbfd46b7c657"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-float32-breathy.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/float32-breathy.wav",
+      "sha256": "9072d06590956b757c76f16c6457e705abce920b1817a4955e1026c3c8236019",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:9072d06590956b757c76f16c6457e705abce920b1817a4955e1026c3c8236019"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-float32-tone.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/float32-tone.Pitch",
+      "sha256": "7bc1204e7e49bdc8dcd8f66b0aca40c2e11cd73222bc832471ed1c19e3fd0122",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:7bc1204e7e49bdc8dcd8f66b0aca40c2e11cd73222bc832471ed1c19e3fd0122"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-float32-tone.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/float32-tone.json",
+      "sha256": "5dc69866d857bd12b638d6f0e3501787ae1e270904ee53b25beb64226401f295",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:5dc69866d857bd12b638d6f0e3501787ae1e270904ee53b25beb64226401f295"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-float32-tone.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/float32-tone.raw.txt",
+      "sha256": "4b6d5f90e9915c9a112503c3c20fc38f472af7e49c3c9069b8305578fa4ea3c0",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:4b6d5f90e9915c9a112503c3c20fc38f472af7e49c3c9069b8305578fa4ea3c0"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-float32-tone.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/float32-tone.wav",
+      "sha256": "ba1ec270eb2159b349e2a962f3373dc8e5932c2e251ec9a72eb1462b0e0d8516",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:ba1ec270eb2159b349e2a962f3373dc8e5932c2e251ec9a72eb1462b0e0d8516"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-harmonic.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/harmonic.Pitch",
+      "sha256": "f93c3436a0a43eec1dddee18152222f022078906c333a66e808bf4b112f987df",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:f93c3436a0a43eec1dddee18152222f022078906c333a66e808bf4b112f987df"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-harmonic.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/harmonic.json",
+      "sha256": "396cb9487e3967dc3a21fe5d51ea951814b5c5b074d6e39e145b296178622b85",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:396cb9487e3967dc3a21fe5d51ea951814b5c5b074d6e39e145b296178622b85"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-harmonic.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/harmonic.raw.txt",
+      "sha256": "434c44e7c765448693518a6d63bad0b7f0b69c18fdb07efec070430f41ae070c",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:434c44e7c765448693518a6d63bad0b7f0b69c18fdb07efec070430f41ae070c"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-harmonic.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/harmonic.wav",
+      "sha256": "e2e03b0f94f8f462784b9963b1798d19f5cdf8956d3d1c8c806d669fcefa5c43",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:e2e03b0f94f8f462784b9963b1798d19f5cdf8956d3d1c8c806d669fcefa5c43"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-irregular-pulses.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/irregular-pulses.Pitch",
+      "sha256": "c2ed683ec465ff3997022a6b99195d641625ba260b5df990415a362e597ab9e3",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:c2ed683ec465ff3997022a6b99195d641625ba260b5df990415a362e597ab9e3"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-irregular-pulses.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/irregular-pulses.json",
+      "sha256": "99c5466528c4964d092fee1256b148f26f27728bdde69b701a3a659fd141174f",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:99c5466528c4964d092fee1256b148f26f27728bdde69b701a3a659fd141174f"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-irregular-pulses.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/irregular-pulses.raw.txt",
+      "sha256": "0fc65ab99dda6baf1490a644818aadb1b02c49455420d45a919b9f70a4fc590b",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:0fc65ab99dda6baf1490a644818aadb1b02c49455420d45a919b9f70a4fc590b"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-irregular-pulses.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/irregular-pulses.wav",
+      "sha256": "ffc70694eba6c12ef6818e4d66e09380ea7f4afae30cbf5c4636628f8be9995f",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:ffc70694eba6c12ef6818e4d66e09380ea7f4afae30cbf5c4636628f8be9995f"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Integration manifest and development execution metadata; no recording"
+      },
+      "transformations": [
+        "Manifest of exact recipe, sources and artifact hashes; development generation timings are separate from native performance."
+      ],
+      "id": "pulse-yin-manifest.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/manifest.json",
+      "sha256": "505f1a3f2a33617a83dd1065208b539d18bd2cb57baf6829aa49779dd7c30b98",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:505f1a3f2a33617a83dd1065208b539d18bd2cb57baf6829aa49779dd7c30b98"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-missing-fundamental.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/missing-fundamental.Pitch",
+      "sha256": "1e7f28729303a162a69da467ba027642ec8c7a1501e784576c7272c5f3c766c7",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:1e7f28729303a162a69da467ba027642ec8c7a1501e784576c7272c5f3c766c7"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-missing-fundamental.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/missing-fundamental.json",
+      "sha256": "5a7ad17b17427e418fd2fb80aaad656504bcfa90368fba11e5f1bac0982540e0",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:5a7ad17b17427e418fd2fb80aaad656504bcfa90368fba11e5f1bac0982540e0"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-missing-fundamental.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/missing-fundamental.raw.txt",
+      "sha256": "0a5322bbd36011b315f7f9d0da246f1595ae8dffdeb3ddd8b99a3b88191e868e",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:0a5322bbd36011b315f7f9d0da246f1595ae8dffdeb3ddd8b99a3b88191e868e"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-missing-fundamental.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/missing-fundamental.wav",
+      "sha256": "db47170d8b7bc7d9d634986424c750ac881acf32ca4edff3e1b7ee240b4ed790",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:db47170d8b7bc7d9d634986424c750ac881acf32ca4edff3e1b7ee240b4ed790"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-octave-jump.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/octave-jump.Pitch",
+      "sha256": "a5178aea0f5a490e4f3cec6ef0e7bcb2f8228141d2860c5a8058992c1144a719",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:a5178aea0f5a490e4f3cec6ef0e7bcb2f8228141d2860c5a8058992c1144a719"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-octave-jump.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/octave-jump.json",
+      "sha256": "7e601513e4a8e9f568c44df301d03e8694a1f98eb953448fe37b623114111d64",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:7e601513e4a8e9f568c44df301d03e8694a1f98eb953448fe37b623114111d64"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-octave-jump.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/octave-jump.raw.txt",
+      "sha256": "afebacf6717794f074769c0994bbec240d4bfc6fd183b6ec84c2dd658383b912",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:afebacf6717794f074769c0994bbec240d4bfc6fd183b6ec84c2dd658383b912"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-octave-jump.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/octave-jump.wav",
+      "sha256": "d6e97ecf8e78c88c5cf429bf2f98a0a69322e27183578148ba9c875d9b1972fa",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:d6e97ecf8e78c88c5cf429bf2f98a0a69322e27183578148ba9c875d9b1972fa"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-silence.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/silence.Pitch",
+      "sha256": "f785613c673d7fe7bbf7ba58f5826c0cccfd6af62fdf9e6475d39c8aef863102",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:f785613c673d7fe7bbf7ba58f5826c0cccfd6af62fdf9e6475d39c8aef863102"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-silence.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/silence.json",
+      "sha256": "9b26d4d2263767859c056de3c5cfc73b69474c34327ac9a1803aeacf56326525",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:9b26d4d2263767859c056de3c5cfc73b69474c34327ac9a1803aeacf56326525"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-silence.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/silence.raw.txt",
+      "sha256": "b55d348e381d455f6be6e3bd5293781121b16e8184569bfa2d57dbfd46b7c657",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:b55d348e381d455f6be6e3bd5293781121b16e8184569bfa2d57dbfd46b7c657"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-silence.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/silence.wav",
+      "sha256": "a9835498b64f5438706a45cca61bb1023399fbac2c9c67f1578d6e34ea44b787",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:a9835498b64f5438706a45cca61bb1023399fbac2c9c67f1578d6e34ea44b787"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-vowel-a.wav\", \"sourceSHA256\": \"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl01-vowel-a.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl01-vowel-a.Pitch",
+      "sha256": "18e2318b7e9409b2b301ca0052a86cb2d782599308bf25173fd35a2610e36105",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:18e2318b7e9409b2b301ca0052a86cb2d782599308bf25173fd35a2610e36105"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-vowel-a.wav\", \"sourceSHA256\": \"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl01-vowel-a.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl01-vowel-a.json",
+      "sha256": "c3ee086547b24c0ffc8d64b6d709c6921df64fd73bab51b67781cb579d1ec4ed",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:c3ee086547b24c0ffc8d64b6d709c6921df64fd73bab51b67781cb579d1ec4ed"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-vowel-a.wav\", \"sourceSHA256\": \"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl01-vowel-a.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl01-vowel-a.raw.txt",
+      "sha256": "cab9295872bff356a75192dce5576b336c9e6bbb3e39c4c3c3f4462d7c029178",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:cab9295872bff356a75192dce5576b336c9e6bbb3e39c4c3c3f4462d7c029178"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-vowel-a.wav\", \"sourceSHA256\": \"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl01-vowel-a.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl01-vowel-a.wav",
+      "sha256": "968917df12b2f336cc4e9667a94ccc5d0c404e710a9f0bdb4dd75653ca40b177",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:968917df12b2f336cc4e9667a94ccc5d0c404e710a9f0bdb4dd75653ca40b177"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":114660,\"startSample\":758520}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-consonant-rich.wav\", \"sourceSHA256\": \"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl02-consonant-rich.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl02-consonant-rich.Pitch",
+      "sha256": "4e0afb8875a899965eec7be4419722b842a8e05d4b7a834320bcb9e4703bdd99",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:4e0afb8875a899965eec7be4419722b842a8e05d4b7a834320bcb9e4703bdd99"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":114660,\"startSample\":758520}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-consonant-rich.wav\", \"sourceSHA256\": \"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl02-consonant-rich.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl02-consonant-rich.json",
+      "sha256": "5d975de9cda370f0b3b3f1d39116345e717601d3463051baaacd43ec2a8ceabb",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:5d975de9cda370f0b3b3f1d39116345e717601d3463051baaacd43ec2a8ceabb"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":114660,\"startSample\":758520}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-consonant-rich.wav\", \"sourceSHA256\": \"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl02-consonant-rich.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl02-consonant-rich.raw.txt",
+      "sha256": "d123b8cf7677affdb1f7d07c51dbcdc51ff7262cfb492e5fb0609751e5a6fd45",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:d123b8cf7677affdb1f7d07c51dbcdc51ff7262cfb492e5fb0609751e5a6fd45"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":114660,\"startSample\":758520}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-consonant-rich.wav\", \"sourceSHA256\": \"9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl02-consonant-rich.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl02-consonant-rich.wav",
+      "sha256": "e980cc86a3b4b4ebe7e96e8afc5c76c31abf2f943739868ad953f27ce5ed1228",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:e980cc86a3b4b4ebe7e96e8afc5c76c31abf2f943739868ad953f27ce5ed1228"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-all-voiced.wav\", \"sourceSHA256\": \"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl03-all-voiced.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl03-all-voiced.Pitch",
+      "sha256": "4e0afb8875a899965eec7be4419722b842a8e05d4b7a834320bcb9e4703bdd99",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:4e0afb8875a899965eec7be4419722b842a8e05d4b7a834320bcb9e4703bdd99"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-all-voiced.wav\", \"sourceSHA256\": \"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl03-all-voiced.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl03-all-voiced.json",
+      "sha256": "41d0dbe73cb51c089bfa24d065e73e0c779442022a532a27f21c46a5b575d52d",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:41d0dbe73cb51c089bfa24d065e73e0c779442022a532a27f21c46a5b575d52d"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-all-voiced.wav\", \"sourceSHA256\": \"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl03-all-voiced.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl03-all-voiced.raw.txt",
+      "sha256": "d123b8cf7677affdb1f7d07c51dbcdc51ff7262cfb492e5fb0609751e5a6fd45",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:d123b8cf7677affdb1f7d07c51dbcdc51ff7262cfb492e5fb0609751e5a6fd45"
+    },
+    {
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":97020,\"startSample\":343980}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"sampleCount\": 5292, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-all-voiced.wav\", \"sourceSHA256\": \"da0a2a3611ed467cab5cb0b6baa6141a87b124f50e52bb7030247bd176db20e6\", \"startSample\": 0}",
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-speech-bl03-all-voiced.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/speech-bl03-all-voiced.wav",
+      "sha256": "50b228a74ad5c19ac7c64741362c32e7f0a49633cf53b5636c2f6176a16d7d89",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:50b228a74ad5c19ac7c64741362c32e7f0a49633cf53b5636c2f6176a16d7d89"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-123.45.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-123.45.Pitch",
+      "sha256": "44c14a27daf4bc3222c14fe28e8cdf815c860618a9e26f06ca4b711b031aa1f5",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:44c14a27daf4bc3222c14fe28e8cdf815c860618a9e26f06ca4b711b031aa1f5"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-123.45.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-123.45.json",
+      "sha256": "42fd549ad47e91406e66f584c976ba152a0d2c518f63a195e7cce212b67ee074",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:42fd549ad47e91406e66f584c976ba152a0d2c518f63a195e7cce212b67ee074"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-123.45.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-123.45.raw.txt",
+      "sha256": "90eefd341330f4e561c6775706ce6105ea0d0b9f117561ed72603fa4ea5bb501",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:90eefd341330f4e561c6775706ce6105ea0d0b9f117561ed72603fa4ea5bb501"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-123.45.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-123.45.wav",
+      "sha256": "e5e949e7d512ce104bd141d515c23aa4e5358185e705a8ba2f5566ff5744cdf1",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:e5e949e7d512ce104bd141d515c23aa4e5358185e705a8ba2f5566ff5744cdf1"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-650.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-650.Pitch",
+      "sha256": "9127af86b22a5311e175001edb14c5727e6a838a5aa5045f9fbc3d0cdf0118b8",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:9127af86b22a5311e175001edb14c5727e6a838a5aa5045f9fbc3d0cdf0118b8"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-650.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-650.json",
+      "sha256": "cd662488c79f00c7d2e716832b6f02f2e828031f767a734b4aed03d7f2f10311",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:cd662488c79f00c7d2e716832b6f02f2e828031f767a734b4aed03d7f2f10311"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-650.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-650.raw.txt",
+      "sha256": "7bbc251bdf666db8399a1072d3fa18deb3c5d0e00e33a4d4dfc558f2ce74a30c",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:7bbc251bdf666db8399a1072d3fa18deb3c5d0e00e33a4d4dfc558f2ce74a30c"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-650.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-650.wav",
+      "sha256": "e372151daf0f550c2da53751707e04f9524e86b267e0eba7cfafb80ad8fa0533",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:e372151daf0f550c2da53751707e04f9524e86b267e0eba7cfafb80ad8fa0533"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-80.Pitch",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-80.Pitch",
+      "sha256": "55504bd5640e85c052ff0b1466775e517f5cd8eb9e43648fa67f8ec100af344a",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:55504bd5640e85c052ff0b1466775e517f5cd8eb9e43648fa67f8ec100af344a"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-80.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-80.json",
+      "sha256": "62da7dc3aa07c37d87621eab54d67542c203800e01bb8dfd900ba3e71414191a",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:62da7dc3aa07c37d87621eab54d67542c203800e01bb8dfd900ba3e71414191a"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-80.raw.txt",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-80.raw.txt",
+      "sha256": "35b0152c911a4a802ba1ae24ba321974005f49b4de408e05a215631e832b21e9",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:35b0152c911a4a802ba1ae24ba321974005f49b4de408e05a215631e832b21e9"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/38",
+        "versionOrHash": "yin-reference-v1 implementation SHA256 33672817b7addf110245e747a0b3caf8958511f76094133df349ce2161288362"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic PCM, equation outputs or catalog metadata; no human recording in this artifact"
+      },
+      "transformations": [
+        "Original fixed-integration YIN steps 2-5 equations evaluated by Python 3.14.8 math.fsum; all differences, CMND values, candidates and raw/tracked outcomes retained; no Swift-derived expected values",
+        "Explicit peak normalization, full observed integration/lag/neighbor support, independent raw-difference interpolation and narrow visible numerical boundary canonicalization per decision #117",
+        "Preserve gross/octave errors, uncertain frames, partial tails and coverage denominators; no human F0 labels or clinical accuracy claim",
+        "Independent YIN fixture reproduced from its original equations and PCM before external pulse processing; only complete raw-voiced frames supply F0, all other statuses map explicitly to unvoiced.",
+        "Uniform grid preserves original support midpoint and hop; no padded edge frames or partial-tail estimate.",
+        "Pinned Praat 7.0.02 injected-F0 pulse/amplitude transcript on unchanged PCM; separate end-to-end estimated-F0 evidence, not native expected outputs or physiological timing."
+      ],
+      "id": "pulse-yin-tone-80.wav",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/tone-80.wav",
+      "sha256": "7ff7ff500a22fead428dc90dd43cc31fc579fc416031644edb24c78f1b228b6a",
+      "generator": {
+        "path": "Tools/Pulses/yin_reference.py",
+        "version": "pulse-yin-integration-v1",
+        "sha256": "856407541d0921d6b01aaa5fe456fa765e1c7ecce3627a8ba9ac186c8a87331e"
+      },
+      "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
+      "referenceOutputIdentity": "sha256:7ff7ff500a22fead428dc90dd43cc31fc579fc416031644edb24c78f1b228b6a"
     }
   ],
   "optionalModels": []

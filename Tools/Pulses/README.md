@@ -259,3 +259,41 @@ irregularly chunked modes. Eligible counts are 1,088 periods, 958 pairs, and 890
 amplitudes. Set `HDXL_PULSE_HISTORY_DIRECTORY` to test a freshly generated catalog;
 an explicitly empty override fails. The [comparison policy](COMPARISON.md) was
 frozen before native history comparison and is separate from generator timings.
+
+## Separate estimated-F0 integration
+
+`yin_reference.py` first reproduces 16 existing independent YIN fixtures from
+their original PCM and equations. It maps only complete raw-voiced frames to
+positive F0 at their observed-support midpoints; every other full-frame status
+maps explicitly to unvoiced. The original hop and unsupported edges remain.
+Partial tails are excluded; no complete frame means insufficient upstream
+support. The causal candidate tracker is disabled in this recipe. These choices
+are retained in `fullSupportRawVoicedYINToPulse-v1` and must be included in any
+combined pipeline configuration that adopts it.
+
+The pinned external pulse route then receives that independently estimated F0.
+The 16 cases cover tones, harmonics, missing fundamental, varying F0, irregular
+pulses, noise, silence, both precisions, and three licensed speech excerpts. All
+152 full YIN frames and 175 external raw pulses remain inspectable. The speech
+records inherit corpus attribution and consent evidence; unavailable/no-pulse
+outcomes are retained without inventing reference pitch labels.
+
+```sh
+python3 Tools/Pulses/yin_reference.py --directory .build/pulse-yin-new
+python3 Tools/Pulses/yin_reference.py --verify \
+  --directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN
+swift test --filter pulseYINIntegration
+```
+
+Offline verification recomputes the original YIN inputs, F0 mapping, and parsed
+external results. Native comparison uses both YIN backends and whole-input or
+irregular chunk delivery. It checks the upstream frame grid/status exactly and
+frequencies within the existing YIN **0.001 Hz** budget. Raw pulse counts remain
+exact; the separate end-to-end catalog position budget is **1e-6 samples**, with
+the existing cycle-amplitude budget. These catalog gates were declared before
+native integration comparisons; they are not universal error bounds.
+
+Set `HDXL_PULSE_YIN_DIRECTORY` for a fresh candidate catalog and
+`HDXL_PULSE_YIN_REPORT` for the separate native error/count audit. Explicitly empty
+paths fail. Integration passes do not replace supplied-oracle-F0 conformance,
+history qualification, or known-source/physical accuracy evidence.
