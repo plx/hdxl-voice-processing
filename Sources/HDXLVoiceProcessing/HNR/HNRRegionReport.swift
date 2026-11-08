@@ -148,4 +148,36 @@ public struct HNRRegionReport: Sendable, Hashable {
                     timeline.plan.source.durationSeconds / 2,
                     timeline.plan.effectiveDelaySeconds)), outcome: outcome)
     }
+
+    /// Maps each scheduler continuity region back to acquisition coordinates before
+    /// aggregation. Stream completions are deliberately not offline region means.
+    public init(
+        profile: HNRStatisticProfile, timeline: MaskTimeline,
+        scheduledRegions: [AnalysisScheduleCompletion]
+    ) throws {
+        let regions = try scheduledRegions.map { completion in
+            guard let native = completion.hnrInterval, completion.hnrStream == nil else {
+                throw HNRError.unexpectedContext
+            }
+            let source = try completion.origin.sourceInterval(for: native.source)
+            guard source == completion.observedSource else { throw HNRError.unexpectedContext }
+            return HNRCompletion(
+                profile: native.profile, source: source,
+                completeGridFrameCount: native.completeGridFrameCount,
+                emittedSlotCount: native.emittedSlotCount,
+                availableFrameCount: native.availableFrameCount,
+                unavailableFrameCount: native.unavailableFrameCount,
+                finiteDecibelFrameCount: native.finiteDecibelFrameCount,
+                reportingLimitFrameCount: native.reportingLimitFrameCount,
+                numericalZeroNoiseFrameCount: native.numericalZeroNoiseFrameCount,
+                lowConfidenceFrameCount: native.lowConfidenceFrameCount,
+                clippedFrameCount: native.clippedFrameCount,
+                observedSampleCount: native.observedSampleCount,
+                finiteUncappedMeanDB: native.finiteUncappedMeanDB,
+                referencePresentationMeanDB: native.referencePresentationMeanDB,
+                isCancelled: completion.isCancelled || native.isCancelled,
+                unavailability: completion.isCancelled ? .cancelled : native.unavailability)
+        }
+        try self.init(profile: profile, timeline: timeline, regions: regions)
+    }
 }

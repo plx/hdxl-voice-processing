@@ -29,7 +29,10 @@ private func transferScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
                 conditioningMethod: .streamingPreview(lobes: 8, cutoffFraction: 0.9)),
             settings: CPPSConfiguration(
                 timeWindowSeconds: 0.02,
-                prominence: CPPConfiguration(fitMethod: .leastSquares))))
+                prominence: CPPConfiguration(fitMethod: .leastSquares))),
+        hnr: HNRConfiguration(
+            method: .forwardCrossCorrelation, sampleRate: 44100,
+            inputPrecision: precision, normalization: .causalWindow))
     let start: Int64 = (1 << 54) + 51
     let source = try SourceInterval(
         epoch: epoch, startSample: start, sampleCount: 0, sampleRate: 44100)
@@ -53,12 +56,14 @@ private func transferScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
     }
     let right = left.map { $0 * 0.5 }
     var frames: [ScheduledFrame] = []
+    var latest = CaptureResultFrames()
     var completion: AnalysisScheduleCompletion?
     func receive(_ event: PCMTransferScheduleEvent) {
         switch event {
         case .frame(let value):
             #expect(value.channelMap == [17, 4])
             frames.append(value.frame)
+            latest.accept(value)
         case .regionCompleted(let value): completion = value
         default: Issue.record("Unexpected discontinuity")
         }
@@ -127,6 +132,15 @@ private func transferScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
         })
     #expect(frames == expected)
     #expect(completion == expectedCompletion)
+    #expect(latest.levels != nil && latest.pitch != nil && latest.cpps != nil && latest.hnr != nil)
+    #expect(
+        try latest.hnr?.frame.measurementResult(.harmonicToNoiseRatio).outcome
+            == .unavailable(.insufficientData))
+    #expect(
+        expected.contains {
+            guard case .hnr(.frame(let value)) = $0.value else { return false }
+            return value.selectedObservation != nil
+        })
 }
 
 @Test func schedulingTransferMatchesMemoryForBothPrecisionsAndLayouts() throws {

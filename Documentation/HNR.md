@@ -81,6 +81,8 @@ relative to its normalization dependency. Source indices are subtracted before
 conversion to seconds. Normalization scale, mean and peak remain inspectable
 alongside local amplitudes. Source and host anchors are optional, with checked
 integer host-time advancement; neither reset nor finish guesses missing clocks.
+Nanosecond projection rounds to nearest with ties to even, matching the shared
+scheduler; a 128 kHz half-nanosecond regression checks both paths.
 Whole chunks are validated before consumption. A gap requires an explicit epoch
 reset; a long requested hop skips unanalyzed samples without stitching windows.
 Preparation and processing belong on a worker, not an audio capture callback.
@@ -136,5 +138,29 @@ prefix reports unvisited regions and retains the full planned coverage denominat
 The report's scalar export preserves partial-coverage, low-confidence and clipping
 warnings. No health or pleasantness cutoff is introduced.
 
-Processing-path integration, performance registration, all remaining software gates
-and both reviews remain required before this leaf is complete.
+`AnalysisScheduleProfile.hnr` composes either HNR method with the other numerical
+workers. Whole-interval normalization requires finite declared input; continuous
+mode rejects it. Causal configuration works identically with finite or continuous
+delivery. The requirements report distinguishes the fractional causal grid from
+the centered whole-interval grid. Input precision/rate must match the schedule.
+Profiles without HNR retain their existing canonical bytes and identity.
+
+`ScheduledFrameValue.hnr` owns `HNRAnalysisResult` metadata, including explicit
+unavailable tails; it retains no correlation/candidate scratch. Export
+`.harmonicToNoiseRatio` for an uncapped finite scalar, warnings, acquisition timing,
+nominal frame center, complete dependency and mask coverage. Numerical zero noise
+retains its typed state and exports an unavailable scalar, never a fabricated
+finite value. `HNRRegionReport` also accepts whole-interval scheduler completions,
+mapping each continuity region back to the original acquisition coordinates before
+checking region order and aggregating.
+
+The audio file and capture-transfer workers use this same schedule. Capture
+snapshots retain the latest HNR result independently of levels, pitch and CPPS,
+including unavailable output. Session archives serialize `.hnr` and `.hnrStatistic`
+recipes as well as schedules containing HNR; scheduled scalar archives and replay
+preserve distinct frame centers even when many frames share a whole-interval
+dependency. The independent `Examples/CoreConsumer` demonstrates all four
+method/normalization combinations using only the public core API.
+
+Performance registration, all remaining software gates and both reviews remain
+required before this leaf is complete.

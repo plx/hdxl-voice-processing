@@ -11,6 +11,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     case trackedYIN(YINProfile)
     case cpp(CPPProfile)
     case cpps(CPPSProfile)
+    case hnr(HNRConfiguration)
+    case hnrStatistic(HNRStatisticProfile)
 
     public func identity() throws -> ProfileIdentity {
         switch self {
@@ -21,6 +23,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         case .trackedYIN(let value): try value.identity()
         case .cpp(let value): try value.identity()
         case .cpps(let value): try value.identity()
+        case .hnr(let value): try value.identity()
+        case .hnrStatistic(let value): try value.identity()
         }
     }
 
@@ -36,6 +40,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         case .trackedYIN(let value): Double(value.estimator.sampleRate)
         case .cpp(let value): value.cepstrogram.map { Double($0.conditioning.sourceSampleRate) }
         case .cpps(let value): Double(value.cepstrogram.conditioning.sourceSampleRate)
+        case .hnr(let value): Double(value.sampleRate)
+        case .hnrStatistic(let value): Double(value.measurement.sampleRate)
         }
     }
 
@@ -66,6 +72,9 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
                         CPPProfile(
                             cepstrogram: cpps.cepstrogram, settings: cpps.settings.prominence)
                     ).descriptors())
+            }
+            if let hnr = value.hnr {
+                result.formUnion(try Self.hnr(hnr).descriptors())
             }
             return result
         case .levels:
@@ -102,11 +111,17 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
                 try MeasurementDescriptor(
                     kind: .cpps, unit: .decibelsRatio, algorithm: identity().identifier)
             ]
+        case .hnr, .hnrStatistic:
+            return [
+                try MeasurementDescriptor(
+                    kind: .harmonicToNoiseRatio, unit: .decibelsRatio,
+                    algorithm: identity().identifier)
+            ]
         }
     }
 
     private enum Kind: String, Codable {
-        case analysis, schedule, levels, yin, trackedYIN, cpp, cpps
+        case analysis, schedule, levels, yin, trackedYIN, cpp, cpps, hnr, hnrStatistic
     }
     private enum CodingKeys: String, CodingKey, CaseIterable { case kind, recipe }
 
@@ -121,6 +136,9 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         case .trackedYIN: self = .trackedYIN(try c.decode(YINProfile.self, forKey: .recipe))
         case .cpp: self = .cpp(try c.decode(CPPProfile.self, forKey: .recipe))
         case .cpps: self = .cpps(try c.decode(CPPSProfile.self, forKey: .recipe))
+        case .hnr: self = .hnr(try c.decode(HNRConfiguration.self, forKey: .recipe))
+        case .hnrStatistic:
+            self = .hnrStatistic(try c.decode(HNRStatisticProfile.self, forKey: .recipe))
         }
     }
 
@@ -138,6 +156,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         case .trackedYIN(let value): try encode(.trackedYIN, value)
         case .cpp(let value): try encode(.cpp, value)
         case .cpps(let value): try encode(.cpps, value)
+        case .hnr(let value): try encode(.hnr, value)
+        case .hnrStatistic(let value): try encode(.hnrStatistic, value)
         }
     }
 }

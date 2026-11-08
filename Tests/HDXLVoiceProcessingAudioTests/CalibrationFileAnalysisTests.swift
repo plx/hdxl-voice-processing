@@ -361,6 +361,7 @@ private final class CalibrationAudioFixture {
                     case .levels: metrics = [.rms, .levelDBFS]
                     case .yin: metrics = [.fundamentalFrequency]
                     case .cpps: metrics = [.cpp, .cpps]
+                    case .hnr: metrics = [.harmonicToNoiseRatio]
                     }
                     for metric in metrics {
                         do {

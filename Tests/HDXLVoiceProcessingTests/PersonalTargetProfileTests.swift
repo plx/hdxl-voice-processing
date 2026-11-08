@@ -76,6 +76,7 @@ private func targetProfileMetric(_ frame: ScheduledFrame) -> ScheduledMetric {
     case .levels: .levelDBFS
     case .pitch: .fundamentalFrequency
     case .cpps: .cpps
+    case .hnr: .harmonicToNoiseRatio
     }
 }
 

@@ -19,6 +19,41 @@ public struct HNRUnavailableFrame: Sendable, Hashable {
 public enum BorrowedHNRAnalysisOutput {
     case frame(BorrowedHNROutput)
     case unavailable(HNRUnavailableFrame)
+
+    /// Owned scalar metadata; candidate and correlation buffers are not copied.
+    public var result: HNRAnalysisResult {
+        switch self {
+        case .frame(let output): .frame(output.result)
+        case .unavailable(let output): .unavailable(output)
+        }
+    }
+}
+
+public enum HNRAnalysisResult: Sendable, Hashable {
+    case frame(HNRFrameResult)
+    case unavailable(HNRUnavailableFrame)
+
+    public var dependencyTiming: AnalysisTiming {
+        switch self {
+        case .frame(let frame): frame.dependencyTiming
+        case .unavailable(let frame): frame.timing
+        }
+    }
+
+    /// Zero-based continuity coordinates when used by the shared schedule.
+    public var centerSourceSeconds: Double {
+        switch self {
+        case .frame(let frame): frame.centerSourceSeconds
+        case .unavailable(let frame): frame.centerSourceSeconds
+        }
+    }
+
+    public func measurementResult() throws -> MeasurementResult {
+        switch self {
+        case .frame(let frame): try frame.measurementResult()
+        case .unavailable(let frame): try frame.measurementResult()
+        }
+    }
 }
 
 /// Whole-interval accounting. Reference presentation and uncapped finite means
