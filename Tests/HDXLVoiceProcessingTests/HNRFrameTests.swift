@@ -58,7 +58,8 @@ private func hnrCompareFrames<Sample: BinaryFloatingPoint & Sendable>(
                 normalization: reference
             ) { output in
                 frames += 1
-                #expect(output.result.centerSecondsFromOrigin == expected.centerSeconds)
+                #expect(
+                    output.result.centerSecondsFromNormalizationOrigin == expected.centerSeconds)
                 #expect(output.result.dependencyTiming.source == source)
                 #expect(
                     output.result.frameTiming.source.startSample == source.startSample

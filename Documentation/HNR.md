@@ -65,8 +65,43 @@ noise; finite-only diagnostics do not silently become a full-population mean.
 Missing frames remain in coverage. The source/host clocks, local support and full
 normalization dependency are retained separately.
 
-The finite causal-window frame factory uses only its complete acquired window for
-normalization, including mean/lag support. It has a separate profile; the stateful
-fractional-hop streaming scheduler still needs implementation. Mask/coverage
-selection, processing-path integration, performance registration, all remaining
-software gates and both reviews remain required before this leaf is complete.
+`PreparedHNRStream` uses only each complete acquired window for normalization,
+including mean/lag support. Its ring and emission buffers are bounded by
+`ceil(nominalSupportSeconds * sampleRate)` and reuse the prepared frame kernel.
+Input chunks affect delivery only. Window `k` starts at `floor(k * step)`, where
+`step` is the exact rational value of the binary64 product `hopSeconds * sampleRate`
+(canonicalized to at least one sample). An integer phase accumulator implements
+that rule without accumulating a floating clock. At 44.1 kHz and 5 ms, starts are
+0, 220, 441, 661, 882, ...; a value just below a decimal step stays below it rather
+than acquiring an undeclared epsilon. This grid has a separate profile identity
+from the whole-interval centered grid.
+
+Streaming results retain both a stream-relative center and the frame center
+relative to its normalization dependency. Source indices are subtracted before
+conversion to seconds. Normalization scale, mean and peak remain inspectable
+alongside local amplitudes. Source and host anchors are optional, with checked
+integer host-time advancement; neither reset nor finish guesses missing clocks.
+Whole chunks are validated before consumption. A gap requires an explicit epoch
+reset; a long requested hop skips unanalyzed samples without stitching windows.
+Preparation and processing belong on a worker, not an audio capture callback.
+
+Streaming finish emits at most the earliest nonempty incomplete window as an
+insufficient-data result, with actual acquired support and no padding. This policy
+is serialized. Empty streams emit no frames and have explicit empty completion.
+Ordinary finish is idempotent; callback cancellation preserves the borrow, releases
+storage ownership, returns the exact consumed prefix and requires reset before
+further use. Reset discards buffered history and reuses capacity when available;
+reconfiguration prepares a complete replacement before changing the current state.
+Reentrant processing, reset, finish and reconfiguration are rejected.
+
+The 12 independent causal fixtures contain 312 complete windows and 12 partial
+tails across both methods, three rates and two precisions. They retain an amplitude
+step and recovery, exact rational positions and independent direct-sum window
+results. Native batch and irregular-chunk output agree exactly; numerical outputs
+meet the same frozen periodicity/dB tolerances. Four million phase advances are
+also checked at independently computed rational checkpoints. These checks establish
+causal behavior, not equivalence to unknown whole-file normalization.
+
+Mask/coverage selection, processing-path integration, performance registration,
+all remaining software gates and both reviews remain required before this leaf
+is complete.

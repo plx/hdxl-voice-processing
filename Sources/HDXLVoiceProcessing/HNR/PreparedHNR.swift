@@ -109,12 +109,16 @@ public final class PreparedHNR<Sample: BinaryFloatingPoint & Sendable> {
         analyzedFrames = saturatingAdd(analyzedFrames)
         let result = HNRFrameResult(
             profile: identity, frameIndex: UInt64(layout.frameIndex), frameTiming: timing,
-            dependencyTiming: dependency, centerSecondsFromOrigin: layout.centerSecondsFromOrigin,
+            dependencyTiming: dependency,
+            centerSecondsFromNormalizationOrigin: layout.centerSecondsFromOrigin,
             centerSourceSeconds: center, strongestCandidateIndex: summary.strongest,
             selectedCandidateIndex: summary.selected,
             strongestObservation: summary.strongest.flatMap { candidates[$0].estimate },
             selectedObservation: summary.selected.flatMap { candidates[$0].estimate },
             unavailability: summary.reason, frameAmplitudeScale: summary.scale,
+            normalizationAmplitudeScale: normalization.amplitudeScale,
+            scaledNormalizationMean: normalization.scaledMean,
+            scaledNormalizationPeak: normalization.scaledMeanRemovedPeak,
             scaledLocalMean: summary.mean, scaledLocalPeak: summary.peak,
             relativeIntensity: summary.intensity, unvoicedStrength: summary.unvoiced,
             hasClipping: summary.clipping, layout: layout)

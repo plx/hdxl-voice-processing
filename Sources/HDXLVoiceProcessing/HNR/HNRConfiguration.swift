@@ -44,6 +44,7 @@ public struct HNRConfiguration: Sendable, Hashable, Codable {
     public let reportingDecibelLimit: Double
     public let frameGrid: String
     public let arithmeticScaling: String
+    public let partialWindowPolicy: PartialWindowPolicy
 
     public var effectivePeriods: Double {
         periodsPerWindow * (method == .autocorrelation ? 2 : 1)
@@ -111,8 +112,9 @@ public struct HNRConfiguration: Sendable, Hashable, Codable {
         self.frameGrid =
             normalization == .wholeInterval
             ? "centeredWholeIntervalBinary64FusedStep"
-            : "causalAcquiredWindowCenterBinary64FractionalHopAccumulator"
+            : "causalAcquiredWindowCenterExactBinary64StepAccumulator"
         self.arithmeticScaling = "framePeakScaledBinary64WithSeparateSilenceReference"
+        self.partialWindowPolicy = .emitUnavailable
     }
 
     public func identity() throws -> ProfileIdentity {
@@ -139,6 +141,7 @@ public struct HNRConfiguration: Sendable, Hashable, Codable {
         case pitchFloorHz, periodsPerWindow, hopSeconds, silenceThreshold, normalization
         case window, interpolation, overshoot, peakResolution, minimumPeakCurvature
         case reportingPeriodicityLimit, reportingDecibelLimit, frameGrid, arithmeticScaling
+        case partialWindowPolicy
     }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
@@ -165,7 +168,9 @@ public struct HNRConfiguration: Sendable, Hashable, Codable {
                 == reportingPeriodicityLimit,
             try c.decode(Double.self, forKey: .reportingDecibelLimit) == reportingDecibelLimit,
             try c.decode(String.self, forKey: .frameGrid) == frameGrid,
-            try c.decode(String.self, forKey: .arithmeticScaling) == arithmeticScaling
+            try c.decode(String.self, forKey: .arithmeticScaling) == arithmeticScaling,
+            try c.decode(PartialWindowPolicy.self, forKey: .partialWindowPolicy)
+                == partialWindowPolicy
         else { throw HNRError.invalidConfiguration }
     }
 }

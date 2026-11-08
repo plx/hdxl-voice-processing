@@ -40221,6 +40221,831 @@
       },
       "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"candidateSearch\": \"internalPositiveLocalMaximaNyquistCeiling\", \"frameGrid\": \"centeredWholeIntervalBinary64FusedStep\", \"hopSeconds\": 0.01, \"identifier\": \"praat-7002-hnr-cc-whole-interval-v1\", \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"overshoot\": \"reciprocalAboveOne\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75.0, \"referenceDecibelLimit\": 150.0, \"referencePeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"selection\": \"wholeContiguousIntervalNoMaskStitching\", \"silencePolicy\": \"wholeIntervalMeanRemovedPeakSoftCandidate\", \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
       "referenceOutputIdentity": "sha256:c7c651e8f97cc789333fbff7030d369eb9fb9c0a8e5c6745fc1ede9d25fde0ba"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-ac-16000-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-16000-float32.json",
+      "sha256": "06796ca55119661ecdd785f171b53ef926f4f923f13d45cf80c0eda0857d9ebb",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:06796ca55119661ecdd785f171b53ef926f4f923f13d45cf80c0eda0857d9ebb"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-ac-16000-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-16000-float32.wav",
+      "sha256": "54840e9389b0cd89ea95772692c836ec24712e86da5147b3b5ce6a456a8b692d",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:54840e9389b0cd89ea95772692c836ec24712e86da5147b3b5ce6a456a8b692d"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-ac-16000-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-16000-float64.json",
+      "sha256": "b24daf65576406b2d0301a8a939a113a996bcc1387fd2c1b7d8d7a5e7a87308f",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:b24daf65576406b2d0301a8a939a113a996bcc1387fd2c1b7d8d7a5e7a87308f"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-ac-16000-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-16000-float64.wav",
+      "sha256": "bb783d9f961d6c1422f888f4f80f368ed79c989c4e817700e087746eefb272b0",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:bb783d9f961d6c1422f888f4f80f368ed79c989c4e817700e087746eefb272b0"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-ac-44100-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-44100-float32.json",
+      "sha256": "228eade6df400b934ddb01a69652572c8152f503b8a48f430d72cdc5a30584b3",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 44100, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:228eade6df400b934ddb01a69652572c8152f503b8a48f430d72cdc5a30584b3"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-ac-44100-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-44100-float32.wav",
+      "sha256": "d8e842caead9b660f001bd5754666234549cc74a48edacc18e552397a4652395",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 44100, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:d8e842caead9b660f001bd5754666234549cc74a48edacc18e552397a4652395"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-ac-44100-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-44100-float64.json",
+      "sha256": "d91b499fe5d9fafe1aa0b64d13383aee3f04f52ed10f1750031ea7301ecdb6e9",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 44100, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:d91b499fe5d9fafe1aa0b64d13383aee3f04f52ed10f1750031ea7301ecdb6e9"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-ac-44100-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-44100-float64.wav",
+      "sha256": "193b75b6ceb6f5571f8e7ea9065d05c95409467cb89eddfbd4959418e3383c1c",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 44100, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:193b75b6ceb6f5571f8e7ea9065d05c95409467cb89eddfbd4959418e3383c1c"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-ac-48000-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-48000-float32.json",
+      "sha256": "6abe6d38fde897a85dd62d890ac263f5a60ba382904afe5b778399ebb45c2e71",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 48000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:6abe6d38fde897a85dd62d890ac263f5a60ba382904afe5b778399ebb45c2e71"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-ac-48000-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-48000-float32.wav",
+      "sha256": "58c8bbbcde3935d6579d9e1ed5374e462f3642ba38df7eaeee6bde62c0d92ab4",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 48000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:58c8bbbcde3935d6579d9e1ed5374e462f3642ba38df7eaeee6bde62c0d92ab4"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-ac-48000-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-48000-float64.json",
+      "sha256": "b649488013d9441e1350385896df08ca7cb3cf725476fd78d02bd19b901c22d5",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 48000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:b649488013d9441e1350385896df08ca7cb3cf725476fd78d02bd19b901c22d5"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-ac-48000-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-ac-48000-float64.wav",
+      "sha256": "84cb060e71a3a4009eb619abd63c1b5b641611acceda4ba6e848d6f791a69379",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"ac\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 48000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"pitchGaussianNPlusOne\"}",
+      "referenceOutputIdentity": "sha256:84cb060e71a3a4009eb619abd63c1b5b641611acceda4ba6e848d6f791a69379"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-cc-16000-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-16000-float32.json",
+      "sha256": "da350322de37f84027b23d41cf314354ea09a8ccc96340deb69bcf6f17315271",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:da350322de37f84027b23d41cf314354ea09a8ccc96340deb69bcf6f17315271"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-cc-16000-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-16000-float32.wav",
+      "sha256": "7527a17ad3ccb2fbc3f8b3a13c3ce9d22e45d0060f88ea7d8d59d97dd7b4e82e",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:7527a17ad3ccb2fbc3f8b3a13c3ce9d22e45d0060f88ea7d8d59d97dd7b4e82e"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-cc-16000-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-16000-float64.json",
+      "sha256": "7da2ad52294efdf8d6b16eccae8b260e82c89f6fafd1eb2534b02cb8bad4658f",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:7da2ad52294efdf8d6b16eccae8b260e82c89f6fafd1eb2534b02cb8bad4658f"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-cc-16000-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-16000-float64.wav",
+      "sha256": "f2fefdd66435133ace9c3bb8c59cd7244a6efc28b9a6520e68d5b3deaf3df1b5",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 16000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:f2fefdd66435133ace9c3bb8c59cd7244a6efc28b9a6520e68d5b3deaf3df1b5"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-cc-44100-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-44100-float32.json",
+      "sha256": "e2871062e4abf091ab6a9c3624d309e492890455c5053c1b3a837d468624c4c6",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 44100, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:e2871062e4abf091ab6a9c3624d309e492890455c5053c1b3a837d468624c4c6"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-cc-44100-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-44100-float32.wav",
+      "sha256": "076b53be18d35382dbf76b8d32e56d6869535642a39ddf9547716d5db0417d8c",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 44100, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:076b53be18d35382dbf76b8d32e56d6869535642a39ddf9547716d5db0417d8c"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-cc-44100-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-44100-float64.json",
+      "sha256": "b5acdae333d4570027bb7561712ede8fe048112283f4127e0a06b217638f47f1",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 44100, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:b5acdae333d4570027bb7561712ede8fe048112283f4127e0a06b217638f47f1"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-cc-44100-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-44100-float64.wav",
+      "sha256": "1360e25dca7792243c2e38a19e6bdff8b7bcdcddfec6d9ad1f71cf784c7826b7",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 44100, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:1360e25dca7792243c2e38a19e6bdff8b7bcdcddfec6d9ad1f71cf784c7826b7"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-cc-48000-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-48000-float32.json",
+      "sha256": "13785dd26e0d61a2721a2d18747427aa2a38c6a8c0053b4860ce4c76d34f1587",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 48000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:13785dd26e0d61a2721a2d18747427aa2a38c6a8c0053b4860ce4c76d34f1587"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-cc-48000-float32",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-48000-float32.wav",
+      "sha256": "7dbba18ac853ce95dedf97e0a243e8d8deccaf51154f79ebddf5b2ed17b1fcf2",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float32\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 48000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:7dbba18ac853ce95dedf97e0a243e8d8deccaf51154f79ebddf5b2ed17b1fcf2"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-causal-cc-48000-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-48000-float64.json",
+      "sha256": "f16281b1ecb6569cc04e22fc55ea7406243a338becc9da7be63c0c57646a44ff",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 48000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:f16281b1ecb6569cc04e22fc55ea7406243a338becc9da7be63c0c57646a44ff"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-pcm-causal-cc-48000-float64",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/causal-cc-48000-float64.wav",
+      "sha256": "e116320ee3224d109ee22ecfbf054b400d5da7fa203932dd404c357e86acf6c6",
+      "expectedProfile": "{\"arithmeticPrecision\": \"float64\", \"arithmeticScaling\": \"framePeakScaledBinary64WithSeparateSilenceReference\", \"frameGrid\": \"causalAcquiredWindowCenterExactBinary64StepAccumulator\", \"hopSeconds\": 0.005, \"inputPrecision\": \"float64\", \"interpolation\": \"sinc700SymmetricRaisedCosineDepthPlusHalf\", \"method\": \"cc\", \"minimumPeakCurvature\": 2.842170943040401e-14, \"normalization\": \"causalWindowMeanRemovedPeak\", \"overshoot\": \"reciprocalAboveOne\", \"partialWindowPolicy\": \"emitUnavailable\", \"peakResolution\": \"positiveLocalMaximumCurvature128Binary64Ulps-v1\", \"periodsPerWindow\": 4.5, \"pitchFloorHz\": 75, \"reportingDecibelLimit\": 150, \"reportingPeriodicityLimit\": 1e-15, \"sampleRate\": 48000, \"schemaVersion\": 1, \"silenceThreshold\": 0.1, \"window\": \"rectangularForwardPair\"}",
+      "referenceOutputIdentity": "sha256:e116320ee3224d109ee22ecfbf054b400d5da7fa203932dd404c357e86acf6c6"
+    },
+    {
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/39",
+        "versionOrHash": "hnr-causal-v1 SHA256 21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic harmonics, deterministic LCG noise and numerical metadata; no human recording"
+      },
+      "transformations": [
+        "Explicit Float32 rounding where declared followed by lossless Float64 WAVE transport",
+        "Exact rational multiplication of the binary64 requested hop; independent of native incremental phase accumulator",
+        "Original direct-sum correlation and interpolation for each finite acquired window with its own mean-removed peak; no unknown future normalization or external whole-recording parity claim",
+        "Amplitude step with initial finite results, silence suppression during transition, and subsequent recovery; no physical-SNR or clinical claim"
+      ],
+      "generator": {
+        "path": "Tools/HNR/streaming.py",
+        "version": "hnr-causal-v1",
+        "sha256": "21eb6656d43012f546e4779b2e0a8136336a6dc30df8c2a1fd44c7e1690b092a"
+      },
+      "id": "hnr-causal-record-manifest",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/manifest.json",
+      "sha256": "56384cf26b9dfa9d068e73ad0d168e2162a49cf8dda76bb1aea0ed52d0460f40",
+      "expectedProfile": "hnr-causal-v1 catalog metadata",
+      "referenceOutputIdentity": "sha256:56384cf26b9dfa9d068e73ad0d168e2162a49cf8dda76bb1aea0ed52d0460f40"
     }
   ],
   "optionalModels": []

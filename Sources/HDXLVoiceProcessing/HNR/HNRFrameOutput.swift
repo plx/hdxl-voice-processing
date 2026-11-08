@@ -63,7 +63,8 @@ public struct HNRFrameResult: Sendable, Hashable {
     /// Acquired local windows; separate from the potentially much longer amplitude dependency.
     public let frameTiming: AnalysisTiming
     public let dependencyTiming: AnalysisTiming
-    public let centerSecondsFromOrigin: Double
+    /// Relative to dependencyTiming.source, not necessarily the entire stream origin.
+    public let centerSecondsFromNormalizationOrigin: Double
     public let centerSourceSeconds: Double
     public let strongestCandidateIndex: Int?
     public let selectedCandidateIndex: Int?
@@ -71,6 +72,9 @@ public struct HNRFrameResult: Sendable, Hashable {
     public let selectedObservation: HNRPeriodicityEstimate?
     public let unavailability: UnavailabilityReason?
     public let frameAmplitudeScale: Double
+    public let normalizationAmplitudeScale: Double
+    public let scaledNormalizationMean: Double
+    public let scaledNormalizationPeak: Double
     public let scaledLocalMean: Double
     public let scaledLocalPeak: Double
     public let relativeIntensity: Double

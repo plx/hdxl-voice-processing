@@ -189,3 +189,33 @@ single-impulse disagreements and zero unexplained failures. The largest comparab
 error uses 0.513 of its declared budget. Twelve gain/polarity/offset invariant pairs
 and all four controlled-noise trends pass. These are reference/equation results;
 they do not establish native conformance or completion of #39.
+
+## Separately identified causal windows
+
+`streaming.py` generates original finite-window references without executing the
+native library or claiming external whole-recording parity. Twelve cases cover AC
+and CC, 16/44.1/48 kHz and Float32/Float64 input. Each contains a sharp amplitude
+increase followed by recovery. The direct-sum oracle analyzes each complete
+acquired normalization window independently. Early windows never see future gain.
+There are 312 complete frames, plus 12 declared incomplete tails; the 25 artifacts
+in `Fixtures/HNRCausal` contain no human recordings.
+
+Starts use `floor(k * Fraction.from_float(max(1, hopSeconds * sampleRate)))`.
+This direct rational multiplication is independent of the native incremental
+phase accumulator. Whole-window normalization mean/peak, local amplitudes,
+candidates, selected periodicity, dB, PCM bytes and all source identities are
+retained. Profiles explicitly serialize the causal grid and emit-unavailable
+partial-window policy. Numerical budgets are 2e-14 for periodicity and normalized
+amplitudes, 1e-4 dB for these ordinary finite values, and 1e-12 seconds for axes.
+Counts, selection states, input bytes and rational positions are exact.
+
+```sh
+python3 Tools/HNR/streaming.py --directory .build/hnr-causal-candidate
+python3 Tools/HNR/streaming.py --directory Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal --verify
+```
+
+Generation refuses an existing directory or a path outside `.build`; verification
+recomputes every independent equation and checks every byte. The lightweight
+Python contract tests separately validate source/profile hashes, input precision,
+exact grids, suppression/recovery and overwrite prevention. Swift compares all
+312 complete frames and tests arbitrary chunk boundaries and lifecycle behavior.
