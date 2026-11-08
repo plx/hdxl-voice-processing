@@ -101,10 +101,10 @@ def main():
         (output/'environment.json').write_text(ci.redact(json.dumps(environment,indent=2))+'\n')
         with (output/'commands.log').open('w') as log:
             ci.run_command(['swift','build','-c','release','--product','HNRStageProbe'],log,result['commands'])
-        directory=ci.capture('swift','build','-c','release','--show-bin-path')
+        directory=benchmark.capture_stdout('swift','build','-c','release','--show-bin-path')
         command=[str(Path(directory)/'HNRStageProbe'),'--rate',str(args.rate)]
         result['probeCommand']=command
-        raw=ci.capture(*command)
+        raw=benchmark.capture_stdout(*command)
         (output/'trials.json').write_text(raw+'\n')
         summaries=validate(json.loads(raw),args.rate)
         (output/'distributions.json').write_text(json.dumps(summaries,indent=2)+'\n')

@@ -31,6 +31,12 @@ def capture(mode):
 
 
 class HNRBenchmarkTests(unittest.TestCase):
+    def test_stderr_lock_notices_do_not_corrupt_machine_readable_stdout(self):
+        import sys
+        value=benchmark.capture_stdout(sys.executable,'-c',
+            'import sys; sys.stderr.write("Another instance of SwiftPM is running..."); print("/tmp/HNRStageProbe")')
+        self.assertEqual(value,'/tmp/HNRStageProbe')
+
     def test_matrix_covers_requested_cross_product_and_support_stresses(self):
         cases=benchmark.expected_cases()
         self.assertEqual(len(cases),208)

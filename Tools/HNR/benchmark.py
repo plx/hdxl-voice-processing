@@ -32,6 +32,12 @@ DIAGNOSTICS = (*ALLOCATIONS, 'freeCountTotal', 'retainCount', 'releaseCount')
 SHARDS = ('ac16000', 'ac44100', 'ac48000', 'cc16000', 'cc44100', 'cc48000', 'stress', 'export')
 
 
+def capture_stdout(*command):
+    # SwiftPM lock-wait notices are stderr, and can lack a trailing newline.
+    # Keep them out of machine-readable paths/JSON rather than parsing mixed text.
+    return subprocess.run(command,cwd=ROOT,text=True,capture_output=True,check=True).stdout.strip()
+
+
 def expected_cases(shard=None):
     result = {}
     def add(kind='Harmonic', method='ac', rate=48000, precision='float64', periods=4.5,
@@ -262,8 +268,8 @@ def main():
                 ci.run_command(command, log, result["commands"])
             run([sys.executable, "Tools/verify-provenance.py"])
             run(["swift", "build", *common, "--product", "HNRWorkloadCheck"])
-            binary_dir = Path(ci.capture("swift", "build", *common, "--show-bin-path"))
-            matrix = json.loads(ci.capture(str(binary_dir / "HNRWorkloadCheck"), "--shard", args.shard))
+            binary_dir = Path(capture_stdout("swift", "build", *common, "--show-bin-path"))
+            matrix = json.loads(capture_stdout(str(binary_dir / "HNRWorkloadCheck"), "--shard", args.shard))
             validate_matrix(matrix, args.shard)
             names = "|".join(re.escape(row["name"]) for row in matrix)
             plugin += ["--filter", rf"^(HNR\.(Prepare|Run)\.({names})|{re.escape(CONTROL)})$"]
