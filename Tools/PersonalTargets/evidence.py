@@ -113,6 +113,32 @@ def validate_binding(directory, prefix, fit, evaluation):
     return dataset, split
 
 
+def validate_feedback(snapshots, model):
+    require(isinstance(snapshots, list) and len(snapshots) == 6, "Missing public feedback workflow")
+    require([s["state"] for s in snapshots] == ["unavailable", "approachingTarget", "onTarget", "onTarget", "unavailable", "unavailable"],
+            "Incorrect feedback persistence or stale state")
+    require([s["reasons"] for s in snapshots] == [["awaitingEvidence"], ["entryPersistence"], ["targetMatch"], ["targetMatch"], ["stale"], ["finished"]],
+            "Incorrect public feedback reasons")
+    require(all(s["targetIdentity"] == identity(model) and s["profile"] == model["candidate"]["scope"]["profile"]
+                and s["statistic"] == "selectedIntervalLowerMedianV1" for s in snapshots), "Feedback detached from accepted model")
+    require(len({s["configurationIdentity"]["sha256"] for s in snapshots}) == 1, "Feedback policy changed midstream")
+    require(snapshots[3]["inputDisposition"] == "duplicate" and snapshots[2]["progress"] == snapshots[3]["progress"],
+            "Duplicate accrued evidence")
+    for index in (2, 3, 4, 5):
+        coverage = snapshots[index]["coverage"]
+        require(coverage["sourceSamples"] == coverage["qualifiedSummarySamples"] == coverage["matchingSummarySamples"] == 6400,
+                "Feedback summary coverage changed")
+        require(snapshots[index]["statistics"]["acceptedIntervals"] == 2, "Duplicate accepted as new evidence")
+    require(snapshots[4].get("values") is None, "Stale values survived")
+    require(snapshots[4]["evidenceAgeNanoseconds"] == 2_000_000_000, "Wrong expiry clock")
+    for index in (1, 2):
+        interval = snapshots[index]["evidence"]
+        require(interval["source"]["startSample"] == (index - 1) * 3200 and interval["source"]["sampleCount"] == 3200,
+                "Feedback source provenance changed")
+        require(interval["profile"] == snapshots[index]["profile"] and interval["statistic"] == snapshots[index]["statistic"],
+                "Actual feedback profile differs")
+
+
 def validate_output(directory, references, envelope, repetitions):
     report = read(directory / "report.json")
     require(type(report["schemaVersion"]) is int and report["schemaVersion"] == 1 and report["status"] == "passed", "Incomplete native workflow")
@@ -138,6 +164,11 @@ def validate_output(directory, references, envelope, repetitions):
             require(rule[key] == wanted[key], "Independent numerical fitting rule differs")
         require(rule["statistic"] == "selectedIntervalLowerMedianV1", "Changed aggregation semantics")
         require(record["activated"] is wanted["activated"] and (evaluated.get("activated") is not None) == wanted["activated"], "Incorrect activation/refusal")
+        if wanted["activated"]:
+            require(record.get("feedbackFile") == name + "-feedback.json", "Missing public feedback artifact")
+            validate_feedback(read(directory / record["feedbackFile"]), evaluated["activated"])
+        else:
+            require(record.get("feedbackFile") is None, "Feedback used an unaccepted model")
         require(len(dataset["sessions"]) == 4 and sum(len(x["takes"]) for x in dataset["sessions"]) == 64
                 and len(split["assignments"]) == 64, "Missing software input records")
         for role, actual in [("fitting", fit["training"]), ("recordingEvaluation", evaluated["recordingEvaluation"]),
@@ -208,6 +239,8 @@ def negative_controls(directory, references, envelope, native_report, reference,
         ("retuned-fit", "separated-fit.json", ["candidate", "rule", "preferredInterval", "upper"], 11),
         ("erased-confound", "loudness-confound-evaluation.json", ["reasons"], []),
         ("changed-split", "separated-split.json", ["seed"], 54),
+        ("stale-feedback-match", "separated-feedback.json", [4, "state"], "onTarget"),
+        ("duplicate-feedback-progress", "separated-feedback.json", [3, "progress", "entryObservations"], 3),
     ]:
         artifact = directory / filename
         original = artifact.read_bytes()
@@ -310,7 +343,7 @@ def run(output):
         "residentGrowthAllowanceBytes": allowance,
         "memoryInterpretation": "Fresh-process cumulative RSS includes nine small scenario exports and prepared maximum-count inputs; compare 1 versus 4 sequential maximum-capacity fits, not callback allocations or a 16 MiB maximum-metadata stress test."}
     (output / "result.json").write_bytes(canonical(result))
-    print("Verified 20 fresh processes, 180 synthetic scenarios, 50 maximum-capacity fits/evaluations, and 11 corruption controls.")
+    print("Verified 20 fresh processes, 180 synthetic scenarios with accepted-model feedback, 50 maximum-capacity fits/evaluations, and 13 corruption controls.")
     return result
 
 

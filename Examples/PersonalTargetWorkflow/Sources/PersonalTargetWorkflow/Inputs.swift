@@ -113,7 +113,10 @@ func syntheticAnalysis(take: CalibrationTake, cpps: Double, pitch: Double, level
     return try CalibrationAnalysisRecord.decode(JSONEncoder().encode(payload), for: take)
 }
 
-func syntheticTake(id: Int, label: CalibrationListeningPreference, profile: AnalysisScheduleProfile)
+func syntheticTake(
+    id: Int, label: CalibrationListeningPreference, profile: AnalysisScheduleProfile,
+    source: SourceInterval? = nil
+)
     throws
     -> CalibrationTake
 {
@@ -128,9 +131,10 @@ func syntheticTake(id: Int, label: CalibrationListeningPreference, profile: Anal
         repetition: 1, instruction: .preferred,
         label: CalibrationListeningLabel(
             preference: label, confidence: 1, exposure: .blindedBeforeFeatures),
-        source: SourceInterval(
-            epoch: StreamEpoch(streamID: identifier(id)), startSample: 0,
-            sampleCount: 3200, sampleRate: 16000),
+        source: source
+            ?? SourceInterval(
+                epoch: StreamEpoch(streamID: identifier(id)), startSample: 0,
+                sampleCount: 3200, sampleRate: 16000),
         conditions: CalibrationRecordingConditions(
             routeIdentifier: "synthetic-route", roomIdentifier: "synthetic-room",
             microphoneDistanceMeters: 0.2, inputGainDB: 0,

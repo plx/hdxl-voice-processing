@@ -27,7 +27,7 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
     case fixtureLoad, fixtureDecode
     case speechActivity, maskIntervals, energyEligibility, maskResolution, maskRouting
     case overrun, drop, routeChange, configurationChange, error, cancelled
-    case resultDelivery, rendering
+    case resultDelivery, rendering, feedbackStateChange
 
     var category: String {
         switch self {
@@ -81,6 +81,7 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
         case .cancelled: "Cancelled"
         case .resultDelivery: "ResultDelivery"
         case .rendering: "Rendering"
+        case .feedbackStateChange: "FeedbackStateChange"
         }
     }
 }

@@ -44,6 +44,8 @@ jobs:
           python3 Tools/PersonalTargets/fitting_reference.py verify --path Tests/HDXLVoiceProcessingTests/Fixtures/PersonalTargets/fitting-reference.json
       - name: Exact profile checks, public API, maximum capacity and memory
         run: python3 Tools/PersonalTargets/evidence.py --output .build/personal-target-evidence
+      - name: Feedback update rates, bounded observers and diagnostic mode parity
+        run: python3 Tools/PersonalTargets/feedback.py --output .build/personal-feedback-evidence
       - name: Retain synthetic target evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -53,6 +55,9 @@ jobs:
             .build/personal-target-evidence/**/*.json
             .build/personal-target-evidence/*.log
             .build/personal-target-evidence/*.xml
+            .build/personal-feedback-evidence/*.json
+            .build/personal-feedback-evidence/*.log
+            .build/personal-feedback-evidence/*.xml
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

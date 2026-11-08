@@ -11,9 +11,32 @@ python3 Tools/PersonalTargets/evidence.py --output .build/personal-target-eviden
 ```
 
 It retains twenty fresh processes, 180 synthetic scenarios, fifty maximum-count
-fitting/evaluation passes, actual exact-profile test evidence and eleven negative
+fitting/evaluation passes, accepted-model feedback lifecycles, actual exact-profile
+test evidence and thirteen negative
 validation controls. See the [example](../../Examples/PersonalTargetWorkflow/README.md)
 for timing/RSS boundaries and the declared memory-growth allowance.
+
+The feedback cost and observer gate is separate:
+
+```sh
+python3 Tools/PersonalTargets/feedback.py --output .build/personal-feedback-evidence
+python3 -m unittest discover -s Tools/Tests -p 'test_personal_target_feedback.py'
+```
+
+It retains 54 trials: 4, 40 and 1,000 virtual updates per second, zero or 64
+observers, three diagnostic modes, and three repetitions with rotated order.
+Each trial uses 256 fabricated complete summaries; source cadences do not validate
+CPPS at those durations. Input preparation is measured once per rate, outside the
+update intervals. Update timing includes policy evaluation, snapshot creation and
+publication; consumer drains, assertions and hashing are outside it. Complete
+snapshot digests must match across modes and observer counts. The 64-observer
+case includes one promptly drained strict observer, one stalled strict observer
+that must fail on overflow, and 62 stalled newest-only displays. Exact deliveries,
+coalescing, overflow, high-water counts and termination are checked independently
+of timing. Artifacts retain raw observations, nearest-rank distributions, paired
+mode differences, toolchain/source identities and exact successful test inventory.
+These are host software cost measurements, without a universal latency threshold
+or a physical capture/display claim. An existing output directory is refused.
 
 Verify committed expectations without running Praat:
 

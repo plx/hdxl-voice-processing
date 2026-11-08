@@ -17,7 +17,9 @@ exact-profile PCM/reference/chunk/boundary test. Only a successful test process
 and a fully validated report produce the checked evidence envelope consumed here.
 It then builds this example in Release, runs twenty fresh processes and independently
 checks every scenario's bounds, direction, predictions, confusion counts, conditional
-uncertainty, identities and activation/refusal. Eleven deliberately corrupted
+uncertainty, identities and activation/refusal. Activated scenarios also exercise
+the public feedback policy with two contiguous summary intervals, a duplicate,
+exact stale expiry and termination. Thirteen deliberately corrupted
 artifacts must fail. Native outputs are retained for review; no private recording
 or microphone is used, and the runner does not download Praat.
 
@@ -44,3 +46,9 @@ timings and model artifacts, all made solely from named synthetic fixtures. Do n
 replace those inputs with private recordings and publish the resulting artifacts.
 The target's scope and limitations are documented in
 [Personal targets](../../Documentation/PersonalTargets.md).
+
+`Feedback.swift` demonstrates an injected replay clock and explicit source-end
+anchors. Its summary durations and host timestamps are synthetic. The example
+does not establish a streaming interpretation for the whole-interval CPPS profile.
+See [feedback policy](../../Documentation/PersonalTargetFeedback.md) for that
+boundary, reset rules, and coverage interpretation.
