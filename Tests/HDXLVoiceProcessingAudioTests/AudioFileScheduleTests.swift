@@ -5,7 +5,7 @@ import Testing
 @testable import HDXLVoiceProcessingAudio
 
 /// Independent PCM16 RIFF writer: expected decoded values are exact integer/32768.
-private func schedulingWAV(_ samples: [Int16], rate: Int, channels: Int) throws -> URL {
+func schedulingWAV(_ samples: [Int16], rate: Int, channels: Int) throws -> URL {
     var bytes = Data()
     func text(_ value: String) { bytes.append(contentsOf: value.utf8) }
     func integer<T: FixedWidthInteger>(_ value: T) {
@@ -31,7 +31,7 @@ private func schedulingWAV(_ samples: [Int16], rate: Int, channels: Int) throws 
     return url
 }
 
-private func fileScheduleProfile(
+func fileScheduleProfile(
     precision: AnalysisPrecision, layout: PCMLayout,
     rate: Int = 48000, channels: Int = 2, reference: Bool = false
 ) throws -> AnalysisScheduleProfile {
@@ -70,7 +70,7 @@ private func fileScheduleOrigin(start: Int64, rate: Int = 48000) throws -> Analy
 }
 
 private func fileScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
-    _: Sample.Type, layout: PCMLayout, reference: Bool = false
+    _: Sample.Type, layout: PCMLayout, reference: Bool = false, mappedStart: Int64? = nil
 ) throws {
     let rate = reference ? 16000 : 48000
     let input: [Int16] = (0..<6401).flatMap { index in
@@ -82,10 +82,10 @@ private func fileScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
     let profile = try fileScheduleProfile(
         precision: Sample.self == Float.self ? .float32 : .float64,
         layout: layout, rate: rate, reference: reference)
-    let origin = try fileScheduleOrigin(start: 97, rate: rate)
+    let origin = try fileScheduleOrigin(start: mappedStart ?? 97, rate: rate)
     let count = 6304  // Exact EOF, with an uneven final decoder chunk.
     let source = try SourceInterval(
-        epoch: origin.source.epoch, startSample: 97,
+        epoch: origin.source.epoch, startSample: origin.source.startSample,
         sampleCount: Int64(count), sampleRate: Double(rate))
     let values = input[(97 * 2)...].map { Sample($0) / 32768 }
     let direct = try PreparedAnalysisSchedule<Sample>(
@@ -116,8 +116,10 @@ private func fileScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
     for capacity in [1, 173, 4096] {
         let worker = try PreparedAudioFileSchedule<Sample>(
             url: url, profile: profile, origin: origin,
+            fileStartSample: mappedStart == nil ? nil : 97,
             chunkCapacity: capacity, sourceTileCapacity: 128)
         let memory = worker.preparedBufferBytes
+        #expect(worker.fileStartSample == 97)
         var frames: [ScheduledFrame] = []
         var regions: [AnalysisScheduleCompletion] = []
         var decoded: Int64 = 0
@@ -148,6 +150,82 @@ private func fileScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
         try fileScheduleParity(Double.self, layout: layout)
     }
     try fileScheduleParity(Double.self, layout: .planar, reference: true)
+}
+
+@Test func sessionFileMappingPreservesLargeSourceClocksAcrossPrecisionsAndLayouts() throws {
+    try fileScheduleParity(Float.self, layout: .interleaved, mappedStart: (1 << 54) + 19)
+    try fileScheduleParity(Double.self, layout: .planar, mappedStart: (1 << 54) + 31)
+}
+
+@Test func sessionFileMappingPreservesMaskGapsAndFullPlanIdentityForOneRegion() throws {
+    let samples: [Int16] = (0..<1000).map { $0 < 700 ? 8192 : 16384 }
+    let url = try schedulingWAV(samples, rate: 16000, channels: 1)
+    defer { try? FileManager.default.removeItem(at: url) }
+    let base: Int64 = (1 << 54) + 41
+    let origin = try fileScheduleOrigin(start: base, rate: 16000)
+    let profile = try AnalysisScheduleProfile(
+        inputFormat: PCMFormat(sampleRate: 16000, channelCount: 1, encoding: .float64),
+        channels: .arithmeticMean,
+        levels: LevelConfiguration(
+            sampleRate: 16000, inputPrecision: .float64,
+            windowLength: 100, hopLength: 100, accumulation: .direct, weighting: .none))
+    func source(_ offset: Int64, _ count: Int64) throws -> SourceInterval {
+        try SourceInterval(
+            epoch: origin.source.epoch, startSample: base + offset, sampleCount: count,
+            sampleRate: 16000)
+    }
+    let provenance = try MaskProvenance(
+        kind: .acquisitionDiagnostics,
+        identifier: VersionedIdentifier(name: "session-file-gap-test", version: 1))
+    let mask = try PreparedAnalysisMask(
+        timeline: MaskTimeline(
+            MaskPlan(
+                source: source(0, 1000),
+                provenances: [provenance], policy: MaskSelectionPolicy(),
+                observations: [
+                    MaskObservation(
+                        source: source(300, 400), provenanceIndex: 0, tags: [.missingAcquisition])
+                ])), scope: .allEligible)
+    let worker = try PreparedAudioFileSchedule<Double>(
+        url: url, profile: profile, origin: origin,
+        fileStartSample: 0, sampleCount: 1000, chunkCapacity: 137, mask: mask)
+    var frames: [ScheduledFrame] = []
+    var decoded: Int64 = 0
+    while worker.completion == nil {
+        decoded += try worker.read { frames.append($0.frame) }.decodedSampleCount
+    }
+    #expect(decoded == 600 && !frames.isEmpty)
+    for frame in frames {
+        let value = try frame.export(.rms).result.outcome.estimate?.value
+        #expect(value == (frame.timing.source.startSample < base + 700 ? 0.25 : 0.5))
+        #expect(frame.mask == mask.provenance)
+    }
+    let nextOrigin = try AnalysisScheduleOrigin(
+        source: source(700, 0), continuityEpoch: origin.continuityEpoch.successor())
+    let region = try PreparedAudioFileSchedule<Double>(
+        url: url, profile: profile, origin: nextOrigin,
+        fileStartSample: 700, sampleCount: 300, chunkCapacity: 73, mask: mask,
+        maskRouting: .singleContinuityRegion)
+    var replayed: [ScheduledFrame] = []
+    while region.completion == nil { _ = try region.read { replayed.append($0.frame) } }
+    #expect(!replayed.isEmpty)
+    for frame in replayed {
+        #expect(frame.origin == nextOrigin && frame.mask == mask.provenance)
+        #expect(try frame.export(.rms).result.outcome.estimate?.value == 0.5)
+    }
+    #expect(throws: AnalysisScheduleError.invalidGap) {
+        _ = try PreparedAudioFileSchedule<Double>(
+            url: url, profile: profile, origin: origin,
+            fileStartSample: 0, sampleCount: 1000, mask: mask, maskRouting: .singleContinuityRegion)
+    }
+    #expect(throws: AudioFileScheduleError.invalidRange) {
+        _ = try PreparedAudioFileSchedule<Double>(
+            url: url, profile: profile, origin: origin, fileStartSample: -1)
+    }
+    #expect(throws: AudioFileScheduleError.invalidRange) {
+        _ = try PreparedAudioFileSchedule<Double>(
+            url: url, profile: profile, origin: origin, fileStartSample: 900, sampleCount: 101)
+    }
 }
 
 @Test func schedulingFileMasksSkipMissingPCMAndPreserveEmptyClipResults() throws {

@@ -22,6 +22,11 @@ CHECKS = ["late-start-intent-rejected", "late-lifecycle-intent-rejected", "idemp
           "private-error-redacted", "permission-states-distinct", "bounded-pcm-samples-preserved",
           "closed-transfer-drained", "worker-rejects-gap"]
 EVIDENCE = "synthetic iOS host execution; no permission request, session activation or microphone capture"
+TEST_CASES = {"IOSCaptureHostTests/testSyntheticHostWithoutMicrophoneAccess()",
+              "IOSCaptureHostTests/testSessionStorageRemainsSerializedAcrossDestinations()",
+              "SessionInterchangeTests/testSessionArchiveFixturesOnIOS27()",
+              "SessionStorageTests/testImportReplacementRefusesCorruptionAndPreservesPriorSession()",
+              "SessionStorageTests/testSyntheticStorageSharingAndOriginalPCMReplay()"}
 
 
 def installed_runtime():
@@ -54,9 +59,9 @@ def validate_probe(probe):
 
 def validate_test_summary(summary):
     if any(summary.get(key) != value for key, value in {
-            "result": "Passed", "totalTestCount": 1, "passedTests": 1,
+            "result": "Passed", "totalTestCount": len(TEST_CASES), "passedTests": len(TEST_CASES),
             "failedTests": 0, "skippedTests": 0, "expectedFailures": 0}.items()):
-        raise ValueError("Expected the host regression to execute and pass without skips")
+        raise ValueError("Expected capture-host, session-interchange and storage regressions to execute and pass without skips")
     runs = summary.get("devicesAndConfigurations", [])
     if len(runs) != 1:
         raise ValueError("Expected one Simulator execution configuration")
@@ -65,6 +70,27 @@ def validate_test_summary(summary):
         raise ValueError("Host test runtime must be iOS 27.0 Simulator")
     if summary.get("testFailures") or summary.get("runtimeWarnings"):
         raise ValueError("Host tests reported failures or runtime warnings")
+
+
+def validate_test_tree(tree):
+    found = []
+
+    def visit(nodes):
+        if not isinstance(nodes, list):
+            raise ValueError("Malformed test tree")
+        for node in nodes:
+            if not isinstance(node, dict):
+                raise ValueError("Malformed test node")
+            if node.get("nodeType") == "Test Case":
+                if node.get("nodeIdentifier") not in TEST_CASES or node.get("result") != "Passed":
+                    raise ValueError("Unexpected or failed named host regression")
+                found.append(node["nodeIdentifier"])
+            visit(node.get("children", []))
+
+    visit(tree.get("testNodes"))
+    if set(found) != TEST_CASES or len(found) != len(TEST_CASES):
+        raise ValueError("Missing or duplicate named host regression")
+    return sorted(found)
 
 
 def validate_app(app):
@@ -116,6 +142,9 @@ def main():
             summary = json.loads(ci.capture("xcrun", "xcresulttool", "get", "test-results", "summary",
                                              "--path", str(results), "--compact"))
             validate_test_summary(summary)
+            tree = json.loads(ci.capture("xcrun", "xcresulttool", "get", "test-results", "tests",
+                                          "--path", str(results), "--compact"))
+            result["testCases"] = validate_test_tree(tree)
             # Keep a compact test summary; raw xcresults remain local.
             result["tests"] = {key: summary[key] for key in
                                ("result", "totalTestCount", "passedTests", "failedTests", "skippedTests")}

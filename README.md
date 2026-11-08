@@ -86,6 +86,10 @@ confound checks, abstention and the limits of personal-label associations.
 The [feedback policy](Documentation/PersonalTargetFeedback.md) adds source-time
 persistence, hysteresis, explicit uncertainty and bounded observers without changing
 the accepted target's measurement semantics.
+The [session interchange guide](Documentation/SessionInterchange.md) describes
+bounded result/calibration archives, audio-free export, explicit original-media
+inclusion, private atomic file storage, verified PCM replay and inspection separate
+from target activation.
 The [licensed voice corpus](Documentation/VoiceCorpus.md) supplies pinned PVQD originals,
 sample-exact speech/vowel excerpts, simulated defects, explicit negative cases, and
 offline load/decode checks without adding resources to runtime products.

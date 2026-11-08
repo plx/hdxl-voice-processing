@@ -1,0 +1,60 @@
+name: Session interchange evidence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Sources/**'
+      - 'Examples/SessionWorkflow/**'
+      - 'Tools/Sessions/**'
+      - 'Tools/Tests/test_session*.py'
+      - 'Tests/HDXLVoiceProcessingTests/SessionArchive*.swift'
+      - 'Tests/HDXLVoiceProcessingAudioTests/SessionArchive*.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/**'
+      - 'Configuration/**'
+      - '.github/workflows/session-interchange.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: session-interchange-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    name: Session serialization and storage / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Fixture provenance and evidence controls
+        run: |
+          python3 Tools/verify-provenance.py
+          python3 -m unittest discover -s Tools/Tests -p 'test_session*.py'
+      - name: Public storage workflow and canonical runtime probe
+        run: |
+          swift test --package-path Examples/SessionWorkflow
+          mkdir -p -m 700 .build/session-probe
+          swift run --package-path Examples/SessionWorkflow SessionWorkflow --fixture-probe --fixtures Tests/HDXLVoiceProcessingTests/Fixtures/Sessions --scratch .build/session-probe --output .build/session-probe/report.json
+      - name: Fresh-process serialization and memory
+        run: python3 Tools/Sessions/benchmark.py --output .build/session-serialization-evidence
+      - name: Retain synthetic counts and timing only
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: session-interchange-evidence-${{ github.run_attempt }}
+          path: |
+            .build/session-serialization-evidence/*.json
+            .build/session-serialization-evidence/*.log
+            .build/session-probe/report.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14

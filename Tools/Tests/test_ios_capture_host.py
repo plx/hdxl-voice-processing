@@ -52,14 +52,15 @@ class IOSHostEvidenceTests(unittest.TestCase):
                 HOST.validate_probe(changed)
 
     def test_execution_summary_rejects_skips_empty_and_wrong_runtime(self):
-        valid = {"result": "Passed", "totalTestCount": 1, "passedTests": 1,
+        valid = {"result": "Passed", "totalTestCount": 5, "passedTests": 5,
                  "failedTests": 0, "skippedTests": 0, "expectedFailures": 0,
                  "devicesAndConfigurations": [{"device": {"platform": "iOS Simulator", "osVersion": "27.0"}}],
                  "testFailures": [], "runtimeWarnings": []}
         HOST.validate_test_summary(valid)
         bad = []
         for key, value in (("passedTests", 0), ("skippedTests", 1), ("failedTests", 1),
-                           ("totalTestCount", 0), ("runtimeWarnings", ["warning"]),
+                           ("totalTestCount", 0), ("totalTestCount", 1), ("passedTests", 1), ("totalTestCount", 2), ("passedTests", 2),
+                           ("totalTestCount", 4), ("passedTests", 4), ("runtimeWarnings", ["warning"]),
                            ("devicesAndConfigurations", [])):
             bad.append({**valid, key: value})
         wrong_runtime = copy.deepcopy(valid)
@@ -68,3 +69,14 @@ class IOSHostEvidenceTests(unittest.TestCase):
         for changed in bad:
             with self.assertRaises(ValueError):
                 HOST.validate_test_summary(changed)
+
+    def test_named_regressions_cannot_be_replaced_by_matching_counts(self):
+        cases = [{"nodeType": "Test Case", "nodeIdentifier": name, "result": "Passed"}
+                 for name in sorted(HOST.TEST_CASES)]
+        valid = {"testNodes": [{"nodeType": "Unit test bundle", "children": cases}]}
+        self.assertEqual(HOST.validate_test_tree(valid), sorted(HOST.TEST_CASES))
+        for nodes in [cases[:-1], cases + cases, [{**cases[0], "nodeIdentifier": "unrelated/test()"}, *cases[1:]],
+                      [{**cases[0], "result": "Skipped"}, *cases[1:]],
+                      [{**cases[0], "result": "Failed"}, *cases[1:]], None]:
+            with self.assertRaises(ValueError):
+                HOST.validate_test_tree({"testNodes": nodes})

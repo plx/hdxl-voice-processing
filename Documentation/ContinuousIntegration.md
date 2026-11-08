@@ -157,19 +157,47 @@ distributions and positive allocator controls, and retains its JSON/gzip/log evi
 ## iOS capture host
 
 The `iOS capture host evidence` workflow builds the development app for an unsigned
-device destination and runs its synthetic test plus app-launch probe on an isolated
+device destination and runs its synthetic capture, session-interchange and storage tests
+plus app-launch probe on an isolated
 iOS 27.0 Simulator. `python3 Tools/Capture/ios_host.py --install-runtime` reproduces
 the lane, downloading the declared runtime only when CoreSimulator does not already
 report it available. The wrapper owns and deletes only its temporary
 device. The shared package's generic iOS lanes remain compile/link checks.
 
 No permission prompts, session activation or microphone capture occur in the host's
-synthetic mode. The wrapper requires the host test to run and pass without skips,
-checks eight named app-probe outcomes (including rejected late lifecycle intent
+synthetic mode. The wrapper requires all five exact named tests to run and pass without
+skips. The session test runs the same public-API canonical-fixture probe as the macOS
+SessionWorkflow example, including byte round trips, explicit recovery and pinned
+original-PCM replay with private-copy cleanup and calibration/target inspection.
+Two shared storage tests exercise the public example worker, including audio opt-in,
+verified sharing/import, deletion, cancellation and replay equality. A host regression
+verifies storage serialization across destination replacement. The wrapper
+checks ten named app-probe outcomes (including rejected late lifecycle intent
 and idempotent lifecycle finish), validates the built usage description/minimum
 OS/no-background declaration, and retains compact redacted JSON/log receipts with
 binary hashes. Raw xcresults stay local. Physical callback/route evidence is #74;
 see [iOS capture](IOSCapture.md) for policy and evidence limits.
+
+## Session interchange
+
+The separate `Session interchange evidence` workflow runs the macOS public storage
+tests and canonical probe, then `Tools/Sessions/benchmark.py`. Five trials each
+serialize/import 6,000 and 720,000 synthetic results (one minute and two hours at
+100 Hz) in 20 fresh release processes. Disk IO, write-side record construction,
+and read-side integrity/meaning checks are timed; DSP and capture never run in
+those intervals. Reads follow writes and may use the OS page cache. An independent
+streaming Python audit checks framing, record hashes, seal counts and the complete
+archive digest before each temporary synthetic archive is deleted.
+
+The lane reports process high-water RSS separately from encoded catalog, payload
+and IO chunk bounds. The long-session median must stay within a declared 32 MiB
+host smoke allowance of the short-session median for each phase. This compares
+timeline length with a fixed small catalog; it does not establish a universal RSS
+ceiling or worst-case decoder/catalog memory. Ten negative receipt controls reject
+missing processes, changed counts, invalid timing, profile drift, private fields,
+DSP contamination and excess RSS growth. Artifacts contain only synthetic counts,
+timings, identities and redacted logs; archives, audio and Simulator containers
+are excluded. The iOS runtime gate remains the separate capture-host lane above.
 
 ## Licensed voice corpus
 

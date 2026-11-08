@@ -29,13 +29,38 @@ python3 Tools/Capture/ios_host.py --install-runtime
 The optional flag asks Xcode to download iOS 27.0 only if CoreSimulator does not
 already report it available; an existing runtime is reused without downloading.
 The script builds unsigned device code, creates its own disposable Simulator, runs
-the host test and launches with `--self-test`, validates ten named synthetic
-checks (including lifecycle cancellation and independent bounded subscriptions), and deletes
+the capture-host, session-interchange and storage tests, then launches with `--self-test`,
+validates ten named synthetic capture checks (including lifecycle cancellation and
+independent bounded subscriptions), and deletes
 only its own device. Xcode 27.0 and Python 3.14.8 are required. The synthetic mode
 disables capture controls and persists only its allowlisted synthetic result in
 the app's local Documents directory. No microphone permission prompt, shared-session
 activation or engine capture runs. CI retains JSON/log summaries, not raw xcresults
 or simulator containers. App and Simulator builds do not qualify device signing.
+
+The session test runs the same public-API fixture probe as
+[SessionWorkflow](../SessionWorkflow/README.md) on macOS: canonical byte round trips,
+exact source/host clocks, statuses/intermediates/gaps, partial/interrupted recovery,
+original-PCM replay with a pinned recipe, explicit audio absence and private-copy
+cleanup, and calibration/target inspection without activation. Its resources live
+only in the test bundle. Two additional shared storage lifecycle tests exercise
+real synthetic analysis, audio opt-in, verified import/replacement, sharing copies,
+delete and replay. A host regression holds a storage operation across destination
+replacement and verifies that publication and deletion remain serialized by the
+app-owned model. The evidence driver checks all five exact
+test names, successful execution, exact counts, no skips and the iOS 27.0 runtime;
+compilation alone cannot satisfy this gate.
+
+## Storage and user-controlled sharing
+
+Open **Session storage and sharing** to create an audio-free synthetic session,
+optionally include its original generated PCM, inspect a Files import, explicitly
+prepare/share a verified copy, replay the first plan, or delete local files. The
+screen shows whether audio is present and never activates imported targets. Its
+private Application Support directory is excluded from backups; sharing copies
+remain there until explicit deletion. This does not record the microphone host's
+buffers. See [SessionWorkflow](../SessionWorkflow/README.md) for API ownership,
+limits, the equivalent macOS CLI and the shared tests.
 
 ## Physical protocol — pending #74
 

@@ -6,6 +6,15 @@ public enum AudioFileScheduleError: Error, Sendable, Equatable {
     case formatMismatch, invalidRange, invalidCapacity, unexpectedEndOfFile, invalidDecodedBuffer
 }
 
+public enum AudioFileMaskRouting: Sendable, Hashable {
+    /// Analyze the complete mask domain, resetting at its eligible/selected regions.
+    case splitAtRegions
+    /// Replay one already identified continuity region while retaining the full
+    /// original mask plan identity. The entire requested interval must belong to
+    /// one region; no missing or excluded interval may be joined across it.
+    case singleContinuityRegion
+}
+
 /// Scalar copy of the on-disk ASBD, distinct from the decoder's PCM output.
 public struct AudioFileStorageFormat: Sendable, Hashable, Codable {
     public let sampleRate: Double
