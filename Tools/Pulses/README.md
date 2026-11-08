@@ -45,6 +45,10 @@ reference bounds, not runtime API limits or timing budgets.
 
 ## Tracking conventions and eligibility
 
+[Search mathematics and stage evidence](SEARCH.md) defines sampled coordinates,
+F0 support, seed selection, observed-pair correlation, finite-table peak selection,
+quadratic refinement, progression and the separate source-timing bias model.
+
 The [method description](https://www.fon.hum.uva.nl/praat/manual/Sound___Pitch__To_PointProcess__cc_.html)
 seeds each completed voiced interval at an absolute waveform extremum near its
 midpoint, then matches approximately one-period neighborhoods on both sides.
@@ -148,6 +152,22 @@ Python/toolchain environment from [Reference](../Reference/README.md):
 python3 Tools/Pulses/generate.py --output .build/pulse-candidates-new
 python3 Tools/Pulses/verify.py --directory .build/pulse-candidates-new
 ```
+
+Isolated stages have a separate explicit generation route:
+
+```sh
+python3 Tools/Pulses/stage_probe.py --mode f0 --output .build/pulse-f0-stages-new
+python3 Tools/Pulses/stage_probe.py --mode matching \
+  --reference-directory .build/pulse-candidates-new --output .build/pulse-matching-stages-new
+```
+
+The F0 route retains direct executable queries at frame centers, interior points,
+boundaries and adjacent representable times. The matching route first verifies
+the complete input reference catalog, then compares 80-digit correlation/peak
+stages with 96 retained next-pulse positions across the Gaussian cases. Stage
+summaries bind every generated artifact and source identity. Their timing records
+describe developer generation, not native execution. They are isolated-stage
+evidence and cannot replace full native tracker/run/eligibility conformance.
 
 The output directory must be absent and under `.build`. `--case NAME` produces
 an explicitly partial catalog; verification requires `--allow-partial` for it.
