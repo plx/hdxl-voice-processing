@@ -17,3 +17,7 @@ cover all fit methods, source precisions, rates and 2/5/10 ms hops.
 [The PCM transport tools](Transport/README.md) audit optimized capture entry points on
 the supported architectures and measure accepted/rejected offers with independent
 timing and allocation binaries, positive controls and retained raw histograms.
+
+[Visualization evidence](Visualization/README.md) measures owned snapshot construction
+and main-actor publication with an Observation subscriber before plotting, retaining
+synthetic preview renders separately from timing.

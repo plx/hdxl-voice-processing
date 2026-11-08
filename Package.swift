@@ -26,6 +26,9 @@ let package = Package(
             dependencies: ["HDXLVoiceProcessingAudio", "HDXLVoiceProcessingVisualization"]),
         .testTarget(
             name: "HDXLVoiceProcessingAudioTests", dependencies: ["HDXLVoiceProcessingAudio"]),
+        .testTarget(
+            name: "HDXLVoiceProcessingVisualizationTests",
+            dependencies: ["HDXLVoiceProcessingVisualization"]),
     ],
     swiftLanguageModes: [.v6]
 )
