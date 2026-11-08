@@ -11,6 +11,8 @@ for scheme in HDXLVoiceProcessing HDXLVoiceProcessingAudio HDXLVoiceProcessingVi
         -derivedDataPath "$derived" CODE_SIGNING_ALLOWED=NO build
 done
 repository_dir="$PWD"
-cd Examples/CoreConsumer
-xcodebuild -scheme CoreConsumer -configuration Debug -destination "$destination" \
-    -derivedDataPath "$repository_dir/$derived-consumer" CODE_SIGNING_ALLOWED=NO build
+for consumer in CoreConsumer AudioConsumer; do
+    cd "$repository_dir/Examples/$consumer"
+    xcodebuild -scheme "$consumer" -configuration Debug -destination "$destination" \
+        -derivedDataPath "$repository_dir/$derived-$consumer" CODE_SIGNING_ALLOWED=NO build
+done

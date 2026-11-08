@@ -25,6 +25,11 @@ swift run --package-path Examples/CoreConsumer CoreConsumer
 The independent consumer demonstrates contracts, masks and selected-region scheduling. Importing
 core does not link capture/UI frameworks or require reference/benchmark tooling.
 
+The optional [visualization product](Documentation/Visualization.md) provides immutable
+result/frame adapters, source selection, a SwiftUI metric inspector, explicit status
+views and capture-free previews. Dense plotting and synchronized comparison follow
+in their roadmap issues; independent Core and Audio clients remain free of UI dependencies.
+
 The Audio product now includes [bounded PCM transfer](Documentation/PCMTransfer.md)
 between a capture adapter and a serial worker, with explicit loss intervals and fixed
 storage. Native [macOS](Documentation/MacOSCapture.md) and

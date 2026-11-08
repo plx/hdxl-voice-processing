@@ -99,6 +99,7 @@ def commands(lane, output):
         ["swift", "build"],
         test,
         ["swift", "run", "--package-path", "Examples/CoreConsumer", "CoreConsumer"],
+        ["swift", "run", "--package-path", "Examples/AudioConsumer", "AudioConsumer"],
         [sys.executable, "Tools/verify-package-graph.py"],
         ["bash", "Tools/verify-offline.sh"],
     ]
