@@ -97,7 +97,7 @@ func syntheticAnalysis(take: CalibrationTake, cpps: Double, pitch: Double, level
     let decoder = try CalibrationDecoderProvenance(
         identifier: "fabricated-summary-fixture", runtime: "personal-target-software-evidence-v1",
         storage: ["syntheticOnly": .boolean(true)], decodedPCM: take.profile.inputFormat,
-        fileSampleCount: take.source.sampleCount)
+        fileSampleCount: take.source.endSample)
     let mask = try PreparedAnalysisMask(
         timeline: MaskTimeline(take.effectiveMaskPlan()), scope: .selected)
     let payload = try SyntheticRecord(
