@@ -102,6 +102,39 @@ meet the same frozen periodicity/dB tolerances. Four million phase advances are
 also checked at independently computed rational checkpoints. These checks establish
 causal behavior, not equivalence to unknown whole-file normalization.
 
-Mask/coverage selection, processing-path integration, performance registration,
-all remaining software gates and both reviews remain required before this leaf
-is complete.
+`HNRStatisticProfile` declares all-eligible, silence-excluded, externally annotated
+voice-only or custom populations. An activity detector does not establish a
+voice-only label. Selection provenance, complete-dependency support, independent
+region treatment and equal-frame uncapped dB aggregation all participate in the
+fingerprint; altered or unknown conventions are rejected when decoding.
+
+`HNRFrameSelection` retains the raw owned result even when selection rejects it.
+Membership uses the entire normalization dependency, not just the nominal center
+or local correlation samples. Missing acquisition and deliberate exclusion have
+different reasons. Scalar selection preserves clocks and warnings while setting
+included support to zero for a rejected frame. An already computed whole-interval
+result whose amplitude reference spans an exclusion cannot be relabeled as selected.
+
+For offline selected analysis, run `PreparedIntervalHNR` independently on each
+`MaskTimeline.selectedRegions` interval, then construct `HNRRegionReport` from the
+ordered completions. Each region has its own grid and normalization reference.
+Do the analogous separate analysis of `eligibleRegions` when raw/all-eligible
+results are needed. Never concatenate retained PCM across either kind of gap.
+The real-PCM regression includes a loud excluded middle interval: its whole-input
+reference suppresses quiet surrounding frames, whereas independent selected-region
+normalization correctly retains those regions. Those are distinct populations,
+not interchangeable estimates.
+
+Region means weight each available frame equally, rather than weighting regions
+by duration or taking an unweighted mean of regional means. Local-support unions
+count once per disjoint region. Missing, eligible, selected and excluded durations,
+available/unavailable slots, finite estimates, reporting limits, numerical unity,
+low-confidence and clipping counts remain separate. Numerical unity or cancellation
+makes the ordinary mean unavailable; finite-only and reference-capped presentation
+means remain explicitly named diagnostics with different denominators. A cancelled
+prefix reports unvisited regions and retains the full planned coverage denominator.
+The report's scalar export preserves partial-coverage, low-confidence and clipping
+warnings. No health or pleasantness cutoff is introduced.
+
+Processing-path integration, performance registration, all remaining software gates
+and both reviews remain required before this leaf is complete.

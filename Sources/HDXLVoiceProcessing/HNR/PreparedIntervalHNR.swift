@@ -34,6 +34,9 @@ public struct HNRCompletion: Sendable, Hashable {
     public let finiteDecibelFrameCount: Int
     public let reportingLimitFrameCount: Int
     public let numericalZeroNoiseFrameCount: Int
+    public let lowConfidenceFrameCount: Int
+    /// Selected observations whose acquired local frame contains clipping.
+    public let clippedFrameCount: Int
     public let observedSampleCount: Int64
     public let finiteUncappedMeanDB: Double?
     public let referencePresentationMeanDB: Double?
@@ -120,6 +123,8 @@ public final class PreparedIntervalHNR<Sample: BinaryFloatingPoint & Sendable> {
         var finite = 0
         var limits = 0
         var zeroNoise = 0
+        var lowConfidence = 0
+        var clipped = 0
         var observed: Int64 = 0
         var observedEnd = 0
         var finiteSum = HNRSum()
@@ -163,6 +168,10 @@ public final class PreparedIntervalHNR<Sample: BinaryFloatingPoint & Sendable> {
                             }
                             if estimate.status != .finite { limits += 1 }
                             if estimate.status == .numericalZeroNoise { zeroNoise += 1 }
+                            if estimate.periodicity < 0.5 || estimate.status != .finite {
+                                lowConfidence += 1
+                            }
+                            if output.result.hasClipping { clipped += 1 }
                             // Frames are monotone; count their acquired support union once.
                             observed += Int64(
                                 max(
@@ -193,7 +202,8 @@ public final class PreparedIntervalHNR<Sample: BinaryFloatingPoint & Sendable> {
             emittedSlotCount: emitted, availableFrameCount: available,
             unavailableFrameCount: emitted - available,
             finiteDecibelFrameCount: finite, reportingLimitFrameCount: limits,
-            numericalZeroNoiseFrameCount: zeroNoise, observedSampleCount: observed,
+            numericalZeroNoiseFrameCount: zeroNoise, lowConfidenceFrameCount: lowConfidence,
+            clippedFrameCount: clipped, observedSampleCount: observed,
             finiteUncappedMeanDB: finite == 0 ? nil : finiteSum.value / Double(finite),
             referencePresentationMeanDB: available == 0
                 ? nil : referenceSum.value / Double(available),
