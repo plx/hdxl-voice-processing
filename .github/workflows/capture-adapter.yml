@@ -31,6 +31,8 @@ jobs:
         run: python3 Tools/Capture/host.py
       - name: Measure synthetic lifecycle setup, recovery and resource retirement
         run: python3 Tools/Capture/lifecycle.py
+      - name: Validate bounded delivery and diagnostics under controlled overload
+        run: python3 Tools/Capture/delivery.py
       - name: Measure synthetic tap duration without allocator instrumentation
         run: python3 Tools/Capture/benchmark.py timing
       - name: Verify production bridge allocation histograms and capability controls
@@ -47,6 +49,9 @@ jobs:
             .build/capture-lifecycle-evidence/*.json
             .build/capture-lifecycle-evidence/*.log
             .build/capture-lifecycle-evidence/*.xml
+            .build/capture-delivery-evidence/*.json
+            .build/capture-delivery-evidence/*.log
+            .build/capture-delivery-evidence/*.xml
             Benchmarks/.build/artifacts/capture-*/*.json
             Benchmarks/.build/artifacts/capture-*/*.json.gz
             Benchmarks/.build/artifacts/capture-*/*.log

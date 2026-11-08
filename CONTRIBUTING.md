@@ -44,11 +44,14 @@ when implementing algorithms. Physical-device evidence is deferred to #74;
 simulator and compile results must retain their actual labels.
 
 Capture adapter changes also run `python3 Tools/Capture/host.py`,
-`python3 Tools/Capture/ios_host.py`, `python3 Tools/Capture/lifecycle.py`, and both modes of
+`python3 Tools/Capture/ios_host.py`, `python3 Tools/Capture/lifecycle.py`,
+`python3 Tools/Capture/delivery.py`, and both modes of
 `python3 Tools/Capture/benchmark.py`. The iOS host lane requires the iOS 27.0
 Simulator runtime and creates/deletes only its own disposable device. It executes
 synthetic tests and an app probe without permission requests or microphone access;
 device compilation is unsigned. See [iOS capture](Documentation/IOSCapture.md).
+The delivery lane retains controlled overload trials, raw queue/latency observations,
+and paired diagnostic-mode comparisons; see [result delivery](Documentation/ResultDelivery.md).
 
 Benchmark smoke checks are isolated from runtime consumers:
 

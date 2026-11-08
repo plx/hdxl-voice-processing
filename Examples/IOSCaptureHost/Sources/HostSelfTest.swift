@@ -34,6 +34,8 @@ enum HostSelfTest {
         checks.append("late-start-intent-rejected")
         let lifecycle = CaptureLifecycle()
         let lifecycleIntent = try lifecycle.prepareStart()
+        let display = try lifecycle.subscribeResults(.newest(capacity: 1))
+        let strict = try lifecycle.subscribeResults(.failOnOverflow(capacity: 8))
         lifecycle.stop()
         do {
             _ = try await lifecycle.start(
@@ -55,6 +57,23 @@ enum HostSelfTest {
             throw HostProbeError.failed
         }
         checks.append("idempotent-lifecycle-finish")
+        var displayIterator = display.makeAsyncIterator()
+        guard let snapshot = try await displayIterator.next(),
+            snapshot.value.state == .stopped, snapshot.value.completion == firstFinish,
+            snapshot.value.configuration == nil, snapshot.statistics.coalesced == 2,
+            try await displayIterator.next() == nil
+        else { throw HostProbeError.failed }
+        checks.append("bounded-lifecycle-display-completion")
+        var strictCount = 0
+        var completionCount = 0
+        for try await receipt in strict {
+            strictCount += 1
+            if case .completed = receipt.value.event { completionCount += 1 }
+        }
+        guard strictCount == 3, completionCount == 1, strict.statistics.coalesced == 0,
+            strict.statistics.rejected == 0, lifecycle.activeResultSubscriberCount == 0
+        else { throw HostProbeError.failed }
+        checks.append("independent-lifecycle-strict-delivery")
         let privateError = NSError(
             domain: "SYNTHETIC-PRIVATE-ROUTE", code: 29,
             userInfo: [NSLocalizedDescriptionKey: "SYNTHETIC-PRIVATE-DESCRIPTION"])

@@ -4,7 +4,7 @@ import Testing
 
 @testable import HDXLVoiceProcessing
 
-private final class RecordingSink: DiagnosticSink {
+final class RecordingSink: DiagnosticSink {
     enum Entry: Equatable, Sendable {
         case begin(DiagnosticRecord)
         case end(DiagnosticRecord)

@@ -17,7 +17,9 @@ import ci
 
 PROJECT = "Examples/IOSCaptureHost/IOSCaptureHost.xcodeproj"
 BUNDLE = "org.hdxl.voice-processing.capture-host"
-CHECKS = ["late-start-intent-rejected", "late-lifecycle-intent-rejected", "idempotent-lifecycle-finish", "private-error-redacted", "permission-states-distinct", "bounded-pcm-samples-preserved",
+CHECKS = ["late-start-intent-rejected", "late-lifecycle-intent-rejected", "idempotent-lifecycle-finish",
+          "bounded-lifecycle-display-completion", "independent-lifecycle-strict-delivery",
+          "private-error-redacted", "permission-states-distinct", "bounded-pcm-samples-preserved",
           "closed-transfer-drained", "worker-rejects-gap"]
 EVIDENCE = "synthetic iOS host execution; no permission request, session activation or microphone capture"
 

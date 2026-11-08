@@ -42,5 +42,6 @@ import Testing
     #expect(
         try await HostLifecycleProbe.run() == [
             "late-lifecycle-intent-rejected", "idempotent-lifecycle-finish",
+            "bounded-lifecycle-display-completion", "independent-lifecycle-strict-delivery",
         ])
 }

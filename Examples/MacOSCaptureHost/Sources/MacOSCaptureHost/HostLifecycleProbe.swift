@@ -6,6 +6,8 @@ enum HostLifecycleProbe {
     @MainActor static func run() async throws -> [String] {
         let owner = CaptureLifecycle()
         let intent = try owner.prepareStart()
+        let display = try owner.subscribeResults(.newest(capacity: 1))
+        let strict = try owner.subscribeResults(.failOnOverflow(capacity: 8))
         owner.stop()
         do {
             _ = try await owner.start(
@@ -23,6 +25,24 @@ enum HostLifecycleProbe {
         guard first == second, first.failures.isEmpty, owner.state == .stopped else {
             throw AnalysisScheduleError.invalidState
         }
-        return ["late-lifecycle-intent-rejected", "idempotent-lifecycle-finish"]
+        var displayIterator = display.makeAsyncIterator()
+        guard let snapshot = try await displayIterator.next(),
+            snapshot.value.state == .stopped, snapshot.value.completion == first,
+            snapshot.value.configuration == nil, snapshot.statistics.coalesced == 2,
+            try await displayIterator.next() == nil
+        else { throw AnalysisScheduleError.invalidState }
+        var strictCount = 0
+        var completions = 0
+        for try await receipt in strict {
+            strictCount += 1
+            if case .completed = receipt.value.event { completions += 1 }
+        }
+        guard strictCount == 3, completions == 1, strict.statistics.coalesced == 0,
+            strict.statistics.rejected == 0, owner.activeResultSubscriberCount == 0
+        else { throw AnalysisScheduleError.invalidState }
+        return [
+            "late-lifecycle-intent-rejected", "idempotent-lifecycle-finish",
+            "bounded-lifecycle-display-completion", "independent-lifecycle-strict-delivery",
+        ]
     }
 }
