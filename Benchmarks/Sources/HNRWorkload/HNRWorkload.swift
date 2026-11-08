@@ -9,6 +9,7 @@ public enum HNROperation: String, CaseIterable {
 public enum HNRWorkloadKind: String, Codable, Sendable {
     case harmonic = "Harmonic"
     case lowFloor = "LowFloor"
+    case amplitudeContrast = "AmplitudeContrast"
     case silence = "Silence"
     case noise = "Noise"
     case export = "OwnedDiagnostics"
@@ -23,7 +24,7 @@ public struct HNRCase: Encodable, Sendable {
     public var shard: String {
         switch kind {
         case .harmonic: "\(configuration.method.rawValue)\(configuration.sampleRate)"
-        case .lowFloor, .silence, .noise: "stress"
+        case .lowFloor, .amplitudeContrast, .silence, .noise: "stress"
         case .export: "export"
         }
     }
@@ -36,10 +37,12 @@ public struct HNRCase: Encodable, Sendable {
         let c = try HNRConfiguration(
             method: method, sampleRate: rate, inputPrecision: precision,
             pitchFloorHz: Double(floor), periodsPerWindow: periods,
-            hopSeconds: Double(hopMS) / 1000, normalization: normalization)
+            hopSeconds: Double(hopMS) / 1000,
+            silenceThreshold: kind == .amplitudeContrast ? 0 : 0.1,
+            normalization: normalization)
         configuration = c
         inputSampleCount =
-            kind == .lowFloor
+            [.lowFloor, .amplitudeContrast].contains(kind)
             ? c.causalWindowSampleCount + 3 * (rate * hopMS / 1000)
             : [.silence, .noise].contains(kind) ? rate * 5 : rate * 2 / 5
         name =
@@ -83,6 +86,12 @@ public struct HNRCase: Encodable, Sendable {
             for kind in [HNRWorkloadKind.silence, .noise] {
                 result.append(try Self(kind, method: method, periods: 6, floor: 60, hopMS: 5))
             }
+        }
+        for precision in [AnalysisPrecision.float32, .float64] {
+            result.append(
+                try Self(
+                    .amplitudeContrast, method: .forwardCrossCorrelation,
+                    precision: precision))
         }
         return result
     }
@@ -163,6 +172,10 @@ private final class HNRWorkload<S: BinaryFloatingPoint & Sendable>: HNRBatch {
             if item.kind == .silence { return S.zero }
             if item.kind == .noise { return S(noise) }
             let phase = 2 * Double.pi * hz * Double(i) / Double(c.sampleRate)
+            if item.kind == .amplitudeContrast {
+                if i == c.causalWindowSampleCount - 3 { return 1 }
+                return S(1e-20 * sin(phase))
+            }
             return S(0.4 * sin(phase) + 0.08 * sin(2 * phase) + 0.015 * noise)
         }
     }
@@ -253,6 +266,9 @@ private final class HNRWorkload<S: BinaryFloatingPoint & Sendable>: HNRBatch {
         precondition(first.isFinite && second.isFinite && checksum > 0)
         precondition(firstChecksum == checksum && previous == counts)
         if item.kind != .export { precondition(first == second && byteChecksum == 0) }
+        if item.kind == .amplitudeContrast {
+            precondition(stream!.estimatorStatistics!.directlyRecomputedEnergyLagCount > 0)
+        }
         let c = item.configuration
         let complete: Int
         if c.normalization == .wholeInterval {

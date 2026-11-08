@@ -116,3 +116,110 @@ import Testing
         }
     }
 }
+
+private func hnrIndependentScaledDot(_ first: ArraySlice<Double>, _ second: ArraySlice<Double>)
+    -> Double?
+{
+    let aScale = first.map(abs).max() ?? 0
+    let bScale = second.map(abs).max() ?? 0
+    guard aScale > 0, bScale > 0 else { return nil }
+    let a = first.map { $0 / aScale }
+    let b = second.map { $0 / bScale }
+    let aEnergy = a.map { $0 * $0 }.reduce(0, +)
+    let bEnergy = b.map { $0 * $0 }.reduce(0, +)
+    let product = zip(a, b).map { $0 * $1 }.reduce(0, +)
+    return product / (sqrt(aEnergy) * sqrt(bEnergy))
+}
+
+@Test func hnrCCQuietOverlapsRejectGlobalConvolutionContaminationAndSquareUnderflow() throws {
+    let c = try HNRConfiguration(method: .forwardCrossCorrelation, sampleRate: 16000)
+    let n = c.windowSampleCount
+    let lagCount = c.maximumCandidateLag
+    let worker = try PreparedHNRCorrelation(c, diagnostics: WorkerDiagnostics())
+    for amplitude in [1.0, 1e-6, 1e-10, 1e-20, 1e-150, 1e-200, Double.leastNormalMagnitude] {
+        for impulseAtEnd in [true, false] {
+            var input = (0..<(n + lagCount)).map { $0.isMultiple(of: 2) ? amplitude : -amplitude }
+            input[impulseAtEnd ? input.count - 1 : 0] = 1
+            let before = worker.directEnergyLagCount
+            try input.withUnsafeBufferPointer { try worker.compute($0, maximumLag: lagCount) }
+            for lag in 1...lagCount {
+                let expected = try #require(
+                    hnrIndependentScaledDot(input[0..<n], input[lag..<lag + n]))
+                #expect(worker.valid[lag])
+                #expect(
+                    abs(worker.curve[lag] - expected) <= 2e-14,
+                    "amplitude \(amplitude), impulseAtEnd \(impulseAtEnd), lag \(lag)")
+                #expect(abs(worker.curve[lag]) <= 1 + 2e-14)
+            }
+            if amplitude <= 1e-6 { #expect(worker.directEnergyLagCount > before) }
+        }
+    }
+    // Truly zero first or shifted support stays undefined. A distant impulse
+    // must not manufacture a finite cross-correlation for an empty pair.
+    for atEnd in [true, false] {
+        var input = [Double](repeating: 0, count: n + lagCount)
+        input[atEnd ? input.count - 1 : 0] = 1
+        try input.withUnsafeBufferPointer { try worker.compute($0, maximumLag: lagCount) }
+        for lag in 1...lagCount { #expect(!worker.valid[lag]) }
+    }
+}
+
+@Test func hnrCCFrameKeepsQuietPeriodicCandidateBesideMuchLouderForwardSample() throws {
+    func check<S: BinaryFloatingPoint & Sendable>(_ type: S.Type, amplitudes: [Double]) throws {
+        let c = try HNRConfiguration(
+            method: .forwardCrossCorrelation, sampleRate: 16000,
+            inputPrecision: S.self == Float.self ? .float32 : .float64,
+            silenceThreshold: 0, normalization: .causalWindow)
+        let layout = try c.causalFrameLayout(frameIndex: 0)
+        let worker = try PreparedHNR<S>(c)
+        let source = try SourceInterval(
+            epoch: StreamEpoch(streamID: UUID()), startSample: 0,
+            sampleCount: Int64(c.causalWindowSampleCount), sampleRate: 16000)
+        let timing = try AnalysisTiming(source: source, includedSampleCount: source.sampleCount)
+        var baseline: Double?
+        for amplitude in amplitudes {
+            var samples = (0..<c.causalWindowSampleCount).map {
+                S(amplitude * sin(2 * Double.pi * 120 * Double($0) / 16000))
+            }
+            samples[layout.support.upperBound - 1] = 1
+            let mean =
+                samples[
+                    layout.localMeanStartSample..<layout.localMeanStartSample
+                        + c.localMeanSampleCount
+                ]
+                .map(Double.init).reduce(0, +) / Double(c.localMeanSampleCount)
+            let centered = samples.map { Double($0) - mean }
+            try samples.withUnsafeBufferPointer { input in
+                let reference = try HNRNormalization(
+                    input, timing: timing, definition: .causalWindow)
+                try worker.analyze(
+                    UnsafeBufferPointer(rebasing: input[layout.support]), layout: layout,
+                    normalization: reference
+                ) { output in
+                    for lag in 1...layout.computedMaximumLag {
+                        let start = layout.correlationStartSample
+                        let expected = hnrIndependentScaledDot(
+                            centered[start..<start + c.windowSampleCount],
+                            centered[start + lag..<start + lag + c.windowSampleCount])!
+                        #expect(abs(output.correlation[lag] - expected) <= 2e-14)
+                    }
+                    let db = output.result.selectedObservation?.finiteDecibels
+                    #expect(db != nil)
+                    if let db {
+                        // Input Float32 rounding may move HNR slightly; this is
+                        // an invariant of the quiet-window scale, not a new
+                        // tolerance for the frozen reference comparisons.
+                        if let baseline {
+                            #expect(abs(db - baseline) < (S.self == Float.self ? 1e-5 : 1e-8))
+                        } else {
+                            baseline = db
+                        }
+                    }
+                }
+            }
+            #expect(worker.executionStatistics.directlyRecomputedEnergyLagCount > 0)
+        }
+    }
+    try check(Double.self, amplitudes: [1e-20, 1e-50, 1e-150, 1e-200])
+    try check(Float.self, amplitudes: [1e-10, 1e-20, 1e-30])
+}

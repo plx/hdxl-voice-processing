@@ -128,32 +128,37 @@ package final class PreparedHNRCorrelation {
             }
             try transform.inverseReal(UnsafeBufferPointer(firstSpectrum), into: transformed)
             var energy = HNRSum()
-            for i in 0..<n { energy.add(samples[i] * samples[i]) }
+            var firstPeak = 0.0
+            for i in 0..<n {
+                energy.add(samples[i] * samples[i])
+                firstPeak = max(firstPeak, abs(samples[i]))
+            }
             let firstEnergy = energy.value
+            var total = energy
+            for i in n..<samples.count { total.add(samples[i] * samples[i]) }
+            // A global convolution includes the entire forward buffer, including
+            // samples outside a particular lag's overlap. Restrict its use to
+            // well-conditioned pairs: at least 1/16 of that energy in each side.
+            // Otherwise transform roundoff can dominate a quiet overlap even
+            // when the rolling denominator itself was computed accurately.
+            let minimumFFTEnergy = total.value / 16
             for lag in 0...maximumLag {
                 if lag > 0 {
                     energy.add(-samples[lag - 1] * samples[lag - 1])
                     energy.add(samples[lag + n - 1] * samples[lag + n - 1])
                 }
-                var secondEnergy = energy.value
-                var product = transformed[n - 1 + lag]
-                // A nearly empty shifted window can lose its energy when rolling
-                // past a much larger value. Recover that bounded lag directly.
-                if secondEnergy <= 128 * Double.ulpOfOne * firstEnergy {
-                    var directEnergy = HNRSum()
-                    var directProduct = HNRSum()
-                    for i in 0..<n {
-                        directEnergy.add(samples[lag + i] * samples[lag + i])
-                        directProduct.add(samples[i] * samples[lag + i])
-                    }
-                    secondEnergy = directEnergy.value
-                    product = directProduct.value
+                let secondEnergy = energy.value
+                let value: Double?
+                if firstEnergy <= minimumFFTEnergy || secondEnergy <= minimumFFTEnergy
+                    || secondEnergy <= 128 * Double.ulpOfOne * firstEnergy
+                {
+                    value = directNormalizedCorrelation(samples, lag: lag, firstPeak: firstPeak)
                     directEnergyLagCount = saturatingAdd(directEnergyLagCount)
+                } else {
+                    let denominator = sqrt(firstEnergy) * sqrt(secondEnergy)
+                    value = denominator > 0 ? transformed[n - 1 + lag] / denominator : nil
                 }
-                // Taking the square roots separately avoids underflow in E1*E2.
-                let denominator = sqrt(firstEnergy) * sqrt(secondEnergy)
-                if firstEnergy > 0, secondEnergy > 0, denominator > 0 {
-                    let value = product / denominator
+                if let value {
                     guard value.isFinite else { throw HNRError.numericalFailure }
                     curve[lag] = value
                     valid[lag] = true
@@ -171,4 +176,29 @@ package final class PreparedHNRCorrelation {
         curve[0] = 1
         valid[0] = true
     }
+
+    /// Normalize each side independently before squaring or taking products.
+    /// This preserves tiny finite overlaps even when their raw squared energy
+    /// underflows, and never includes a sample outside the current lag pair.
+    private func directNormalizedCorrelation(
+        _ samples: UnsafeBufferPointer<Double>, lag: Int, firstPeak: Double
+    ) -> Double? {
+        guard firstPeak > 0 else { return nil }
+        let n = configuration.windowSampleCount
+        var secondPeak = 0.0
+        for i in 0..<n { secondPeak = max(secondPeak, abs(samples[lag + i])) }
+        guard secondPeak > 0 else { return nil }
+        var first = HNRSum()
+        var second = HNRSum()
+        var product = HNRSum()
+        for i in 0..<n {
+            let a = samples[i] / firstPeak
+            let b = samples[lag + i] / secondPeak
+            first.add(a * a)
+            second.add(b * b)
+            product.add(a * b)
+        }
+        return product.value / (sqrt(first.value) * sqrt(second.value))
+    }
+
 }

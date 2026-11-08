@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location('hnr_benchmark', ROOT / 'Tools/HNR/benchmark.py')
 benchmark = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(benchmark)
-KINDS = ('Harmonic', 'LowFloor', 'Silence', 'Noise', 'OwnedDiagnostics')
+KINDS = ('Harmonic', 'LowFloor', 'AmplitudeContrast', 'Silence', 'Noise', 'OwnedDiagnostics')
 MATRIX = [{'name': k, 'workload': {'kind': k}} for k in KINDS]
 
 
@@ -39,9 +39,9 @@ class HNRBenchmarkTests(unittest.TestCase):
 
     def test_matrix_covers_requested_cross_product_and_support_stresses(self):
         cases=benchmark.expected_cases()
-        self.assertEqual(len(cases),208)
+        self.assertEqual(len(cases),210)
         groups=[set(benchmark.expected_cases(shard)) for shard in benchmark.SHARDS]
-        self.assertEqual([len(g) for g in groups],[32,32,32,32,32,32,8,8])
+        self.assertEqual([len(g) for g in groups],[32,32,32,32,32,32,10,8])
         self.assertEqual(set.union(*groups),set(cases))
         self.assertEqual(sum(map(len,groups)),len(cases))
         primary=[x for x in cases.values() if x['kind']=='Harmonic']
@@ -55,7 +55,7 @@ class HNRBenchmarkTests(unittest.TestCase):
 
     def test_positive_control_and_prepared_heap_maxima(self):
         good = capture('allocation')
-        self.assertEqual(len(benchmark.validate_raw(good,MATRIX,'allocation')),11)
+        self.assertEqual(len(benchmark.validate_raw(good,MATRIX,'allocation')),13)
         for metric in benchmark.DIAGNOSTICS:
             bad = copy.deepcopy(good)
             for item in bad['results'][-1]:

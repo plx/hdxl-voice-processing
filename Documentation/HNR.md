@@ -18,7 +18,11 @@ frame into the input. Unsupported short inputs produce no complete grid frames.
 Correlation arithmetic uses zero-padded FFTs, independently checked against direct
 compensated Python sums. Preparation computes the Gaussian window correction once.
 CC uses convolution and compensated rolling energies, with a directly recomputed
-lag when a shifted window's energy is too small for reliable subtraction. Undefined
+lag when either pair has at most 1/16 of the complete forward buffer's energy,
+or the shifted energy is too small for reliable subtraction. Direct recovery
+scales both sides independently before products/squares; a distant loud sample
+cannot contaminate a quiet overlap, and small finite squared energies cannot
+underflow into false unavailability. Undefined
 energy and the explicit uncomputed zero interpolation tail remain distinguishable.
 Sinc uses an angle recurrence with a near-integer sine reduction, avoiding repeated
 transcendental calls and division-amplified error near the right integer endpoint.

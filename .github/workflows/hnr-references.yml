@@ -38,8 +38,9 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.14.8'
-      - name: Verify committed references and provenance
+      - name: Acquire pinned reference and verify committed evidence
         run: |
+          python3 Tools/Reference/setup.py
           python3 Tools/verify-provenance.py
           python3 Tools/HNR/verify.py
           python3 -m unittest discover -s Tools/Tests -p 'test_hnr*.py'

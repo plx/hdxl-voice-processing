@@ -210,7 +210,7 @@ See [mask workload semantics](../Tools/Masks/README.md#performance-matrix) and
 
 The macOS native-buffer bridge uses `python3 Tools/Capture/benchmark.py timing` and `allocation`. Its 40 cases measure one prepared production tap invocation, with buffer creation/worker verification excluded. These synthetic distributions exclude device delivery and SDK work before the callback; see [the capture guide](../Documentation/MacOSCapture.md).
 
-HNR registers 208 whole/causal AC/CC workloads with separate Prepare/Run
+HNR registers 210 whole/causal AC/CC workloads with separate Prepare/Run
 measurements and positive allocation/ARC controls. Run
 `python3 Tools/HNR/benchmark.py timing --shard ac16000` (or `allocation`), selecting
 one of six method/rate shards, `stress` or `export`. The full matrix and distinct

@@ -47,7 +47,7 @@ def expected_cases(shard=None):
         support = width + (1 / floor if method == 'cc' else 0)
         window = 2 * (math.floor(width / (1 / rate)) // 2 - 1)
         causal = math.ceil(support * rate)
-        count = causal + 3 * (rate * hop // 1000) if kind == 'LowFloor' else rate * 5 if kind in ('Silence', 'Noise') else rate * 2 // 5
+        count = causal + 3 * (rate * hop // 1000) if kind in ('LowFloor','AmplitudeContrast') else rate * 5 if kind in ('Silence', 'Noise') else rate * 2 // 5
         name = f'{kind}.{method}.{precision}.{rate}Hz.p{periods:.1f}.f{floor}.h{hop}.{normalization}'
         result[name] = dict(kind=kind, method=method, rate=rate, precision=precision,
             periods=periods, floor=floor, hop=hop, normalization=normalization,
@@ -67,6 +67,8 @@ def expected_cases(shard=None):
             for normalization in ('whole','causal'):
                 add(kind='OwnedDiagnostics',method=method,precision=precision,normalization=normalization)
         for kind in ('Silence','Noise'): add(kind=kind,method=method,periods=6.,floor=60,hop=5)
+    for precision in ('float32','float64'):
+        add(kind='AmplitudeContrast',method='cc',precision=precision)
     if shard is not None:
         if shard not in SHARDS: raise ValueError('Unknown HNR shard')
         result = {name:row for name,row in result.items() if row['shard']==shard}
@@ -76,7 +78,7 @@ def expected_cases(shard=None):
 def expected_profile(row):
     return dict(schemaVersion=1,method=row['method'],sampleRate=row['rate'],inputPrecision=row['precision'],
         arithmeticPrecision='float64',pitchFloorHz=row['floor'],periodsPerWindow=row['periods'],
-        hopSeconds=row['hop']/1000,silenceThreshold=.1,
+        hopSeconds=row['hop']/1000,silenceThreshold=0 if row['kind']=='AmplitudeContrast' else .1,
         normalization='wholeIntervalMeanRemovedPeak' if row['normalization']=='whole' else 'causalWindowMeanRemovedPeak',
         window='pitchGaussianNPlusOne' if row['method']=='ac' else 'rectangularForwardPair',
         interpolation='sinc700SymmetricRaisedCosineDepthPlusHalf',overshoot='reciprocalAboveOne',
@@ -247,7 +249,7 @@ def main():
                             "frameworkScalingFactor": 1, "exportStatistic": "p99, one declared Prepare or Run operation",
                             "sampling": "Run: one warmup, ten measured operations, 3600s cap. Prepare/control: three warmups, thirty measured operations, 60s cap. Ten samples required; p99 of ten is effectively the maximum, not a stable population tail estimate.",
                             "distributions": "raw-baseline.json.gz; sample counts/maxima in distributions.json; p99.json",
-                            "input": "Original 120/240Hz harmonic PCM (.4/.08) plus .015 times UInt32 LCG seed39 noise; low-floor uses configured floor and its octave; silence; pure LCG noise. Round once to declared source precision. Generation excluded; exact input bytes hashed.",
+                            "input": "Original 120/240Hz harmonic PCM (.4/.08) plus .015 times UInt32 LCG seed39 noise; low-floor uses configured floor and its octave; silence; pure LCG noise; AmplitudeContrast uses 1e-20 times a 120Hz sine with a unit sample at causalWindowSamples-3 and disabled silence gating, exercising direct normalized CC recovery. Round once to declared source precision. Generation excluded; exact input bytes hashed.",
                             "operations": {"Prepare": "construct/destroy selected whole-interval or causal HNR worker, normalization storage and FFT; input generation excluded",
                                            "Run": "reset, append/process entire prepared input in 256-sample chunks and finish. Includes normalization, window preparation, correlation, internal period search and scalar consumption. Whole-interval grid has no partial slot; causal has one acquired partial tail. OwnedDiagnostics also copies candidates/window/correlation arrays and serializes every measurement, consuming every encoded byte; includes DSP, not isolated serialization."},
                             "workingMemory": "owned worker PCM, window/correlation/candidate/FFT buffers; excludes object bookkeeping and opaque FFT setup tables. Input bytes separate. Whole mode retains its explicitly bounded full input; causal has fixed ring/emission buffers. No transform sharing with other algorithms.",

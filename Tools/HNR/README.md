@@ -225,11 +225,12 @@ exact grids, suppression/recovery and overwrite prevention. Swift compares all
 `python3 Tools/HNR/benchmark.py timing --shard ac16000` and the analogous
 `allocation` command use the pinned benchmark framework in `Benchmarks`. Shards
 are `ac16000`, `ac44100`, `ac48000`, `cc16000`, `cc44100`, `cc48000`, `stress`
-and `export`. The complete matrix has 208 workloads: the requested 48 AC/CC ×
+and `export`. The complete matrix has 210 workloads: the requested 48 AC/CC ×
 rate × period × floor × hop configurations, each in both PCM precisions and both
 normalization definitions (192), four 20 Hz floor stress cases, four five-second
-silence/noise cases, and eight explicit owned-output export cases. Baseline input
-is 0.4 seconds; the low-floor cases acquire four full windows and one tail.
+silence/noise cases, eight explicit owned-output export cases, and two CC
+amplitude-contrast cases that exercise independently scaled direct recovery next
+to a much louder sample. Baseline input is 0.4 seconds; the low-floor cases acquire four full windows and one tail.
 At an exact search boundary, noisy peak refinement can leave a frame unavailable;
 these stress receipts preserve the observed coverage rather than assume a valid
 candidate. No external F0 or transform sharing is involved.
