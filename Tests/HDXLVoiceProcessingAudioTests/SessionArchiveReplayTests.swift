@@ -391,3 +391,44 @@ private func expectNoSessionStage(_ directory: URL) throws {
     }
     try expectNoSessionStage(directory)
 }
+
+@Test func sessionAudioReplayLimitsMatchDecoderAndSchedulerCapacityBoundaries() throws {
+    for capacity in [0, 4097, 65_536, Int.max] {
+        #expect(throws: SessionArchiveError.invalidConfiguration) {
+            _ = try SessionArchiveReplayLimits(sourceTileCapacity: capacity)
+        }
+    }
+    for capacity in [0, 65_537, Int.max] {
+        #expect(throws: SessionArchiveError.invalidConfiguration) {
+            _ = try SessionArchiveReplayLimits(decodedChunkCapacity: capacity)
+        }
+    }
+    let directory = try sessionFileTestDirectory()
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let fixture = try SessionAudioReplayFixture(directory: directory)
+    let archive = try fixture.archive(directory: directory)
+    let expected = try #require(fixture.expected[.rms])
+    for tile in [1, 4096] {
+        for chunk in [1, 65_536] {
+            var values: [ScheduledMeasurementExport] = []
+            let result = try SessionArchiveAudioReplay.run(
+                at: archive, planIndex: 0, scratchDirectory: directory,
+                archiveLimits: SessionArchiveLimits(),
+                replayLimits: SessionArchiveReplayLimits(
+                    decodedChunkCapacity: chunk, sourceTileCapacity: tile)
+            ) { values.append($0) }
+            // Changing tiling changes the declared batching bound, not the
+            // measurement values, source timing or coverage of the same PCM.
+            #expect(values.map(\.result) == expected.map(\.result))
+            #expect(values.map(\.dependencyCoverage) == expected.map(\.dependencyCoverage))
+            #expect(values.map(\.dependencyTiming) == expected.map(\.dependencyTiming))
+            #expect(
+                values.allSatisfy {
+                    $0.workerBatchingUpperBoundSeconds == Double(tile) / fixture.interval.sampleRate
+                })
+            #expect(result.decodedSamples == fixture.interval.sampleCount)
+            #expect(result.maximumDecodedChunkSamples <= chunk)
+            try expectNoSessionStage(directory)
+        }
+    }
+}

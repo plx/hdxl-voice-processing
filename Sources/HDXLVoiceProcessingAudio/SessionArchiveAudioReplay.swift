@@ -8,7 +8,9 @@ import HDXLVoiceProcessing
 public struct SessionArchiveReplayLimits: Sendable, Hashable {
     public let maximumSourceSamples: Int64
     public let maximumSourceSeconds: Double
+    /// Decoder read capacity, in `1...65_536` source frames.
     public let decodedChunkCapacity: Int
+    /// Scheduler tile capacity, in `1...4096` source frames.
     public let sourceTileCapacity: Int
 
     public init(
@@ -18,7 +20,7 @@ public struct SessionArchiveReplayLimits: Sendable, Hashable {
         guard (1...1_000_000_000).contains(maximumSourceSamples),
             maximumSourceSeconds.isFinite, maximumSourceSeconds > 0,
             maximumSourceSeconds <= 86_400,
-            (1...65_536).contains(decodedChunkCapacity), (1...65_536).contains(sourceTileCapacity)
+            (1...65_536).contains(decodedChunkCapacity), (1...4096).contains(sourceTileCapacity)
         else { throw SessionArchiveError.invalidConfiguration }
         self.maximumSourceSamples = maximumSourceSamples
         self.maximumSourceSeconds = maximumSourceSeconds

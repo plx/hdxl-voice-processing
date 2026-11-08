@@ -143,7 +143,9 @@ Replay emits only the chosen metric's complete `ScheduledMeasurementExport`, wit
 no retained result history. Its separate limits bound decoded source samples/time
 and worker chunks/tiles; native whole-interval layout limits still apply. Defaults
 allow 172.8 million source frames and 3600 seconds, with 2048-frame decoder chunks
-and 256-frame source tiles. These are engineering ceilings, not measured physical
+and 256-frame source tiles. Decoder chunk capacities accept 1...65,536 frames;
+source tile capacities accept the scheduler's 1...4,096 range. Unsupported capacities
+are rejected when constructing replay limits. These are engineering ceilings, not measured physical
 device budgets. The batching bound reflects the chosen replay tile capacity.
 
 For calibration, a host may use `withVerifiedMedia` and `CalibrationFileAnalysis.run`
