@@ -1,0 +1,27 @@
+begin	hnr-reference-v1
+input	16000	5120
+settings	ac	0.01	75	0.1	4.5
+axes	21	0.060000000000000005	0.01
+mean	decibelsRatio	--undefined--
+frame	1	0.060000000000000005	-200
+frame	2	0.07	-200
+frame	3	0.08	-200
+frame	4	0.09000000000000001	-200
+frame	5	0.1	-200
+frame	6	0.11	-200
+frame	7	0.12000000000000001	-200
+frame	8	0.13	-200
+frame	9	0.14	-200
+frame	10	0.15	-200
+frame	11	0.16	-200
+frame	12	0.17	-200
+frame	13	0.18	-200
+frame	14	0.19	-200
+frame	15	0.2	-200
+frame	16	0.21000000000000002	-200
+frame	17	0.22	-200
+frame	18	0.23	-200
+frame	19	0.24000000000000002	-200
+frame	20	0.25	-200
+frame	21	0.26	-200
+end	hnr-reference-v1
