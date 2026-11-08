@@ -1,0 +1,17 @@
+begin	pulse-reference-v2
+input	4000	40
+periodSettings	0.0001	0.02	1.3
+pitch	2	0.0025	0.005	0	0.01
+f0	1	0.0025	500
+f0	2	0.0075	500
+count	5
+pulse	1	0.0008749999999999999
+pulse	2	0.002875
+pulse	3	0.004875
+pulse	4	0.006875
+pulse	5	0.008875000000000001
+amplitudes	complete	3
+amplitude	1	0.002875	0.9380651903579085
+amplitude	2	0.004875	0.9380651903579087
+amplitude	3	0.006875	0.9380651903579087
+end	pulse-reference-v2

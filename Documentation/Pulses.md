@@ -119,6 +119,17 @@ boundary queries and 96 complete matching-stage tables are independently retaine
 Reference raw agreement does not by itself validate native run qualification,
 an upstream pitch estimator, or physiological accuracy.
 
+A separate 50-case history catalog checks both direct and irregularly chunked
+processing against original high-precision matching equations and a graph of
+successful tracking steps. It covers failed matches, exclusions, unvoiced gaps,
+short fragments, period limits, adjacent-period ratios, and every rejection
+reason. Exact binary templates provide closed-form timing anchors at
+80/150/300/600 Hz. Their seed convention matters: an extremum at the edge of the
+seed-search window is not fractionally refined, and its phase bias can persist
+through a periodic track. A seed in a silent gap can also reacquire a different
+waveform phase; usable timing does not guarantee a usable cycle amplitude.
+These observations do not establish arbitrary-waveform timing accuracy.
+
 Worker diagnostics expose bounded `PulseMatching`, `PulseInterpolation`, and
 `PulseSequences` spans inside `Pulses`. Consumer callbacks run outside `Pulses`.
 The shared record budget and every-sixteenth-frame sampling policy still apply;

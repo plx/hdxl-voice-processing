@@ -35,5 +35,31 @@ the exact-count/position comparison. Decision record: issue #151.
 Known-source timing is a separate comparison against the original generator's
 landmarks. A sampled quadratic interpolation has systematic bias that may
 accumulate along a track. Native/reference tolerance never absorbs that bias.
-The complete known-source and explicit-run oracle gates remain pending; passing
-this catalog alone does not close #42 or establish glottal-closure accuracy.
+The finite Gaussian source-timing bound remains pending; passing this catalog
+alone does not close #42 or establish glottal-closure accuracy.
+
+## Independent histories and exact-template timing
+
+The separate 50-case history catalog freezes its policy in
+`trace_oracle.COMPARISON` before any native history comparison. Its original
+80-digit observed-pair equations retain every proposed step, including failures.
+A graph of actual successful tracking edges supplies connected components for
+run membership. It never infers a missed step from a flat external point list.
+Counts, indices, eligibility, and all rejection reasons must match exactly.
+Positions, period durations, and amplitude support endpoints use **2e-10 samples**;
+correlations, curvature, and adjacent-period ratios use **2e-12**. F0 uses
+**1e-10 Hz**. Cycle RMS uses the same amplitude budget as the full catalog.
+
+Exact binary sample templates supply separate closed-form timing anchors,
+including fractional seeds and 80/150/300/600 Hz trains. Interior extrema permit
+quadratic refinement. An extremum at the seed-search endpoint does not; the
+declared `endpoint-seed` case retains a **-0.25-sample phase bias** through its
+integer-period track. Its source landmarks remain the original fractional
+coordinates. Both absolute source error and residual after that analytically
+known bias are recorded. No tolerance is widened to hide the bias. These anchors
+do not establish a Gaussian, arbitrary-waveform, or physiological timing bound.
+
+Direct complete-interval and irregularly chunked complete-block processing must
+both satisfy every history record. Native output is never an oracle input. The
+external raw trajectory supplies an additional independent cross-check; its
+available amplitudes do not replace native support and run qualification.

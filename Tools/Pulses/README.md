@@ -217,3 +217,45 @@ path fails instead of silently selecting committed fixtures. Set
 `HDXL_PULSE_REFERENCE_REPORT` to retain native/reference coordinates, source and
 profile identities, amplitude comparison counts, and maximum budget use. This
 audit is separate from generator execution timings and physical measurements.
+
+## Independent tracking histories
+
+`trace_oracle.py` supplies a bounded original locator using the 80-digit stage
+equations. It retains the complete finite lag tables and all attempted steps,
+then computes eligibility through connected components of a successful-step
+graph. Rejection removes an edge; filtering the raw point list cannot reconnect
+it. The 50 cases include both precisions, exclusions, missed cycles, silent and
+unvoiced gaps, short fragments, period limits, alternating periods and strengths,
+polarity, fractional seeds, and 80/150/300/600 Hz templates.
+
+The exact binary lobe templates have independently specified source landmarks.
+The quarter-sample asymmetry of one template also exposes endpoint seeding:
+an extremum at the seed-window edge is not refined, so that case retains a
+declared -0.25-sample phase bias. Increasing the input length moves the seed to
+the interior and recovers the fractional source phase. Absolute source error
+and bias-adjusted residual remain separate fields. A seed in a long silent gap
+can reacquire a different phase and yield unavailable cycle RMS. Neither case
+is evidence of physiological timing, and exact-template anchors do not replace
+the pending finite Gaussian source-bias bound.
+
+```sh
+python3 Tools/Pulses/trace_reference.py --directory .build/pulse-histories-new
+python3 Tools/Pulses/trace_reference.py --verify \
+  --directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseHistories
+swift test --filter pulseHistories
+```
+
+Generation checks the independent history against the pinned external raw
+trajectory and amplitudes. Offline verification regenerates PCM, F0, mathematical
+histories, graph membership, and every derived result, without Swift or external
+execution. It rejects stale identities, missing/extra artifacts, changed policies,
+symlinks, and rehashed corruption. The 202 promoted files include 200 case
+artifacts plus manifest and separately scoped generation timings. Hashes and
+replay do not authenticate the producer of the retained external transcript.
+
+`PulseHistoryTests` compares all 1,586 attempts, 1,434 raw points, 1,386 adjacent
+intervals, 1,342 adjacent-period pairs, and their amplitudes in both direct and
+irregularly chunked modes. Eligible counts are 1,088 periods, 958 pairs, and 890
+amplitudes. Set `HDXL_PULSE_HISTORY_DIRECTORY` to test a freshly generated catalog;
+an explicitly empty override fails. The [comparison policy](COMPARISON.md) was
+frozen before native history comparison and is separate from generator timings.
