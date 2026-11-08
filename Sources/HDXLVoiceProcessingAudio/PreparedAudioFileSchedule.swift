@@ -11,7 +11,12 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
     public let source: SourceInterval
     public let decoding: AudioFileDecodingProvenance
     public let chunkCapacity: Int
+    /// Decoder position corresponding to origin.source.startSample. The default
+    /// keeps legacy file-coordinate behavior; an explicit mapping preserves live
+    /// source clocks when a stored recording starts at a different file frame.
+    public let fileStartSample: Int64
     public let mask: PreparedAnalysisMask?
+    public let maskRouting: AudioFileMaskRouting
     public private(set) var nextSourceSample: Int64
     public private(set) var completion: AudioFileScheduleCompletion?
     public var isCancelled: Bool { state == .cancelled }
@@ -36,8 +41,9 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
 
     public init(
         url: URL, profile: AnalysisScheduleProfile, origin: AnalysisScheduleOrigin,
+        fileStartSample: Int64? = nil,
         sampleCount: Int64? = nil, chunkCapacity: Int = 2048, sourceTileCapacity: Int = 256,
-        mask: PreparedAnalysisMask? = nil
+        mask: PreparedAnalysisMask? = nil, maskRouting: AudioFileMaskRouting = .splitAtRegions
     ) throws {
         guard (1...65536).contains(chunkCapacity) else {
             throw AudioFileScheduleError.invalidCapacity
@@ -57,18 +63,19 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
             format.isInterleaved == (profile.inputFormat.layout == .interleaved)
         else { throw AudioFileScheduleError.formatMismatch }
         let length = file.length
-        guard length >= 0, origin.source.startSample <= length else {
+        let fileStart = fileStartSample ?? origin.source.startSample
+        guard length >= 0, fileStart >= 0, fileStart <= length else {
             throw AudioFileScheduleError.invalidRange
         }
-        let count = sampleCount ?? (length - origin.source.startSample)
-        guard count >= 0, count <= length - origin.source.startSample else {
+        let count = sampleCount ?? (length - fileStart)
+        guard count >= 0, count <= length - fileStart else {
             throw AudioFileScheduleError.invalidRange
         }
         let source = try SourceInterval(
             epoch: origin.source.epoch,
             startSample: origin.source.startSample, sampleCount: count,
             sampleRate: origin.source.sampleRate)
-        if let mask {
+        if let mask, maskRouting == .splitAtRegions {
             guard mask.timeline.plan.source == source else {
                 throw AudioFileScheduleError.invalidRange
             }
@@ -81,7 +88,9 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
         self.origin = origin
         self.source = source
         self.chunkCapacity = chunkCapacity
+        self.fileStartSample = fileStart
         self.mask = mask
+        self.maskRouting = maskRouting
         self.nextSourceSample = source.startSample
         self.file = file
         self.buffer = buffer
@@ -90,7 +99,7 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
             decodedPCM: profile.inputFormat, fileSampleCount: length,
             decoderIdentifier: "apple-avaudiofile-native-pcm-v1",
             platformVersion: ProcessInfo.processInfo.operatingSystemVersionString)
-        if let mask {
+        if let mask, maskRouting == .splitAtRegions {
             plain = nil
             masked = try PreparedMaskedAnalysisSchedule(
                 profile: profile, origin: origin,
@@ -99,11 +108,12 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
             masked = nil
             plain = try PreparedAnalysisSchedule(
                 profile: profile, origin: origin,
-                mode: .finite, expectedSampleCount: count, sourceTileCapacity: sourceTileCapacity)
+                mode: .finite, expectedSampleCount: count, sourceTileCapacity: sourceTileCapacity,
+                mask: mask)
         }
         planes = .allocate(capacity: profile.inputFormat.channelCount)
         planes.initialize(repeating: UnsafeBufferPointer(start: nil, count: 0))
-        file.framePosition = source.startSample
+        file.framePosition = fileStart
     }
 
     deinit {
@@ -152,7 +162,7 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
                         try masked.skipMissingAcquisition(
                             interval(start: nextSourceSample, end: next))
                         nextSourceSample = next
-                        file.framePosition = next
+                        file.framePosition = fileStartSample + (next - source.startSample)
                     }
                     if nextSourceSample == source.endSample { break }
                     end = regions[eligibleRegionIndex].endSample

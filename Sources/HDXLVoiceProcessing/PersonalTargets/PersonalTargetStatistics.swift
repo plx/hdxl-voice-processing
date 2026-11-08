@@ -43,6 +43,35 @@ public struct PersonalTargetDistribution: Sendable, Hashable, Encodable {
         upperQuartile = q(0.75)
     }
 
+    /// Structural inspection of persisted summaries; this does not establish
+    /// that any training observations existed or were verified. The archive
+    /// activation boundary requires a separate matching fit/evaluation.
+    init(
+        count: Int, minimum: Double, lowerQuartile: Double, median: Double,
+        upperQuartile: Double, maximum: Double
+    ) throws {
+        let values = [minimum, lowerQuartile, median, upperQuartile, maximum]
+        guard (1...CalibrationRecordLimits.maximumTakes).contains(count),
+            values.allSatisfy(\.isFinite), zip(values, values.dropFirst()).allSatisfy({ $0 <= $1 })
+        else { throw PersonalTargetError.invalidObservation }
+        let ranks = [
+            0, max(0, Int(ceil(0.25 * Double(count))) - 1),
+            max(0, Int(ceil(0.5 * Double(count))) - 1), max(0, Int(ceil(0.75 * Double(count))) - 1),
+            count - 1,
+        ]
+        for index in 1..<ranks.count where ranks[index] == ranks[index - 1] {
+            guard values[index] == values[index - 1] else {
+                throw PersonalTargetError.invalidObservation
+            }
+        }
+        self.count = count
+        self.minimum = minimum
+        self.lowerQuartile = lowerQuartile
+        self.median = median
+        self.upperQuartile = upperQuartile
+        self.maximum = maximum
+    }
+
     var extent: PersonalTargetInterval {
         // Construction already checked finite, ordered values.
         try! PersonalTargetInterval(lower: minimum, upper: maximum)

@@ -44,8 +44,11 @@ import SwiftUI
                         }
                     }
                     Section("Development host") {
+                        NavigationLink("Session storage and sharing") { SessionStorageView() }
+                            .disabled(synthetic)
+                            .accessibilityIdentifier("session-storage-navigation")
                         Text(
-                            "Foreground capture only. Stop or background the app to end capture. No audio is saved or uploaded."
+                            "Foreground capture only. Stop or background the app to end capture. Microphone audio is never saved or uploaded by this host."
                         )
                         Text(
                             "Device route and timing measurements remain pending physical validation."

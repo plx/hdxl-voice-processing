@@ -21392,6 +21392,256 @@
       ],
       "expectedProfile": "personal-cpps-iqr-band/v1; synthetic contract fixtures; not listening evidence",
       "referenceOutputIdentity": "sha256:3f9d8a299237c3f520b44d9710231e7c6e468eb3f46942ba67fb18b30d2d6d99"
+    },
+    {
+      "id": "session-v1-embedded-pcm-v1-hvps",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/embedded-pcm-v1.hvps",
+      "sha256": "1be323058d95ed6c29d867edba5b68e7760ea67e40b294de46ddf01f94edbf12",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/58",
+        "versionOrHash": "generator-v1-sha256:cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "generator": {
+        "path": "Tools/Sessions/generate_fixtures.py",
+        "version": "1",
+        "sha256": "cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original scripted scalar contracts and constant integer PCM; no human recording or personal values."
+      },
+      "transformations": [
+        "Independent Python canonical JSON, explicit little-endian scalar/media framing and SHA-256; no Swift export consumed",
+        "Synthetic complete/partial/truncated containers; optional original mono PCM16 WAVE32samples at16000Hz with exact0.25RMS; omitted counterpart retains reference without audio"
+      ],
+      "expectedProfile": "hdxl-voice-session/v1.0; digital-level-windows/v1 and shared-pcm-analysis-schedule/v1; explicitly synthetic contracts",
+      "referenceOutputIdentity": "sha256:1be323058d95ed6c29d867edba5b68e7760ea67e40b294de46ddf01f94edbf12"
+    },
+    {
+      "id": "session-v1-interrupted-v1-hvps",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/interrupted-v1.hvps",
+      "sha256": "1bbcc2c062d2bef5ec224f769cfedc7dec5133a3a5fd7cce4cdaaa9076dcc1f1",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/58",
+        "versionOrHash": "generator-v1-sha256:cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "generator": {
+        "path": "Tools/Sessions/generate_fixtures.py",
+        "version": "1",
+        "sha256": "cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original scripted scalar contracts and constant integer PCM; no human recording or personal values."
+      },
+      "transformations": [
+        "Independent Python canonical JSON, explicit little-endian scalar/media framing and SHA-256; no Swift export consumed",
+        "Synthetic complete/partial/truncated containers; optional original mono PCM16 WAVE32samples at16000Hz with exact0.25RMS; omitted counterpart retains reference without audio"
+      ],
+      "expectedProfile": "hdxl-voice-session/v1.0; digital-level-windows/v1 and shared-pcm-analysis-schedule/v1; explicitly synthetic contracts",
+      "referenceOutputIdentity": "sha256:1bbcc2c062d2bef5ec224f769cfedc7dec5133a3a5fd7cce4cdaaa9076dcc1f1"
+    },
+    {
+      "id": "session-v1-manifest-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/manifest.json",
+      "sha256": "053a6d2be89446405a9d1ceae00e59604fe315ae4673fdbc90bc0fba05dfe6a2",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/58",
+        "versionOrHash": "generator-v1-sha256:cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "generator": {
+        "path": "Tools/Sessions/generate_fixtures.py",
+        "version": "1",
+        "sha256": "cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original scripted scalar contracts and constant integer PCM; no human recording or personal values."
+      },
+      "transformations": [
+        "Independent Python canonical JSON, explicit little-endian scalar/media framing and SHA-256; no Swift export consumed",
+        "Synthetic complete/partial/truncated containers; optional original mono PCM16 WAVE32samples at16000Hz with exact0.25RMS; omitted counterpart retains reference without audio"
+      ],
+      "expectedProfile": "hdxl-voice-session/v1.0; digital-level-windows/v1 and shared-pcm-analysis-schedule/v1; explicitly synthetic contracts",
+      "referenceOutputIdentity": "sha256:053a6d2be89446405a9d1ceae00e59604fe315ae4673fdbc90bc0fba05dfe6a2"
+    },
+    {
+      "id": "session-v1-omitted-pcm-v1-hvps",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/omitted-pcm-v1.hvps",
+      "sha256": "cabeb5e9b2ad0620dfa9b954728ee5e86fa1acb28c8fc4aa758abe761737f78c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/58",
+        "versionOrHash": "generator-v1-sha256:cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "generator": {
+        "path": "Tools/Sessions/generate_fixtures.py",
+        "version": "1",
+        "sha256": "cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original scripted scalar contracts and constant integer PCM; no human recording or personal values."
+      },
+      "transformations": [
+        "Independent Python canonical JSON, explicit little-endian scalar/media framing and SHA-256; no Swift export consumed",
+        "Synthetic complete/partial/truncated containers; optional original mono PCM16 WAVE32samples at16000Hz with exact0.25RMS; omitted counterpart retains reference without audio"
+      ],
+      "expectedProfile": "hdxl-voice-session/v1.0; digital-level-windows/v1 and shared-pcm-analysis-schedule/v1; explicitly synthetic contracts",
+      "referenceOutputIdentity": "sha256:cabeb5e9b2ad0620dfa9b954728ee5e86fa1acb28c8fc4aa758abe761737f78c"
+    },
+    {
+      "id": "session-v1-partial-v1-hvps",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/partial-v1.hvps",
+      "sha256": "a81a36cb22df863ccffa56d3907ad3702db7be70284efd4a6477fe497ccdc1f6",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/58",
+        "versionOrHash": "generator-v1-sha256:cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "generator": {
+        "path": "Tools/Sessions/generate_fixtures.py",
+        "version": "1",
+        "sha256": "cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original scripted scalar contracts and constant integer PCM; no human recording or personal values."
+      },
+      "transformations": [
+        "Independent Python canonical JSON, explicit little-endian scalar/media framing and SHA-256; no Swift export consumed",
+        "Synthetic complete/partial/truncated containers; optional original mono PCM16 WAVE32samples at16000Hz with exact0.25RMS; omitted counterpart retains reference without audio"
+      ],
+      "expectedProfile": "hdxl-voice-session/v1.0; digital-level-windows/v1 and shared-pcm-analysis-schedule/v1; explicitly synthetic contracts",
+      "referenceOutputIdentity": "sha256:a81a36cb22df863ccffa56d3907ad3702db7be70284efd4a6477fe497ccdc1f6"
+    },
+    {
+      "id": "session-v1-scalars-v1-hvps",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/scalars-v1.hvps",
+      "sha256": "fae736501579fd009da6ccf28e090ac6dfa8b67d7f1d5fb30e362b59a1126244",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/58",
+        "versionOrHash": "generator-v1-sha256:cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "generator": {
+        "path": "Tools/Sessions/generate_fixtures.py",
+        "version": "1",
+        "sha256": "cc465ff3504d060e06ca809d3efb7bff45afb618503d76f285de12913926d2bc"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original scripted scalar contracts and constant integer PCM; no human recording or personal values."
+      },
+      "transformations": [
+        "Independent Python canonical JSON, explicit little-endian scalar/media framing and SHA-256; no Swift export consumed",
+        "Synthetic complete/partial/truncated containers; optional original mono PCM16 WAVE32samples at16000Hz with exact0.25RMS; omitted counterpart retains reference without audio"
+      ],
+      "expectedProfile": "hdxl-voice-session/v1.0; digital-level-windows/v1 and shared-pcm-analysis-schedule/v1; explicitly synthetic contracts",
+      "referenceOutputIdentity": "sha256:fae736501579fd009da6ccf28e090ac6dfa8b67d7f1d5fb30e362b59a1126244"
+    },
+    {
+      "id": "session-v1-calibration-v1-hvps",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/calibration-v1.hvps",
+      "sha256": "55e3235dbe5098ec47aa247758b411b04ab94795f50582cc7d98e144c045acea",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/58",
+        "versionOrHash": "generator-v1-sha256:c8fb620485b69cc150a34cfc3bccb95f4b8f6a136ddc02c336a0e9f69e7fd459"
+      },
+      "generator": {
+        "path": "Examples/SessionWorkflow/Sources/SessionWorkflowSupport/SyntheticCalibrationFixture.swift",
+        "version": "1",
+        "sha256": "c8fb620485b69cc150a34cfc3bccb95f4b8f6a136ddc02c336a0e9f69e7fd459"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Scripted labels and fabricated analysis/validation contract data; no recording, person or listening result."
+      },
+      "transformations": [
+        "Public Swift APIs construct 64 labelled synthetic takes and fit/evaluate scripted summaries; inspection archive contains no native activation capability",
+        "Inputs pinned to PersonalTargets/fitting-reference.json SHA256 3f9d8a299237c3f520b44d9710231e7c6e468eb3f46942ba67fb18b30d2d6d99; current fitter and unsupported version99 targets retain the same known rule shape",
+        "Fabricated validation receipt is explicitly contract-only and is not DSP, perceptual or physical evidence"
+      ],
+      "expectedProfile": "hdxl-voice-session/v1.0; profile SHA256 c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b; CPPS identity scale preserved",
+      "referenceOutputIdentity": "sha256:55e3235dbe5098ec47aa247758b411b04ab94795f50582cc7d98e144c045acea"
+    },
+    {
+      "id": "session-v1-calibration-manifest-json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Sessions/calibration-manifest.json",
+      "sha256": "164d7b4f8ac8d57a55a43d3a6a1e0b3bee272286a7a3a8af0176db3345083baf",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/58",
+        "versionOrHash": "generator-v1-sha256:c8fb620485b69cc150a34cfc3bccb95f4b8f6a136ddc02c336a0e9f69e7fd459"
+      },
+      "generator": {
+        "path": "Examples/SessionWorkflow/Sources/SessionWorkflowSupport/SyntheticCalibrationFixture.swift",
+        "version": "1",
+        "sha256": "c8fb620485b69cc150a34cfc3bccb95f4b8f6a136ddc02c336a0e9f69e7fd459"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Scripted labels and fabricated analysis/validation contract data; no recording, person or listening result."
+      },
+      "transformations": [
+        "Public Swift APIs construct 64 labelled synthetic takes and fit/evaluate scripted summaries; inspection archive contains no native activation capability",
+        "Inputs pinned to PersonalTargets/fitting-reference.json SHA256 3f9d8a299237c3f520b44d9710231e7c6e468eb3f46942ba67fb18b30d2d6d99; current fitter and unsupported version99 targets retain the same known rule shape",
+        "Fabricated validation receipt is explicitly contract-only and is not DSP, perceptual or physical evidence"
+      ],
+      "expectedProfile": "hdxl-voice-session/v1.0; profile SHA256 c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b; CPPS identity scale preserved",
+      "referenceOutputIdentity": "sha256:164d7b4f8ac8d57a55a43d3a6a1e0b3bee272286a7a3a8af0176db3345083baf"
     }
   ],
   "optionalModels": []
