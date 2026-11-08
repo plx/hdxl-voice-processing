@@ -175,6 +175,10 @@ A replay plan contains series index, media-reference index, mapping index and
 nullable full `MaskPlan` (at most 4096 observations). It requires a scheduled series
 with a complete schedule recipe and exact decoded PCM agreement. Its mapping starts
 at the series' continuity origin and must stay inside one prepared-mask region.
+An archived gap also bounds the mapping by the old source's observed end, whether
+the gap precedes or follows the plan. Acquired but undispatched pending samples
+remain inside that bound; missing samples never do. Replay metadata for the next
+source may precede its incoming gap because it does not publish measurements.
 The full mask's identity/provenance must equal that retained by the series. There
 is at most one plan per series. Omitted audio can still retain a valid plan.
 

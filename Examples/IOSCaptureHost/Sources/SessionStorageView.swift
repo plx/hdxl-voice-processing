@@ -4,10 +4,10 @@ import Observation
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// This screen owns one private archive and explicit sharing copies. It never
+/// This screen uses the app's private archive owner and explicit sharing copies. It never
 /// consumes the microphone host's buffers or starts audio-session activity.
 struct SessionStorageView: View {
-    @State private var model = SessionStorageModel()
+    let model: SessionStorageModel
     @State private var includeAudio = false
     @State private var importing = false
 
@@ -86,11 +86,17 @@ struct SessionStorageView: View {
     }
 }
 
-@MainActor @Observable private final class SessionStorageModel {
+@MainActor @Observable final class SessionStorageModel {
     private(set) var status = "No session loaded."
     private(set) var isBusy = false
     private(set) var inspection: StoredSessionWorkflow.Inspection?
     private(set) var shareURL: URL?
+    private let storageRoot: @Sendable () throws -> URL
+
+    init(storageRoot: @escaping @Sendable () throws -> URL = SessionStorageModel.prepareStorageRoot)
+    {
+        self.storageRoot = storageRoot
+    }
 
     private enum Outcome: Sendable {
         case inspected(StoredSessionWorkflow.Inspection?)
@@ -163,25 +169,19 @@ struct SessionStorageView: View {
     }
 
     /// One operation at a time; filesystem/decoder work stays off the main actor.
-    /// The task retains its owner until completion, even if navigation changes.
+    /// The app retains this owner across destinations; an in-flight operation
+    /// keeps every destination busy until publication or failure completes.
     private func perform(_ work: @escaping @Sendable (URL) throws -> Outcome) {
         guard !isBusy else { return }
         isBusy = true
         shareURL = nil
         status = "Working…"
+        let storageRoot = storageRoot
         Task {
             defer { isBusy = false }
             do {
                 let outcome = try await Task.detached(priority: .utility) {
-                    var root = URL.applicationSupportDirectory.appendingPathComponent(
-                        "SessionExample", isDirectory: true)
-                    try FileManager.default.createDirectory(
-                        at: root, withIntermediateDirectories: true,
-                        attributes: [.posixPermissions: 0o700])
-                    var values = URLResourceValues()
-                    values.isExcludedFromBackup = true
-                    try root.setResourceValues(values)
-                    return try work(root)
+                    try work(storageRoot())
                 }.value
                 switch outcome {
                 case .inspected(let summary):
@@ -209,6 +209,18 @@ struct SessionStorageView: View {
             }
         }
     }
+
+    nonisolated private static func prepareStorageRoot() throws -> URL {
+        var root = URL.applicationSupportDirectory.appendingPathComponent(
+            "SessionExample", isDirectory: true)
+        try FileManager.default.createDirectory(
+            at: root, withIntermediateDirectories: true,
+            attributes: [.posixPermissions: 0o700])
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try root.setResourceValues(values)
+        return root
+    }
 }
 
-#Preview { NavigationStack { SessionStorageView() } }
+#Preview { NavigationStack { SessionStorageView(model: SessionStorageModel()) } }

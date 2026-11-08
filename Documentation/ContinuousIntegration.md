@@ -165,12 +165,13 @@ report it available. The wrapper owns and deletes only its temporary
 device. The shared package's generic iOS lanes remain compile/link checks.
 
 No permission prompts, session activation or microphone capture occur in the host's
-synthetic mode. The wrapper requires all four exact named tests to run and pass without
+synthetic mode. The wrapper requires all five exact named tests to run and pass without
 skips. The session test runs the same public-API canonical-fixture probe as the macOS
 SessionWorkflow example, including byte round trips, explicit recovery and pinned
 original-PCM replay with private-copy cleanup and calibration/target inspection.
 Two shared storage tests exercise the public example worker, including audio opt-in,
-verified sharing/import, deletion, cancellation and replay equality. The wrapper
+verified sharing/import, deletion, cancellation and replay equality. A host regression
+verifies storage serialization across destination replacement. The wrapper
 checks ten named app-probe outcomes (including rejected late lifecycle intent
 and idempotent lifecycle finish), validates the built usage description/minimum
 OS/no-background declaration, and retains compact redacted JSON/log receipts with

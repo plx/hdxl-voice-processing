@@ -57,7 +57,7 @@ struct SessionArchiveReplayState {
     }
 
     mutating func add(
-        _ plan: SessionArchiveReplayPlan, catalog: SessionArchiveCatalog,
+        _ plan: SessionArchiveReplayPlan, catalog: inout SessionArchiveCatalog,
         media: SessionArchiveMediaState
     ) throws -> UInt32 {
         guard seriesIndices[plan.seriesIndex] == nil else {
@@ -76,6 +76,7 @@ struct SessionArchiveReplayState {
             mapping.source.startSample == source.origin.source.startSample,
             recipe.inputFormat == reference.decoder.decodedPCM
         else { throw SessionArchiveError.incompatibleProfile }
+        try catalog.validateReplayMapping(mapping)
         if let mask = plan.mask {
             guard let provenance = series.mask else { throw SessionArchiveError.invalidMetadata }
             let prepared = try PreparedAnalysisMask(
@@ -92,6 +93,7 @@ struct SessionArchiveReplayState {
         let index = UInt32(plans.count)
         plans.append(plan)
         seriesIndices[plan.seriesIndex] = index
+        catalog.acceptedReplayMapping(mapping)
         return index
     }
 }

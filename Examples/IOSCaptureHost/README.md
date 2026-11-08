@@ -45,7 +45,9 @@ original-PCM replay with a pinned recipe, explicit audio absence and private-cop
 cleanup, and calibration/target inspection without activation. Its resources live
 only in the test bundle. Two additional shared storage lifecycle tests exercise
 real synthetic analysis, audio opt-in, verified import/replacement, sharing copies,
-delete and replay. The evidence driver checks all four exact
+delete and replay. A host regression holds a storage operation across destination
+replacement and verifies that publication and deletion remain serialized by the
+app-owned model. The evidence driver checks all five exact
 test names, successful execution, exact counts, no skips and the iOS 27.0 runtime;
 compilation alone cannot satisfy this gate.
 

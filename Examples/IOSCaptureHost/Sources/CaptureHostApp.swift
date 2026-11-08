@@ -4,6 +4,8 @@ import SwiftUI
 @main struct CaptureHostApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @State private var model = CaptureHostModel()
+    // The private archive has one owner across navigation and window lifetimes.
+    @State private var sessionStorage = SessionStorageModel()
     private let synthetic = CommandLine.arguments.contains("--self-test")
 
     var body: some Scene {
@@ -44,9 +46,11 @@ import SwiftUI
                         }
                     }
                     Section("Development host") {
-                        NavigationLink("Session storage and sharing") { SessionStorageView() }
-                            .disabled(synthetic)
-                            .accessibilityIdentifier("session-storage-navigation")
+                        NavigationLink("Session storage and sharing") {
+                            SessionStorageView(model: sessionStorage)
+                        }
+                        .disabled(synthetic)
+                        .accessibilityIdentifier("session-storage-navigation")
                         Text(
                             "Foreground capture only. Stop or background the app to end capture. Microphone audio is never saved or uploaded by this host."
                         )

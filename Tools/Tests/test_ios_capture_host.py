@@ -52,7 +52,7 @@ class IOSHostEvidenceTests(unittest.TestCase):
                 HOST.validate_probe(changed)
 
     def test_execution_summary_rejects_skips_empty_and_wrong_runtime(self):
-        valid = {"result": "Passed", "totalTestCount": 4, "passedTests": 4,
+        valid = {"result": "Passed", "totalTestCount": 5, "passedTests": 5,
                  "failedTests": 0, "skippedTests": 0, "expectedFailures": 0,
                  "devicesAndConfigurations": [{"device": {"platform": "iOS Simulator", "osVersion": "27.0"}}],
                  "testFailures": [], "runtimeWarnings": []}
@@ -60,7 +60,7 @@ class IOSHostEvidenceTests(unittest.TestCase):
         bad = []
         for key, value in (("passedTests", 0), ("skippedTests", 1), ("failedTests", 1),
                            ("totalTestCount", 0), ("totalTestCount", 1), ("passedTests", 1), ("totalTestCount", 2), ("passedTests", 2),
-                           ("runtimeWarnings", ["warning"]),
+                           ("totalTestCount", 4), ("passedTests", 4), ("runtimeWarnings", ["warning"]),
                            ("devicesAndConfigurations", [])):
             bad.append({**valid, key: value})
         wrong_runtime = copy.deepcopy(valid)

@@ -23,6 +23,7 @@ CHECKS = ["late-start-intent-rejected", "late-lifecycle-intent-rejected", "idemp
           "closed-transfer-drained", "worker-rejects-gap"]
 EVIDENCE = "synthetic iOS host execution; no permission request, session activation or microphone capture"
 TEST_CASES = {"IOSCaptureHostTests/testSyntheticHostWithoutMicrophoneAccess()",
+              "IOSCaptureHostTests/testSessionStorageRemainsSerializedAcrossDestinations()",
               "SessionInterchangeTests/testSessionArchiveFixturesOnIOS27()",
               "SessionStorageTests/testImportReplacementRefusesCorruptionAndPreservesPriorSession()",
               "SessionStorageTests/testSyntheticStorageSharingAndOriginalPCMReplay()"}

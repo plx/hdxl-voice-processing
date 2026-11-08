@@ -134,7 +134,7 @@ private struct SessionAudioReplayFixture {
     func archive(
         directory: URL, decoder alternate: CalibrationDecoderProvenance? = nil,
         media alternateMedia: Data? = nil, embedded: Bool = true,
-        completion: SessionArchiveCompletion = .completed
+        completion: SessionArchiveCompletion = .completed, gapBeforePlan: Bool? = nil
     ) throws -> URL {
         let url = directory.appendingPathComponent("archive-\(UUID()).hvps")
         let bytes = alternateMedia ?? original
@@ -164,6 +164,26 @@ private struct SessionAudioReplayFixture {
                 let index = try writer.addSeries(series)
                 for value in values { try writer.append(value, to: index) }
             }
+            let gap: SessionArchiveGap?
+            if gapBeforePlan != nil {
+                let missing = try SourceInterval(
+                    epoch: interval.epoch, startSample: interval.endSample,
+                    sampleCount: 8, sampleRate: interval.sampleRate)
+                try writer.addSource(
+                    SessionArchiveSource(
+                        origin: AnalysisScheduleOrigin(
+                            source: SourceInterval(
+                                epoch: interval.epoch, startSample: missing.endSample,
+                                sampleCount: 0, sampleRate: interval.sampleRate),
+                            continuityEpoch: source.origin.continuityEpoch.successor()),
+                        acquisition: source.acquisition))
+                gap = try SessionArchiveGap(
+                    previousSourceIndex: 0, nextSourceIndex: 1, observedSource: interval,
+                    dispatchedSourceSamples: interval.sampleCount - 8,
+                    pendingSourceSamplesDiscarded: 8, missingSource: missing, reason: .droppedAudio)
+            } else {
+                gap = nil
+            }
             try writer.addMediaReference(reference)
             if embedded {
                 if alternateMedia == nil {
@@ -179,14 +199,38 @@ private struct SessionAudioReplayFixture {
                     try writer.appendMedia(bytes, to: 0)
                 }
             }
+            if gapBeforePlan == true, let gap { try writer.append(gap) }
             for index in metrics.indices {
                 try writer.addReplayPlan(
                     SessionArchiveReplayPlan(
                         seriesIndex: UInt32(index), mediaReferenceIndex: 0, mappingIndex: 0,
                         mask: mask))
             }
+            if gapBeforePlan == false, let gap { try writer.append(gap) }
         }
         return url
+    }
+}
+
+@Test func sessionAudioReplayStopsAtArchivedGapInEitherRecordOrder() throws {
+    let directory = try sessionFileTestDirectory()
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let fixture = try SessionAudioReplayFixture(directory: directory)
+    for gapFirst in [false, true] {
+        let url = try fixture.archive(directory: directory, gapBeforePlan: gapFirst)
+        var values: [ScheduledMeasurementExport] = []
+        let result = try SessionArchiveAudioReplay.run(
+            at: url, planIndex: 0, scratchDirectory: directory,
+            archiveLimits: SessionArchiveLimits(),
+            replayLimits: SessionArchiveReplayLimits(
+                decodedChunkCapacity: 251, sourceTileCapacity: 128)
+        ) { values.append($0) }
+        #expect(values == fixture.expected[.rms])
+        #expect(result.source == fixture.interval)
+        #expect(result.decodedSamples == fixture.interval.sampleCount)
+        #expect(
+            values.allSatisfy { $0.result.timing.source.endSample <= fixture.interval.endSample })
+        try expectNoSessionStage(directory)
     }
 }
 

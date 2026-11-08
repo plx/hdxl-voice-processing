@@ -127,6 +127,8 @@ plus the full original mask plan if present. The mapping starts at that series'
 continuity origin and lies within one acquired/selected region. A mask fingerprint
 alone cannot reconstruct selection. Separated regions require separate origins and
 plans; replay never concatenates across a gap or trims away required causal history.
+Both export and import check the mapping against any archived gap's observed end
+in either record order, including when the series has no mask.
 
 `SessionArchiveAudioReplay.run` discovers the selected reference in one bounded
 pass and verifies/extracts it in a second pass. All executable inputs come from the

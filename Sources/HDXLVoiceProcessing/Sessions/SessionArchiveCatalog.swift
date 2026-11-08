@@ -20,9 +20,12 @@ struct SessionArchiveCatalog {
     private var sourceOrigins: Set<AnalysisScheduleOrigin> = []
     private var seriesKeys: Set<SeriesKey> = []
     private var timestamps: [UInt32: SessionArchiveTimestamp] = [:]
-    private var closedSources: Set<UInt32> = []
+    private var closedSourceEnds: [UInt32: Int64] = [:]
     private var incomingGaps: Set<UInt32> = []
     private var observedEnds: [UInt32: Int64] = [:]
+    // Replay metadata may precede an incoming gap without publishing results.
+    // Keep its extent separate from observedEnds so that ordering stays valid.
+    private var replayEnds: [UInt32: Int64] = [:]
 
     private struct SeriesKey: Hashable {
         let profile: UInt32
@@ -127,7 +130,7 @@ struct SessionArchiveCatalog {
 
     func validate(_ record: SessionArchiveMeasurement, seriesIndex: UInt32) throws {
         let (item, profile, source) = try context(for: seriesIndex)
-        guard !closedSources.contains(item.sourceIndex) else {
+        guard closedSourceEnds[item.sourceIndex] == nil else {
             throw SessionArchiveError.outOfOrder
         }
         guard record.result.profile == profile.identity else {
@@ -196,8 +199,8 @@ struct SessionArchiveCatalog {
     func validate(_ gap: SessionArchiveGap) throws {
         guard Int(gap.previousSourceIndex) < sources.count,
             Int(gap.nextSourceIndex) < sources.count,
-            !closedSources.contains(gap.previousSourceIndex),
-            !closedSources.contains(gap.nextSourceIndex),
+            closedSourceEnds[gap.previousSourceIndex] == nil,
+            closedSourceEnds[gap.nextSourceIndex] == nil,
             !incomingGaps.contains(gap.nextSourceIndex), observedEnds[gap.nextSourceIndex] == nil
         else { throw SessionArchiveError.outOfOrder }
         let previous = sources[Int(gap.previousSourceIndex)].origin
@@ -205,7 +208,9 @@ struct SessionArchiveCatalog {
         try validate(gap.observedSource, source: sources[Int(gap.previousSourceIndex)])
         guard gap.observedSource.startSample == previous.source.startSample,
             gap.observedSource.endSample
-                >= (observedEnds[gap.previousSourceIndex] ?? previous.source.startSample)
+                >= (observedEnds[gap.previousSourceIndex] ?? previous.source.startSample),
+            gap.observedSource.endSample
+                >= (replayEnds[gap.previousSourceIndex] ?? previous.source.startSample)
         else { throw SessionArchiveError.invalidMetadata }
         do {
             _ = try SourceDiscontinuity(
@@ -220,8 +225,19 @@ struct SessionArchiveCatalog {
     }
 
     mutating func accepted(_ gap: SessionArchiveGap) {
-        closedSources.insert(gap.previousSourceIndex)
+        closedSourceEnds[gap.previousSourceIndex] = gap.observedSource.endSample
         incomingGaps.insert(gap.nextSourceIndex)
+    }
+
+    func validateReplayMapping(_ mapping: SessionArchiveMediaMapping) throws {
+        if let end = closedSourceEnds[mapping.sourceIndex] {
+            guard mapping.source.endSample <= end else { throw SessionArchiveError.invalidMetadata }
+        }
+    }
+
+    mutating func acceptedReplayMapping(_ mapping: SessionArchiveMediaMapping) {
+        replayEnds[mapping.sourceIndex] = max(
+            replayEnds[mapping.sourceIndex] ?? 0, mapping.source.endSample)
     }
 
     private func validate(_ interval: SourceInterval, source: SessionArchiveSource) throws {

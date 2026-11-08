@@ -42,7 +42,7 @@ jobs:
       - name: Public storage workflow and canonical runtime probe
         run: |
           swift test --package-path Examples/SessionWorkflow
-          mkdir -m 700 .build/session-probe
+          mkdir -p -m 700 .build/session-probe
           swift run --package-path Examples/SessionWorkflow SessionWorkflow --fixture-probe --fixtures Tests/HDXLVoiceProcessingTests/Fixtures/Sessions --scratch .build/session-probe --output .build/session-probe/report.json
       - name: Fresh-process serialization and memory
         run: python3 Tools/Sessions/benchmark.py --output .build/session-serialization-evidence
@@ -56,4 +56,5 @@ jobs:
             .build/session-serialization-evidence/*.log
             .build/session-probe/report.json
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 14

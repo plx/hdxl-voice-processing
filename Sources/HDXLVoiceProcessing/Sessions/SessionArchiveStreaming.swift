@@ -215,7 +215,7 @@ public final class SessionArchiveWriter {
             var nextCatalog = catalog
             try nextCatalog.reserveMetadata(payloadBytes: bytes.count)
             var nextReplay = replay
-            let index = try nextReplay.add(plan, catalog: nextCatalog, media: media)
+            let index = try nextReplay.add(plan, catalog: &nextCatalog, media: media)
             try wire.append(.replayPlan, payload: bytes)
             catalog = nextCatalog
             replay = nextReplay
@@ -509,7 +509,7 @@ public final class SessionArchiveReader {
                 try catalog.checkBudget(payloadBytes: record.payload.count)
                 let value = try decodeSessionMetadata(
                     SessionArchiveReplayPlan.self, from: record.payload)
-                let index = try replay.add(value, catalog: catalog, media: media)
+                let index = try replay.add(value, catalog: &catalog, media: media)
                 try catalog.reserveMetadata(payloadBytes: record.payload.count)
                 return .replayPlan(index: index, value)
             case .mediaReference:
