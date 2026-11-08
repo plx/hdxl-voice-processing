@@ -16,11 +16,12 @@ class PulseReferenceTests(unittest.TestCase):
                       'stepSeconds': .01, 'ceilingHz': 1000., 'frequenciesHz': [200., 0.]}
         # Hand-enumerated protocol: two F0 frames and three raw pulse landmarks.
         self.raw = '\n'.join([
-            'begin\tpulse-reference-v1', 'input\t16000\t320',
+            'begin\tpulse-reference-v2', 'input\t16000\t320',
+            'periodSettings\t0.0001\t0.02\t1.3',
             'pitch\t2\t0.005\t0.01\t0\t0.02',
             'f0\t1\t0.005\t200', 'f0\t2\t0.015\t--undefined--',
             'count\t3', 'pulse\t1\t-0.001', 'pulse\t2\t0.004',
-            'pulse\t3\t0.02', 'end\tpulse-reference-v1', ''])
+            'pulse\t3\t0.02', 'amplitudes\tinsufficientData\t0', 'end\tpulse-reference-v2', ''])
 
     def test_raw_boundary_landmarks_remain_explicit(self):
         result = pulse_reference.parse(self.raw, self.pitch, 16000, 320)
@@ -36,22 +37,22 @@ class PulseReferenceTests(unittest.TestCase):
             pulse_reference.parse(self.raw.replace('\t200\n', '\t--undefined--\n'), self.pitch, 16000, 320)
 
     def test_empty_points_are_valid_with_complete_f0_evidence(self):
-        raw = self.raw[:self.raw.index('count\t')] + 'count\t0\nend\tpulse-reference-v1\n'
+        raw = self.raw[:self.raw.index('count\t')] + 'count\t0\namplitudes\tinsufficientData\t0\nend\tpulse-reference-v2\n'
         result = pulse_reference.parse(raw, self.pitch, 16000, 320)
         self.assertEqual(result['pulseTimesSeconds'], [])
         self.assertEqual(result['outsideDomainIndices'], [])
 
     def test_missing_reordered_duplicate_and_extra_records_fail(self):
         corruptions = [
-            self.raw.replace('begin\tpulse-reference-v1\n', ''),
-            self.raw.replace('end\tpulse-reference-v1\n', ''),
+            self.raw.replace('begin\tpulse-reference-v2\n', ''),
+            self.raw.replace('end\tpulse-reference-v2\n', ''),
             self.raw.replace('count\t3', 'count\t2'),
             self.raw.replace('pulse\t2\t0.004', 'pulse\t1\t0.004'),
             self.raw.replace('f0\t2\t0.015\t--undefined--\n', ''),
             self.raw.replace('f0\t2\t', 'f0\t1\t'),
             self.raw.replace('pulse\t3\t0.02', 'pulse\t3\t-0.002'),
             self.raw.replace('pulse\t2\t0.004', 'pulse\t2\t-0.001'),
-            self.raw.replace('end\tpulse-reference-v1', 'extra\t1\nend\tpulse-reference-v1'),
+            self.raw.replace('end\tpulse-reference-v2', 'extra\t1\nend\tpulse-reference-v2'),
             self.raw.replace('count\t3', 'count\t03'),
         ]
         for raw in corruptions:
@@ -89,6 +90,42 @@ class PulseReferenceTests(unittest.TestCase):
         self.assertIn('Object class = "Pitch 1"', text)
         self.assertTrue(text.endswith('1\n1\n200.0\n0.9\n1\n1\n0.0\n0\n'))
         self.assertNotIn('\n.', text)
+
+    def test_interior_f0_grid_does_not_require_fabricated_edge_frames(self):
+        pitch = {**self.pitch, 'domainEndSeconds': .1, 'firstCenterSeconds': .02,
+                 'frequenciesHz': [150.] * 4}
+        pulse_reference.validate_pitch(pitch, 16000, 1600)
+        encoded = pulse_reference.encode_pitch(pitch, 16000, 1600).decode()
+        self.assertEqual(encoded.count('150.0\n'), 4)
+
+    def test_amplitudes_bind_to_interior_observed_pulses(self):
+        raw = self.raw[:self.raw.index('count\t')] + '\n'.join([
+            'count\t5', 'pulse\t1\t0.002', 'pulse\t2\t0.006', 'pulse\t3\t0.010',
+            'pulse\t4\t0.014', 'pulse\t5\t0.018', 'amplitudes\tcomplete\t3',
+            'amplitude\t1\t0.006\t0.2', 'amplitude\t2\t0.010\t0.3',
+            'amplitude\t3\t0.014\t0.4', 'end\tpulse-reference-v2', ''])
+        result = pulse_reference.parse(raw, self.pitch, 16000, 320)
+        self.assertEqual([a['pulseIndex'] for a in result['amplitudes']], [1, 2, 3])
+        self.assertEqual([a['rmsAmplitude'] for a in result['amplitudes']], [.2, .3, .4])
+        for old, new in [('amplitudes\tcomplete\t3', 'amplitudes\tcomplete\t2'),
+                         ('amplitudes\tcomplete', 'amplitudes\tinsufficientData'),
+                         ('amplitude\t1\t0.006', 'amplitude\t1\t0.002'),
+                         ('amplitude\t3\t0.014', 'amplitude\t3\t0.010'),
+                         ('amplitude\t3\t0.014', 'amplitude\t3\t0.015'),
+                         ('amplitude\t2\t0.010\t0.3', 'amplitude\t2\t0.010\t0'),
+                         ('amplitude\t2\t0.010\t0.3', 'amplitude\t2\t0.010\tnan')]:
+            with self.subTest(old=old, new=new), self.assertRaises(ValueError):
+                pulse_reference.parse(raw.replace(old, new), self.pitch, 16000, 320)
+
+    def test_period_settings_are_explicit_order_independent_and_bounded(self):
+        reordered = dict(reversed(list(pulse_reference.PERIOD_DEFAULTS.items())))
+        pulse_reference.parse(self.raw, self.pitch, 16000, 320, reordered)
+        for patch in [{'minimumSeconds': True}, {'minimumSeconds': .02},
+                      {'maximumSeconds': .2}, {'maximumAdjacentFactor': .9}, {'unknown': 1}]:
+            with self.subTest(patch=patch), self.assertRaises(ValueError):
+                pulse_reference.validate_period_settings({**pulse_reference.PERIOD_DEFAULTS, **patch})
+        with self.assertRaises(ValueError):
+            pulse_reference.parse(self.raw.replace('0.02\t1.3', '0.02\t1.5'), self.pitch, 16000, 320)
 
 
 if __name__ == '__main__':

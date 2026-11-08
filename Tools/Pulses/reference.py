@@ -25,6 +25,15 @@ MAX_FRAMES = 5000
 MAX_POINTS = 30000
 MAX_OUTPUT_BYTES = 4 * 1024 * 1024
 PITCH_KEYS = {'domainEndSeconds', 'firstCenterSeconds', 'stepSeconds', 'ceilingHz', 'frequenciesHz'}
+PERIOD_DEFAULTS = {'minimumSeconds': .0001, 'maximumSeconds': .02, 'maximumAdjacentFactor': 1.3}
+
+
+def validate_period_settings(settings):
+    if not isinstance(settings, dict) or set(settings) != set(PERIOD_DEFAULTS):
+        raise ValueError('Unknown period settings')
+    lo, hi, factor = (settings[key] for key in PERIOD_DEFAULTS)
+    if not all(finite(x) for x in (lo, hi, factor)) or not 0 < lo < hi <= .1 or not 1 <= factor <= 10:
+        raise ValueError('Invalid period bounds/factor')
 
 
 def digest(data):
@@ -58,8 +67,8 @@ def validate_pitch(pitch, rate, count):
     last = math.fma(float(len(values) - 1), step, first)
     if first > pitch['domainEndSeconds'] or last > pitch['domainEndSeconds']:
         raise ValueError('Sampled F0 centers exceed the observed domain')
-    if first > step or last + step < pitch['domainEndSeconds']:
-        raise ValueError('Sampled F0 grid leaves an unrepresented domain')
+    # Interior-only contours are valid. Their uncovered edges must not acquire
+    # fabricated F0 observations; the reference retains its explicit grid.
 
 
 def encode_pitch(pitch, rate, count):
@@ -88,26 +97,31 @@ def scalar(token):
     return value
 
 
-def parse(raw, pitch, rate, count):
+def parse(raw, pitch, rate, count, period_settings=None):
     validate_pitch(pitch, rate, count)
+    period_settings = PERIOD_DEFAULTS if period_settings is None else period_settings
+    validate_period_settings(period_settings)
     if not isinstance(raw, str) or len(raw.encode()) > MAX_OUTPUT_BYTES:
         raise ValueError('Pulse protocol exceeds byte budget')
     lines = [line.split('\t') for line in raw.splitlines()]
-    if len(lines) < 5 or lines[0] != ['begin', 'pulse-reference-v1'] or lines[-1] != ['end', 'pulse-reference-v1']:
+    if len(lines) < 7 or lines[0] != ['begin', 'pulse-reference-v2'] or lines[-1] != ['end', 'pulse-reference-v2']:
         raise ValueError('Missing pulse protocol boundaries')
     if lines[1] != ['input', str(rate), str(count)]:
         raise ValueError('Reference PCM identity differs')
     n = len(pitch['frequenciesHz'])
-    axis = lines[2]
+    settings = lines[2]
+    if len(settings) != 4 or settings[0] != 'periodSettings' or list(map(scalar, settings[1:])) != [period_settings[k] for k in PERIOD_DEFAULTS]:
+        raise ValueError('Reference period settings differ')
+    axis = lines[3]
     if len(axis) != 6 or axis[0] != 'pitch' or integer(axis[1]) != n:
         raise ValueError('Reference F0 frame coverage differs')
     expected_axis = [pitch['firstCenterSeconds'], pitch['stepSeconds'], 0., pitch['domainEndSeconds']]
     if list(map(scalar, axis[2:])) != expected_axis:
         raise ValueError('Reference F0 axis differs')
-    if len(lines) < n + 5:
+    if len(lines) < n + 7:
         raise ValueError('Truncated F0 frame rows')
     for i, frequency in enumerate(pitch['frequenciesHz']):
-        row = lines[i + 3]
+        row = lines[i + 4]
         if len(row) != 4 or row[0] != 'f0' or integer(row[1]) != i + 1:
             raise ValueError('Missing/repeated/reordered F0 frame')
         if scalar(row[2]) != math.fma(float(i), pitch['stepSeconds'], pitch['firstCenterSeconds']):
@@ -115,14 +129,14 @@ def parse(raw, pitch, rate, count):
         value = number(row[3])
         if value != (frequency if frequency else None):
             raise ValueError('Reference did not use the injected F0 contour')
-    size = lines[n + 3]
+    size = lines[n + 4]
     if len(size) != 2 or size[0] != 'count':
         raise ValueError('Missing pulse count')
     points = integer(size[1])
-    if points > MAX_POINTS or len(lines) != n + points + 5:
+    if points > MAX_POINTS or len(lines) < n + points + 7:
         raise ValueError('Pulse coverage/count budget differs')
     times = []
-    for i, row in enumerate(lines[n + 4:-1], 1):
+    for i, row in enumerate(lines[n + 5:n + 5 + points], 1):
         if len(row) != 3 or row[0] != 'pulse' or integer(row[1]) != i:
             raise ValueError('Missing/repeated/reordered pulse')
         value = scalar(row[2])
@@ -132,15 +146,59 @@ def parse(raw, pitch, rate, count):
         if not -0.1 <= value <= pitch['domainEndSeconds'] + 0.1:
             raise ValueError('Reference pulse exceeds bounded edge extension')
         times.append(value)
+    header = lines[n + 5 + points]
+    observed = sum(0 <= t <= pitch['domainEndSeconds'] for t in times)
+    state = 'insufficientData' if observed < 3 else 'complete'
+    if len(header) != 3 or header[:2] != ['amplitudes', state]:
+        raise ValueError('Reference amplitude state differs')
+    amplitudes = integer(header[2])
+    if amplitudes > max(0, observed - 2) or len(lines) != n + points + amplitudes + 7:
+        raise ValueError('Amplitude coverage/count differs')
+    values = []
+    positions = {t: i for i, t in enumerate(times)}
+    interior = {i for i, t in enumerate(times) if 0 <= t <= pitch['domainEndSeconds']}
+    if interior:
+        interior -= {min(interior), max(interior)}
+    for i, row in enumerate(lines[n + 6 + points:-1], 1):
+        if len(row) != 4 or row[0] != 'amplitude' or integer(row[1]) != i:
+            raise ValueError('Missing/repeated/reordered amplitude')
+        time, value = scalar(row[2]), scalar(row[3])
+        if time not in positions or positions[time] not in interior or value <= 0:
+            raise ValueError('Invalid cycle-amplitude observation')
+        if values and time <= values[-1]['timeSeconds']:
+            raise ValueError('Amplitude positions must increase strictly')
+        values.append({'pulseIndex': positions[time], 'timeSeconds': time, 'rmsAmplitude': value})
     return {'unit': 'seconds', 'pulseTimesSeconds': times, 'pulseCount': points,
             'outsideDomainIndices': [i for i, t in enumerate(times) if t < 0 or t >= pitch['domainEndSeconds']],
-            'injectedF0Verified': True}
+            'injectedF0Verified': True, 'amplitudeState': state, 'amplitudes': values,
+            'amplitudeUnit': 'linearAmplitude', 'amplitudeDefinition': 'praat7002HannRMSPointTwoNeighborPeriods'}
 
 
-def evaluate(samples, rate, pitch, *, precision='float64'):
+def make_record(wave, encoded_pitch, raw, pitch, rate, count, precision, period_settings):
+    """Bind the raw executable transcript without launching or estimating anything."""
+    if precision not in ('float32', 'float64'):
+        raise ValueError('Unsupported input precision')
+    if encoded_pitch != encode_pitch(pitch, rate, count):
+        raise ValueError('Pitch transport differs from the explicit contour')
+    data = parse(raw, pitch, rate, count, period_settings)
+    lock = load_json(ROOT / 'Tools/Reference/toolchain.json')
+    ingredients = {'schemaVersion': 2, 'toolchain': lock, 'sampleRate': rate, 'sampleCount': count,
+                  'inputPrecision': precision, 'pitch': pitch,
+                  'periodSettings': period_settings,
+                  'inputSHA256': digest(wave), 'pitchSHA256': digest(encoded_pitch),
+                  'rawSHA256': digest(raw.encode()),
+                  'sourceSHA256': {str(p.relative_to(ROOT)): digest(p.read_bytes()) for p in
+                                   (Path(__file__).resolve(), HERE / 'probe.praat',
+                                    ROOT / 'Tools/Reference/common.py', ROOT / 'Tools/Reference/setup.py')}}
+    return {'referenceIdentity': digest(canonical(ingredients)), **ingredients, 'data': data}
+
+
+def evaluate(samples, rate, pitch, *, precision='float64', period_settings=None):
     if precision not in ('float32', 'float64'):
         raise ValueError('Unsupported input precision')
     validate_pitch(pitch, rate, len(samples))
+    period_settings = dict(PERIOD_DEFAULTS) if period_settings is None else dict(period_settings)
+    validate_period_settings(period_settings)
     if any(not finite(s) or abs(s) > 1 for s in samples):
         raise ValueError('Expected finite normalized mono PCM')
     if precision == 'float32':
@@ -153,17 +211,11 @@ def evaluate(samples, rate, pitch, *, precision='float64'):
         (scratch / 'input.wav').write_bytes(wave)
         (scratch / 'input.Pitch').write_bytes(encoded_pitch)
         command = [str(binary), *lock['options'], str(HERE / 'probe.praat'),
-                   str(scratch / 'input.wav'), str(scratch / 'input.Pitch')]
+                   str(scratch / 'input.wav'), str(scratch / 'input.Pitch'),
+                   *[str(period_settings[k]) for k in PERIOD_DEFAULTS]]
         process = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', timeout=120,
                                  env={**os.environ, 'LC_ALL': 'C', 'LANG': 'C'})
     if process.returncode or process.stderr.strip():
         raise ValueError(f'Pulse reference failed ({process.returncode}): {process.stderr[:1200]}')
-    data = parse(process.stdout, pitch, rate, len(samples))
-    ingredients = {'schemaVersion': 1, 'toolchain': lock, 'sampleRate': rate, 'sampleCount': len(samples),
-                  'inputPrecision': precision, 'pitch': pitch,
-                  'inputSHA256': digest(wave), 'pitchSHA256': digest(encoded_pitch),
-                  'rawSHA256': digest(process.stdout.encode()),
-                  'sourceSHA256': {str(p.relative_to(ROOT)): digest(p.read_bytes()) for p in
-                                   (Path(__file__).resolve(), HERE / 'probe.praat',
-                                    ROOT / 'Tools/Reference/common.py', ROOT / 'Tools/Reference/setup.py')}}
-    return {'referenceIdentity': digest(canonical(ingredients)), **ingredients, 'data': data}, wave, encoded_pitch, process.stdout
+    record = make_record(wave, encoded_pitch, process.stdout, pitch, rate, len(samples), precision, period_settings)
+    return record, wave, encoded_pitch, process.stdout
