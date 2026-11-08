@@ -68,6 +68,8 @@ nested intermediate arrays and conservative repeated metadata charges. These are
 retention limits, not process RSS or allocation guarantees. Inputs have already
 been created by the producer; rejecting an oversized input cannot recover that
 construction cost. Hosts must bound input production and queues as well.
+An unavailable cepstrum charges only its retained finite prefix (possibly empty);
+the expected complete bin count remains separate metadata, without allocated padding.
 
 Choose explicit larger `VisualizationLimits` only when required. Adapters throw
 `capacityExceeded` instead of silently truncating source data. The host can retain

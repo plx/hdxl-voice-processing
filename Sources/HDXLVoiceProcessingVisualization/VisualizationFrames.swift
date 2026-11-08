@@ -76,7 +76,7 @@ public struct VisualizationFrameSnapshot: Sendable, Hashable {
     /// An unavailable power cepstrum may retain a finite prefix. The original
     /// reason, expected bin count, recipe and boundary-extension context survive.
     public init(_ frame: PowerCepstrumFrame, limits: VisualizationLimits = .standard) throws {
-        guard frame.configuration.frame.binCount <= limits.maximumFrameScalars else {
+        guard frame.values.count <= limits.maximumFrameScalars else {
             throw VisualizationError.capacityExceeded
         }
         var metadata = VisualizationMetadataBudget(limits)

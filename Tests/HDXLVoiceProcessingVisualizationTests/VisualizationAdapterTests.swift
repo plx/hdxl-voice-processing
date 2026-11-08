@@ -87,6 +87,26 @@ import Testing
     #expect(cepstrum.yUnit == .inverseSecondsSquared)
     #expect(cepstrum.xStep == native.quefrencyStepSeconds)
     #expect(cepstrum.selected(by: VisualizationSelection(source: try visualizationSource(105, 0))))
+
+    let prefixLimit = try VisualizationLimits(
+        maximumMeasurements: 1, maximumFrameScalars: 2, maximumSegments: 1,
+        maximumMetadataBytes: 1024)
+    let bounded = try VisualizationFrameSnapshot(native, limits: prefixLimit)
+    #expect(bounded.values == [1, 4])
+    #expect(bounded.expectedValueCount == configuration.frame.binCount)
+    #expect(bounded.expectedValueCount > prefixLimit.maximumFrameScalars)
+    #expect(bounded.unavailability == .insufficientData)
+    let tooSmall = try VisualizationLimits(
+        maximumMeasurements: 1, maximumFrameScalars: 1, maximumSegments: 1,
+        maximumMetadataBytes: 1024)
+    #expect(throws: VisualizationError.capacityExceeded) {
+        try VisualizationFrameSnapshot(native, limits: tooSmall)
+    }
+    let empty = try PowerCepstrumFrame(
+        configuration: configuration, context: context, values: [], unavailability: .silence)
+    let emptySnapshot = try VisualizationFrameSnapshot(empty, limits: tooSmall)
+    #expect(emptySnapshot.values.isEmpty && emptySnapshot.unavailability == .silence)
+    #expect(emptySnapshot.expectedValueCount == configuration.frame.binCount)
 }
 
 @Test func visualizationSegmentationRetainsMissingExcludedAndWholeTimelineCoverage() throws {
