@@ -1,0 +1,86 @@
+name: HNR references
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 2'
+  pull_request:
+    paths:
+      - 'Sources/HDXLVoiceProcessing/HNR/**'
+      - 'Sources/HDXLVoiceProcessing/Fourier/**'
+      - 'Sources/HDXLVoiceProcessing/Contracts/**'
+      - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
+      - 'Tests/HDXLVoiceProcessingTests/HNR*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/HNR*/**'
+      - 'Tools/HNR/**'
+      - 'Tools/Reference/**'
+      - 'Tools/Tests/test_hnr*'
+      - '.github/workflows/hnr-references.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hnr-references-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    name: AC and CC references / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 90
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Verify committed references and provenance
+        run: |
+          python3 Tools/verify-provenance.py
+          python3 Tools/HNR/verify.py
+          python3 -m unittest discover -s Tools/Tests -p 'test_hnr*.py'
+      - name: Regenerate pinned external references
+        run: |
+          set -o pipefail
+          mkdir -p .build/hnr-reference-evidence
+          python3 Tools/HNR/reference.py --output .build/hnr-reference-evidence/external | tee .build/hnr-reference-evidence/external.log
+          python3 Tools/HNR/verify.py --directory .build/hnr-reference-evidence/external
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/HNR/manifest.json .build/hnr-reference-evidence/external/manifest.json
+      - name: Independently audit equations and intermediate stages
+        run: |
+          set -o pipefail
+          python3 Tools/HNR/check_equations.py --directory .build/hnr-reference-evidence/external --output .build/hnr-reference-evidence/equations | tee .build/hnr-reference-evidence/equations.log
+          python3 -c 'import json; r=json.load(open(".build/hnr-reference-evidence/equations/equations.json")); assert r["status"]=="qualified" and r["comparisons"]==532 and r["agreements"]==526 and len(r["documentedReferenceDisagreements"])==6 and not r["failures"] and r["maximumBudgetFraction"]<=1'
+          python3 Tools/HNR/stages.py --reference-directory .build/hnr-reference-evidence/external --directory .build/hnr-reference-evidence/stages
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/HNRStages/manifest.json .build/hnr-reference-evidence/stages/manifest.json
+          python3 Tools/HNR/stages.py --reference-directory .build/hnr-reference-evidence/external --directory Tests/HDXLVoiceProcessingTests/Fixtures/HNRStages --verify
+      - name: Regenerate independent causal windows
+        run: |
+          set -o pipefail
+          python3 Tools/HNR/streaming.py --directory .build/hnr-reference-evidence/causal | tee .build/hnr-reference-evidence/causal.log
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal/manifest.json .build/hnr-reference-evidence/causal/manifest.json
+          python3 Tools/HNR/streaming.py --directory Tests/HDXLVoiceProcessingTests/Fixtures/HNRCausal --verify
+      - name: Native comparison against regenerated candidates
+        env:
+          HDXL_HNR_REFERENCE_DIRECTORY: ${{ github.workspace }}/.build/hnr-reference-evidence/external
+          HDXL_HNR_STAGES_DIRECTORY: ${{ github.workspace }}/.build/hnr-reference-evidence/stages
+          HDXL_HNR_CAUSAL_DIRECTORY: ${{ github.workspace }}/.build/hnr-reference-evidence/causal
+          HDXL_HNR_REFERENCE_REPORT: ${{ github.workspace }}/.build/hnr-reference-evidence/native-external.json
+          HDXL_HNR_CAUSAL_REPORT: ${{ github.workspace }}/.build/hnr-reference-evidence/native-causal.json
+        run: |
+          set -o pipefail
+          swift test -c release --filter '(hnr|HNR)' | tee .build/hnr-reference-evidence/native.log
+          python3 Tools/HNR/native_audit.py --reference-directory .build/hnr-reference-evidence/external --native-report .build/hnr-reference-evidence/native-external.json --causal-directory .build/hnr-reference-evidence/causal --causal-report .build/hnr-reference-evidence/native-causal.json --output .build/hnr-reference-evidence/audit.json
+      - name: Retain reproducible reference evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: hnr-references-${{ github.run_attempt }}
+          path: .build/hnr-reference-evidence/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

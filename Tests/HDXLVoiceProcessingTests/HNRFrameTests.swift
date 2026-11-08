@@ -3,38 +3,74 @@ import Testing
 
 @testable import HDXLVoiceProcessing
 
+private struct HNRImpulseProof: Encodable {
+    let definition = "singleImpulseFlatCCLagCurve"
+    let impulseIndex, meanSamples, windowSamples, comparedLagCount: Int
+    let expectedCorrelation, maximumCurveError: Double
+}
+private struct HNRNativeFrameAudit: Encodable {
+    let name: String
+    let inputSHA256: String
+    let configuration: HNRConfiguration
+    let profileIdentity: ProfileIdentity
+    let frameIndex: Int
+    let expectedCenterSeconds, actualCenterSeconds: Double
+    let expectedStatus, actualStatus: String
+    let actualDecibelStatus: HNRDecibelStatus?
+    let expectedDB, actualDB: Double?
+    let budgetFraction: Double?
+    let proof: HNRImpulseProof?
+}
+private struct HNRNativeAudit: Encodable {
+    let schemaVersion = 1
+    let status = "qualified"
+    let cases: Int
+    let frames: Int
+    let documentedReferenceDisagreements: Int
+    let rows: [HNRNativeFrameAudit]
+}
+
 private func hnrProveFlatImpulse<Sample: BinaryFloatingPoint & Sendable>(
     samples: [Sample], output: BorrowedHNROutput
-) -> Bool {
+) -> HNRImpulseProof? {
     let layout = output.result.layout
     let c = layout.configuration
     guard c.method == .forwardCrossCorrelation, output.result.selectedObservation == nil,
         output.candidates.allSatisfy({ $0.estimate == nil }),
         layout.computedMaximumLag == c.maximumCandidateLag
-    else { return false }
+    else { return nil }
     let positions = samples.indices.filter { samples[$0] != 0 }
-    guard positions.count == 1 else { return false }
+    guard positions.count == 1 else { return nil }
     let i = positions[0]
     let k = c.localMeanSampleCount
     let n = c.windowSampleCount
     guard i >= layout.localMeanStartSample, i < layout.localMeanStartSample + k,
         i >= layout.correlationStartSample + layout.computedMaximumLag,
         i < layout.correlationStartSample + n
-    else { return false }
+    else { return nil }
     let expectedMean = Double(samples[i]) / Double(k) / output.result.frameAmplitudeScale
-    guard abs(output.result.scaledLocalMean - expectedMean) < 2e-15 else { return false }
+    guard abs(output.result.scaledLocalMean - expectedMean) < 2e-15 else { return nil }
     let expected = Double(n - 2 * k) / Double(k * k - 2 * k + n)
     guard expected > 0, expected < 1, output.correlation.count > layout.computedMaximumLag else {
-        return false
+        return nil
     }
-    return (1...layout.computedMaximumLag).allSatisfy {
-        output.correlationValidity[$0] && abs(output.correlation[$0] - expected) <= 2e-14
-    }
+    let maximumError = (1...layout.computedMaximumLag).map {
+        abs(output.correlation[$0] - expected)
+    }.max()!
+    guard
+        (1...layout.computedMaximumLag).allSatisfy({
+            output.correlationValidity[$0] && abs(output.correlation[$0] - expected) <= 2e-14
+        })
+    else { return nil }
+    return HNRImpulseProof(
+        impulseIndex: i, meanSamples: k, windowSamples: n,
+        comparedLagCount: layout.computedMaximumLag, expectedCorrelation: expected,
+        maximumCurveError: maximumError)
 }
 
 private func hnrCompareFrames<Sample: BinaryFloatingPoint & Sendable>(
     _ record: HNRReferenceRecord, samples: [Sample]
-) throws -> (frames: Int, disagreements: Int) {
+) throws -> [HNRNativeFrameAudit] {
     let c = try record.case.profile.native()
     let worker = try PreparedHNR<Sample>(c)
     let layout = try HNRIntervalLayout(configuration: c, sampleCount: samples.count)
@@ -48,8 +84,7 @@ private func hnrCompareFrames<Sample: BinaryFloatingPoint & Sendable>(
     let reference = try samples.withUnsafeBufferPointer {
         try HNRNormalization($0, timing: timing, definition: .wholeInterval)
     }
-    var frames = 0
-    var disagreements = 0
+    var audits: [HNRNativeFrameAudit] = []
     try samples.withUnsafeBufferPointer { input in
         for (index, expected) in record.data.frames.enumerated() {
             let frame = try layout.frame(at: index)
@@ -57,7 +92,6 @@ private func hnrCompareFrames<Sample: BinaryFloatingPoint & Sendable>(
                 UnsafeBufferPointer(rebasing: input[frame.support]), layout: frame,
                 normalization: reference
             ) { output in
-                frames += 1
                 #expect(
                     output.result.centerSecondsFromNormalizationOrigin == expected.centerSeconds)
                 #expect(output.result.dependencyTiming.source == source)
@@ -66,19 +100,33 @@ private func hnrCompareFrames<Sample: BinaryFloatingPoint & Sendable>(
                         + Int64(frame.support.lowerBound))
                 #expect(output.result.centerSourceSeconds == 12.5 + expected.centerSeconds)
                 let selected = output.result.selectedObservation
-                if expected.status == "finite", selected == nil,
-                    hnrProveFlatImpulse(samples: samples, output: output)
-                {
-                    disagreements += 1
-                    return
+                let proof =
+                    expected.status == "finite" && selected == nil
+                    ? hnrProveFlatImpulse(samples: samples, output: output) : nil
+                var budgetFraction: Double?
+                var state = "unavailable"
+                defer {
+                    audits.append(
+                        HNRNativeFrameAudit(
+                            name: record.case.name,
+                            inputSHA256: record.input.encodedSHA256, configuration: c,
+                            profileIdentity: worker.identity, frameIndex: index,
+                            expectedCenterSeconds: expected.centerSeconds,
+                            actualCenterSeconds: output.result.centerSecondsFromNormalizationOrigin,
+                            expectedStatus: expected.status, actualStatus: state,
+                            actualDecibelStatus: selected?.status,
+                            expectedDB: expected.valueDB,
+                            actualDB: selected?.referenceReportingDecibels,
+                            budgetFraction: budgetFraction, proof: proof))
                 }
-                let state: String
                 switch selected?.status {
                 case nil: state = "unavailable"
                 case .finite: state = "finite"
                 case .upperReportingLimit, .numericalZeroNoise: state = "upperReportingLimit"
                 case .lowerReportingLimit: state = "lowerReportingLimit"
                 }
+                if proof != nil { return }
+                budgetFraction = state == expected.status ? 0 : nil
                 #expect(
                     state == expected.status,
                     "\(record.case.name), frame \(index), native \(String(describing: selected)), reference \(expected.rawReferenceDB)"
@@ -95,6 +143,7 @@ private func hnrCompareFrames<Sample: BinaryFloatingPoint & Sendable>(
                         let wanted = energyFraction(db)
                         fraction = abs(energyFraction(actual) - wanted) / (2e-14 + 1e-4 * wanted)
                     }
+                    budgetFraction = fraction
                     #expect(
                         fraction <= 1,
                         "\(record.case.name), frame \(index), native \(actual), reference \(db), budget fraction \(fraction)"
@@ -104,7 +153,7 @@ private func hnrCompareFrames<Sample: BinaryFloatingPoint & Sendable>(
         }
     }
     #expect(worker.executionStatistics.analyzedFrameCount == UInt64(layout.frameCount))
-    return (frames, disagreements)
+    return audits
 }
 
 @Test func hnrPreparedFramesConformToAllExternalCasesWithProvedDisagreements() throws {
@@ -112,22 +161,29 @@ private func hnrCompareFrames<Sample: BinaryFloatingPoint & Sendable>(
     struct Manifest: Decodable { let catalog: [HNRReferenceCase] }
     let manifest = try JSONDecoder().decode(
         Manifest.self, from: Data(contentsOf: directory.appending(path: "manifest.json")))
-    var frames = 0
-    var disagreements = 0
+    var rows: [HNRNativeFrameAudit] = []
     for item in manifest.catalog {
         let record = try JSONDecoder().decode(
             HNRReferenceRecord.self,
             from: Data(contentsOf: directory.appending(path: item.name + ".json")))
         let samples = try hnrReferenceSamples(record, directory: directory)
-        let counts: (frames: Int, disagreements: Int)
+        let counts: [HNRNativeFrameAudit]
         switch item.profile.inputPrecision {
         case .float32: counts = try hnrCompareFrames(record, samples: samples.map(Float.init))
         case .float64: counts = try hnrCompareFrames(record, samples: samples)
         }
-        frames += counts.frames
-        disagreements += counts.disagreements
+        rows += counts
     }
-    #expect(frames == 4113 && disagreements == 6)
+    let disagreements = rows.filter { $0.proof != nil }.count
+    #expect(rows.count == 4113 && disagreements == 6)
+    if let path = ProcessInfo.processInfo.environment["HDXL_HNR_REFERENCE_REPORT"] {
+        let report = HNRNativeAudit(
+            cases: manifest.catalog.count, frames: rows.count,
+            documentedReferenceDisagreements: disagreements, rows: rows)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        try encoder.encode(report).write(to: URL(filePath: path), options: .atomic)
+    }
 }
 
 @Test func hnrPreparedFrameOwnershipValidationAndClockDependencies() throws {

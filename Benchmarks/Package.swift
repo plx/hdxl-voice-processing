@@ -6,6 +6,8 @@ let package = Package(
     name: "VoiceBenchmarks",
     platforms: [.macOS("27.0")],
     products: [
+        .executable(name: "HNRBenchmarks", targets: ["HNRBenchmarks"]),
+        .executable(name: "HNRWorkloadCheck", targets: ["HNRWorkloadCheck"]),
         .executable(name: "CaptureBenchmarks", targets: ["CaptureBenchmarks"]),
         .executable(name: "CaptureWorkloadCheck", targets: ["CaptureWorkloadCheck"]),
         .executable(name: "ScheduleBenchmarks", targets: ["ScheduleBenchmarks"]),
@@ -49,6 +51,15 @@ let package = Package(
             ]),
     ],
     targets: [
+        .target(
+            name: "HNRWorkload",
+            dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
+        .executableTarget(name: "HNRWorkloadCheck", dependencies: ["HNRWorkload"]),
+        .executableTarget(
+            name: "HNRBenchmarks",
+            dependencies: ["HNRWorkload", .product(name: "Benchmark", package: "benchmark")],
+            path: "Benchmarks/HNRBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .target(
             name: "CaptureWorkload",
             dependencies: [

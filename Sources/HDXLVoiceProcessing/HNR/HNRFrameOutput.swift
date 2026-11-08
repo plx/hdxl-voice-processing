@@ -37,6 +37,23 @@ public struct HNRNormalization: Sendable, Hashable {
         self.scaledMean = mean
         self.scaledMeanRemovedPeak = peak
     }
+
+    /// The reference's full acquired dependency is measured once. Whole-interval
+    /// normalization is a control pass; causal normalization is sampled by frame.
+    package static func prepared<Sample: BinaryFloatingPoint & Sendable>(
+        _ input: UnsafeBufferPointer<Sample>, timing: AnalysisTiming,
+        definition: HNRNormalizationDefinition, frameSequence: UInt64,
+        diagnostics: WorkerDiagnostics
+    ) throws -> Self {
+        var metadata = DiagnosticMetadata()
+        metadata.profileToken = 39
+        metadata.frameSequence = frameSequence
+        metadata.sampleCount = UInt32(input.count)
+        return try diagnostics.withFrame(metadata, stage: .hnrNormalization) {
+            try Self(input, timing: timing, definition: definition)
+        }
+    }
+
 }
 
 public enum HNRPeakDisposition: String, Sendable, Hashable, Codable {

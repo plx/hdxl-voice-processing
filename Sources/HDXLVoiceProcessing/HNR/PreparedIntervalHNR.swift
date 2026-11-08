@@ -106,12 +106,20 @@ public final class PreparedIntervalHNR<Sample: BinaryFloatingPoint & Sendable> {
     }
     private let samples: UnsafeMutableBufferPointer<Sample>
     private let worker: PreparedHNR<Sample>
+    private let diagnostics: WorkerDiagnostics
     private var busy = false
     private enum State { case prepared, finished, cancelled, failed }
     private var state = State.prepared
     private var completion: HNRCompletion?
 
-    public init(configuration: HNRConfiguration, timing: AnalysisTiming) throws {
+    public convenience init(configuration: HNRConfiguration, timing: AnalysisTiming) throws {
+        try self.init(
+            configuration: configuration, timing: timing, diagnostics: WorkerDiagnostics())
+    }
+    package init(
+        configuration: HNRConfiguration, timing: AnalysisTiming,
+        diagnostics: WorkerDiagnostics
+    ) throws {
         guard timing.source.sampleRate == Double(configuration.sampleRate),
             timing.includedSampleCount == timing.source.sampleCount,
             timing.source.sampleCount <= Int64(HNRConfiguration.maximumIntervalSampleCount)
@@ -120,7 +128,8 @@ public final class PreparedIntervalHNR<Sample: BinaryFloatingPoint & Sendable> {
         self.layout = try HNRIntervalLayout(
             configuration: configuration, sampleCount: Int(timing.source.sampleCount))
         self.timing = timing
-        self.worker = try PreparedHNR(configuration)
+        self.diagnostics = diagnostics
+        self.worker = try PreparedHNR(configuration, diagnostics: diagnostics)
         samples = .allocate(capacity: layout.sampleCount)
         samples.initialize(repeating: 0)
     }
@@ -184,8 +193,9 @@ public final class PreparedIntervalHNR<Sample: BinaryFloatingPoint & Sendable> {
                             reason: .insufficientData)))
             } else {
                 let input = UnsafeBufferPointer(samples)
-                let reference = try HNRNormalization(
-                    input, timing: timing, definition: .wholeInterval)
+                let reference = try HNRNormalization.prepared(
+                    input, timing: timing, definition: .wholeInterval, frameSequence: 0,
+                    diagnostics: diagnostics)
                 for index in 0..<layout.frameCount {
                     if state == .cancelled { break }
                     let frame = try layout.frame(at: index)
@@ -223,6 +233,7 @@ public final class PreparedIntervalHNR<Sample: BinaryFloatingPoint & Sendable> {
             }
         } catch {
             if state != .cancelled { state = .failed }
+            diagnostics.event(.error, validity: .failed)
             throw error
         }
         let cancelled = state == .cancelled
@@ -260,10 +271,14 @@ public final class PreparedIntervalHNR<Sample: BinaryFloatingPoint & Sendable> {
         receivedSampleCount = 0
         completion = nil
         state = .prepared
+        diagnostics.reset()
     }
 
     /// Safe inside emit: the current borrow remains valid until the callback exits.
     public func cancel() {
-        if state == .prepared { state = .cancelled }
+        if state == .prepared {
+            state = .cancelled
+            diagnostics.event(.cancelled, validity: .cancelled)
+        }
     }
 }

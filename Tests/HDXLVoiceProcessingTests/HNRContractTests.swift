@@ -43,7 +43,16 @@ struct HNRReferenceRecord: Decodable {
 }
 
 func hnrFixtureDirectory(_ name: String) throws -> URL {
-    try #require(Bundle.module.url(forResource: name, withExtension: nil, subdirectory: "Fixtures"))
+    let keys = [
+        "HNR": "HDXL_HNR_REFERENCE_DIRECTORY",
+        "HNRStages": "HDXL_HNR_STAGES_DIRECTORY", "HNRCausal": "HDXL_HNR_CAUSAL_DIRECTORY",
+    ]
+    if let key = keys[name], let path = ProcessInfo.processInfo.environment[key] {
+        try #require(!path.isEmpty, "An explicitly selected reference directory must not be empty")
+        return URL(filePath: path, directoryHint: .isDirectory)
+    }
+    return try #require(
+        Bundle.module.url(forResource: name, withExtension: nil, subdirectory: "Fixtures"))
 }
 
 func hnrReferenceSamples(_ record: HNRReferenceRecord, directory: URL) throws -> [Double] {

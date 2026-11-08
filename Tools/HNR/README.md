@@ -219,3 +219,69 @@ recomputes every independent equation and checks every byte. The lightweight
 Python contract tests separately validate source/profile hashes, input precision,
 exact grids, suppression/recovery and overwrite prevention. Swift compares all
 312 complete frames and tests arbitrary chunk boundaries and lifecycle behavior.
+
+## Host performance matrix
+
+`python3 Tools/HNR/benchmark.py timing --shard ac16000` and the analogous
+`allocation` command use the pinned benchmark framework in `Benchmarks`. Shards
+are `ac16000`, `ac44100`, `ac48000`, `cc16000`, `cc44100`, `cc48000`, `stress`
+and `export`. The complete matrix has 208 workloads: the requested 48 AC/CC ×
+rate × period × floor × hop configurations, each in both PCM precisions and both
+normalization definitions (192), four 20 Hz floor stress cases, four five-second
+silence/noise cases, and eight explicit owned-output export cases. Baseline input
+is 0.4 seconds; the low-floor cases acquire four full windows and one tail.
+At an exact search boundary, noisy peak refinement can leave a frame unavailable;
+these stress receipts preserve the observed coverage rather than assume a valid
+candidate. No external F0 or transform sharing is involved.
+
+Prepare constructs and destroys the selected worker, including FFT preparation
+and bounded PCM storage. Run resets a prepared worker, feeds 256-sample chunks,
+finishes and consumes scalar results. Verification repeats with 137-sample chunks
+and compares exact numerical checksums and coverage. OwnedDiagnostics additionally
+copies candidates and window/correlation arrays and serializes scalar results.
+Input generation and correctness verification are outside measured regions.
+Each receipt includes canonical configuration/identity, exact PCM hash, geometry,
+input duration, explicit workspace bytes, availability/limit counts and checksum.
+Whole normalization retains the declared input; causal normalization uses fixed
+ring/emission buffers. Workspace accounting excludes object overhead and opaque
+FFT setup tables. Prepared non-export runs must have zero observed heap-allocation
+maxima; owned export allocations are reported separately. Allocation/ARC positive
+controls are required. Timing binaries have interposition disabled.
+
+`python3 Tools/HNR/stage_benchmark.py --rate 16000` (also 44100 and 48000) measures
+actual worker scopes, with five paired disabled/detailed trials for each baseline
+profile and a warmed worker before each measurement. Raw per-stage nanoseconds
+and summaries are retained; nested FFT cost belongs to the inclusive correlation
+scope, so those durations must not be summed as independent work. Detailed trials
+include bounded sink clock/lock overhead. Paired uninstrumented full-batch trials
+show its context; the main suite supplies allocator-free timing distributions and
+separate allocation evidence. The probe is development tooling, outside library
+products, and logs no audio or per-sample records.
+
+`hnr-benchmarks.yml` runs the eight matrix shards plus three stage-probe rates.
+The strict validators reject missing profiles, incorrect hashes/geometry,
+coverage or export inconsistencies, incomplete distributions, failed counter
+controls, prepared allocations, missing stages, unbalanced inclusive timing and
+instrumentation-induced result changes. Host distributions describe processing
+cost, not physical capture latency, scheduling guarantees or a real-time deadline
+certification. Physical measurements remain tracked under #74/#102.
+
+## Reference CI evidence
+
+`hnr-references.yml` separately regenerates all 180 pinned external cases,
+compares their manifest with the frozen references, repeats the 532 independent
+equation comparisons, reproduces all 16 intermediate anchors and all 12 causal
+cases, then runs the native HNR tests against those newly generated candidates.
+The family-specific `HDXL_HNR_REFERENCE_DIRECTORY`, `HDXL_HNR_STAGES_DIRECTORY`
+and `HDXL_HNR_CAUSAL_DIRECTORY` environment variables select candidate inputs;
+an explicitly empty path is an error rather than a fallback to bundled data.
+
+`HDXL_HNR_REFERENCE_REPORT` exports every native external frame with profile/input
+identity, exact axis, typed state, value, comparison-budget use and any proved
+single-impulse flat-correlation disagreement. `HDXL_HNR_CAUSAL_REPORT` exports
+complete/tail counts, exact chunk equality and maximum numerical-stage budgets.
+`native_audit.py` independently checks report completeness, reference identities,
+values/limits, proof geometry and causal coverage. The external result remains
+qualified (4,107 agreeing frames plus six proved reference disagreements), while
+all 312 causal windows and 12 partial tails must pass their separate definition.
+Neither CI regeneration nor audit export updates the frozen goldens.

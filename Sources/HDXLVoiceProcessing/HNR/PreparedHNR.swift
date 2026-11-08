@@ -157,70 +157,84 @@ public final class PreparedHNR<Sample: BinaryFloatingPoint & Sendable> {
         reference: HNRNormalization
     ) throws -> Summary {
         let c = configuration
-        var summary = Summary()
-        for value in input {
-            summary.scale = max(summary.scale, abs(Double(value)))
-            if abs(value) >= 1 { summary.clipping = true }
-        }
-        guard summary.scale <= reference.amplitudeScale else { throw HNRError.unexpectedContext }
-        func centered(_ index: Int) -> Double {
-            (summary.scale == 0
-                ? 0 : Double(input[index - layout.support.lowerBound]) / summary.scale)
-                - summary.mean
-        }
-        var sum = HNRSum()
-        if summary.scale > 0 {
-            for i in layout.localMeanStartSample..<layout.localMeanStartSample
-                + c.localMeanSampleCount
-            {
-                sum.add(Double(input[i - layout.support.lowerBound]) / summary.scale)
+        var summary = try diagnostics.withInterval(.hnrWindow) {
+            var summary = Summary()
+            for value in input {
+                summary.scale = max(summary.scale, abs(Double(value)))
+                if abs(value) >= 1 { summary.clipping = true }
             }
-        }
-        summary.mean = sum.value / Double(c.localMeanSampleCount)
-        for i in windowed.indices {
-            windowed[i] = centered(layout.centeredWindowStartSample + i) * correlation.window[i]
-        }
-        let half = c.windowSampleCount / 2
-        let halfPeriod = c.localMeanSampleCount / 4 + 1
-        for i in max(0, half - halfPeriod)..<min(c.windowSampleCount, half + halfPeriod) {
-            summary.peak = max(summary.peak, abs(windowed[i]))
-        }
-        if reference.amplitudeScale > 0, reference.scaledMeanRemovedPeak > 0 {
-            let relativeScale = summary.scale / reference.amplitudeScale
-            summary.intensity = min(
-                1, summary.peak * relativeScale / reference.scaledMeanRemovedPeak)
-        }
-        guard summary.intensity.isFinite else { throw HNRError.numericalFailure }
-        summary.unvoiced =
-            c.silenceThreshold == 0 ? 0 : max(0, 2 - summary.intensity / c.silenceThreshold)
-        guard reference.scaledMeanRemovedPeak > 0, summary.peak > 0 else {
-            summary.reason = .silence
+            guard summary.scale <= reference.amplitudeScale else {
+                throw HNRError.unexpectedContext
+            }
+            func centered(_ index: Int) -> Double {
+                (summary.scale == 0
+                    ? 0 : Double(input[index - layout.support.lowerBound]) / summary.scale)
+                    - summary.mean
+            }
+            var sum = HNRSum()
+            if summary.scale > 0 {
+                for i in layout.localMeanStartSample..<layout.localMeanStartSample
+                    + c.localMeanSampleCount
+                {
+                    sum.add(Double(input[i - layout.support.lowerBound]) / summary.scale)
+                }
+            }
+            summary.mean = sum.value / Double(c.localMeanSampleCount)
+            for i in windowed.indices {
+                windowed[i] = centered(layout.centeredWindowStartSample + i) * correlation.window[i]
+            }
+            let half = c.windowSampleCount / 2
+            let halfPeriod = c.localMeanSampleCount / 4 + 1
+            for i in max(0, half - halfPeriod)..<min(c.windowSampleCount, half + halfPeriod) {
+                summary.peak = max(summary.peak, abs(windowed[i]))
+            }
+            if reference.amplitudeScale > 0, reference.scaledMeanRemovedPeak > 0 {
+                let relativeScale = summary.scale / reference.amplitudeScale
+                summary.intensity = min(
+                    1, summary.peak * relativeScale / reference.scaledMeanRemovedPeak)
+            }
+            guard summary.intensity.isFinite else { throw HNRError.numericalFailure }
+            summary.unvoiced =
+                c.silenceThreshold == 0 ? 0 : max(0, 2 - summary.intensity / c.silenceThreshold)
+            guard reference.scaledMeanRemovedPeak > 0, summary.peak > 0 else {
+                summary.reason = .silence
+                return summary
+            }
+            if c.method == .forwardCrossCorrelation {
+                let count = c.windowSampleCount + layout.computedMaximumLag
+                for i in 0..<count { forward[i] = centered(layout.correlationStartSample + i) }
+            }
             return summary
         }
-        if c.method == .autocorrelation {
-            try correlation.compute(
-                UnsafeBufferPointer(windowed), maximumLag: c.maximumCorrelationLag)
-        } else {
-            let count = c.windowSampleCount + layout.computedMaximumLag
-            for i in 0..<count { forward[i] = centered(layout.correlationStartSample + i) }
-            try correlation.compute(
-                UnsafeBufferPointer(start: forward.baseAddress, count: count),
-                maximumLag: layout.computedMaximumLag)
-        }
-        summary.hasCurve = true
-        try searchCandidates()
-        var bestStrength = 0.0
-        for i in 0..<candidateCount {
-            if let estimate = candidates[i].estimate, let hz = candidates[i].frequencyHz,
-                hz > 0, hz < Double(c.sampleRate) / 2, estimate.periodicity > bestStrength
-            {
-                summary.strongest = i
-                bestStrength = estimate.periodicity
+        guard summary.reason == nil else { return summary }
+        try diagnostics.withInterval(.hnrCorrelation) {
+            if c.method == .autocorrelation {
+                try correlation.compute(
+                    UnsafeBufferPointer(windowed), maximumLag: c.maximumCorrelationLag)
+            } else {
+                try correlation.compute(
+                    UnsafeBufferPointer(
+                        start: forward.baseAddress,
+                        count: c.windowSampleCount + layout.computedMaximumLag),
+                    maximumLag: layout.computedMaximumLag)
             }
         }
-        if bestStrength > summary.unvoiced { summary.selected = summary.strongest }
-        if summary.selected == nil {
-            summary.reason = summary.strongest == nil ? .lowConfidence : .silence
+        summary.hasCurve = true
+        try diagnostics.withInterval(.hnrPeriodSearch) {
+            try searchCandidates()
+            var bestStrength = 0.0
+            for i in 0..<candidateCount {
+                if let estimate = candidates[i].estimate, let hz = candidates[i].frequencyHz,
+                    hz > 0, hz < Double(c.sampleRate) / 2, estimate.periodicity > bestStrength
+                {
+                    summary.strongest = i
+                    bestStrength = estimate.periodicity
+                }
+            }
+            if bestStrength > summary.unvoiced { summary.selected = summary.strongest }
+            if summary.selected == nil {
+                summary.reason = summary.strongest == nil ? .lowConfidence : .silence
+            }
         }
         return summary
     }

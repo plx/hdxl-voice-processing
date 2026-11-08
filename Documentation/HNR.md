@@ -162,5 +162,8 @@ preserve distinct frame centers even when many frames share a whole-interval
 dependency. The independent `Examples/CoreConsumer` demonstrates all four
 method/normalization combinations using only the public core API.
 
-Performance registration, all remaining software gates and both reviews remain
-required before this leaf is complete.
+The [host performance protocol](../Tools/HNR/README.md#host-performance-matrix)
+registers the requested method/rate/period/floor/hop matrix in both precisions and
+normalization modes, with low-floor, sustained silence/noise and owning-export
+stresses. It separates worker preparation, full-batch processing, internal scopes
+and allocation evidence; it makes no physical real-time guarantee.

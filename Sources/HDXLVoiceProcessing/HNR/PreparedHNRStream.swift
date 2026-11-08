@@ -203,8 +203,9 @@ public final class PreparedHNRStream<Sample: BinaryFloatingPoint & Sendable> {
                         let frame = try configuration.causalFrameLayout(
                             frameIndex: Int(completeFrames))
                         let samples = storage.borrow()
-                        let reference = try HNRNormalization(
-                            samples, timing: timing, definition: .causalWindow)
+                        let reference = try HNRNormalization.prepared(
+                            samples, timing: timing, definition: .causalWindow,
+                            frameSequence: completeFrames, diagnostics: diagnostics)
                         let placement =
                             Double(start - origin.source.startSample) / source.sampleRate
                             + frame.centerSecondsFromOrigin

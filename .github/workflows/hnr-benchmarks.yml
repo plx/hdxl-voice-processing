@@ -1,0 +1,92 @@
+name: HNR benchmarks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '13 12 * * 3'
+  pull_request:
+    paths:
+      - 'Sources/HDXLVoiceProcessing/HNR/**'
+      - 'Sources/HDXLVoiceProcessing/Framing/**'
+      - 'Sources/HDXLVoiceProcessing/Fourier/**'
+      - 'Sources/HDXLVoiceProcessing/Contracts/**'
+      - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
+      - 'Benchmarks/**'
+      - 'Tools/HNR/benchmark.py'
+      - 'Tools/HNR/stage_benchmark.py'
+      - 'Tools/HNRStageProbe/**'
+      - 'Package.swift'
+      - 'Tools/Tests/test_hnr_benchmark.py'
+      - 'Tools/benchmark.py'
+      - '.github/workflows/hnr-benchmarks.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hnr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    name: HNR / ${{ matrix.shard }} / Xcode 27.0
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [ac16000, ac44100, ac48000, cc16000, cc44100, cc48000, stress, export]
+    runs-on: xcode-27
+    timeout-minutes: 120
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Timing without allocator instrumentation
+        run: python3 Tools/HNR/benchmark.py timing --shard "${{ matrix.shard }}"
+      - name: Allocation diagnostics with positive controls
+        run: python3 Tools/HNR/benchmark.py allocation --shard "${{ matrix.shard }}"
+      - name: Retain host HNR evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: hnr-benchmarks-${{ matrix.shard }}-${{ github.run_attempt }}
+          path: |
+            Benchmarks/.build/artifacts/hnr-*/*.json
+            Benchmarks/.build/artifacts/hnr-*/*.json.gz
+            Benchmarks/.build/artifacts/hnr-*/*.log
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  stages:
+    name: HNR internal stages / ${{ matrix.rate }} Hz / Xcode 27.0
+    strategy:
+      fail-fast: false
+      matrix:
+        rate: [16000, 44100, 48000]
+    runs-on: xcode-27
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Paired worker stage measurements
+        run: python3 Tools/HNR/stage_benchmark.py --rate "${{ matrix.rate }}"
+      - name: Retain stage timing evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: hnr-stages-${{ matrix.rate }}-${{ github.run_attempt }}
+          path: .build/artifacts/hnr-stages-*/*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

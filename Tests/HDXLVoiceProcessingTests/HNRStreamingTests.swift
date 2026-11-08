@@ -28,6 +28,15 @@ private struct HNRCausalReference: Decodable {
     let frames: [Frame]
 }
 
+private struct HNRCausalAudit: Encodable {
+    let name, inputSHA256: String
+    let profileIdentity: ProfileIdentity
+    let configuration: HNRConfiguration
+    let completeFrameCount, tailStartSample, tailSampleCount: Int
+    let chunkResultsExactlyEqual: Bool
+    let maximumBudgetFractions: [String: Double]
+}
+
 private struct HNRStreamingCapture: Equatable {
     let result: HNRFrameResult?
     let unavailable: HNRUnavailableFrame?
@@ -146,6 +155,7 @@ private func hnrStream<Sample: BinaryFloatingPoint & Sendable>(
     let manifest = try JSONDecoder().decode(
         Manifest.self, from: Data(contentsOf: directory.appending(path: "manifest.json")))
     var compared = 0
+    var audits: [HNRCausalAudit] = []
     for name in manifest.catalog {
         let r = try JSONDecoder().decode(
             HNRCausalReference.self,
@@ -185,6 +195,15 @@ private func hnrStream<Sample: BinaryFloatingPoint & Sendable>(
         #expect(batch.0.count == r.frames.count + 1)
         let complete = batch.0.filter { $0.result != nil }
         #expect(complete.count == r.grid.completeFrameCount)
+        var budgets = Dictionary(
+            uniqueKeysWithValues: [
+                "center", "normalizationMean",
+                "normalizationPeak", "localMean", "localPeak", "relativeIntensity", "periodicity",
+                "decibels",
+            ].map { ($0, 0.0) })
+        func retainBudget(_ key: String, _ difference: Double, _ limit: Double) {
+            budgets[key] = max(budgets[key]!, abs(difference) / limit)
+        }
         for (actual, expected) in zip(complete, r.frames) {
             let value = try #require(actual.result)
             #expect(value.frameIndex == UInt64(expected.frameIndex))
@@ -223,6 +242,29 @@ private func hnrStream<Sample: BinaryFloatingPoint & Sendable>(
                 (UInt64(expected.startSample) * 1_000_000_000 + UInt64(r.input.sampleRate) / 2)
                 / UInt64(r.input.sampleRate)
             #expect(value.dependencyTiming.hostStartNanoseconds == 1_000_000_000 + delta)
+            retainBudget("center", actual.center - expected.centerSecondsFromStreamOrigin, 1e-12)
+            retainBudget(
+                "normalizationMean",
+                value.scaledNormalizationMean - expected.normalizationMean
+                    / value.normalizationAmplitudeScale, 2e-14)
+            retainBudget(
+                "normalizationPeak",
+                value.scaledNormalizationPeak - expected.normalizationPeak
+                    / value.normalizationAmplitudeScale, 2e-14)
+            retainBudget(
+                "localMean", value.scaledLocalMean - expected.localMean / value.frameAmplitudeScale,
+                2e-14)
+            retainBudget(
+                "localPeak", value.scaledLocalPeak - expected.localPeak / value.frameAmplitudeScale,
+                2e-14)
+            retainBudget(
+                "relativeIntensity", value.relativeIntensity - expected.relativeIntensity, 2e-14)
+            if let selected = value.selectedObservation, let db = expected.valueDB,
+                let periodicity = expected.periodicity
+            {
+                retainBudget("periodicity", selected.periodicity - periodicity, 2e-14)
+                retainBudget("decibels", selected.referenceReportingDecibels - db, 1e-4)
+            }
             compared += 1
         }
         #expect(complete.prefix(3).allSatisfy { $0.result?.selectedObservation != nil })
@@ -233,11 +275,25 @@ private func hnrStream<Sample: BinaryFloatingPoint & Sendable>(
             tail.timing.source.startSample == origin.source.startSample
                 + Int64(r.grid.tailStartSample))
         #expect(tail.timing.source.sampleCount == Int64(r.grid.tailSampleCount))
+        audits.append(
+            HNRCausalAudit(
+                name: name, inputSHA256: hash,
+                profileIdentity: try r.profile.identity(), configuration: r.profile,
+                completeFrameCount: complete.count,
+                tailStartSample: Int(tail.timing.source.startSample - origin.source.startSample),
+                tailSampleCount: Int(tail.timing.source.sampleCount),
+                chunkResultsExactlyEqual: batch.0 == pieces.0 && batch.1 == pieces.1,
+                maximumBudgetFractions: budgets))
         #expect(batch.1.framing.disposition == .unavailablePartial && !batch.1.isCancelled)
         #expect(
             batch.1.availableFrameCount + batch.1.unavailableFrameCount == UInt64(batch.0.count))
     }
     #expect(manifest.catalog.count == 12 && compared == 312)
+    if let path = ProcessInfo.processInfo.environment["HDXL_HNR_CAUSAL_REPORT"] {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        try encoder.encode(audits).write(to: URL(filePath: path), options: .atomic)
+    }
 }
 
 @Test func hnrStreamingGapClockCancellationAndReconfigurationAreTransactional() throws {
