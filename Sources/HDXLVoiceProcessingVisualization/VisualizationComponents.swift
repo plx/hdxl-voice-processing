@@ -85,6 +85,9 @@ public struct VisualizationMeasurementReadout: View {
             LabeledContent("Epoch", value: String(result.timing.source.epoch.sequence))
             if let scheduled = measurement.scheduled {
                 LabeledContent(
+                    "Frame center from origin",
+                    value: "\(scheduled.frameCenterSecondsFromOrigin) s")
+                LabeledContent(
                     "Dependency samples",
                     value:
                         "\(scheduled.dependencyTiming.source.startSample)..<\(scheduled.dependencyTiming.source.endSample)"

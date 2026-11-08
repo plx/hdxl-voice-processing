@@ -132,13 +132,20 @@ coverage-weighted aggregate. Segmentation selection returns original contributin
 segments, not clipped/recomputed coverage.
 
 Exact inspection uses `VisualizationMeasurementID`, which includes the series key
-and full support interval. A store refuses an ID it no longer contains. Eviction
+and full support interval, plus the scheduled frame center when available. Scheduled
+histories order and search by that frame center: whole-interval CPP/CPPS can emit
+many frames with identical dependency support, while preview edge frames can share
+their starting sample. Bare `MeasurementResult` histories order by support start,
+then end; equal complete supports are ambiguous and rejected. Use the scheduled
+export adapter when frame placement is available, because the bare scalar contract
+does not carry that placement. A store refuses an ID it no longer contains. Eviction
 clears the exact inspected ID while preserving the selected source interval; the
 panel can then show the newest remaining overlapping measurement. A series change
 clears both selection and inspection, preventing stale-profile results. `select`
 clears exact inspection, `inspect` selects the result's support, and `clearSelection`
 returns to the newest measurement. `inspect(nil)` clears only exact inspection.
-The Previous/Next controls inspect original records in source order.
+The Previous/Next controls inspect original records in the snapshot's source order,
+with scheduled frame centers displayed separately from dependency intervals.
 
 Presentation preferences (`VisualizationPresentation`) are separate from algorithm
 configuration. Scale and maximum visible history are renderer preferences for

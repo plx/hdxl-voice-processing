@@ -27,6 +27,22 @@ public struct VisualizationSeriesKey: Sendable, Hashable {
 public struct VisualizationMeasurementID: Sendable, Hashable {
     public let series: VisualizationSeriesKey
     public let support: SourceInterval
+    /// Scheduled frame placement is independent of dependency support. Whole-interval
+    /// CPPS frames can share the entire support interval while having distinct centers.
+    /// Nil for a bare MeasurementResult, whose contract supplies support only.
+    public let scheduledFrameCenterSecondsFromOrigin: Double?
+
+    fileprivate func precedes(_ other: Self) -> Bool {
+        if let center = scheduledFrameCenterSecondsFromOrigin,
+            let next = other.scheduledFrameCenterSecondsFromOrigin
+        {
+            return center < next
+        }
+        if support.startSample != other.support.startSample {
+            return support.startSample < other.support.startSample
+        }
+        return support.endSample < other.support.endSample
+    }
 }
 
 /// Owns the original Core result. Scheduled exports additionally retain mask,
@@ -42,7 +58,9 @@ public struct VisualizationMeasurement: Sendable, Hashable, Identifiable {
         scheduled = nil
         // A key derived from one already-validated result cannot have an incompatible origin.
         let key = VisualizationSeriesKey(validatedResult: result, scheduledOrigin: nil)
-        id = VisualizationMeasurementID(series: key, support: result.timing.source)
+        id = VisualizationMeasurementID(
+            series: key, support: result.timing.source,
+            scheduledFrameCenterSecondsFromOrigin: nil)
     }
 
     public init(_ export: ScheduledMeasurementExport) {
@@ -50,7 +68,9 @@ public struct VisualizationMeasurement: Sendable, Hashable, Identifiable {
         scheduled = export
         let key = VisualizationSeriesKey(
             validatedResult: export.result, scheduledOrigin: export.origin)
-        id = VisualizationMeasurementID(series: key, support: result.timing.source)
+        id = VisualizationMeasurementID(
+            series: key, support: result.timing.source,
+            scheduledFrameCenterSecondsFromOrigin: export.frameCenterSecondsFromOrigin)
     }
 
     public init(_ frame: ScheduledFrame, metric: ScheduledMetric) throws {
@@ -92,17 +112,18 @@ public struct VisualizationMetricSnapshot: Sendable, Hashable {
         var metadata = VisualizationMetadataBudget(limits)
         try metadata.charge(series.profile)
         try metadata.charge(series.measurement.algorithm)
-        var previous: Int64?
+        var previous: VisualizationMeasurementID?
         for item in measurements {
             guard item.id.series == series else { throw VisualizationError.incompatibleSeries }
             try metadata.charge(item.result)
             if let mask = item.scheduled?.mask { try metadata.charge(mask) }
-            let start = item.result.timing.source.startSample
             if let previous {
-                guard start != previous else { throw VisualizationError.duplicateMeasurement }
-                guard start > previous else { throw VisualizationError.unorderedMeasurements }
+                guard item.id != previous else { throw VisualizationError.duplicateMeasurement }
+                guard previous.precedes(item.id) else {
+                    throw VisualizationError.unorderedMeasurements
+                }
             }
-            previous = start
+            previous = item.id
             for frame in item.result.intermediates {
                 guard frame.values.count <= remaining else {
                     throw VisualizationError.capacityExceeded
@@ -136,7 +157,7 @@ public struct VisualizationMetricSnapshot: Sendable, Hashable {
         var high = measurements.count
         while low < high {
             let middle = low + (high - low) / 2
-            if measurements[middle].id.support.startSample < id.support.startSample {
+            if measurements[middle].id.precedes(id) {
                 low = middle + 1
             } else {
                 high = middle
