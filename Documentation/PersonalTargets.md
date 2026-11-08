@@ -179,9 +179,10 @@ noncausal CPPS at 16 kHz, the pinned Praat 7 Murton recipe, FFT YIN at 50–700 
 and unweighted 400-sample/160-hop level windows. Its full schedule identity is
 `c9fbb8420ee5ac5f76254129d42d10358dd393f868a5173ee7dea45e0ce9b01b`.
 This evidence does not validate a streaming-preview CPPS profile or another hop,
-window, backend or resampling configuration. [#57](https://github.com/plx/hdxl-voice-processing/issues/57)
-must preserve the declared observation semantics and exact profile when providing
-feedback. Model import/export belongs to [#58](https://github.com/plx/hdxl-voice-processing/issues/58);
+window, backend or resampling configuration. The
+[feedback policy](PersonalTargetFeedback.md) preserves the complete-summary semantics,
+exact profile and accepted model while adding source-time persistence and explicit
+unavailable states. Model import/export belongs to [#58](https://github.com/plx/hdxl-voice-processing/issues/58);
 these types expose encoding and inspection but no permissive model decoder.
 
 The numerical suite compares actual PCM with pinned external CPPS references and

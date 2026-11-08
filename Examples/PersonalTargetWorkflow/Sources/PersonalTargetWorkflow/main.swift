@@ -14,6 +14,7 @@ struct ScenarioReport: Encodable {
     let datasetIdentity, splitIdentity, fitIdentity, evaluationIdentity: CalibrationDigest
     let activated: Bool
     let datasetFile, splitFile, fitFile, evaluationFile: String
+    let feedbackFile: String?
 }
 
 struct Report: Encodable {
@@ -89,13 +90,19 @@ func perform() throws {
                 to: output.appending(path: splitFile), options: .atomic)
             try write(fit, to: output.appending(path: fitFile))
             try write(evaluation, to: output.appending(path: evaluationFile))
+            let feedbackFile = evaluation.activated == nil ? nil : scenario.name + "-feedback.json"
+            if let target = evaluation.activated, let feedbackFile {
+                try write(
+                    feedbackSnapshots(target: target, profile: evidence.profile),
+                    to: output.appending(path: feedbackFile))
+            }
             return try ScenarioReport(
                 name: scenario.name, datasetIdentity: inputs.dataset.identity(),
                 splitIdentity: CalibrationDigest(bytes: inputs.split.canonicalJSON()),
                 fitIdentity: fit.identity(), evaluationIdentity: evaluation.evaluationIdentity,
                 activated: evaluation.activated != nil, datasetFile: datasetFile,
                 splitFile: splitFile,
-                fitFile: fitFile, evaluationFile: evaluationFile)
+                fitFile: fitFile, evaluationFile: evaluationFile, feedbackFile: feedbackFile)
         }
         scenarios.append(report)
     }

@@ -75,3 +75,9 @@ Worker instrumentation changes also run `python3 Tools/instrumentation.py` and
 `python3 Tools/instrumentation.py --compiled-out`. For actual local trace evidence,
 use the commands in [Instrumentation](Documentation/Instrumentation.md); keep raw
 Instruments traces local and share only the approved summaries.
+
+Personal-target feedback changes also run
+`python3 Tools/PersonalTargets/feedback.py --output .build/personal-feedback-evidence`
+and the public API workflow in `Tools/PersonalTargets/README.md`, using fresh
+output destinations. Keep synthetic policy cost and profile validation separate
+from the deferred physical evidence.
