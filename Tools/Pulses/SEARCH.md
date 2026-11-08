@@ -6,7 +6,7 @@ in [the reference lock](../Reference/toolchain.json); the
 [published method](https://www.fon.hum.uva.nl/praat/manual/Sound___Pitch__To_PointProcess__cc_.html)
 and retained pinned-executable probes establish the reference route. Original
 equations in `stages.py` use 80-digit Decimal arithmetic and complete lag tables,
-independently of the future native worker. No upstream source is incorporated.
+independently of the native worker. No upstream source is incorporated.
 
 ## Coordinates and F0 support
 
@@ -130,6 +130,11 @@ Current isolated-stage comparison budgets are `2e-12` for normalized correlation
 and `2e-10` samples for a well-conditioned interpolated peak. The 80-digit oracle,
 closed-form examples, and external stage probes validate these independently of
 native results. Flat/ambiguous peak selection needs explicit diagnostics and
-cannot be made trustworthy by a larger position tolerance. Complete native
-location, run/eligibility and known-source timing budgets remain to be frozen
-with their final support/conditioning scope before native conformance validation.
+cannot be made trustworthy by a larger position tolerance. The complete raw
+native-location and amplitude gates are frozen in [COMPARISON.md](COMPARISON.md).
+Native accumulation explicitly uses fused multiply-add operations: a one-ulp
+arithmetic change can move a later anchor across a sampled-window boundary and
+alter its support. The first full-catalog comparison exposed this in the 80 Hz
+sine and a flat boundary of a DC-offset train; explicit fused accumulation fixed
+both without changing tolerances. Independent run/eligibility and complete
+known-source timing gates remain separate work before #42 can close.

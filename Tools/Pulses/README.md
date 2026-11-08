@@ -185,6 +185,35 @@ fresh candidate locations. No candidate is promoted automatically.
 Freeze numerical tolerances from independent probes before native comparisons;
 never generate expected pulse locations with Swift or change tolerances solely to
 make a native comparison pass. Pulse-search stage oracles, native support/run
-eligibility, promotion, provenance, timing budgets and complete runtime
-conformance remain required parts of #42; these development tools alone do not
-complete that issue.
+eligibility, timing budgets and complete runtime conformance remain required
+parts of #42; these development tools alone do not complete that issue.
+
+## Promoted evidence and native comparison
+
+The complete catalog and isolated stages are retained under `Fixtures/Pulses`,
+`Fixtures/PulseF0Stages`, and `Fixtures/PulseMatchingStages`, including raw
+transcripts, inputs, tool/source identities, and provenance inventory. Offline
+verification never launches either Swift or the external executable:
+
+```sh
+python3 Tools/Pulses/verify.py --directory Tests/HDXLVoiceProcessingTests/Fixtures/Pulses
+python3 Tools/Pulses/verify_stages.py \
+  --f0-directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseF0Stages \
+  --matching-directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseMatchingStages \
+  --reference-directory Tests/HDXLVoiceProcessingTests/Fixtures/Pulses
+```
+
+`PulseReferenceTests` checks all raw landmarks, every available native amplitude,
+255 F0 queries, and 96 complete independent correlation tables. The
+[frozen comparison policy](COMPARISON.md) records the exact constant-waveform
+proof exception separately from location parity. The
+[runtime contract](../../Documentation/Pulses.md) explains native eligibility,
+ownership, complete support, and bounded chunked delivery.
+
+For freshly regenerated candidates, set `HDXL_PULSE_REFERENCE_DIRECTORY`,
+`HDXL_PULSE_F0_STAGE_DIRECTORY`, and `HDXL_PULSE_MATCHING_STAGE_DIRECTORY` to
+their respective directories before running the same tests. An explicitly empty
+path fails instead of silently selecting committed fixtures. Set
+`HDXL_PULSE_REFERENCE_REPORT` to retain native/reference coordinates, source and
+profile identities, amplitude comparison counts, and maximum budget use. This
+audit is separate from generator execution timings and physical measurements.

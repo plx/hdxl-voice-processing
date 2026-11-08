@@ -1,0 +1,28 @@
+begin	pulse-f0-boundaries-v1
+count	25
+query	1	-0.001	--undefined--
+query	2	0	--undefined--
+query	3	0.015624999999999998	--undefined--
+query	4	0.015625	--undefined--
+query	5	0.015625000000000003	--undefined--
+query	6	0.0234375	--undefined--
+query	7	0.03125	--undefined--
+query	8	0.0390625	--undefined--
+query	9	0.04687499999999999	--undefined--
+query	10	0.046875	--undefined--
+query	11	0.04687500000000001	--undefined--
+query	12	0.0546875	--undefined--
+query	13	0.0625	--undefined--
+query	14	0.0703125	--undefined--
+query	15	0.07812499999999999	--undefined--
+query	16	0.078125	--undefined--
+query	17	0.07812500000000001	--undefined--
+query	18	0.0859375	--undefined--
+query	19	0.09375	--undefined--
+query	20	0.1015625	--undefined--
+query	21	0.10937499999999999	--undefined--
+query	22	0.109375	--undefined--
+query	23	0.10937500000000001	--undefined--
+query	24	0.125	--undefined--
+query	25	0.126	--undefined--
+end	pulse-f0-boundaries-v1
