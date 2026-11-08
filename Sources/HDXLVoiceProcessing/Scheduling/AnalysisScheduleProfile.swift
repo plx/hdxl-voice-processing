@@ -14,7 +14,7 @@ public enum AnalysisScheduleMode: String, Sendable, Hashable, Codable {
 }
 
 public enum ScheduledAlgorithm: String, Sendable, Hashable, Codable {
-    case levels, yin, cpps
+    case levels, yin, cpps, hnr
 }
 
 public enum AnalysisScheduleChannelConversion: String, Sendable, Hashable, Codable {
@@ -22,7 +22,7 @@ public enum AnalysisScheduleChannelConversion: String, Sendable, Hashable, Codab
 }
 
 public enum AnalysisSchedulePlacement: String, Sendable, Hashable {
-    case leftAlignedIntegerGrid, centeredCompleteInterval
+    case leftAlignedIntegerGrid, centeredCompleteInterval, leftAlignedFractionalGrid
 }
 
 public enum AnalysisScheduleHistory: String, Sendable, Hashable {
@@ -63,24 +63,26 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
     public let levels: LevelConfiguration?
     public let pitch: YINProfile?
     public let cpps: CPPSProfile?
+    public let hnr: HNRConfiguration?
 
     public var inputPrecision: AnalysisPrecision {
         inputFormat.encoding == .float32 ? .float32 : .float64
     }
 
     public var requiresCompleteInterval: Bool {
-        cpps.map { $0.cepstrogram.previewHopLength == nil } ?? false
+        (cpps.map { $0.cepstrogram.previewHopLength == nil } ?? false)
+            || hnr?.normalization == .wholeInterval
     }
 
     public init(
         inputFormat: PCMFormat, channels: PCMChannelSelection,
         levels: LevelConfiguration? = nil, pitch: YINProfile? = nil,
-        cpps: CPPSProfile? = nil
+        cpps: CPPSProfile? = nil, hnr: HNRConfiguration? = nil
     ) throws {
         guard let rate = Int(exactly: inputFormat.sampleRate),
             (4000...192_000).contains(rate), (1...32).contains(inputFormat.channelCount),
             channels.channelIndex.map({ $0 < inputFormat.channelCount }) ?? true,
-            levels != nil || pitch != nil || cpps != nil
+            levels != nil || pitch != nil || cpps != nil || hnr != nil
         else { throw AnalysisScheduleError.invalidConfiguration }
         let precision: AnalysisPrecision =
             inputFormat.encoding == .float32 ? .float32 : .float64
@@ -103,6 +105,11 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
                 _ = try PreviewConditioningLayout(configuration: cpps.cepstrogram.conditioning)
             }
         }
+        if let hnr {
+            guard hnr.sampleRate == rate, hnr.inputPrecision == precision else {
+                throw AnalysisScheduleError.invalidConfiguration
+            }
+        }
         schemaVersion = 1
         self.inputFormat = inputFormat
         self.channels = channels
@@ -110,6 +117,7 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
         self.levels = levels
         self.pitch = pitch
         self.cpps = cpps
+        self.hnr = hnr
     }
 
     public func validate(mode: AnalysisScheduleMode) throws {
@@ -179,11 +187,25 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
                         ? .centeredCompleteInterval : .leftAlignedIntegerGrid,
                     history: c.previewHopLength == nil ? .completeInterval : .finiteWindow))
         }
+        if let hnr {
+            let offline = hnr.normalization == .wholeInterval
+            result.append(
+                AnalysisScheduleRequirements(
+                    algorithm: .hnr, analysisSampleRate: Double(hnr.sampleRate),
+                    frameSupportSeconds: offline
+                        ? hnr.nominalSupportSeconds
+                        : Double(hnr.causalWindowSampleCount) / Double(hnr.sampleRate),
+                    outputIntervalSeconds: hnr.hopSeconds, filterWarmupSourceSamples: 0,
+                    filterLookaheadSeconds: 0, centeredSmoothingLookaheadSeconds: 0,
+                    requiresCompleteInterval: offline, partialWindowPolicy: hnr.partialWindowPolicy,
+                    placement: offline ? .centeredCompleteInterval : .leftAlignedFractionalGrid,
+                    history: offline ? .completeInterval : .finiteWindow))
+        }
         return result
     }
 
     private enum CodingKeys: String, CodingKey, CaseIterable {
-        case schemaVersion, inputFormat, channels, channelConversion, levels, pitch, cpps
+        case schemaVersion, inputFormat, channels, channelConversion, levels, pitch, cpps, hnr
     }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
@@ -197,7 +219,8 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
             channels: c.decode(PCMChannelSelection.self, forKey: .channels),
             levels: c.decodeIfPresent(LevelConfiguration.self, forKey: .levels),
             pitch: c.decodeIfPresent(YINProfile.self, forKey: .pitch),
-            cpps: c.decodeIfPresent(CPPSProfile.self, forKey: .cpps))
+            cpps: c.decodeIfPresent(CPPSProfile.self, forKey: .cpps),
+            hnr: c.decodeIfPresent(HNRConfiguration.self, forKey: .hnr))
         guard
             try c.decode(AnalysisScheduleChannelConversion.self, forKey: .channelConversion)
                 == channelConversion
@@ -213,5 +236,7 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
         try c.encode(levels, forKey: .levels)
         try c.encode(pitch, forKey: .pitch)
         try c.encode(cpps, forKey: .cpps)
+        // Preserve the identities of existing schedules when HNR is not enabled.
+        try c.encodeIfPresent(hnr, forKey: .hnr)
     }
 }

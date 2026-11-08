@@ -268,3 +268,22 @@ frame sampling, balanced scopes and completion before consumer callbacks.
 The [CPPS benchmark protocol](../Tools/CPPS/README.md#host-performance-matrix)
 measures complete pipelines with diagnostics disabled; its allocation mode is a
 separate binary. Physical capture and device traces remain tracked by #74.
+
+## HNR worker integration
+
+HNR uses profile token 39 and original frame indices. `HNRNormalization` measures
+one complete acquired reference: once for a whole interval, or once per admitted
+causal frame. `HNRWindow` includes scale, mean, window, intensity and forward-pair
+preparation. `HNRCorrelation` includes the method-specific FFT correlation and
+normalization; `HNRPeriodSearch` includes candidate detection, interpolation,
+refinement and final selection. `HNR` encloses the last three stages. Normalization
+is separate from per-frame computation and retains its full dependency sample
+count. Silent frames skip correlation/search. Whole-frame sampling admits all
+sub-stages together; every scope ends before the consumer callback, including
+failure and cancellation. Disabled mode uses the same numerical path without a
+sink. Metadata is numeric only; no PCM or candidate curves enter signposts.
+
+`HNRDiagnosticsTests` verifies sampled/detailed coverage, exact disabled-mode
+results, failure balance and consumer/cancellation/reset boundaries. The separate
+[HNR stage probe](../Tools/HNR/README.md#host-performance-matrix) reports inclusive
+stage cost and its clock/lock overhead alongside disabled full-batch trials.

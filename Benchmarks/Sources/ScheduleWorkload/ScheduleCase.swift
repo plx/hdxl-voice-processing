@@ -159,6 +159,10 @@ public struct ScheduleDigest: Codable, Equatable, Sendable {
                 pitch.checksum += observation.frequencyHz
             }
             pitch.auxiliaryChecksum += tracked?.observation?.frequencyHz ?? 0
+        case .hnr:
+            // This suite fixes the pre-HNR scheduler compositions. HNR has its
+            // own matrix; silently accepting an unexpected lane would hide drift.
+            preconditionFailure("HNR is not configured in this scheduler workload")
         case .cpps(let value):
             cpps.support(value.context.timing.source, offset: offset)
             if let observation = value.observation {

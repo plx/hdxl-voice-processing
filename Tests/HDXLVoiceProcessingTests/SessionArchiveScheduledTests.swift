@@ -74,6 +74,7 @@ private func sessionScheduledProfile() throws -> AnalysisScheduleProfile {
         case .levels: requested = [.rms, .levelDBFS, .clippingFraction, .kWeightedEnergy]
         case .yin: requested = [.fundamentalFrequency, .trackedFundamentalFrequency]
         case .cpps: requested = [.cpp, .cpps]
+        case .hnr: requested = [.harmonicToNoiseRatio]
         }
         for metric in requested {
             metrics.insert(metric)

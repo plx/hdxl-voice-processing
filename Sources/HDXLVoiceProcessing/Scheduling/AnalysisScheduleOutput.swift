@@ -3,11 +3,12 @@ public enum ScheduledFrameValue: Sendable, Hashable {
     case levels(LevelWindowResult)
     case pitch(raw: YINFrameResult, tracked: YINTrackedFrameResult?)
     case cpps(CPPSFrameResult)
+    case hnr(HNRAnalysisResult)
 }
 
 public enum ScheduledMetric: String, Sendable, Hashable, Codable {
     case meanSquare, rms, peakAmplitude, crestFactor, levelDBFS, clippingFraction, kWeightedEnergy
-    case fundamentalFrequency, trackedFundamentalFrequency, cpp, cpps
+    case fundamentalFrequency, trackedFundamentalFrequency, cpp, cpps, harmonicToNoiseRatio
 }
 
 /// Owned scalar export retaining population evidence and complete dependency
@@ -44,6 +45,7 @@ public struct ScheduledFrame: Sendable, Hashable {
         case .levels: .levels
         case .pitch: .yin
         case .cpps: .cpps
+        case .hnr: .hnr
         }
     }
 
@@ -85,6 +87,8 @@ public struct ScheduledFrame: Sendable, Hashable {
             native = try value.rawCPP.measurementResult()
         case (.cpps(let value), .cpps):
             native = try value.measurementResult()
+        case (.hnr(let value), .harmonicToNoiseRatio):
+            native = try value.measurementResult()
         default: throw AnalysisScheduleError.invalidConfiguration
         }
         return try MeasurementResult(
@@ -111,6 +115,8 @@ public struct AnalysisScheduleCompletion: Sendable, Hashable {
     public let levels: LevelCompletion?
     public let pitch: YINCompletion?
     public let cpps: CPPSCompletion?
+    public let hnrInterval: HNRCompletion?
+    public let hnrStream: HNRStreamingCompletion?
     public let isCancelled: Bool
 }
 

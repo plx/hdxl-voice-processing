@@ -34,6 +34,7 @@
                 ]
             case .yin: metrics = [.fundamentalFrequency]
             case .cpps: metrics = [.cpp, .cpps]
+            case .hnr: metrics = [.harmonicToNoiseRatio]
             }
             outcomes = try metrics.map { try frame.measurementResult($0).outcome }
         }

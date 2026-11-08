@@ -88,6 +88,14 @@ positions and the full transformation chain in the provenance inventory. Explici
 unmasked dropout characterization is not represented as numerical parity success.
 Constructed CPPS power probes and catalog metadata contain no human recording.
 
+The speech-derived files in `Tests/HDXLVoiceProcessingTests/Fixtures/HNR/` and
+`HNRStages/` contain further **modified** representations: half-second prefixes at
+the original 44.1 kHz rate, lossless Float64 WAVE transport, external AC/CC HNR
+frames, and independent window/correlation/candidate numerical vectors. They
+retain the same CC BY 4.0 attribution and consent evidence. The provenance inventory
+preserves parent recording/excerpt hashes and the explicit prefix transformation;
+there is no additional resampling, private recording, or bundled reference code.
+
 Public-use consent evidence is the dataset author's coauthored
 [methods, “Study Design and Participants”](https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/).
 Private consent forms, participant names, and clinical/demographic labels are not

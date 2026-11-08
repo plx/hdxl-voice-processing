@@ -18,7 +18,9 @@ private struct SessionAudioReplayFixture {
 
     init(
         directory: URL, precision: AnalysisPrecision = .float64, layout: PCMLayout = .planar,
-        allMetrics: Bool = false, masked: Bool = false
+        allMetrics: Bool = false, masked: Bool = false,
+        hnrMethod: HNRMethod = .forwardCrossCorrelation,
+        hnrNormalization: HNRNormalizationDefinition = .causalWindow
     ) throws {
         let rate = 16000
         let count = allMetrics ? 2401 : 1001
@@ -37,11 +39,14 @@ private struct SessionAudioReplayFixture {
                 inputFormat: base.inputFormat, channels: base.channels, levels: base.levels,
                 pitch: YINProfile(
                     estimator: try #require(base.pitch).estimator,
-                    tracker: YINTrackerConfiguration()), cpps: base.cpps)
+                    tracker: YINTrackerConfiguration()), cpps: base.cpps,
+                hnr: HNRConfiguration(
+                    method: hnrMethod, sampleRate: rate,
+                    inputPrecision: precision, normalization: hnrNormalization))
             metrics = [
                 .meanSquare, .rms, .peakAmplitude, .crestFactor, .levelDBFS,
                 .clippingFraction, .kWeightedEnergy, .fundamentalFrequency,
-                .trackedFundamentalFrequency, .cpp, .cpps,
+                .trackedFundamentalFrequency, .cpp, .cpps, .harmonicToNoiseRatio,
             ]
         } else {
             profile = try AnalysisScheduleProfile(
@@ -115,6 +120,7 @@ private struct SessionAudioReplayFixture {
                         switch metric {
                         case .fundamentalFrequency, .trackedFundamentalFrequency: algorithm = .yin
                         case .cpp, .cpps: algorithm = .cpps
+                        case .harmonicToNoiseRatio: algorithm = .hnr
                         default: algorithm = .levels
                         }
                         if output.frame.algorithm == algorithm {
@@ -308,6 +314,31 @@ private func expectNoSessionStage(_ directory: URL) throws {
     #expect(values.allSatisfy { $0.mask != nil && $0.origin == fixture.source.origin })
     #expect(result.originalDecoder == claimed && result.actualDecoder == fixture.decoder)
     #expect(result.sessionCompletion == .partial && result.source == fixture.interval)
+    try expectNoSessionStage(directory)
+}
+
+@Test func hnrAudioReplayPreservesOfflineACProfileAndFloat32FileResults() throws {
+    let directory = try sessionFileTestDirectory()
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let fixture = try SessionAudioReplayFixture(
+        directory: directory, precision: .float32,
+        layout: .interleaved, allMetrics: true, hnrMethod: .autocorrelation,
+        hnrNormalization: .wholeInterval)
+    let url = try fixture.archive(directory: directory)
+    let index = try #require(fixture.metrics.firstIndex(of: .harmonicToNoiseRatio))
+    var values: [ScheduledMeasurementExport] = []
+    let result = try SessionArchiveAudioReplay.run(
+        at: url, planIndex: UInt32(index),
+        scratchDirectory: directory, archiveLimits: SessionArchiveLimits(),
+        replayLimits: SessionArchiveReplayLimits(decodedChunkCapacity: 83, sourceTileCapacity: 128)
+    ) {
+        values.append($0)
+    }
+    #expect(values == fixture.expected[.harmonicToNoiseRatio] && values.count > 1)
+    #expect(result.seriesIndex == UInt32(index))
+    #expect(values.allSatisfy { $0.result.measurement.kind == .harmonicToNoiseRatio })
+    #expect(Set(values.map { $0.dependencyTiming.source }).count == 1)
+    #expect(Set(values.map(\.frameCenterSecondsFromOrigin)).count == values.count)
     try expectNoSessionStage(directory)
 }
 

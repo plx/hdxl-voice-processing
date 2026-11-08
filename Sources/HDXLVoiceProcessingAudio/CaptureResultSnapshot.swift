@@ -7,12 +7,14 @@ public struct CaptureResultFrames: Sendable, Hashable {
     public internal(set) var levels: PCMTransferScheduledFrame?
     public internal(set) var pitch: PCMTransferScheduledFrame?
     public internal(set) var cpps: PCMTransferScheduledFrame?
+    public internal(set) var hnr: PCMTransferScheduledFrame?
 
     mutating func accept(_ value: PCMTransferScheduledFrame) {
         switch value.frame.algorithm {
         case .levels: levels = value
         case .yin: pitch = value
         case .cpps: cpps = value
+        case .hnr: hnr = value
         }
     }
 }

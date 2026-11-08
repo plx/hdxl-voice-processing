@@ -97,6 +97,13 @@ public enum SessionArchiveAudioReplay {
                 } else {
                     mask = nil
                 }
+                if let hnr = profile.hnr, hnr.normalization == .wholeInterval {
+                    // Replay analyzes this mapping as one continuity region;
+                    // unrelated regions in the full provenance plan are not input.
+                    _ = try HNRIntervalLayout(
+                        configuration: hnr,
+                        sampleCount: Int(mapping.source.sampleCount))
+                }
                 if profile.inputPrecision == .float32 {
                     return try analyze(
                         Float.self, url: url, archiveID: reader.header.id,
@@ -242,6 +249,7 @@ public enum SessionArchiveAudioReplay {
             return (.trackedFundamentalFrequency, .yin)
         case .cpp: return (.cpp, .cpps)
         case .cpps: return (.cpps, .cpps)
+        case .harmonicToNoiseRatio: return (.harmonicToNoiseRatio, .hnr)
         default: throw SessionArchiveError.incompatibleProfile
         }
     }

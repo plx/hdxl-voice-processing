@@ -12,6 +12,9 @@ let package = Package(
             name: "HDXLVoiceProcessingVisualization", targets: ["HDXLVoiceProcessingVisualization"]),
     ],
     targets: [
+        .executableTarget(
+            name: "HNRStageProbe", dependencies: ["HDXLVoiceProcessing"],
+            path: "Tools/HNRStageProbe"),
         .target(name: "HDXLVoiceProcessing"),
         .target(name: "HDXLVoiceProcessingAudio", dependencies: ["HDXLVoiceProcessing"]),
         .target(name: "HDXLVoiceProcessingVisualization", dependencies: ["HDXLVoiceProcessing"]),

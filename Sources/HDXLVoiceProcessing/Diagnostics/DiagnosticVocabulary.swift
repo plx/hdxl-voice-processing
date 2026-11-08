@@ -24,6 +24,7 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
     case resample, preEmphasis, frameAssembly, fft, cepstrum, cpp, cppsSmoothing, cppsFitting,
         cppsAggregation
     case pitch, pitchTracking, hnr, pulses, perturbation, resultPublication, levelEnergy, kWeighting
+    case hnrNormalization, hnrWindow, hnrCorrelation, hnrPeriodSearch
     case fixtureLoad, fixtureDecode
     case speechActivity, maskIntervals, energyEligibility, maskResolution, maskRouting
     case overrun, drop, routeChange, configurationChange, error, cancelled
@@ -61,6 +62,10 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
         case .pitch: "Pitch"
         case .pitchTracking: "PitchTracking"
         case .hnr: "HNR"
+        case .hnrNormalization: "HNRNormalization"
+        case .hnrWindow: "HNRWindow"
+        case .hnrCorrelation: "HNRCorrelation"
+        case .hnrPeriodSearch: "HNRPeriodSearch"
         case .pulses: "Pulses"
         case .perturbation: "Perturbation"
         case .resultPublication: "ResultPublication"

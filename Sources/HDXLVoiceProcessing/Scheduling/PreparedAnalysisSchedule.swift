@@ -24,6 +24,8 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     private var pitchWorker: PreparedYINAnalyzer<Sample>?
     private var previewWorker: PreparedPreviewCPPS<Sample>?
     private var intervalWorker: PreparedIntervalCPPS<Sample>?
+    private var hnrStreamWorker: PreparedHNRStream<Sample>?
+    private var hnrIntervalWorker: PreparedIntervalHNR<Sample>?
     private var callbackError: (any Error)?
     private var completion: AnalysisScheduleCompletion?
     private let cppsIdentity: ProfileIdentity?
@@ -36,6 +38,8 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             + (previewWorker?.smoothingRecordWorkspaceBytes ?? 0)
             + (intervalWorker?.scalarWorkspaceBytes ?? 0)
             + (intervalWorker?.smoothingRecordWorkspaceBytes ?? 0)
+            + (hnrStreamWorker?.preparedBufferBytes ?? 0)
+            + (hnrIntervalWorker?.preparedBufferBytes ?? 0)
     }
 
     public init(
@@ -125,6 +129,17 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             } else if let count = expectedSampleCount, count > 0 {
                 intervalWorker = try PreparedIntervalCPPS(
                     profile: cpps, source: localInterval(start: 0, count: count))
+            }
+        }
+        if let hnr = profile.hnr {
+            if hnr.normalization == .causalWindow {
+                hnrStreamWorker = try PreparedHNRStream(
+                    configuration: hnr, epoch: origin.continuityEpoch)
+            } else if let count = expectedSampleCount {
+                hnrIntervalWorker = try PreparedIntervalHNR(
+                    configuration: hnr,
+                    timing: AnalysisTiming(
+                        source: localInterval(start: 0, count: count), includedSampleCount: count))
             }
         }
     }
@@ -280,6 +295,14 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         if state == .prepared, callbackError == nil, let intervalWorker {
             try intervalWorker.append(input, interval: interval)
         }
+        if state == .prepared, callbackError == nil, let hnrStreamWorker {
+            _ = try hnrStreamWorker.process(input, interval: interval) { value in
+                deliver(.hnr(value.frame.result), emit: emit)
+            }
+        }
+        if state == .prepared, callbackError == nil, let hnrIntervalWorker {
+            try hnrIntervalWorker.append(input, interval: interval)
+        }
         dispatchedSampleCount += Int64(tileCount)
         tileCount = 0
         if let callbackError { throw callbackError }
@@ -311,6 +334,9 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             case .cpps(let value):
                 native = value.context.timing
                 center = value.context.centerSecondsFromOrigin
+            case .hnr(let value):
+                native = value.dependencyTiming
+                center = value.centerSourceSeconds
             }
             let timing = try origin.mappedTiming(native)
             emittedFrameCount += 1
@@ -370,6 +396,14 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
                     unavailability: .insufficientData)
             }
             if let callbackError { throw callbackError }
+            let hnrStream =
+                state == .prepared
+                ? try hnrStreamWorker?.finish { deliver(.hnr($0.frame.result), emit: emit) } : nil
+            if let callbackError { throw callbackError }
+            let hnrInterval =
+                state == .prepared
+                ? try hnrIntervalWorker?.finish { deliver(.hnr($0.result), emit: emit) } : nil
+            if let callbackError { throw callbackError }
             let observed = try origin.sourceInterval(
                 for: localInterval(start: 0, count: receivedSampleCount))
             let result = try AnalysisScheduleCompletion(
@@ -378,6 +412,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
                 coverage: mask?.coverage(of: observed) ?? .acquired(observed.sampleCount),
                 mask: mask?.provenance,
                 emittedFrames: emittedFrameCount, levels: levels, pitch: pitch, cpps: cpps,
+                hnrInterval: hnrInterval, hnrStream: hnrStream,
                 isCancelled: isCancelled)
             if state != .cancelled {
                 state = .finished
@@ -451,14 +486,34 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             newInterval = nil
         }
 
+        let newHNRStream: PreparedHNRStream<Sample>?
+        if hnrStreamWorker == nil, let hnr = profile.hnr, hnr.normalization == .causalWindow {
+            newHNRStream = try PreparedHNRStream(configuration: hnr, epoch: next.continuityEpoch)
+        } else {
+            newHNRStream = nil
+        }
+        let nextHNRTiming = try AnalysisTiming(
+            source: nextInterval, includedSampleCount: nextInterval.sampleCount)
+        let reuseHNRInterval = hnrIntervalWorker != nil && count == expectedSampleCount
+        let newHNRInterval: PreparedIntervalHNR<Sample>?
+        if let hnr = profile.hnr, hnr.normalization == .wholeInterval, !reuseHNRInterval {
+            newHNRInterval = try PreparedIntervalHNR(configuration: hnr, timing: nextHNRTiming)
+        } else {
+            newHNRInterval = nil
+        }
+
         try levelWorker?.reset(for: boundary)
         try pitchWorker?.reset(for: boundary)
         try previewWorker?.reset(for: boundary)
         if reuseInterval { try intervalWorker?.reset(source: nextInterval) }
+        try hnrStreamWorker?.reset(for: boundary)
+        if reuseHNRInterval { try hnrIntervalWorker?.reset(timing: nextHNRTiming) }
         if let newLevel { levelWorker = newLevel }
         if let newPitch { pitchWorker = newPitch }
         if let newPreview { previewWorker = newPreview }
         if !reuseInterval { intervalWorker = newInterval }
+        if let newHNRStream { hnrStreamWorker = newHNRStream }
+        if !reuseHNRInterval { hnrIntervalWorker = newHNRInterval }
         if tile.baseAddress == nil {
             tile = .allocate(capacity: sourceTileCapacity)
             tile.initialize(repeating: 0)
@@ -484,6 +539,8 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     public func cancel() {
         state = .cancelled
         completion = nil
+        hnrStreamWorker?.cancel()
+        hnrIntervalWorker?.cancel()
         if !busy { releaseIfCancelled() }
     }
 
@@ -493,6 +550,8 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         pitchWorker = nil
         previewWorker = nil
         intervalWorker = nil
+        hnrStreamWorker = nil
+        hnrIntervalWorker = nil
         if tile.baseAddress != nil {
             tile.deinitialize()
             tile.deallocate()
