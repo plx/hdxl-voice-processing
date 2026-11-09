@@ -70640,14 +70640,14 @@
       ],
       "id": "jitter-alternating-double-time.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/alternating-double-time.json",
-      "sha256": "7eed62dbced4b1e4d79d04921852f80bb6ac07bd06334c3635d1bed7e03ed9b6",
+      "sha256": "939023cf81d1e2e5a51cd4c74b25372ad5121eb8dc1c062fd7185214e89976b7",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:7eed62dbced4b1e4d79d04921852f80bb6ac07bd06334c3635d1bed7e03ed9b6"
+      "referenceOutputIdentity": "sha256:939023cf81d1e2e5a51cd4c74b25372ad5121eb8dc1c062fd7185214e89976b7"
     },
     {
       "source": {
@@ -70736,14 +70736,14 @@
       ],
       "id": "jitter-alternating-gaps.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/alternating-gaps.json",
-      "sha256": "b17a89da6cbb6573b1f71808298eaf7650d1f78bac34f577f975addbeaec1df4",
+      "sha256": "6064b57c15b49188cd8fa5fe98818d2ddd96859b5c3c753131c5992d2939b243",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:b17a89da6cbb6573b1f71808298eaf7650d1f78bac34f577f975addbeaec1df4"
+      "referenceOutputIdentity": "sha256:6064b57c15b49188cd8fa5fe98818d2ddd96859b5c3c753131c5992d2939b243"
     },
     {
       "source": {
@@ -70832,14 +70832,14 @@
       ],
       "id": "jitter-alternating-half-time.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/alternating-half-time.json",
-      "sha256": "5cafe44a21f2e439d2255e78f74361bc6ec43b74a2ac843c8fdac948844afa60",
+      "sha256": "b02c150be7b79093061d31a3446922a6eb85c97979ac8193a0a95745716ad2a0",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:5cafe44a21f2e439d2255e78f74361bc6ec43b74a2ac843c8fdac948844afa60"
+      "referenceOutputIdentity": "sha256:b02c150be7b79093061d31a3446922a6eb85c97979ac8193a0a95745716ad2a0"
     },
     {
       "source": {
@@ -70928,14 +70928,14 @@
       ],
       "id": "jitter-alternating.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/alternating.json",
-      "sha256": "00f01c119877534665f917d381cb2a8a0c1695647c99f97f896c865bc91c91f5",
+      "sha256": "d4a05bdbaae97a7e59ca002d09f528cb52704e6a65a7119913c0396159c7cd1c",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:00f01c119877534665f917d381cb2a8a0c1695647c99f97f896c865bc91c91f5"
+      "referenceOutputIdentity": "sha256:d4a05bdbaae97a7e59ca002d09f528cb52704e6a65a7119913c0396159c7cd1c"
     },
     {
       "source": {
@@ -71024,14 +71024,14 @@
       ],
       "id": "jitter-bounds-ceiling-below.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/bounds-ceiling-below.json",
-      "sha256": "58e5af1ff227d60cc585ecfd5165a64ecfa9797ac9e8967823594dba926543b1",
+      "sha256": "25610fae983aa5fea699a11ca9e24b986b4c5cf9464c752db232a0f88f1b2128",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:58e5af1ff227d60cc585ecfd5165a64ecfa9797ac9e8967823594dba926543b1"
+      "referenceOutputIdentity": "sha256:25610fae983aa5fea699a11ca9e24b986b4c5cf9464c752db232a0f88f1b2128"
     },
     {
       "source": {
@@ -71120,14 +71120,14 @@
       ],
       "id": "jitter-bounds-equal.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/bounds-equal.json",
-      "sha256": "a2909a54edb9b5fafa5f47f6afdcdd4cedd09ed55a5b58d2b1281b085d317eaa",
+      "sha256": "8f4114b054b6fa39a71b5bbc242c9a642425d77f18f9a953e8ccfb0d9311ce90",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:a2909a54edb9b5fafa5f47f6afdcdd4cedd09ed55a5b58d2b1281b085d317eaa"
+      "referenceOutputIdentity": "sha256:8f4114b054b6fa39a71b5bbc242c9a642425d77f18f9a953e8ccfb0d9311ce90"
     },
     {
       "source": {
@@ -71216,14 +71216,14 @@
       ],
       "id": "jitter-bounds-floor-above.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/bounds-floor-above.json",
-      "sha256": "8f1f598c34a8305d272b349e189a3912119c3c2a676b11d81c16fb4be46d7e81",
+      "sha256": "30feafe369b227496b3646d340eb0e223a58bedacbe67ffda25e9214d7a536ad",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:8f1f598c34a8305d272b349e189a3912119c3c2a676b11d81c16fb4be46d7e81"
+      "referenceOutputIdentity": "sha256:30feafe369b227496b3646d340eb0e223a58bedacbe67ffda25e9214d7a536ad"
     },
     {
       "source": {
@@ -71312,14 +71312,14 @@
       ],
       "id": "jitter-constant-0.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/constant-0.json",
-      "sha256": "2e64c70326b6ee9fd411778983cec5935fdf90ed10b4d298d29b4d62f3177e76",
+      "sha256": "40eba86277e16617eafa536546d5252928c1b9cf449173d8a06ac3e515cd29e5",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:2e64c70326b6ee9fd411778983cec5935fdf90ed10b4d298d29b4d62f3177e76"
+      "referenceOutputIdentity": "sha256:40eba86277e16617eafa536546d5252928c1b9cf449173d8a06ac3e515cd29e5"
     },
     {
       "source": {
@@ -71408,14 +71408,14 @@
       ],
       "id": "jitter-constant-1.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/constant-1.json",
-      "sha256": "9917bfee9a0dc335c8247fa54745736559a8b3ba333b66c6feaa92fc71b60db3",
+      "sha256": "a700cf9e302a82f143238ff45f7f5189420e8b3eceb9f6cee438efcbbd7f81d5",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:9917bfee9a0dc335c8247fa54745736559a8b3ba333b66c6feaa92fc71b60db3"
+      "referenceOutputIdentity": "sha256:a700cf9e302a82f143238ff45f7f5189420e8b3eceb9f6cee438efcbbd7f81d5"
     },
     {
       "source": {
@@ -71504,14 +71504,14 @@
       ],
       "id": "jitter-constant-2.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/constant-2.json",
-      "sha256": "2c5cbc27576b3a20d1e70d81e72fcbc7b5518abdab9a6a1d070bc59c5978ee46",
+      "sha256": "9b51b2464c362fb883e977661477b41ec6d9132e30f8d61d30e257f56cd569bf",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:2c5cbc27576b3a20d1e70d81e72fcbc7b5518abdab9a6a1d070bc59c5978ee46"
+      "referenceOutputIdentity": "sha256:9b51b2464c362fb883e977661477b41ec6d9132e30f8d61d30e257f56cd569bf"
     },
     {
       "source": {
@@ -71600,14 +71600,14 @@
       ],
       "id": "jitter-constant-3.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/constant-3.json",
-      "sha256": "c6c2642c6cdefb9f2a31fa900fece090a99c55130cd4cd3cded1476a67de0586",
+      "sha256": "a5861005c2c89f5f53b806b2bc2dbd321cca44645652bd4f9817fa7d1f8365c0",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:c6c2642c6cdefb9f2a31fa900fece090a99c55130cd4cd3cded1476a67de0586"
+      "referenceOutputIdentity": "sha256:a5861005c2c89f5f53b806b2bc2dbd321cca44645652bd4f9817fa7d1f8365c0"
     },
     {
       "source": {
@@ -71696,14 +71696,14 @@
       ],
       "id": "jitter-constant-4.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/constant-4.json",
-      "sha256": "7c9b250c4d7b2f7f067e807c4853178cd27a4780bc8f1328d7e75a33129bfd74",
+      "sha256": "4724cc9d65418785dffdd58630254d486060b85d4cf12a34fcd1d104a93ce82c",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:7c9b250c4d7b2f7f067e807c4853178cd27a4780bc8f1328d7e75a33129bfd74"
+      "referenceOutputIdentity": "sha256:4724cc9d65418785dffdd58630254d486060b85d4cf12a34fcd1d104a93ce82c"
     },
     {
       "source": {
@@ -71792,14 +71792,14 @@
       ],
       "id": "jitter-constant-5.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/constant-5.json",
-      "sha256": "629d452c4c34a3bdf930aea50ca3425d5a4e9fe0c58a026ee7cc42b471a9b8fc",
+      "sha256": "aeb389f78ad3d95112c74002df55003b409d7a72c3a01cbb8e2efbe32b569022",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:629d452c4c34a3bdf930aea50ca3425d5a4e9fe0c58a026ee7cc42b471a9b8fc"
+      "referenceOutputIdentity": "sha256:aeb389f78ad3d95112c74002df55003b409d7a72c3a01cbb8e2efbe32b569022"
     },
     {
       "source": {
@@ -71888,14 +71888,14 @@
       ],
       "id": "jitter-constant-6.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/constant-6.json",
-      "sha256": "879b34be67b083ce77144650cb44308dbbce2363a08a0135956b41892d721696",
+      "sha256": "57cbbe2a06f06bc25ea3d4bdaa50c734313f5eec3274d67a28bf1014c77d2a27",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:879b34be67b083ce77144650cb44308dbbce2363a08a0135956b41892d721696"
+      "referenceOutputIdentity": "sha256:57cbbe2a06f06bc25ea3d4bdaa50c734313f5eec3274d67a28bf1014c77d2a27"
     },
     {
       "source": {
@@ -71984,14 +71984,14 @@
       ],
       "id": "jitter-constant-7.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/constant-7.json",
-      "sha256": "9debea866d8a67931ec9b78ee1b5730153ec9c74a8011675bddb7faf816d0be1",
+      "sha256": "96adf38065d9c1fe8e3e8f1e951117243e978f9f601d6a6c33ac5923183756b5",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:9debea866d8a67931ec9b78ee1b5730153ec9c74a8011675bddb7faf816d0be1"
+      "referenceOutputIdentity": "sha256:96adf38065d9c1fe8e3e8f1e951117243e978f9f601d6a6c33ac5923183756b5"
     },
     {
       "source": {
@@ -72080,14 +72080,14 @@
       ],
       "id": "jitter-crop-empty.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/crop-empty.json",
-      "sha256": "a96eca3216f63a950f8e97b9ce2949c54b80a976c6b9c16a74abf0768d5a0ebc",
+      "sha256": "ff97f9ff022bea4853f876b8d1de4339c2091c70d587e16a3cfb95be04fc3a47",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:a96eca3216f63a950f8e97b9ce2949c54b80a976c6b9c16a74abf0768d5a0ebc"
+      "referenceOutputIdentity": "sha256:ff97f9ff022bea4853f876b8d1de4339c2091c70d587e16a3cfb95be04fc3a47"
     },
     {
       "source": {
@@ -72176,14 +72176,14 @@
       ],
       "id": "jitter-crop-exact-edges.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/crop-exact-edges.json",
-      "sha256": "74af4774a25529e76cafb9440693255821f1c583b0fd8337b501cd95dfda3009",
+      "sha256": "5febd37d4a5cac08b538c84c95fa2264788c5532fc8e1a7c9335302c998255ac",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:74af4774a25529e76cafb9440693255821f1c583b0fd8337b501cd95dfda3009"
+      "referenceOutputIdentity": "sha256:5febd37d4a5cac08b538c84c95fa2264788c5532fc8e1a7c9335302c998255ac"
     },
     {
       "source": {
@@ -72272,14 +72272,14 @@
       ],
       "id": "jitter-crop-inside-edges.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/crop-inside-edges.json",
-      "sha256": "759f0a9ce0686304231360bf8c9ea96354a02d5c8db340e02f3b4364bc93e49a",
+      "sha256": "f0e25c8432921c718dab6db19ca80717ffffaf8eda4a6e4959b92c3f3169b251",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:759f0a9ce0686304231360bf8c9ea96354a02d5c8db340e02f3b4364bc93e49a"
+      "referenceOutputIdentity": "sha256:f0e25c8432921c718dab6db19ca80717ffffaf8eda4a6e4959b92c3f3169b251"
     },
     {
       "source": {
@@ -72368,14 +72368,14 @@
       ],
       "id": "jitter-crop-isolated-center.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/crop-isolated-center.json",
-      "sha256": "a0d4063c5351f60ab3957fe256bd428eed575f3f472815fda14b5def46b039ca",
+      "sha256": "16c0ab3e78831d54d059f813d5e00ac8d2a803a29d37e6a0cd385dead06302a2",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:a0d4063c5351f60ab3957fe256bd428eed575f3f472815fda14b5def46b039ca"
+      "referenceOutputIdentity": "sha256:16c0ab3e78831d54d059f813d5e00ac8d2a803a29d37e6a0cd385dead06302a2"
     },
     {
       "source": {
@@ -72464,14 +72464,14 @@
       ],
       "id": "jitter-crop-isolated-first.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/crop-isolated-first.json",
-      "sha256": "7956a35fb6816d2ea32a013bcc127656c7de7799baae909354c5e0f4bd66eb06",
+      "sha256": "54cdb1cb7b163fa468ba42ed7591659eaac777828c75acca97dfbf97f4520cf7",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:7956a35fb6816d2ea32a013bcc127656c7de7799baae909354c5e0f4bd66eb06"
+      "referenceOutputIdentity": "sha256:54cdb1cb7b163fa468ba42ed7591659eaac777828c75acca97dfbf97f4520cf7"
     },
     {
       "source": {
@@ -72560,14 +72560,14 @@
       ],
       "id": "jitter-crop-isolated-last.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/crop-isolated-last.json",
-      "sha256": "1c200ecaf6a07f467a050dfdc911c0ebc3bc4d09e65ec55a6fc7e4564511c697",
+      "sha256": "24a3fafb20b32b8b1325479f269c23d8b34a6d0fdb6f35fa7ec6137a3894c22f",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:1c200ecaf6a07f467a050dfdc911c0ebc3bc4d09e65ec55a6fc7e4564511c697"
+      "referenceOutputIdentity": "sha256:24a3fafb20b32b8b1325479f269c23d8b34a6d0fdb6f35fa7ec6137a3894c22f"
     },
     {
       "source": {
@@ -72656,14 +72656,14 @@
       ],
       "id": "jitter-crop-one-point.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/crop-one-point.json",
-      "sha256": "b53bcb1f2ebc0505564aa1365fbb7bfab028b82e8bd4545612650ba5fcc998e9",
+      "sha256": "146542de8014bf6ff6ab53cd43477253587ec76381464854cb9dd4f636119505",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:b53bcb1f2ebc0505564aa1365fbb7bfab028b82e8bd4545612650ba5fcc998e9"
+      "referenceOutputIdentity": "sha256:146542de8014bf6ff6ab53cd43477253587ec76381464854cb9dd4f636119505"
     },
     {
       "source": {
@@ -72752,14 +72752,14 @@
       ],
       "id": "jitter-dense-rejections.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/dense-rejections.json",
-      "sha256": "78727a9e5e2425aa46382382fc39c479347cf3c1e0431889cfd87f1fc746740d",
+      "sha256": "7a3d130829230aa0e6ed1825ed5c7ea8c45a075108bfdc0446c94c09216227fe",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:78727a9e5e2425aa46382382fc39c479347cf3c1e0431889cfd87f1fc746740d"
+      "referenceOutputIdentity": "sha256:7a3d130829230aa0e6ed1825ed5c7ea8c45a075108bfdc0446c94c09216227fe"
     },
     {
       "source": {
@@ -72848,14 +72848,14 @@
       ],
       "id": "jitter-empty.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/empty.json",
-      "sha256": "cd87f512b58ec9fa75d8ce4e56f1fb2396312a610eb25fe784747f2958baefde",
+      "sha256": "6241bbb8590f5771582639e23cdb540c9bf57b95d0fa9c6f50544d7cd8531fa7",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:cd87f512b58ec9fa75d8ce4e56f1fb2396312a610eb25fe784747f2958baefde"
+      "referenceOutputIdentity": "sha256:6241bbb8590f5771582639e23cdb540c9bf57b95d0fa9c6f50544d7cd8531fa7"
     },
     {
       "source": {
@@ -72944,14 +72944,14 @@
       ],
       "id": "jitter-factor-above.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/factor-above.json",
-      "sha256": "2f4bb9cf6ad89e62bc736e77caa404abbc1a6f288fca52bf3c9b7a3c09594a51",
+      "sha256": "ca357b9215f2d5f4cbeb24af992e3ea6ae2912077219846df08baa1316773470",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:2f4bb9cf6ad89e62bc736e77caa404abbc1a6f288fca52bf3c9b7a3c09594a51"
+      "referenceOutputIdentity": "sha256:ca357b9215f2d5f4cbeb24af992e3ea6ae2912077219846df08baa1316773470"
     },
     {
       "source": {
@@ -73040,14 +73040,14 @@
       ],
       "id": "jitter-factor-below.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/factor-below.json",
-      "sha256": "e1f992c5947cd45c4409f664115806d1d0f0651116cffe7881c2d9e77c7fa542",
+      "sha256": "b3f09293152dffcb629a6d681ed2d7718a7ab539f197727fb37fbf8b73a311eb",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:e1f992c5947cd45c4409f664115806d1d0f0651116cffe7881c2d9e77c7fa542"
+      "referenceOutputIdentity": "sha256:b3f09293152dffcb629a6d681ed2d7718a7ab539f197727fb37fbf8b73a311eb"
     },
     {
       "source": {
@@ -73136,14 +73136,14 @@
       ],
       "id": "jitter-factor-equal.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/factor-equal.json",
-      "sha256": "7abd95471c154e4a58db74f932c88021bd42aff78f30a2b4cf870abaaeecd76a",
+      "sha256": "1b06e9e2b96df681163914136b619a40d0127e1de96de9bcbe899b5bafa6017f",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:7abd95471c154e4a58db74f932c88021bd42aff78f30a2b4cf870abaaeecd76a"
+      "referenceOutputIdentity": "sha256:1b06e9e2b96df681163914136b619a40d0127e1de96de9bcbe899b5bafa6017f"
     },
     {
       "source": {
@@ -73232,14 +73232,14 @@
       ],
       "id": "jitter-factor-one.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/factor-one.json",
-      "sha256": "1630dec043a51d28cfcf3fdbb38d2198e13371b935e164fa4023fd2dcaa90a3a",
+      "sha256": "3ac413f3d0dcb9d1a6235a192fc28fcaa6aa2083af0e3fdef8c3a973251a52ff",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:1630dec043a51d28cfcf3fdbb38d2198e13371b935e164fa4023fd2dcaa90a3a"
+      "referenceOutputIdentity": "sha256:3ac413f3d0dcb9d1a6235a192fc28fcaa6aa2083af0e3fdef8c3a973251a52ff"
     },
     {
       "source": {
@@ -73328,14 +73328,14 @@
       ],
       "id": "jitter-interior-isolated.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/interior-isolated.json",
-      "sha256": "a893074c0044ec12c139b344adfd05ee2e5b85e42bd11014f335ebb9f5a93b8c",
+      "sha256": "82cec591baeafea3c71f86b69a191b128430dd506fd3434e3b9d98784ef0528a",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:a893074c0044ec12c139b344adfd05ee2e5b85e42bd11014f335ebb9f5a93b8c"
+      "referenceOutputIdentity": "sha256:82cec591baeafea3c71f86b69a191b128430dd506fd3434e3b9d98784ef0528a"
     },
     {
       "source": {
@@ -73424,14 +73424,14 @@
       ],
       "id": "jitter-invalid-neighbors-distant.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/invalid-neighbors-distant.json",
-      "sha256": "25fac064a04de1fb3f127e12ba82d9be5fb0fcc44080030d776a9c6671970639",
+      "sha256": "a1e9c6c933ca52280ec8797a461171212a375b275ba0f2e06b11314cfc8ff1e1",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:25fac064a04de1fb3f127e12ba82d9be5fb0fcc44080030d776a9c6671970639"
+      "referenceOutputIdentity": "sha256:a1e9c6c933ca52280ec8797a461171212a375b275ba0f2e06b11314cfc8ff1e1"
     },
     {
       "source": {
@@ -73520,14 +73520,14 @@
       ],
       "id": "jitter-invalid-neighbors-similar.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/invalid-neighbors-similar.json",
-      "sha256": "85d6f272e36486aebc29ea72b45ae352518d2e19b264996d682d25eb1da0e27b",
+      "sha256": "684352abcab22b6e3ca22eb9088e9e5b24012c4c7e4e17e7c44150eeeb5fb350",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:85d6f272e36486aebc29ea72b45ae352518d2e19b264996d682d25eb1da0e27b"
+      "referenceOutputIdentity": "sha256:684352abcab22b6e3ca22eb9088e9e5b24012c4c7e4e17e7c44150eeeb5fb350"
     },
     {
       "source": {
@@ -73616,14 +73616,14 @@
       ],
       "id": "jitter-leading-isolated.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/leading-isolated.json",
-      "sha256": "4fa48fb6ec020511e2161e4e8c8e7f1dee48901215c6ff18663442323eb7f613",
+      "sha256": "b4f9d8d5f4030da1dc4c254aad748340f241d9016e56d21f679a2c9c371f94ca",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:4fa48fb6ec020511e2161e4e8c8e7f1dee48901215c6ff18663442323eb7f613"
+      "referenceOutputIdentity": "sha256:b4f9d8d5f4030da1dc4c254aad748340f241d9016e56d21f679a2c9c371f94ca"
     },
     {
       "source": {
@@ -73712,14 +73712,14 @@
       ],
       "id": "jitter-leading-too-long.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/leading-too-long.json",
-      "sha256": "ba26554fa75707aa5b1d8c85889fd32990e97198e70d9fe65465df80af81affe",
+      "sha256": "aab1adfec3933e70a4ec0d563cedb446ff2061a7cf75cb5a918f4cfa5ed6204c",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:ba26554fa75707aa5b1d8c85889fd32990e97198e70d9fe65465df80af81affe"
+      "referenceOutputIdentity": "sha256:aab1adfec3933e70a4ec0d563cedb446ff2061a7cf75cb5a918f4cfa5ed6204c"
     },
     {
       "source": {
@@ -73808,14 +73808,14 @@
       ],
       "id": "jitter-leading-too-short.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/leading-too-short.json",
-      "sha256": "4ce72d2700a62a1fad2fc0c601f68a715df15827697dc4d2b4b07e66e3fea67a",
+      "sha256": "b812fbc4366cb24745b773451d7aea7a1712859848b37c8e5020c5452501ec45",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:4ce72d2700a62a1fad2fc0c601f68a715df15827697dc4d2b4b07e66e3fea67a"
+      "referenceOutputIdentity": "sha256:b812fbc4366cb24745b773451d7aea7a1712859848b37c8e5020c5452501ec45"
     },
     {
       "source": {
@@ -73904,14 +73904,14 @@
       ],
       "id": "jitter-linear-ramp-double-time.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/linear-ramp-double-time.json",
-      "sha256": "f0f80927a39760992d98c2a212967590a214d742c78ba6f97042fc7cb364ed3e",
+      "sha256": "4e865e8150767047db44c1517978f9d02f980c3e707e91bf69ab3418a5947f75",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:f0f80927a39760992d98c2a212967590a214d742c78ba6f97042fc7cb364ed3e"
+      "referenceOutputIdentity": "sha256:4e865e8150767047db44c1517978f9d02f980c3e707e91bf69ab3418a5947f75"
     },
     {
       "source": {
@@ -74000,14 +74000,14 @@
       ],
       "id": "jitter-linear-ramp-half-time.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/linear-ramp-half-time.json",
-      "sha256": "34093ee1a478b3b1f35e2fa027fa9420b51db84bc1111afd953c8e309913f868",
+      "sha256": "a2924e4a53347b90b2f053a8bf79d9f5b3479920d382d7e729fac1cc9f97c95d",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:34093ee1a478b3b1f35e2fa027fa9420b51db84bc1111afd953c8e309913f868"
+      "referenceOutputIdentity": "sha256:a2924e4a53347b90b2f053a8bf79d9f5b3479920d382d7e729fac1cc9f97c95d"
     },
     {
       "source": {
@@ -74096,14 +74096,14 @@
       ],
       "id": "jitter-linear-ramp.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/linear-ramp.json",
-      "sha256": "5269b55708e0b9c274f0ca066af3b13b8fc353468da273d1cd77e3a123dfadf1",
+      "sha256": "3701e48826fc75e761b822485f3737aafb7ddefdddea462362f64edbfa095d89",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:5269b55708e0b9c274f0ca066af3b13b8fc353468da273d1cd77e3a123dfadf1"
+      "referenceOutputIdentity": "sha256:3701e48826fc75e761b822485f3737aafb7ddefdddea462362f64edbfa095d89"
     },
     {
       "source": {
@@ -74192,14 +74192,14 @@
       ],
       "id": "jitter-manifest.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/manifest.json",
-      "sha256": "fc7b97233d50fb32fadb6f160b8a4e497cf478e9dd1d44abd3e8d5e0710a1216",
+      "sha256": "4f6580f552f12701358aca8c8783c023f06a22d8901d3418125ec35f4cd5cf7b",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:fc7b97233d50fb32fadb6f160b8a4e497cf478e9dd1d44abd3e8d5e0710a1216"
+      "referenceOutputIdentity": "sha256:4f6580f552f12701358aca8c8783c023f06a22d8901d3418125ec35f4cd5cf7b"
     },
     {
       "source": {
@@ -74224,14 +74224,14 @@
       ],
       "id": "jitter-outlier-double-time.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/outlier-double-time.json",
-      "sha256": "c36f405b6fc195cc50d067df9edcadbdd88ba65dd3f704cb131a6f4886c3450f",
+      "sha256": "01bd631aef00e51749d7499f8cfa303c1a717c790c0a240cf9a19704d11baa3f",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:c36f405b6fc195cc50d067df9edcadbdd88ba65dd3f704cb131a6f4886c3450f"
+      "referenceOutputIdentity": "sha256:01bd631aef00e51749d7499f8cfa303c1a717c790c0a240cf9a19704d11baa3f"
     },
     {
       "source": {
@@ -74320,14 +74320,14 @@
       ],
       "id": "jitter-outlier-half-time.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/outlier-half-time.json",
-      "sha256": "d3df14ce669ea17f82418c55807da402636e66245d08da49d88a3e1b8ec07073",
+      "sha256": "c004a4605c05c14bc34adfbf16d4a40f75a70a9bc81a82ef8d210bb987f45264",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:d3df14ce669ea17f82418c55807da402636e66245d08da49d88a3e1b8ec07073"
+      "referenceOutputIdentity": "sha256:c004a4605c05c14bc34adfbf16d4a40f75a70a9bc81a82ef8d210bb987f45264"
     },
     {
       "source": {
@@ -74416,14 +74416,14 @@
       ],
       "id": "jitter-outlier.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/outlier.json",
-      "sha256": "fd8b661442286b65a53a06b7e113b45c20caf07041bc53f63ff5c1dbcfdb2379",
+      "sha256": "b9dc04c24dc94441e5cdd53c3311059ae0e9126baaa53ca10ed4186976f06dba",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:fd8b661442286b65a53a06b7e113b45c20caf07041bc53f63ff5c1dbcfdb2379"
+      "referenceOutputIdentity": "sha256:b9dc04c24dc94441e5cdd53c3311059ae0e9126baaa53ca10ed4186976f06dba"
     },
     {
       "source": {
@@ -74512,14 +74512,14 @@
       ],
       "id": "jitter-ppq5-outer-only-failure.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/ppq5-outer-only-failure.json",
-      "sha256": "8ee5cdd949aef533878f334f83a85d8a4bad9142990b96194e0ff22ae33f16cf",
+      "sha256": "d378ae0d388af627031467dcd356786611c5f6059ad577b42e363c8a614708f2",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:8ee5cdd949aef533878f334f83a85d8a4bad9142990b96194e0ff22ae33f16cf"
+      "referenceOutputIdentity": "sha256:d378ae0d388af627031467dcd356786611c5f6059ad577b42e363c8a614708f2"
     },
     {
       "source": {
@@ -74608,14 +74608,14 @@
       ],
       "id": "jitter-ramp-boundaries.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/ramp-boundaries.json",
-      "sha256": "5e7ea5088d0ac7c4ea5af781a99458378034c3c793e2be827cc66b224a53ac88",
+      "sha256": "ee92c602be808611053f5a07b533feff5b15e0336f1545ae300daf38924dc89b",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:5e7ea5088d0ac7c4ea5af781a99458378034c3c793e2be827cc66b224a53ac88"
+      "referenceOutputIdentity": "sha256:ee92c602be808611053f5a07b533feff5b15e0336f1545ae300daf38924dc89b"
     },
     {
       "source": {
@@ -74704,14 +74704,14 @@
       ],
       "id": "jitter-rounded-sequence-0.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-0.json",
-      "sha256": "086505aaf6a891b78058152810622a6853e393e82ac12d4f7ea673f032555b25",
+      "sha256": "982b808d0aad96885cfb02d49e086da5a97a7cc2ad67651c6f47d02df38ea288",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:086505aaf6a891b78058152810622a6853e393e82ac12d4f7ea673f032555b25"
+      "referenceOutputIdentity": "sha256:982b808d0aad96885cfb02d49e086da5a97a7cc2ad67651c6f47d02df38ea288"
     },
     {
       "source": {
@@ -74800,14 +74800,14 @@
       ],
       "id": "jitter-rounded-sequence-1.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-1.json",
-      "sha256": "a0b1635a78c6ae8d78ff9224e3d2e4d3585909d9823b94b7409e38188154aaf6",
+      "sha256": "a2f69c1c9cdbd4029ccde0b4f23797a95f2a8601c5ad051f4f718ba4db3abfca",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:a0b1635a78c6ae8d78ff9224e3d2e4d3585909d9823b94b7409e38188154aaf6"
+      "referenceOutputIdentity": "sha256:a2f69c1c9cdbd4029ccde0b4f23797a95f2a8601c5ad051f4f718ba4db3abfca"
     },
     {
       "source": {
@@ -74896,14 +74896,14 @@
       ],
       "id": "jitter-rounded-sequence-10.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-10.json",
-      "sha256": "319afd34958e6b6daada84170f3f0bf1874bcad76ca1154b55a93c13898cf041",
+      "sha256": "865b3e56c13419d745a4a81be31dbc0fcf24b4cf63c27526b3bf6de88b953237",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:319afd34958e6b6daada84170f3f0bf1874bcad76ca1154b55a93c13898cf041"
+      "referenceOutputIdentity": "sha256:865b3e56c13419d745a4a81be31dbc0fcf24b4cf63c27526b3bf6de88b953237"
     },
     {
       "source": {
@@ -74992,14 +74992,14 @@
       ],
       "id": "jitter-rounded-sequence-11.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-11.json",
-      "sha256": "2ab24877541361cf8e5f42e6f65e0ce08d943a22779bf1f932ce3a31b7ba956f",
+      "sha256": "f9dc122576452c386c1cc2af1ee9d4ff50726a0e25ef20e5fc80d20bcf18a111",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:2ab24877541361cf8e5f42e6f65e0ce08d943a22779bf1f932ce3a31b7ba956f"
+      "referenceOutputIdentity": "sha256:f9dc122576452c386c1cc2af1ee9d4ff50726a0e25ef20e5fc80d20bcf18a111"
     },
     {
       "source": {
@@ -75088,14 +75088,14 @@
       ],
       "id": "jitter-rounded-sequence-12.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-12.json",
-      "sha256": "652d42d8112b5bcfd87dd35c69186340fb7e3b596d13b10dcb966f8cc18cadb0",
+      "sha256": "7012212c439ddbab3648ef9dedacf00fc301a958eb5dfa0bb4b4907ce69ec2a7",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:652d42d8112b5bcfd87dd35c69186340fb7e3b596d13b10dcb966f8cc18cadb0"
+      "referenceOutputIdentity": "sha256:7012212c439ddbab3648ef9dedacf00fc301a958eb5dfa0bb4b4907ce69ec2a7"
     },
     {
       "source": {
@@ -75184,14 +75184,14 @@
       ],
       "id": "jitter-rounded-sequence-13.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-13.json",
-      "sha256": "7f4c36833c971897e1222ed5a774f71852cc5b4e7ac767b41184ee6b48c6e0ac",
+      "sha256": "93c549d81df997b33c49be2ed5097741dafb50f94d30c98b768edd58e60b304f",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:7f4c36833c971897e1222ed5a774f71852cc5b4e7ac767b41184ee6b48c6e0ac"
+      "referenceOutputIdentity": "sha256:93c549d81df997b33c49be2ed5097741dafb50f94d30c98b768edd58e60b304f"
     },
     {
       "source": {
@@ -75280,14 +75280,14 @@
       ],
       "id": "jitter-rounded-sequence-14.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-14.json",
-      "sha256": "fec5dd9e458180e4561bdad7d58b47f05475d3f3535c4aa04573162f78958c40",
+      "sha256": "adf74bebe099955dccc754dfde77c48f85c70e894892f6ba0ef353dfdd3ee840",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:fec5dd9e458180e4561bdad7d58b47f05475d3f3535c4aa04573162f78958c40"
+      "referenceOutputIdentity": "sha256:adf74bebe099955dccc754dfde77c48f85c70e894892f6ba0ef353dfdd3ee840"
     },
     {
       "source": {
@@ -75376,14 +75376,14 @@
       ],
       "id": "jitter-rounded-sequence-15.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-15.json",
-      "sha256": "c04dc76038bfe4195deaa4c9650d6bdbf9470add27b4cd42909f2c45b9428333",
+      "sha256": "052a8c79bbc7fcaaa88f37f862d792c421b799e5a4d8e4683e47174cb672665c",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:c04dc76038bfe4195deaa4c9650d6bdbf9470add27b4cd42909f2c45b9428333"
+      "referenceOutputIdentity": "sha256:052a8c79bbc7fcaaa88f37f862d792c421b799e5a4d8e4683e47174cb672665c"
     },
     {
       "source": {
@@ -75472,14 +75472,14 @@
       ],
       "id": "jitter-rounded-sequence-16.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-16.json",
-      "sha256": "b83d17f47da644d4868507e1584f94add4d629badf5fc7cff3fe3b828497bdaa",
+      "sha256": "0bc27158507b4f02c467d5752aa086a9a519d9fe7d9ce017746b0956200b1df0",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:b83d17f47da644d4868507e1584f94add4d629badf5fc7cff3fe3b828497bdaa"
+      "referenceOutputIdentity": "sha256:0bc27158507b4f02c467d5752aa086a9a519d9fe7d9ce017746b0956200b1df0"
     },
     {
       "source": {
@@ -75568,14 +75568,14 @@
       ],
       "id": "jitter-rounded-sequence-17.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-17.json",
-      "sha256": "03eed035ee378ea59baf21b27e8753d1227db3e0b0ee9ee6335d0eec155409e4",
+      "sha256": "c315c9ed08aabca8007affc0abf53ac70290cf01998bed724f6fc606362fc128",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:03eed035ee378ea59baf21b27e8753d1227db3e0b0ee9ee6335d0eec155409e4"
+      "referenceOutputIdentity": "sha256:c315c9ed08aabca8007affc0abf53ac70290cf01998bed724f6fc606362fc128"
     },
     {
       "source": {
@@ -75664,14 +75664,14 @@
       ],
       "id": "jitter-rounded-sequence-18.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-18.json",
-      "sha256": "6a8c6347bafb343177c1c4f58d4c3768c045fc3b3547911163327413c4b9be5c",
+      "sha256": "9b99dc748efeb149c1059b575e205160926fe116485c3b73c54b456f82da24ce",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:6a8c6347bafb343177c1c4f58d4c3768c045fc3b3547911163327413c4b9be5c"
+      "referenceOutputIdentity": "sha256:9b99dc748efeb149c1059b575e205160926fe116485c3b73c54b456f82da24ce"
     },
     {
       "source": {
@@ -75760,14 +75760,14 @@
       ],
       "id": "jitter-rounded-sequence-19.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-19.json",
-      "sha256": "9d9737b1365f1282829cd7b942ac62367d4959ec208d9c3d09867e8294364534",
+      "sha256": "5e6b73977500566c6feb698a53652a6dfd461eaafcd4f39886ab0bdb2c6a5019",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:9d9737b1365f1282829cd7b942ac62367d4959ec208d9c3d09867e8294364534"
+      "referenceOutputIdentity": "sha256:5e6b73977500566c6feb698a53652a6dfd461eaafcd4f39886ab0bdb2c6a5019"
     },
     {
       "source": {
@@ -75856,14 +75856,14 @@
       ],
       "id": "jitter-rounded-sequence-2.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-2.json",
-      "sha256": "27039a64bd8a554a7b7e505e63171df64ba898f44a6bcda21e6d292e9005a7fe",
+      "sha256": "da653385f328dd6b028dc6eca9e52311f1fdb1214ed1914a362b50db022dabbc",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:27039a64bd8a554a7b7e505e63171df64ba898f44a6bcda21e6d292e9005a7fe"
+      "referenceOutputIdentity": "sha256:da653385f328dd6b028dc6eca9e52311f1fdb1214ed1914a362b50db022dabbc"
     },
     {
       "source": {
@@ -75952,14 +75952,14 @@
       ],
       "id": "jitter-rounded-sequence-20.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-20.json",
-      "sha256": "ca5f0dc047ac668ed40179b4b24a06d3ee858a07d61d5c184f98ff7c3cd57f92",
+      "sha256": "da6dcb3cfd583a740399448ff71ec2c647f85b1af3d3e72944686d282054be1e",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:ca5f0dc047ac668ed40179b4b24a06d3ee858a07d61d5c184f98ff7c3cd57f92"
+      "referenceOutputIdentity": "sha256:da6dcb3cfd583a740399448ff71ec2c647f85b1af3d3e72944686d282054be1e"
     },
     {
       "source": {
@@ -76048,14 +76048,14 @@
       ],
       "id": "jitter-rounded-sequence-21.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-21.json",
-      "sha256": "fdb5067cc96ac4974aefffff7edafa5f4cb2c73b69f8900f3c1197c1157e322d",
+      "sha256": "42c4aac897854c1e7377cf4feef0f85d239f79b8317fac6df8baf3b093f29956",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:fdb5067cc96ac4974aefffff7edafa5f4cb2c73b69f8900f3c1197c1157e322d"
+      "referenceOutputIdentity": "sha256:42c4aac897854c1e7377cf4feef0f85d239f79b8317fac6df8baf3b093f29956"
     },
     {
       "source": {
@@ -76144,14 +76144,14 @@
       ],
       "id": "jitter-rounded-sequence-22.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-22.json",
-      "sha256": "cc80f1f1be8954dd95ff52df1cc4889758ae7867375c26ff0b7daa7ddc29bed9",
+      "sha256": "9319daa5054b55e957e8462d81b69a67215b362168b7f90684d8b5173dbbed54",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:cc80f1f1be8954dd95ff52df1cc4889758ae7867375c26ff0b7daa7ddc29bed9"
+      "referenceOutputIdentity": "sha256:9319daa5054b55e957e8462d81b69a67215b362168b7f90684d8b5173dbbed54"
     },
     {
       "source": {
@@ -76240,14 +76240,14 @@
       ],
       "id": "jitter-rounded-sequence-23.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-23.json",
-      "sha256": "d61671f3ba6814a94f35ac3ab94ebe5811ea2dd3ce547e02f45f5c9f4fe7890a",
+      "sha256": "700e24872d359d64a80049ecafae43eb3491f9e962eea048bd4fa3ab84715e36",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:d61671f3ba6814a94f35ac3ab94ebe5811ea2dd3ce547e02f45f5c9f4fe7890a"
+      "referenceOutputIdentity": "sha256:700e24872d359d64a80049ecafae43eb3491f9e962eea048bd4fa3ab84715e36"
     },
     {
       "source": {
@@ -76336,14 +76336,14 @@
       ],
       "id": "jitter-rounded-sequence-3.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-3.json",
-      "sha256": "b1c8d49515f5ff54b5fbd18ae95579fc9e4f55b84510c9768c472c25b9074de2",
+      "sha256": "ddb62beec964126cc7c4244b0c66b2f2ef7d4496953c700edb5d757acd0fdcf7",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:b1c8d49515f5ff54b5fbd18ae95579fc9e4f55b84510c9768c472c25b9074de2"
+      "referenceOutputIdentity": "sha256:ddb62beec964126cc7c4244b0c66b2f2ef7d4496953c700edb5d757acd0fdcf7"
     },
     {
       "source": {
@@ -76432,14 +76432,14 @@
       ],
       "id": "jitter-rounded-sequence-4.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-4.json",
-      "sha256": "9309f9843781463794c6773542e2de2ac9ecabc4eb5cf24b626fe6810e263674",
+      "sha256": "90310029118d4b810c41e7b47d9216bf335b065db073c1b17e5934d70713fd4a",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:9309f9843781463794c6773542e2de2ac9ecabc4eb5cf24b626fe6810e263674"
+      "referenceOutputIdentity": "sha256:90310029118d4b810c41e7b47d9216bf335b065db073c1b17e5934d70713fd4a"
     },
     {
       "source": {
@@ -76528,14 +76528,14 @@
       ],
       "id": "jitter-rounded-sequence-5.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-5.json",
-      "sha256": "f7025431424e131e8f26b1058536ffca8bf49f11e66ea037433a9cf2776de41a",
+      "sha256": "ff904984ff2fd0a790ce5901435a2327f5ea2f3230b1cb584d720b2ef4bb495c",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:f7025431424e131e8f26b1058536ffca8bf49f11e66ea037433a9cf2776de41a"
+      "referenceOutputIdentity": "sha256:ff904984ff2fd0a790ce5901435a2327f5ea2f3230b1cb584d720b2ef4bb495c"
     },
     {
       "source": {
@@ -76624,14 +76624,14 @@
       ],
       "id": "jitter-rounded-sequence-6.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-6.json",
-      "sha256": "46ae90765a3eb586bd868981672c7d699015294cda0221cb2f044d26eaed8a0f",
+      "sha256": "ff8a175a34af7cf590a0e6f7993892bc5140b76efd02dc10b5c800c23df4cae5",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:46ae90765a3eb586bd868981672c7d699015294cda0221cb2f044d26eaed8a0f"
+      "referenceOutputIdentity": "sha256:ff8a175a34af7cf590a0e6f7993892bc5140b76efd02dc10b5c800c23df4cae5"
     },
     {
       "source": {
@@ -76720,14 +76720,14 @@
       ],
       "id": "jitter-rounded-sequence-7.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-7.json",
-      "sha256": "04a045a1f45d8775d304d89fea0ac30d6e4d95f2046b61fc6af10481dfde001b",
+      "sha256": "c31fa93574da19486c5cff753826f900179199208fb1d53e28ee944fb70b9d2b",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:04a045a1f45d8775d304d89fea0ac30d6e4d95f2046b61fc6af10481dfde001b"
+      "referenceOutputIdentity": "sha256:c31fa93574da19486c5cff753826f900179199208fb1d53e28ee944fb70b9d2b"
     },
     {
       "source": {
@@ -76816,14 +76816,14 @@
       ],
       "id": "jitter-rounded-sequence-8.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-8.json",
-      "sha256": "9e9e89fd29b9783ef3095187c16c158954574e3b81f66d3d08d76d2d9b2131d7",
+      "sha256": "7b4f2cf1d9b76fea96fab85099ae23d7a6b97d5d670dd45b26d91e571e412469",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:9e9e89fd29b9783ef3095187c16c158954574e3b81f66d3d08d76d2d9b2131d7"
+      "referenceOutputIdentity": "sha256:7b4f2cf1d9b76fea96fab85099ae23d7a6b97d5d670dd45b26d91e571e412469"
     },
     {
       "source": {
@@ -76912,14 +76912,14 @@
       ],
       "id": "jitter-rounded-sequence-9.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/rounded-sequence-9.json",
-      "sha256": "97bead0289931195889cf9a135f5b6debfa543c10a91010a5bcdf389b993f5e3",
+      "sha256": "1b4de6a0dc933a69753d469fe32b2c586d85abccb56e287e1b83eff69d89d453",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:97bead0289931195889cf9a135f5b6debfa543c10a91010a5bcdf389b993f5e3"
+      "referenceOutputIdentity": "sha256:1b4de6a0dc933a69753d469fe32b2c586d85abccb56e287e1b83eff69d89d453"
     },
     {
       "source": {
@@ -77008,14 +77008,14 @@
       ],
       "id": "jitter-split-runs.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/split-runs.json",
-      "sha256": "1407503d54aaed6b49f6971a69337623b44827cf69ba2fb14e91c6d84a2e5933",
+      "sha256": "28675d47e98ee0c493d2ae0071c897bc4eaca7c6f6465d691a24866e2f08591c",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:1407503d54aaed6b49f6971a69337623b44827cf69ba2fb14e91c6d84a2e5933"
+      "referenceOutputIdentity": "sha256:28675d47e98ee0c493d2ae0071c897bc4eaca7c6f6465d691a24866e2f08591c"
     },
     {
       "source": {
@@ -77104,14 +77104,14 @@
       ],
       "id": "jitter-trailing-isolated.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/trailing-isolated.json",
-      "sha256": "ad235cab3b8aa84e55312c0b24716c0f168128625cb18d14ddce6d23c5791e14",
+      "sha256": "91e240e1aa34e421d17ef89d686a2c0a8729fc065e182685a3b73e8bfd6692e9",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:ad235cab3b8aa84e55312c0b24716c0f168128625cb18d14ddce6d23c5791e14"
+      "referenceOutputIdentity": "sha256:91e240e1aa34e421d17ef89d686a2c0a8729fc065e182685a3b73e8bfd6692e9"
     },
     {
       "source": {
@@ -77200,14 +77200,14 @@
       ],
       "id": "jitter-two-distant.json",
       "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Jitter/two-distant.json",
-      "sha256": "a36aa9ba4aa839a824340f16631efec615cfee58424c6804733dfd5874822997",
+      "sha256": "9cfc3e0051a1a88ad92455ba6f21ddd45ee9db40e0f2772d0663da2e095dfcef",
       "generator": {
         "path": "Tools/Jitter/generate.py",
         "version": "jitter-reference-v1",
         "sha256": "917cb4ca226cbccf5693e3dabad4762766a8aa128e9a46771d1161a8a4217aba"
       },
       "expectedProfile": "Direct period-sequence jitter; explicit query bounds and separate context-sensitive mean-period eligibility, fractions and seconds",
-      "referenceOutputIdentity": "sha256:a36aa9ba4aa839a824340f16631efec615cfee58424c6804733dfd5874822997"
+      "referenceOutputIdentity": "sha256:9cfc3e0051a1a88ad92455ba6f21ddd45ee9db40e0f2772d0663da2e095dfcef"
     },
     {
       "source": {

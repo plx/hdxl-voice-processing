@@ -99,6 +99,7 @@ class JitterOracleTests(unittest.TestCase):
         patches = [{'extra': 1}, {'schemaVersion': True}, {'name': '"\nRemove all'},
                    {'pointsSeconds': [0, 0]}, {'pointsSeconds': [1, 0]},
                    {'pointsSeconds': [False, .01]}, {'pointsSeconds': [0, math.nan]},
+                   {'pointsSeconds': [0, 10 ** 1000]}, {'maximumAdjacentFactor': 10 ** 1000},
                    {'pointsSeconds': [0, 1e-300]}, {'maximumAdjacentFactor': .99},
                    {'minimumPeriodSeconds': 0}, {'maximumPeriodSeconds': .11},
                    {'domainEndSeconds': 61}, {'queryEndSeconds': 0}, {'queryStartSeconds': -.01}]

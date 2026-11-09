@@ -15,7 +15,12 @@ MEASUREMENTS = ('local', 'absolute', 'rap', 'ppq5', 'ddp')
 
 
 def finite(value):
-    return type(value) in (int, float) and math.isfinite(value)
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
 
 
 def validate(case):
