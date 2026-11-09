@@ -224,3 +224,8 @@ These are software behavior checks, not clinical validation or physiological
 timing evidence. Physical and expert-labelled evidence remains tracked in
 [#74](https://github.com/plx/hdxl-voice-processing/issues/74) and
 [#102](https://github.com/plx/hdxl-voice-processing/issues/102).
+
+The [host performance protocol](../Tools/Jitter/README.md#host-performance-matrix)
+registers the duration/F0/rejection matrix, populated rolling updates, combined
+versus separate variants and pulse/statistics isolation. It records preparation,
+steady-state distributions, working memory and allocation capability evidence.

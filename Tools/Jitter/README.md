@@ -100,3 +100,89 @@ period of 0.1 seconds. Inputs reject unknown fields, nonfinite numbers, duplicat
 or reordered points, invalid ranges and unsupported settings before execution.
 The parser rejects missing, extra, reordered or malformed records, changed
 injected points, invalid counts and inconsistent availability.
+
+## Host performance matrix
+
+The #25 workload registration is `JitterCase.matrix()` in
+[`JitterWorkload.swift`](../../Benchmarks/Sources/JitterWorkload/JitterWorkload.swift).
+It contains 68 cases and 240 operation distributions in each mode:
+
+| Input | Cases | Operations |
+| --- | ---: | --- |
+| Supplied periods: 0.25/1/3/10 seconds, 80/600 Hz, accepted/dense rejection, both declared PCM precisions | 32 | Prepare, Combined, Separate |
+| Incremental rolling: same window/F0/rejection/precision matrix | 32 | Prepare, Combined, Separate, QueryOnly |
+| Pinned 0.5-second Gaussian PCM at 16 kHz, 80/600 Hz, Float/Double | 4 | Prepare, PulseOnly, PCMCombined, StatisticsOnly |
+
+Period arithmetic is Float64 in all cases. The original supplied-period recipe
+alternates +1%/-1% durations; endpoints come directly from the cycle ordinal,
+without accumulated generation drift. Dense cases reject five of every eleven
+periods, keeping six-period accepted runs so every numerator is still exercised.
+Rejected observations remain in position. The Python receipt checker reconstructs
+the input bytes and applies separate 100-digit Decimal equations, comparing
+membership/counts exactly and values within stated binary64 forward bounds.
+
+Rolling input contains two windows. Each measured operation begins with one full
+window seeded outside the measurement. Combined and Separate append the second
+window, querying and consuming output after each new period. Actual append/query
+counts and bounded tree-node work are checked. QueryOnly measures one report from
+already populated state, with no expiry due. Separate uses five workers that each
+compute a genuinely requested variant; RAP/DDP each require the triplet numerator.
+Preparation measures construction/destruction of one combined worker. Input
+creation, contour hashing, reset, rolling seed history and encoding are excluded.
+
+Supplied periods use one source sample of conservative dependency padding around
+fractional endpoints. This is a benchmark input-envelope policy, not a claim of
+physiological pulse detection delay. Frame/window lengths, variable period-hop
+definition, profile identities, source intervals and precision are recorded.
+
+The PCM comparison uses the existing frozen external pulse/F0 fixtures, including
+their exact content hashes. PulseOnly and PCMCombined consume the same borrowed
+pulse outputs. StatisticsOnly receives the exact qualified period sequence copied
+during untimed setup. Numerical equations are independently checked for those
+declared periods and flags; this benchmark does not independently relabel pulse
+reliability. Raw pulse populations and positions also match the frozen reference.
+The three costs are measured directly. Their difference is not presented as an
+isolated internal stage duration. Full pulse tracking validation remains in
+[`Tools/Pulses`](../Pulses/README.md).
+
+Run each shard in both modes with the pinned host toolchain:
+
+```sh
+python3 Tools/Jitter/benchmark.py timing --shard duration250
+python3 Tools/Jitter/benchmark.py allocation --shard duration250
+```
+
+The other shards are `duration1000`, `duration3000`, `duration10000` and `pcm`.
+Each operation has three warmups and thirty measured samples, with a 600-second
+cap; fewer samples fail verification. The retained p99 is near the maximum of
+this small sample and is not a stable population-tail estimate. Throughput and
+amortized update cost use the declared batch length; query-only cost is separate.
+These are host software measurements, not device capture latency or physical
+real-time guarantees. Physical evidence is tracked in #74/#102.
+
+Timing and allocation builds use separate `.build/jitter-timing` and
+`.build/jitter-allocation` caches. Allocation mode requires positive malloc,
+free, byte, object and ARC controls. Every prepared non-Prepare operation must
+report zero heap-allocation maxima; unavailable instrumentation cannot pass as
+zero. Allocator-instrumented wall times are diagnostic and must not be used as
+uninstrumented latency results. Worker signposts are disabled during these runs.
+The #18 token50 registration and its source/period counter semantics are in
+the [instrumentation guide](../../Documentation/Instrumentation.md#jitter-worker-integration).
+
+Each unique `Benchmarks/.build/artifacts/jitter-<mode>-<shard>-<id>` directory retains
+input/profile/geometry reports, hardware/toolchain/SDK and source hashes, locked
+dependency resolution, command logs, raw histograms, p99 exports, validated metric
+coverage and status. Timing mode also writes derived operation costs. Temporary
+framework baselines are removed only after their distributions are retained.
+
+Prepared bytes are explicit buffer storage, excluding object bookkeeping. Pinned
+arm64 Swift 6.4 layouts are: numerical period16, public period32, source interval48,
+analysis timing112, optional rolling ring entry88 and tree node352 bytes. A ring of
+capacity `C` uses `88*C + 352*2*nextPowerOfTwo(C)` bytes. Five separate workers own
+five copies of that storage. Input/contour/support arrays are reported separately.
+Allocator resident-memory and leak metrics are not inferred from those sizes.
+
+Receipt rejection tests cover changed values, counts, units, queries, profiles,
+input/F0 identities, missing incremental work, workspace geometry, distributions,
+controls and units. CI runs all five performance shards, regenerates the complete
+69-case reference set and proves byte identity before native comparison tests.
