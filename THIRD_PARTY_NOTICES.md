@@ -96,6 +96,25 @@ retain the same CC BY 4.0 attribution and consent evidence. The provenance inven
 preserves parent recording/excerpt hashes and the explicit prefix transformation;
 there is no additional resampling, private recording, or bundled reference code.
 
+The speech-derived files in `Fixtures/YIN/`, `Fixtures/Pulses/`, and
+`Fixtures/PulseYIN/` under `Tests/HDXLVoiceProcessingTests/` retain the same CC BY
+4.0 attribution and consent evidence. They contain **modified** representations:
+declared prefixes at the original sample rate, explicit input-precision rounding,
+lossless Float64 WAVE transport, selected F0 contours, acoustic pulse/amplitude
+transcripts, and original YIN numerical analyses. The provenance inventory retains
+each source recording/excerpt hash, prefix length, transformation, generator, and
+reference identity. The separate YIN-to-pulse integration uses the existing YIN
+excerpts and preserves uncertain or unavailable outcomes. These numerical records
+provide no new human pitch labels or physiological ground truth. No Praat source
+or executable is redistributed in these fixtures.
+
+`Fixtures/PulseSourceTiming/` contains original numerical certificates for the
+synthetic Gaussian pulse sources only. Exact integer correlations and outward
+arithmetic use the generated PCM and known source coordinates, without native
+or external tracker answers. These files contain no human recording, licensed
+speech derivative, or upstream implementation code; their provenance inherits
+the pending project-license decision.
+
 Public-use consent evidence is the dataset author's coauthored
 [methods, “Study Design and Participants”](https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/).
 Private consent forms, participant names, and clinical/demographic labels are not

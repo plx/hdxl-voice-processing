@@ -71,7 +71,7 @@ synthetic probe does not claim to implement the named DSP algorithms.
 | worker | AnalysisFrame | One admitted synchronous synthetic/analysis worker turn |
 | worker | Resample, PreEmphasis, FrameAssembly | Conditioning and frame assembly work |
 | worker | FFT, Cepstrum, CPP, CPPSSmoothing, CPPSFitting, CPPSAggregation | Numerical scopes; CPPS boundaries below |
-| worker | Pitch, HNR, Pulses, Perturbation | Future numerical stages |
+| worker | Pitch, HNR, Pulses, Perturbation | Algorithm scopes; integration details below |
 | worker | SpeechActivity, MaskIntervals, EnergyEligibility, MaskResolution, MaskRouting | Mask worker/control stages; precise boundaries below |
 | worker | ResultPublication | Worker-side result construction/publication work |
 | worker | FeedbackStateChange | A personal-feedback state/reason/feature/model change; no personal values |
@@ -287,3 +287,28 @@ sink. Metadata is numeric only; no PCM or candidate curves enter signposts.
 results, failure balance and consumer/cancellation/reset boundaries. The separate
 [HNR stage probe](../Tools/HNR/README.md#host-performance-matrix) reports inclusive
 stage cost and its clock/lock overhead alongside disabled full-batch trials.
+
+## Pulse worker integration
+
+Pulse tracking uses profile token 42 and the complete interval's analyzed sequence
+number and acquired sample count. `Pulses` encloses waveform tracking and sequence
+construction. `PulseMatching` includes each finite lag table and peak selection;
+`PulseInterpolation` refines a selected peak and is absent when no peak was
+selected. `PulseSequences` constructs runs, periods, pairs, and cycle amplitudes.
+`ResultPublication` starts after `Pulses` ends, keeping consumer work separate.
+No PCM, F0 arrays, pulse coordinates, or per-sample events enter signposts.
+
+Whole-frame sampling and the shared 64-record budget remain in force. A long
+interval can exhaust the budget before later attempts, sequence construction, or
+publication; its signposts are therefore not an unbiased per-cycle distribution.
+`PulseDiagnosticsTests` checks numerical equality, balanced failure/publication
+scopes, and reset behavior after exhaustion.
+
+The [pulse stage probe](../Tools/Pulses/README.md#host-performance-matrix) replays
+every actual attempted kernel call with a separate diagnostic frame for each
+attempt. This is a developer measurement recipe, not a change to production
+sampling. It retains accepted/rejected and eligible/ineligible groups separately,
+checks identical results with instrumentation disabled, and reports clock/lock
+overhead explicitly. Missing samples are null; a measured zero duration means
+the call completed below the clock's resolution. Complete analyzer throughput
+and allocation measurements come from the separate public-worker benchmark.

@@ -13,6 +13,9 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
+            name: "PulseStageProbe", dependencies: ["HDXLVoiceProcessing"],
+            path: "Tools/PulseStageProbe"),
+        .executableTarget(
             name: "HNRStageProbe", dependencies: ["HDXLVoiceProcessing"],
             path: "Tools/HNRStageProbe"),
         .target(name: "HDXLVoiceProcessing"),

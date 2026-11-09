@@ -82,6 +82,8 @@ defines the pinned smoothing recipe, whole-interval and preview PCM paths, selec
 statistics, bounded rolling windows, and explicit freshness/coverage.
 The [YIN guide](Documentation/YIN.md) defines PCM pitch estimation, raw candidates,
 periodicity, actual observed support, optional causal tracking and separate history timing.
+The [pulse guide](Documentation/Pulses.md) defines injected-F0 waveform matching,
+explicit period/pair eligibility, cycle amplitudes, and bounded chunked delivery.
 The [masking guide](Documentation/Masks.md) defines independent annotation, energy,
 and spectral-flatness sources, original-timeline coverage, separate-region routing,
 and inspectable exclusions without an implicit periodicity gate.
