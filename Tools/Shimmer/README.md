@@ -118,3 +118,58 @@ retains raw transcripts, reports and audit results. An additional 36-case native
 integration suite exercises original signals and the existing approved licensed
 vowel/speech corpus in both precisions. It checks finite behavior, provenance and
 coverage; it does not promote those native values into reference goldens.
+
+## Host performance matrix
+
+The 68 workloads register shimmer statistics under #25 and token-51
+`Perturbation` scopes under #18. The matrix has 32 amplitude batches, 32 rolling
+histories and four PCM comparisons. Amplitude/rolling cases cover 0.25/1/3/10
+seconds, 80/600 Hz and both declared input precisions at 16 kHz. Arithmetic is
+Float64. Original alternating 0.9/1.1 amplitudes exercise every numerator;
+dense cases additionally reject seven of each seventeen source observations
+and include isolated amplitude-4 outliers. Missing observations retain their
+sequence positions. Exact equations independently validate counts and values.
+
+Batch `Combined` computes all six variants. `Separate` uses six actual
+single-variant workers, including each worker's coverage calculation. Rolling
+measurements seed one complete window outside the clock, then measure at most
+64 append/query pairs, consuming every result. This keeps the operation bounded
+while exercising expiration at every window size. `QueryOnly` measures one
+already populated window. Receipts verify append/query counts and the exact
+number of amplitudes scanned. The implementation is O(n) per query, with
+amortized O(1) append/expiration, not constant-time incremental statistics.
+
+The PCM cases use existing pinned half-second Gaussian 80/600 Hz fixtures in
+both precisions. `PulseOnly` includes shared cycle RMS extraction and bounded
+trace consumption. `PCMCombined` includes the same pulse work, mapping and all
+shimmer statistics. `StatisticsOnly` operates on the exact qualified amplitude
+sequence captured during untimed setup. These are directly timed operations;
+subtracting two noisy timings is not used to claim an isolated extraction cost.
+All three retain the same source and F0 identities. Available RMS amplitudes
+are checked against the frozen external pulse evidence, and mapped source flags
+are audited separately from the statistical equations.
+
+`Prepare` measures combined worker construction/destruction and bounded buffers.
+Input creation, F0 construction, resets, rolling seeds, snapshots and JSON export
+are outside steady-state measurements. Thirty measured samples follow three
+warmups; an operation that cannot supply thirty within 600 seconds fails. Wall
+and CPU histograms, explicit p99 values, throughput, amortized update/query cost,
+profiles, frame/window/hop definitions, input hashes, hardware/toolchain identity,
+source hashes and prepared/input storage are retained. P99 from thirty samples
+is near the observed maximum, not a stable population-tail estimate.
+
+```sh
+python3 Tools/Shimmer/benchmark.py timing --shard duration250
+python3 Tools/Shimmer/benchmark.py allocation --shard duration250
+```
+
+Run both modes for `duration250`, `duration1000`, `duration3000`, `duration10000`
+and `pcm`. Timing uses a binary without allocator interposition. Allocation uses
+a separate binary, requires positive malloc/free/object/ARC controls, and rejects
+any nonzero maximum heap count/bytes/object allocation in a prepared operation.
+Artifacts are in `Benchmarks/.build/artifacts/shimmer-*`; CI runs each shard and
+retains its original distributions and independently validated receipts.
+No fixed machine-independent timing gate or physical-device claim is made.
+Device capture, thermal behavior and sustained real-time evidence remain in
+[#74](https://github.com/plx/hdxl-voice-processing/issues/74) and
+[#102](https://github.com/plx/hdxl-voice-processing/issues/102).
