@@ -4,6 +4,7 @@ import Foundation
 public enum JitterError: Error, Sendable, Equatable {
     case invalidConfiguration, invalidInput, unexpectedContext, precisionMismatch
     case capacityExceeded, invalidState, reentrantCall, numericalFailure
+    case measurementNotRequested
 }
 
 /// A declared analysis task. Rolling values can include natural F0 movement and
@@ -120,11 +121,15 @@ public struct JitterConfiguration: Sendable, Hashable, Codable {
             sampleRate: c.decode(Int.self, forKey: .sampleRate),
             inputPrecision: c.decode(AnalysisPrecision.self, forKey: .inputPrecision),
             applicability: c.decode(JitterApplicability.self, forKey: .applicability),
-            rollingWindowSampleCount: c.decodeIfPresent(Int.self, forKey: .rollingWindowSampleCount),
+            rollingWindowSampleCount: c.decodeIfPresent(
+                Int.self, forKey: .rollingWindowSampleCount),
             minimumPeriodSeconds: c.decode(Double.self, forKey: .minimumPeriodSeconds),
             maximumPeriodSeconds: c.decode(Double.self, forKey: .maximumPeriodSeconds),
-            maximumAdjacentPeriodFactor: c.decode(Double.self, forKey: .maximumAdjacentPeriodFactor))
-        guard try c.decode(AnalysisPrecision.self, forKey: .arithmeticPrecision) == arithmeticPrecision,
+            maximumAdjacentPeriodFactor: c.decode(Double.self, forKey: .maximumAdjacentPeriodFactor)
+        )
+        guard
+            try c.decode(AnalysisPrecision.self, forKey: .arithmeticPrecision)
+                == arithmeticPrecision,
             try c.decode(String.self, forKey: .definition) == definition,
             try c.decode(String.self, forKey: .denominatorDefinition) == denominatorDefinition,
             try c.decode(String.self, forKey: .neighborhoodDefinition) == neighborhoodDefinition

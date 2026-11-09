@@ -28,7 +28,9 @@ import Testing
 
 @Test func jitterConfigurationRejectsInvalidRangesAndMislabeledRollingProfiles() throws {
     for rate in [0, 3999, 192001, Int.max] {
-        #expect(throws: JitterError.invalidConfiguration) { try JitterConfiguration(sampleRate: rate) }
+        #expect(throws: JitterError.invalidConfiguration) {
+            try JitterConfiguration(sampleRate: rate)
+        }
     }
     for factor in [0.99, 10.01, Double.nan, Double.infinity] {
         #expect(throws: JitterError.invalidConfiguration) {
@@ -51,7 +53,8 @@ import Testing
     for size in [nil, 0, -1, JitterConfiguration.maximumRollingWindowSampleCount + 1] as [Int?] {
         #expect(throws: JitterError.invalidConfiguration) {
             try JitterConfiguration(
-                sampleRate: 16000, applicability: .exploratoryRolling, rollingWindowSampleCount: size)
+                sampleRate: 16000, applicability: .exploratoryRolling,
+                rollingWindowSampleCount: size)
         }
     }
 }

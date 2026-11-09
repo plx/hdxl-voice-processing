@@ -26,7 +26,10 @@ private struct JitterFixture: Decodable {
         let data: [String: Double?]
     }
     struct Comparison: Decodable {
-        struct Bounds: Decodable { let seconds: Double; let fraction: Double }
+        struct Bounds: Decodable {
+            let seconds: Double
+            let fraction: Double
+        }
         let bounds: Bounds
     }
     let input: JitterFixtureInput
@@ -60,7 +63,9 @@ private struct JitterFixture: Decodable {
             JitterKernel.evaluate($0, configuration: configuration)
         }
         #expect(combined.selectedPeriodCount == fixture.oracle.selectedPeriodCount, "\(input.name)")
-        #expect(combined.boundedReliablePeriodCount == fixture.oracle.boundedPeriodCount, "\(input.name)")
+        #expect(
+            combined.boundedReliablePeriodCount == fixture.oracle.boundedPeriodCount,
+            "\(input.name)")
         #expect(combined.meanPeriodCount == fixture.oracle.meanPeriodCount, "\(input.name)")
         #expect(combined.pairCount == fixture.oracle.pairIndices.count, "\(input.name)")
         #expect(combined.rapCount == fixture.oracle.rapWindowStartIndices.count, "\(input.name)")
@@ -75,7 +80,8 @@ private struct JitterFixture: Decodable {
             let actual = combined.value(variant)
             #expect((actual == nil) == (expected == nil), "\(input.name) \(variant)")
             if let actual, let expected {
-                let bound = variant == .absolute
+                let bound =
+                    variant == .absolute
                     ? fixture.comparison.bounds.seconds : fixture.comparison.bounds.fraction
                 #expect(abs(actual - expected) <= bound, "\(input.name) \(variant)")
             }
@@ -95,7 +101,8 @@ private struct JitterFixture: Decodable {
     let configuration = try JitterConfiguration(sampleRate: 16000)
     let durations = [2.0, 2.125, 2, 2.125, 2, 2.125, 2].map { $0 / 256 }
     let original = durations.enumerated().map {
-        JitterKernelPeriod(durationSeconds: $1, selected: true, reliable: true, connectsToPrevious: $0 > 0)
+        JitterKernelPeriod(
+            durationSeconds: $1, selected: true, reliable: true, connectsToPrevious: $0 > 0)
     }
     for mode in 0..<3 {
         var periods = original
@@ -118,14 +125,20 @@ private struct JitterFixture: Decodable {
 @Test func jitterNativeKernelDistinguishesRawRatioContextFromHardExclusions() throws {
     let configuration = try JitterConfiguration(sampleRate: 16000)
     let original = [2.0, 1, 2].enumerated().map {
-        JitterKernelPeriod(durationSeconds: $1 / 256, selected: $0 == 1, reliable: true, connectsToPrevious: $0 > 0)
+        JitterKernelPeriod(
+            durationSeconds: $1 / 256, selected: $0 == 1, reliable: true, connectsToPrevious: $0 > 0
+        )
     }
-    let raw = original.withUnsafeBufferPointer { JitterKernel.evaluate($0, configuration: configuration) }
+    let raw = original.withUnsafeBufferPointer {
+        JitterKernel.evaluate($0, configuration: configuration)
+    }
     #expect(raw.selectedPeriodCount == 1 && raw.boundedReliablePeriodCount == 1)
     #expect(raw.meanPeriodCount == 0 && raw.bothRatioRejectedPeriodCount == 1)
     var excluded = original
     excluded[0].reliable = false
-    let result = excluded.withUnsafeBufferPointer { JitterKernel.evaluate($0, configuration: configuration) }
+    let result = excluded.withUnsafeBufferPointer {
+        JitterKernel.evaluate($0, configuration: configuration)
+    }
     #expect(result.meanPeriodCount == 1 && result.meanPeriodSeconds == 1 / 256)
     #expect(result.local == nil && result.absolute == nil)
 }

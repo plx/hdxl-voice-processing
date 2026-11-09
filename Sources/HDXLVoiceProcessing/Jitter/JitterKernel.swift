@@ -18,13 +18,14 @@ struct JitterRequestedVariants: OptionSet {
 
     init(rawValue: UInt8) { self.rawValue = rawValue }
     init(_ variant: JitterVariant) {
-        self = switch variant {
-        case .local: .local
-        case .absolute: .absolute
-        case .rap: .rap
-        case .ppq5: .ppq5
-        case .ddp: .ddp
-        }
+        self =
+            switch variant {
+            case .local: .local
+            case .absolute: .absolute
+            case .rap: .rap
+            case .ppq5: .ppq5
+            case .ddp: .ddp
+            }
     }
 }
 
@@ -144,7 +145,8 @@ enum JitterKernel {
                     result.meanPeriodCount += 1
                     meanSum.add(p.durationSeconds)
                 }
-                eligibleRun = eligibleRun > 0 && connected(i) && !ratioRejected(i) ? eligibleRun + 1 : 1
+                eligibleRun =
+                    eligibleRun > 0 && connected(i) && !ratioRejected(i) ? eligibleRun + 1 : 1
             } else {
                 eligibleRun = 0
             }
@@ -158,7 +160,8 @@ enum JitterKernel {
                 result.rapCount += 1
                 if computeRAP {
                     let center = periods[i - 1].durationSeconds
-                    let difference = (periods[i - 2].durationSeconds - center)
+                    let difference =
+                        (periods[i - 2].durationSeconds - center)
                         + (p.durationSeconds - center)
                     rapSum.add(abs(difference) / 3)
                 }

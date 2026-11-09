@@ -312,3 +312,20 @@ checks identical results with instrumentation disabled, and reports clock/lock
 overhead explicitly. Missing samples are null; a measured zero duration means
 the call completed below the clock's resolution. Complete analyzer throughput
 and allocation measurements come from the separate public-worker benchmark.
+
+## Jitter worker integration
+
+`PreparedJitter` uses profile token 50, the successful query sequence number and
+the acquired dependency sample count for one `Perturbation` interval. The sample
+field saturates only if the declared source interval exceeds its UInt32 range;
+exact source lengths and period counts remain in the typed result. `processed`
+records the number of prior successful queries. Source validation precedes the
+span. The scope covers period statistics and fixed-size result construction;
+consumer work and explicit scalar/JSON exports occur after it ends. No PCM,
+period coordinates, F0 arrays or per-period events are logged.
+
+The PCM adapter gives pulse tracking and statistics separate diagnostic facades,
+retaining the existing token42 pulse scopes. This separates waveform-tracking
+cost from the inexpensive period statistics. Both use whole-query sampling and
+the shared record budget. `JitterDiagnosticsTests` checks all three modes,
+numerical equality, balanced scopes, metadata and consumer exclusion.
