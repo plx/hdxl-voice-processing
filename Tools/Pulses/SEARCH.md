@@ -136,5 +136,6 @@ Native accumulation explicitly uses fused multiply-add operations: a one-ulp
 arithmetic change can move a later anchor across a sampled-window boundary and
 alter its support. The first full-catalog comparison exposed this in the 80 Hz
 sine and a flat boundary of a DC-offset train; explicit fused accumulation fixed
-both without changing tolerances. Independent run/eligibility and complete
-known-source timing gates remain separate work before #42 can close.
+both without changing tolerances. Independent run/eligibility histories and
+[finite generated-source certificates](SOURCE_TIMING.md) supply separate gates;
+neither is inferred merely from raw reference agreement.

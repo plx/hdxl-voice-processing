@@ -35,8 +35,12 @@ the exact-count/position comparison. Decision record: issue #151.
 Known-source timing is a separate comparison against the original generator's
 landmarks. A sampled quadratic interpolation has systematic bias that may
 accumulate along a track. Native/reference tolerance never absorbs that bias.
-The finite Gaussian source-timing bound remains pending; passing this catalog
-alone does not close #42 or establish glottal-closure accuracy.
+The separate [finite-input source certificates](SOURCE_TIMING.md) cover 36
+declared Gaussian cases using exact integer correlations and outward arithmetic.
+They preserve the original source coordinates and certify the fixed input-derived
+source-error budget before native comparison. Native source count/order and
+membership in every certified interval are required in direct and chunked modes.
+This catalog does not establish a universal waveform or glottal-closure bound.
 
 ## Independent histories and exact-template timing
 

@@ -69362,6 +69362,1260 @@
       },
       "expectedProfile": "fullSupportRawVoicedYINToPulse-v1; raw YIN estimator, explicit voiced-only F0 mapping, external acoustic pulse CC; settings and policy retained",
       "referenceOutputIdentity": "sha256:7ff7ff500a22fead428dc90dd43cc31fc579fc416031644edb24c78f1b228b6a"
+    },
+    {
+      "id": "pulse-source-timing-alternating-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/alternating-float32.json",
+      "sha256": "13420dac9da6f2d4392148778a2203556de9daeceba630f0601fef5e9ac0ca14",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:13420dac9da6f2d4392148778a2203556de9daeceba630f0601fef5e9ac0ca14"
+    },
+    {
+      "id": "pulse-source-timing-alternating-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/alternating-float64.json",
+      "sha256": "30f56393fa5311e26000855b60653aa07521e19974ab65ca226276b90a1ae2e3",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:30f56393fa5311e26000855b60653aa07521e19974ab65ca226276b90a1ae2e3"
+    },
+    {
+      "id": "pulse-source-timing-execution.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/execution.json",
+      "sha256": "3e2d158ae4016695ee7d68d0a78a2c030a357a056467edbc437325630ccbebbb",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:3e2d158ae4016695ee7d68d0a78a2c030a357a056467edbc437325630ccbebbb"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-16000-150-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-16000-150-float32.json",
+      "sha256": "e7dee22f4cd183fff8984743f4e95ea123f0040e5ad28de46afea8707c37e2d8",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:e7dee22f4cd183fff8984743f4e95ea123f0040e5ad28de46afea8707c37e2d8"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-16000-150-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-16000-150-float64.json",
+      "sha256": "5987c15712a52f6f169a567602d436cbdaddf874581a8531b5e0e71b274196f1",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:5987c15712a52f6f169a567602d436cbdaddf874581a8531b5e0e71b274196f1"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-16000-300-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-16000-300-float32.json",
+      "sha256": "f494628965496a66a85e92bd0b714b9bfe1c6efdb4ea0752f4c3eb666c83aaf4",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:f494628965496a66a85e92bd0b714b9bfe1c6efdb4ea0752f4c3eb666c83aaf4"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-16000-300-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-16000-300-float64.json",
+      "sha256": "c0095afd671f3da382ed45941ae550d8aaaf8c19a7507459e68ae8b78a1834ea",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:c0095afd671f3da382ed45941ae550d8aaaf8c19a7507459e68ae8b78a1834ea"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-16000-600-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-16000-600-float32.json",
+      "sha256": "fd2b978412236b102fb5fdecd7605f3d86e2f3d025b2b258b782a53a6c271f86",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:fd2b978412236b102fb5fdecd7605f3d86e2f3d025b2b258b782a53a6c271f86"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-16000-600-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-16000-600-float64.json",
+      "sha256": "693eec8926d6924178373a6b0d88713ded87d4c54390a0a88b1278258f02e10e",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:693eec8926d6924178373a6b0d88713ded87d4c54390a0a88b1278258f02e10e"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-16000-80-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-16000-80-float32.json",
+      "sha256": "267dec3eff8923efaed41108794864f0aab9938b447f03e3131d798abc04e112",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:267dec3eff8923efaed41108794864f0aab9938b447f03e3131d798abc04e112"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-16000-80-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-16000-80-float64.json",
+      "sha256": "fb2ccc9ecabddf355df14bb4ddeccff277601083f1b1a386f48a1e7c69fe89ad",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:fb2ccc9ecabddf355df14bb4ddeccff277601083f1b1a386f48a1e7c69fe89ad"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-44100-150-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-44100-150-float32.json",
+      "sha256": "3d50dd68c084c506ca19668a73311e67c6750af42d56ddb995ee5005dcb590dc",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:3d50dd68c084c506ca19668a73311e67c6750af42d56ddb995ee5005dcb590dc"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-44100-150-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-44100-150-float64.json",
+      "sha256": "2b7f4556167604c44ef9ea0308d1345267a0e96e64cf2c032cab940225f0f045",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:2b7f4556167604c44ef9ea0308d1345267a0e96e64cf2c032cab940225f0f045"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-44100-300-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-44100-300-float32.json",
+      "sha256": "d40abb892b1242fe039f1b43e9b10a229ab6acc4181cde9f5562bbd2a2551c45",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:d40abb892b1242fe039f1b43e9b10a229ab6acc4181cde9f5562bbd2a2551c45"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-44100-300-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-44100-300-float64.json",
+      "sha256": "804c620a9c90d799fca3e94d108f0ffdb65fb329d7192ea6645384dc86915859",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:804c620a9c90d799fca3e94d108f0ffdb65fb329d7192ea6645384dc86915859"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-44100-600-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-44100-600-float32.json",
+      "sha256": "08168c667d15a84e0ba2eedff8db4690acfab4d64c574ab459ee06d93acff642",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:08168c667d15a84e0ba2eedff8db4690acfab4d64c574ab459ee06d93acff642"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-44100-600-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-44100-600-float64.json",
+      "sha256": "85635700263258c0f75f70be60c0f0a1d1d895bcf0fc88bdd5839886cf0c3f17",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:85635700263258c0f75f70be60c0f0a1d1d895bcf0fc88bdd5839886cf0c3f17"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-44100-80-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-44100-80-float32.json",
+      "sha256": "c7561a66e639c71d9d22e7ecbded66ac445ab966a9e42db484055b9b0201cd28",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:c7561a66e639c71d9d22e7ecbded66ac445ab966a9e42db484055b9b0201cd28"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-44100-80-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-44100-80-float64.json",
+      "sha256": "161645a059cc36e7aa0781e3684164b7d85ed4f6bf39770684082688e1f02490",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:161645a059cc36e7aa0781e3684164b7d85ed4f6bf39770684082688e1f02490"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-48000-150-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-48000-150-float32.json",
+      "sha256": "1e156f39ae4225b7081d7cf1cb69e3a49024785035bc6a33dac9d890889b7870",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:1e156f39ae4225b7081d7cf1cb69e3a49024785035bc6a33dac9d890889b7870"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-48000-150-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-48000-150-float64.json",
+      "sha256": "6d024f3abb0bf315d6247419ac605643d83679e65f7ea9297e38e60e2289f5a9",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:6d024f3abb0bf315d6247419ac605643d83679e65f7ea9297e38e60e2289f5a9"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-48000-300-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-48000-300-float32.json",
+      "sha256": "daa406369db65a806fac470c01f4efc4d7a78149373aa8eb780c9cf118d0761b",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:daa406369db65a806fac470c01f4efc4d7a78149373aa8eb780c9cf118d0761b"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-48000-300-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-48000-300-float64.json",
+      "sha256": "0a43b02e83c2120edff00353d3dc8a7259eebe29cf75d9e8d0d4565ab9156a21",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:0a43b02e83c2120edff00353d3dc8a7259eebe29cf75d9e8d0d4565ab9156a21"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-48000-600-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-48000-600-float32.json",
+      "sha256": "59171e857039b060323d2a6d05f0a8403bfe82b2b86cc1c3bf61858b9c111c2e",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:59171e857039b060323d2a6d05f0a8403bfe82b2b86cc1c3bf61858b9c111c2e"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-48000-600-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-48000-600-float64.json",
+      "sha256": "936abe5622ef3ec94d95ded527d5667c8317d723be5b92945a015e0ca2e24847",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:936abe5622ef3ec94d95ded527d5667c8317d723be5b92945a015e0ca2e24847"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-48000-80-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-48000-80-float32.json",
+      "sha256": "1b1921f0479df2bf98b061cd4ccd7b449f30b710df0b5fc2d19d32b105c13836",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:1b1921f0479df2bf98b061cd4ccd7b449f30b710df0b5fc2d19d32b105c13836"
+    },
+    {
+      "id": "pulse-source-timing-gaussian-48000-80-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/gaussian-48000-80-float64.json",
+      "sha256": "6c8a07a5fcdc08e0167afeb7ebb6ab7689276b15353c7bf01c4861e46c3389e4",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:6c8a07a5fcdc08e0167afeb7ebb6ab7689276b15353c7bf01c4861e46c3389e4"
+    },
+    {
+      "id": "pulse-source-timing-inverted-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/inverted-float32.json",
+      "sha256": "bac11385790ca2cd7cfbb7440145b6087c8f39a480119b9ff45be7196f3dbb64",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:bac11385790ca2cd7cfbb7440145b6087c8f39a480119b9ff45be7196f3dbb64"
+    },
+    {
+      "id": "pulse-source-timing-inverted-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/inverted-float64.json",
+      "sha256": "e55886b2c9e558493666886e947b3d2382f33de187e071c834dd9dbb3e82976f",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:e55886b2c9e558493666886e947b3d2382f33de187e071c834dd9dbb3e82976f"
+    },
+    {
+      "id": "pulse-source-timing-jitter-12pct-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/jitter-12pct-float32.json",
+      "sha256": "4d9da5a624c72c3d7e37e4cb17aa89bd606b352748bcd5c1abf5fcd1228c42f5",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:4d9da5a624c72c3d7e37e4cb17aa89bd606b352748bcd5c1abf5fcd1228c42f5"
+    },
+    {
+      "id": "pulse-source-timing-jitter-12pct-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/jitter-12pct-float64.json",
+      "sha256": "8dfea17aea06a4a3ab5e9e14a1b09a15fc9d60f6ff45f746eb4236936739b54c",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:8dfea17aea06a4a3ab5e9e14a1b09a15fc9d60f6ff45f746eb4236936739b54c"
+    },
+    {
+      "id": "pulse-source-timing-jitter-1pct-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/jitter-1pct-float32.json",
+      "sha256": "f06425693308e6c2c9927de0b51ec21f5dfe92c294b05594d571e4445d597b03",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:f06425693308e6c2c9927de0b51ec21f5dfe92c294b05594d571e4445d597b03"
+    },
+    {
+      "id": "pulse-source-timing-jitter-1pct-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/jitter-1pct-float64.json",
+      "sha256": "19505279544ad601524384867b56c42a5efe7e58c549d5211c7dc9f3092f1b7e",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:19505279544ad601524384867b56c42a5efe7e58c549d5211c7dc9f3092f1b7e"
+    },
+    {
+      "id": "pulse-source-timing-manifest.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/manifest.json",
+      "sha256": "603be83f5a8d7ad772d1ef7694a0e42d52a59e71a4523d959722c22437e39974",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:603be83f5a8d7ad772d1ef7694a0e42d52a59e71a4523d959722c22437e39974"
+    },
+    {
+      "id": "pulse-source-timing-modulated-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/modulated-float32.json",
+      "sha256": "aeb2031ea5bb1327ce0426d1be030a41af433bf5adbfa5b305b4d231770db023",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:aeb2031ea5bb1327ce0426d1be030a41af433bf5adbfa5b305b4d231770db023"
+    },
+    {
+      "id": "pulse-source-timing-modulated-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/modulated-float64.json",
+      "sha256": "09ff76405784a580a217b25616cc1f0d7dd097eb621a13f4b6f7ffddddefd40e",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:09ff76405784a580a217b25616cc1f0d7dd097eb621a13f4b6f7ffddddefd40e"
+    },
+    {
+      "id": "pulse-source-timing-quiet-float32.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/quiet-float32.json",
+      "sha256": "7d37f8e62f00b92b36d747ca7be187afa40a39200ca5064d4cec978600091ea1",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:7d37f8e62f00b92b36d747ca7be187afa40a39200ca5064d4cec978600091ea1"
+    },
+    {
+      "id": "pulse-source-timing-quiet-float64.json",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/quiet-float64.json",
+      "sha256": "984a2d87cccd425adecdccea307364639512c6d9b23c4d8ba70af4d33d58fe84",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/42",
+        "versionOrHash": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthetic Gaussian PCM and independent finite-input numerical certificates; no human recording"
+      },
+      "transformations": [
+        "Original generated Gaussian sources, exact actual input precision and supplied F0; no native or external tracker output is used.",
+        "Exact integer energies/dots, 80-digit normalization and outward binary64 arithmetic enclose finite-window matching and possible peak selections.",
+        "Fixed input-derived source-error policy is checked before native comparison; unchanged source coordinates retain interpolation bias.",
+        "Manifest binds source/PCM/certificate identities; generation execution timings are not native performance."
+      ],
+      "generator": {
+        "path": "Tools/Pulses/source_reference.py",
+        "version": "finite-input-gaussian-pulse-enclosure-v1",
+        "sha256": "fa94fabe052c2d46b60788a7fee7066cce848a0e3ad175267eab7954d0827e7b"
+      },
+      "expectedProfile": "finite-input-gaussian-pulse-enclosure-v1; finite-gaussian-source-radius-v1; exact count/order and interval membership; not physiological timing",
+      "referenceOutputIdentity": "sha256:984a2d87cccd425adecdccea307364639512c6d9b23c4d8ba70af4d33d58fe84"
     }
   ],
   "optionalModels": []

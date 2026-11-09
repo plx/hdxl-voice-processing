@@ -148,6 +148,16 @@ through a periodic track. A seed in a silent gap can also reacquire a different
 waveform phase; usable timing does not guarantee a usable cycle amplitude.
 These observations do not establish arbitrary-waveform timing accuracy.
 
+A separate finite-input certificate covers 36 Gaussian source cases: the three
+rates and four steady frequencies, both precisions, polarity inversion, quiet
+input, known jitter, modulation and alternating strength. Original source
+coordinates are compared with independently enclosed finite-window calculations;
+native output must have the exact source count/order and fall inside every
+interval. Direct and chunked delivery both pass. The narrow 16 kHz / 600 Hz train
+accumulates about 1.38 samples of interpolation bias, retained explicitly rather
+than absorbed into reference tolerance. See the [source timing policy](../Tools/Pulses/SOURCE_TIMING.md)
+and [evidence](Evidence/pulses.md) for the finite scope and arithmetic assumptions.
+
 The separate YIN integration recipe uses complete raw YIN frames, places their
 frequencies at the midpoint of their observed support, and retains the original
 uniform hop. Only `.voiced` frames supply a positive frequency; uncertain,

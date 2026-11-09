@@ -49,6 +49,7 @@ jobs:
           python3 Tools/Pulses/verify_stages.py --f0-directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseF0Stages --matching-directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseMatchingStages --reference-directory Tests/HDXLVoiceProcessingTests/Fixtures/Pulses
           python3 Tools/Pulses/trace_reference.py --verify --directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseHistories
           python3 Tools/Pulses/yin_reference.py --verify --directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN
+          python3 Tools/Pulses/source_reference.py --verify --directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming
           python3 -m unittest discover -s Tools/Tests -p 'test_pulse*.py'
       - name: Regenerate injected-F0 and isolated-stage evidence
         run: |
@@ -71,6 +72,12 @@ jobs:
           python3 Tools/Pulses/yin_reference.py --directory .build/pulse-reference-evidence/yin | tee .build/pulse-reference-evidence/yin.log
           python3 Tools/Pulses/yin_reference.py --verify --directory .build/pulse-reference-evidence/yin
           cmp Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/manifest.json .build/pulse-reference-evidence/yin/manifest.json
+      - name: Certify generated-source timing independently of tracker output
+        run: |
+          set -o pipefail
+          python3 Tools/Pulses/source_reference.py --directory .build/pulse-reference-evidence/source | tee .build/pulse-reference-evidence/source.log
+          python3 Tools/Pulses/source_reference.py --verify --directory .build/pulse-reference-evidence/source
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming/manifest.json .build/pulse-reference-evidence/source/manifest.json
       - name: Native comparison against freshly regenerated candidates
         env:
           HDXL_PULSE_REFERENCE_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/external
@@ -78,8 +85,10 @@ jobs:
           HDXL_PULSE_MATCHING_STAGE_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/matching
           HDXL_PULSE_HISTORY_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/histories
           HDXL_PULSE_YIN_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/yin
+          HDXL_PULSE_SOURCE_TIMING_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/source
           HDXL_PULSE_REFERENCE_REPORT: ${{ github.workspace }}/.build/pulse-reference-evidence/native-external.json
           HDXL_PULSE_YIN_REPORT: ${{ github.workspace }}/.build/pulse-reference-evidence/native-yin.json
+          HDXL_PULSE_SOURCE_TIMING_REPORT: ${{ github.workspace }}/.build/pulse-reference-evidence/native-source.json
         run: |
           set -o pipefail
           swift test -c release --filter '(pulse|Pulse)' | tee .build/pulse-reference-evidence/native.log

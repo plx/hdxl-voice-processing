@@ -142,8 +142,8 @@ while following a narrow periodic waveform away from its midpoint seed. In the
 0.5 s, 16 kHz, 600 Hz Gaussian candidate, all 300 cycles are located distinctly,
 but source-time error reaches about 1.38 samples; the per-period bias is about
 0.009086 samples. A continuous-Gaussian correlation parabola explains this
-behavior. A final source-timing budget still needs the discrete/finite-support
-stage checks; these observations do not relax native/reference parity.
+behavior. The separate finite-input certificates below account for the actual
+discrete/finite support; these observations do not relax native/reference parity.
 
 External generation remains an explicit developer action with the pinned
 Python/toolchain environment from [Reference](../Reference/README.md):
@@ -235,8 +235,8 @@ declared -0.25-sample phase bias. Increasing the input length moves the seed to
 the interior and recovers the fractional source phase. Absolute source error
 and bias-adjusted residual remain separate fields. A seed in a long silent gap
 can reacquire a different phase and yield unavailable cycle RMS. Neither case
-is evidence of physiological timing, and exact-template anchors do not replace
-the pending finite Gaussian source-bias bound.
+is evidence of physiological timing, and exact-template anchors remain separate
+from the finite Gaussian source certificates.
 
 ```sh
 python3 Tools/Pulses/trace_reference.py --directory .build/pulse-histories-new
@@ -297,6 +297,41 @@ Set `HDXL_PULSE_YIN_DIRECTORY` for a fresh candidate catalog and
 `HDXL_PULSE_YIN_REPORT` for the separate native error/count audit. Explicitly empty
 paths fail. Integration passes do not replace supplied-oracle-F0 conformance,
 history qualification, or known-source/physical accuracy evidence.
+
+## Finite generated-source timing
+
+`source_reference.py` certifies 36 original Gaussian cases using only source PCM,
+F0 and known generated coordinates. Coverage includes both precisions, the three
+rates and four steady frequencies, polarity, quiet input, known jitter, modulation
+and alternating strength. It does not read native or external tracker answers.
+
+The [frozen source policy](SOURCE_TIMING.md) derives a radius from input geometry,
+ideal interpolation bias and declared precision. Exact integer energies/dots and
+outward arithmetic then check the actual finite-window calculation against that
+radius. All possible rounded window geometries and winning peak alternatives are
+enclosed; a failed proof condition stops generation. This avoids treating an
+infinite Gaussian approximation as an unproved finite-window error theorem.
+
+```sh
+python3 Tools/Pulses/source_reference.py --directory .build/pulse-source-new
+python3 Tools/Pulses/source_reference.py --verify \
+  --directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseSourceTiming
+swift test --filter pulseGeneratedSourceTiming
+```
+
+The promoted 38 files retain 4,290 source landmarks and their certified algorithm
+intervals. Native tests require exact source count/order, interval membership and
+the unchanged source-error radius in both direct and chunked modes (8,580 point
+comparisons). The maximum observed source error is about 1.38 samples, while the
+widest certified algorithm interval is below 8.56e-8 samples. These are different
+quantities: the narrow interval encloses the finite algorithm's biased result,
+not the true source center. Original source coordinates remain unchanged.
+
+Use `HDXL_PULSE_SOURCE_TIMING_DIRECTORY` for a fresh candidate directory and
+`HDXL_PULSE_SOURCE_TIMING_REPORT` for a native error audit. The certificate verifier
+recomputes every enclosure and rejects rehashed changes to coordinates, intervals,
+budgets, identities and coverage. [Evidence and assumptions](../../Documentation/Evidence/pulses.md)
+separate this finite-catalog claim from arbitrary-waveform or physiological accuracy.
 
 ## Host performance matrix
 

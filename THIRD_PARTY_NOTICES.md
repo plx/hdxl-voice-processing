@@ -108,6 +108,13 @@ excerpts and preserves uncertain or unavailable outcomes. These numerical record
 provide no new human pitch labels or physiological ground truth. No Praat source
 or executable is redistributed in these fixtures.
 
+`Fixtures/PulseSourceTiming/` contains original numerical certificates for the
+synthetic Gaussian pulse sources only. Exact integer correlations and outward
+arithmetic use the generated PCM and known source coordinates, without native
+or external tracker answers. These files contain no human recording, licensed
+speech derivative, or upstream implementation code; their provenance inherits
+the pending project-license decision.
+
 Public-use consent evidence is the dataset author's coauthored
 [methods, “Study Design and Participants”](https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/).
 Private consent forms, participant names, and clinical/demographic labels are not
