@@ -132,3 +132,43 @@ private func checkShimmerPCMGain<Sample: BinaryFloatingPoint & Sendable>(_ type:
         #expect(recovered.local.status == .available)
     }
 }
+
+@Test func shimmerPCMExclusionsAndSilenceRemainExplicitAndCannotJoinAPQWindows() throws {
+    let worker = try shimmerPCMWorker(Double.self)
+    let samples = pulseCycleTrain()
+    let contour = try pulseContour(count: samples.count)
+    let masked = try pulseTiming(count: samples.count, excluded: 80)
+    try samples.withUnsafeBufferPointer { input in
+        try worker.analyze(
+            input, contour: contour, timing: masked, excludedSampleRanges: [100..<180]
+        ) { output in
+            #expect(output.result.coverage.rejections.excluded > 0)
+            #expect(output.result.dependencyTiming.includedSampleCount == 320)
+            #expect(output.result.coverage.durationCoverage < 1)
+            for amplitude in output.amplitudes where amplitude.rejections.isEmpty {
+                let observed = output.pulses.amplitudes[Int(amplitude.sequenceIndex)]
+                let start = try #require(observed.supportStartSeconds)
+                let end = try #require(observed.supportEndSeconds)
+                #expect(end <= 0.025 || start >= 0.045)
+            }
+            let flags = output.result.coverage.rejections
+            #expect(flags.discontinuousPairs > 0)
+        }
+    }
+    let silent = try Array(repeating: 0.0, count: 400).withUnsafeBufferPointer {
+        try worker.analyze($0, contour: contour, timing: pulseTiming(count: 400))
+    }
+    for variant in ShimmerVariant.allCases {
+        #expect(
+            silent.estimate(variant).value == nil
+                && silent.estimate(variant).unavailability == .silence)
+    }
+    let allExcluded = try samples.withUnsafeBufferPointer {
+        try worker.analyze(
+            $0, contour: contour, timing: pulseTiming(count: 400, excluded: 400),
+            excludedSampleRanges: [0..<400])
+    }
+    #expect(allExcluded.local.unavailability == .excluded)
+    #expect(allExcluded.coverage.acceptedAmplitudeCount == 0)
+    #expect(allExcluded.coverage.acceptedAPQ11NeighborhoodCount == 0)
+}

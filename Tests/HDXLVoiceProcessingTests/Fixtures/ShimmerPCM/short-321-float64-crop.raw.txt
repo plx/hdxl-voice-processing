@@ -1,0 +1,11 @@
+begin	shimmer-pcm-v1
+input	16000	321
+settings	0.005015625	0.015046875000000001	0.0001	0.02	1.3	1.6
+pulses	3
+pulse	1	0.00246669606562974
+pulse	2	0.009133398065463039
+pulse	3	0.015800100065296335
+selected	1
+amplitudes	insufficientPulses	0
+queries	skippedInsufficientPulses
+end	shimmer-pcm-v1

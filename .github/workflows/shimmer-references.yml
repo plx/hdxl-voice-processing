@@ -1,0 +1,75 @@
+name: Shimmer references
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 11 * * 4'
+  pull_request:
+    paths:
+      - 'Sources/HDXLVoiceProcessing/Shimmer/**'
+      - 'Sources/HDXLVoiceProcessing/Pulses/**'
+      - 'Sources/HDXLVoiceProcessing/Contracts/**'
+      - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
+      - 'Tests/HDXLVoiceProcessingTests/Shimmer*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Shimmer*/**'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Pulses/**'
+      - 'Tools/Shimmer/**'
+      - 'Tools/Reference/**'
+      - 'Tools/Tests/test_shimmer*.py'
+      - 'Configuration/provenance.json'
+      - 'Package.swift'
+      - '.github/workflows/shimmer-references.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shimmer-references-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    name: Shimmer equations, PCM extraction and eligibility / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Verify original inputs and pinned reference
+        run: |
+          python3 Tools/Reference/setup.py
+          python3 Tools/verify-provenance.py
+          python3 Tools/Shimmer/verify.py Tests/HDXLVoiceProcessingTests/Fixtures/Shimmer
+          python3 Tools/Shimmer/verify_pcm.py Tests/HDXLVoiceProcessingTests/Fixtures/ShimmerPCM
+          python3 -m unittest discover -s Tools/Tests -p 'test_shimmer*.py'
+      - name: Regenerate complete independent/reference evidence
+        run: |
+          set -o pipefail
+          mkdir -p .build/shimmer-reference-evidence
+          python3 Tools/Shimmer/generate.py --output .build/shimmer-reference-evidence/candidate | tee .build/shimmer-reference-evidence/generation.log
+          python3 Tools/Shimmer/verify.py .build/shimmer-reference-evidence/candidate --canonical Tests/HDXLVoiceProcessingTests/Fixtures/Shimmer --report .build/shimmer-reference-evidence/comparison.json
+          python3 Tools/Shimmer/generate_pcm.py --output .build/shimmer-reference-evidence/pcm | tee .build/shimmer-reference-evidence/pcm.log
+          python3 Tools/Shimmer/verify_pcm.py .build/shimmer-reference-evidence/pcm --canonical Tests/HDXLVoiceProcessingTests/Fixtures/ShimmerPCM --report .build/shimmer-reference-evidence/pcm-comparison.json
+      - name: Native tests against canonical evidence proven identical to fresh candidates
+        env:
+          HDXL_SHIMMER_PCM_REPORT: ${{ github.workspace }}/.build/shimmer-reference-evidence/native-pcm.json
+          HDXL_SHIMMER_CORPUS_REPORT: ${{ github.workspace }}/.build/shimmer-reference-evidence/native-corpus.json
+        run: |
+          set -o pipefail
+          swift test -c release --filter shimmer | tee .build/shimmer-reference-evidence/native.log
+          python3 Tools/Shimmer/audit_native_pcm.py .build/shimmer-reference-evidence/native-pcm.json --report .build/shimmer-reference-evidence/native-pcm-audit.json --corruption-controls
+      - name: Retain reproducible shimmer evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: shimmer-references-${{ github.run_attempt }}
+          path: .build/shimmer-reference-evidence/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

@@ -87,6 +87,9 @@ explicit period/pair eligibility, cycle amplitudes, and bounded chunked delivery
 The [jitter guide](Documentation/Jitter.md) defines local, absolute, RAP, PPQ5 and
 DDP statistics, coverage-aware PCM analysis and incremental exploratory windows
 with explicit denominator context and source timing.
+The [shimmer guide](Documentation/Shimmer.md) defines local, dB, APQ3/5/11 and
+DDA statistics, shared cycle RMS extraction, explicit amplitude eligibility and
+bounded exploratory histories with coverage.
 The [masking guide](Documentation/Masks.md) defines independent annotation, energy,
 and spectral-flatness sources, original-timeline coverage, separate-region routing,
 and inspectable exclusions without an implicit periodicity gate.

@@ -71,3 +71,50 @@ Availability and membership decisions are exact. For arithmetic comparisons,
 up to eleven terms per neighborhood and normalization/logarithm operations.
 This is numerical conformance allowance, not a recorded-voice error estimate.
 External DDA must additionally equal `3 * APQ3` exactly.
+
+## PCM extraction and accepted-population audit
+
+`Fixtures/ShimmerPCM` adds 80 cases (161 files) using existing original pulse
+fixtures, without duplicating audio: both precisions, full and cropped queries,
+80/150/600 Hz inputs at 16/44.1/48 kHz, harmonic and filtered signals, modulation,
+alternation, polarity/gain, noise, jitter, missing cycles, unvoiced gaps and short
+or silent inputs. Wider amplitude-factor cases expose the effect of that setting.
+Inherited WAV, Pitch and pulse-fixture hashes are verified before execution.
+
+The pinned CLI produces 70 complete query sets and explicitly skips ten cases
+with fewer than three selected pulses. A skipped query has no external answer.
+Every complete query records both Sound/PointProcess and extracted AmplitudeTier
+answers. Independent squared-Hann energy sums audit 4,072 raw RMS amplitudes;
+the exact sequence equations then audit all six external statistics. RMS error
+is bounded by `2e-12 + 1e-10 * abs(referenceAmplitude)`, inherited from the pulse
+extraction contract. It is separate from the statistical arithmetic allowance.
+
+Native tests retain 4,030 accepted RMS observations. Source reliability excludes
+additional amplitudes in 36 cases, two retain explicit run/cycle gaps, 32 have
+identical populations/neighborhoods, and ten have no executed reference query.
+The first interior amplitude of full Gaussian inputs is explicitly asserted to
+retain the upstream insufficient-support rejection. It is not silently admitted
+to force agreement with a raw reference tier. Identical populations permit 176
+direct scalar comparisons after propagating the RMS error through normalization
+or logarithms. All 80 native populations are independently recomputed with exact
+rational equations and 100-digit logarithms, including their rejection counts.
+
+```sh
+python3 Tools/Shimmer/generate_pcm.py --output .build/shimmer-pcm-candidates
+python3 Tools/Shimmer/verify_pcm.py .build/shimmer-pcm-candidates \
+  --canonical Tests/HDXLVoiceProcessingTests/Fixtures/ShimmerPCM
+HDXL_SHIMMER_PCM_REPORT="$PWD/.build/shimmer-native-pcm.json" \
+  swift test -c release --filter shimmer
+python3 Tools/Shimmer/audit_native_pcm.py .build/shimmer-native-pcm.json \
+  --report .build/shimmer-native-audit.json --corruption-controls
+```
+
+The native audit independently checks input/profile/F0 identity, source timing,
+adapter flags, selected and normalization membership, complete neighborhoods,
+coverage, units, availability and numerical answers. Its negative controls reject
+missing rows, altered scalars, counts, source flags and profile identity. CI
+regenerates both catalogs, checks canonical identity, runs the native suite and
+retains raw transcripts, reports and audit results. An additional 36-case native
+integration suite exercises original signals and the existing approved licensed
+vowel/speech corpus in both precisions. It checks finite behavior, provenance and
+coverage; it does not promote those native values into reference goldens.

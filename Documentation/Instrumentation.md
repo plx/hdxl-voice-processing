@@ -338,3 +338,20 @@ cost explicitly, separate from query-only cost. Tree-node counters expose bounde
 incremental work without logging period values. Source-envelope validation occurs
 before the interval, and public calls reject diagnostic reentry during a query or
 reset. `JitterRollingTests` covers numerical identity across instrumentation modes.
+
+## Shimmer worker integration
+
+`PreparedShimmer` uses profile token 51 for `Perturbation`, enclosing amplitude
+statistics and fixed-size result construction after source validation. `frame`
+and `processed` count prior successful queries; `samples` describes the acquired
+dependency and saturates only at the diagnostic UInt32 limit. The PCM adapter
+gives statistics and pulse tracking separate facades, retaining token 42 for the
+existing pulse scopes. Statistics end before the borrowed consumer callback.
+
+`PreparedRollingShimmer` uses token 51 for expiration, copying the selected ring
+history, the bounded statistics scan and result construction. `frame` counts
+queries and `processed` counts appended amplitudes. Appends emit no per-amplitude
+events. Execution statistics expose evaluated amplitude count outside signposts.
+No PCM, amplitudes, pulse coordinates, F0 arrays or user-provided strings enter
+metadata. `ShimmerDiagnosticsTests` checks all modes, sampling, balanced scopes,
+consumer exclusion and rejected query/reset reentry.
