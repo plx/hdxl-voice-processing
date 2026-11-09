@@ -1,0 +1,11 @@
+begin	jitter-reference-v1
+count	1
+point	1	0
+periodCount	0
+meanPeriod	--undefined--
+local	--undefined--
+absolute	--undefined--
+rap	--undefined--
+ppq5	--undefined--
+ddp	--undefined--
+end	jitter-reference-v1

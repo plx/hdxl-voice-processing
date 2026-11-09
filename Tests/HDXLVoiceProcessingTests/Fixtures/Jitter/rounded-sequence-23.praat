@@ -1,0 +1,100 @@
+# Original numerical query wrapper; no external implementation code.
+Create empty PointProcess: "jitter", 0.0, 0.17015979437498138
+Add point: 0.0
+Add point: 0.0018639046625725719
+Add point: 0.0039438988106040695
+Add point: 0.005800602403684968
+Add point: 0.007724104626837221
+Add point: 0.009766956002654129
+Add point: 0.011458146511598629
+Add point: 0.013270832152381815
+Add point: 0.014823397139725449
+Add point: 0.016915666022773453
+Add point: 0.01880159889285332
+Add point: 0.02034665708391306
+Add point: 0.02218884152683636
+Add point: 0.024123927675752416
+Add point: 0.026141551782277894
+Add point: 0.027986399048887604
+Add point: 0.029572896635401302
+Add point: 0.031102576847813368
+Add point: 0.03322966757659473
+Add point: 0.035003925312733004
+Add point: 0.036792955672308045
+Add point: 0.038538567671892926
+Add point: 0.04044962815701082
+Add point: 0.042538107524246534
+Add point: 0.04445801071193139
+Add point: 0.0460015358979581
+Add point: 0.047877776990364385
+Add point: 0.04962401046568563
+Add point: 0.05155252658619753
+Add point: 0.05314917682495435
+Add point: 0.054855665346301444
+Add point: 0.056796149126064316
+Add point: 0.058675628902252634
+Add point: 0.06064383652123744
+Add point: 0.06269494533881598
+Add point: 0.0644747544911742
+Add point: 0.06608672019236515
+Add point: 0.06780035394922987
+Add point: 0.06964546916715336
+Add point: 0.07131770140681142
+Add point: 0.07300609190439532
+Add point: 0.07496320086930174
+Add point: 0.07654564837552177
+Add point: 0.07865246483465417
+Add point: 0.08052766475597985
+Add point: 0.08236675343491329
+Add point: 0.08410306213624105
+Add point: 0.08599714674616096
+Add point: 0.08798362886446909
+Add point: 0.09015498309475975
+Add point: 0.09204149800540312
+Add point: 0.09407429182578604
+Add point: 0.09573154210169042
+Add point: 0.09771486367691845
+Add point: 0.09945361785937741
+Add point: 0.1015418120066601
+Add point: 0.10315041734483439
+Add point: 0.10497431930777601
+Add point: 0.10711626579456843
+Add point: 0.10917112689892142
+Add point: 0.1111705237392043
+Add point: 0.11308984337406906
+Add point: 0.11486918477283325
+Add point: 0.11696767346717901
+Add point: 0.1190146363478292
+Add point: 0.12061211318081608
+Add point: 0.12218684398015117
+Add point: 0.12399398460988544
+Add point: 0.1260148111555329
+Add point: 0.1280292675505108
+Add point: 0.1298242362735457
+Add point: 0.13186502703413783
+Add point: 0.13361066054319964
+Add point: 0.13567663497931792
+Add point: 0.13729829212829595
+Add point: 0.13890979437498138
+appendInfoLine: "begin", tab$, "jitter-reference-v1"
+count = Get number of points
+appendInfoLine: "count", tab$, count
+for i from 1 to count
+    time = Get time from index: i
+    appendInfoLine: "point", tab$, i, tab$, time
+endfor
+value = Get number of periods: 0.0, 0.17015979437498138, 0.0001, 0.02, 1.3
+appendInfoLine: "periodCount", tab$, value
+value = Get mean period: 0.0, 0.17015979437498138, 0.0001, 0.02, 1.3
+appendInfoLine: "meanPeriod", tab$, value
+value = Get jitter (local): 0.0, 0.17015979437498138, 0.0001, 0.02, 1.3
+appendInfoLine: "local", tab$, value
+value = Get jitter (local, absolute): 0.0, 0.17015979437498138, 0.0001, 0.02, 1.3
+appendInfoLine: "absolute", tab$, value
+value = Get jitter (rap): 0.0, 0.17015979437498138, 0.0001, 0.02, 1.3
+appendInfoLine: "rap", tab$, value
+value = Get jitter (ppq5): 0.0, 0.17015979437498138, 0.0001, 0.02, 1.3
+appendInfoLine: "ppq5", tab$, value
+value = Get jitter (ddp): 0.0, 0.17015979437498138, 0.0001, 0.02, 1.3
+appendInfoLine: "ddp", tab$, value
+appendInfoLine: "end", tab$, "jitter-reference-v1"
