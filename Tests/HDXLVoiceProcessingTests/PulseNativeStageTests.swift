@@ -14,7 +14,7 @@ import Testing
     let object = try #require(
         JSONSerialization.jsonObject(with: canonicalContractJSON(full)) as? [String: Any])
     for (key, value): (String, Any) in [
-        ("unknown", 1), ("arithmeticPrecision", "float32"),
+        ("unknown", 1), ("schemaVersion", 2), ("arithmeticPrecision", "float32"),
         ("correlationDefinition", "meanRemoved"), ("minimumReliableCurvature", 0),
         ("minimumRelativeVariation", 0), ("maximumAdjacentPeriodFactor", 0.5),
     ] {

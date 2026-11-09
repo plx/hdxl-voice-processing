@@ -297,3 +297,67 @@ Set `HDXL_PULSE_YIN_DIRECTORY` for a fresh candidate catalog and
 `HDXL_PULSE_YIN_REPORT` for the separate native error/count audit. Explicitly empty
 paths fail. Integration passes do not replace supplied-oracle-F0 conformance,
 history qualification, or known-source/physical accuracy evidence.
+
+## Host performance matrix
+
+The A12 matrix has 88 cases. Forty-eight cover Gaussian 80/150/300/600 Hz at
+16/44.1/48 kHz, both input precisions, and both support definitions. Thirty-two
+cover rising/falling F0, 12% jitter, noisy pulses, missed cycles, splices, silence,
+and noise. Four use the licensed sustained-vowel excerpt; four deliberately copy
+owned snapshots. All input PCM and F0 come from the promoted pinned catalog.
+The workload verifier checks hashes, raw reference agreement, reset repeatability,
+eligibility counts, and every available amplitude before measurement.
+
+```sh
+python3 Tools/Pulses/benchmark.py timing --shard steady16000
+python3 Tools/Pulses/benchmark.py allocation --shard steady16000
+python3 Tools/Pulses/stage_benchmark.py --shard steady16000
+```
+
+Complete the `steady16000`, `steady44100`, `steady48000`, `stress`, `vowel`, and
+`export` shards in both timing and allocation modes. The stage probe uses the
+first five shards; export repeats an existing input and adds no new kernel case.
+Each invocation retains a fresh artifact directory and never reuses a previous
+timing receipt. Run timing measurements separately from other benchmark workloads.
+
+`Prepare` constructs and destroys the tracker or bounded block collector with
+prepared PCM/F0 already available. `Run` resets and analyzes the full declared
+interval; block mode additionally appends 256-sample chunks before finishing.
+It consumes every borrowed output array. Owned cases also copy and consume all
+five snapshot arrays; they do not claim archive serialization. Loading/decoding,
+input generation, F0 identity hashing, warmup, and verification are outside the
+measured operation. Ordinary runs require zero observed heap allocations with
+positive malloc/ARC controls; the owned-snapshot cases intentionally allocate.
+Timing binaries exclude the allocator interposer; allocation binaries include it.
+
+Receipts retain profiles, PCM/F0/fixture identities, sample rate, precision,
+input duration, F0 frame grid, chunk size, attempt/output counts, capacity, prepared
+bytes, hardware/toolchain, and full raw benchmark histograms. Prepare/control use
+30 measured iterations after three warmups; Run uses ten after one warmup. The
+p99 of ten observations is effectively the maximum, not a stable population-tail
+estimate. `costs.json` derives throughput and amortized cost per attempt from the
+complete Run distribution. It does not attribute the whole batch to accepted or
+rejected cycles. Both support profiles wait for their complete block; processing
+time is separate from the half-block center delay and physical capture latency.
+There is no fixed analysis frame/hop: each matching window spans one current F0
+period, with one attempted cycle per progression step. The supplied F0 grid is
+reported independently; 256 samples is a delivery chunk, not an analysis hop.
+
+The separate stage probe records the actual attempted steps from a complete
+native tracking prepass, then replays the unchanged matching/interpolation kernel
+with five paired disabled/detailed trials. Every result must equal the prepass;
+every detailed matching call is recorded, with no diagnostic suppression. Each
+attempt gets its own diagnostic frame to avoid production's 64-record prefix
+limit. Accepted/rejected reference gates and native eligible/ineligible timing
+remain separate groups. Matching/interpolation samples include sink clock/lock
+overhead. Null means a stage was not measured or not entered; a measured zero
+means below-clock-resolution duration. Replay totals include framing/validation
+and are not complete analyzer throughput. No physical-device performance claim
+is made; those measurements remain follow-up #74.
+
+The [initial host evidence](../../Documentation/Evidence/pulses-performance.md)
+records all 17 passing shards, observed throughput and allocation counts, stage
+coverage, and raw-artifact identities. `pulse-benchmarks.yml` runs the complete
+matrix for relevant pull requests and weekly. `pulse-references.yml` independently
+regenerates raw, isolated-stage, history and YIN integration candidates before
+comparing native release output against those fresh candidates.

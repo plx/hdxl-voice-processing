@@ -235,3 +235,61 @@ func pulseSnapshot(
     let recovered = try pulseSnapshot(worker, samples, contour: unvoiced)
     #expect(recovered.landmarks.isEmpty && worker.executionStatistics.analyzedIntervalCount == 2)
 }
+
+@Test func pulseResultStatusDistinguishesUnavailablePeriodsFromZeroAndRetainsUnits() throws {
+    let worker = try pulseWorker()
+    let voiced = pulseCycleTrain()
+    let silence = try pulseSnapshot(worker, Array(repeating: 0, count: 400))
+    let constant = try pulseSnapshot(worker, Array(repeating: 0.3, count: 400))
+    let excluded = try pulseSnapshot(worker, voiced, exclusions: [0..<400])
+    let unvoiced = try pulseSnapshot(
+        worker, voiced, contour: pulseContour(count: 400, values: Array(repeating: 0, count: 20)))
+    for (snapshot, reason): (PulseSnapshot, UnavailabilityReason) in [
+        (silence, .silence), (constant, .lowConfidence),
+        (excluded, .excluded), (unvoiced, .insufficientData),
+    ] {
+        #expect(snapshot.result.unavailability == reason)
+        #expect(snapshot.result.eligiblePeriodCount == 0)
+        #expect(snapshot.result.availableAmplitudeCount == 0)
+        #expect(snapshot.amplitudes.allSatisfy { $0.rmsAmplitude == nil && !$0.isEligible })
+        #expect(snapshot.result.timeUnit == .seconds)
+        #expect(snapshot.result.amplitudeUnit == .normalizedAmplitude)
+    }
+    #expect(excluded.result.timing.includedSampleCount == 0)
+    #expect(excluded.result.timing.excludedSampleCount == 400)
+    #expect(try pulseSnapshot(worker, voiced).result.unavailability == nil)
+}
+
+@Test func pulseOwnedSnapshotCrossesTasksAfterScratchReuseAndRetainsClockProvenance() async throws {
+    let worker = try pulseWorker()
+    let pcm = pulseCycleTrain()
+    let contour = try pulseContour(count: 400)
+    let source = try pulseTiming(count: 400).source
+    let timing = try AnalysisTiming(
+        source: source, includedSampleCount: 400, sourceStartSeconds: 123.5,
+        hostStartNanoseconds: 1_000_000_000, completedHostNanoseconds: 1_200_000_000,
+        effectiveDelaySeconds: 0.08)
+    var captured: PulseSnapshot?
+    try pcm.withUnsafeBufferPointer {
+        try worker.analyze($0, contour: contour, timing: timing) {
+            captured = try $0.snapshot(maximumRecordCount: 10000)
+        }
+    }
+    let retained = try #require(captured)
+    let originalHash = retained.hashValue
+    let originalTimes = retained.landmarks.map(\.timeSeconds)
+    let originalAmplitudes = retained.amplitudes.compactMap(\.rmsAmplitude)
+    try worker.reset()
+    let shifted = (Array(pcm.dropFirst(2)) + pcm.prefix(2)).map { $0 * 0.25 }
+    let replacement = try pulseSnapshot(worker, shifted)
+    #expect(replacement.landmarks.map(\.timeSeconds) != originalTimes)
+    #expect(replacement.amplitudes.compactMap(\.rmsAmplitude) != originalAmplitudes)
+    let received = await Task.detached { retained }.value
+    #expect(received.hashValue == originalHash)
+    #expect(received.landmarks.map(\.timeSeconds) == originalTimes)
+    #expect(received.amplitudes.compactMap(\.rmsAmplitude) == originalAmplitudes)
+    #expect(received.result.timing == timing)
+    #expect(received.result.timing.source.endSample == Int64.max)
+    #expect(received.result.profile == (try worker.configuration.identity()))
+    #expect(received.result.f0ContourIdentity == (try contour.identity()))
+}

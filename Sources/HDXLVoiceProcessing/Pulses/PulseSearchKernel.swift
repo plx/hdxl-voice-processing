@@ -29,18 +29,18 @@ package struct PulseSeed {
 }
 
 package struct PulseSearchMatch {
-    let timeSeconds: Double
-    let correlation: Double?
-    let amplitudeGatePeak: Double
-    let curvature: Double
-    let observedPairCount: Int
-    let varyingSupport: Bool
-    let support: PulsePairSupport
-    let usedRangeFallback: Bool
-    let selectedSyntheticCandidate: Bool
-    let firstRequiredSampleIndex: Int
-    let lastRequiredSampleIndex: Int
-    let evaluatedLagCount: Int
+    package let timeSeconds: Double
+    package let correlation: Double?
+    package let amplitudeGatePeak: Double
+    package let curvature: Double
+    package let observedPairCount: Int
+    package let varyingSupport: Bool
+    package let support: PulsePairSupport
+    package let usedRangeFallback: Bool
+    package let selectedSyntheticCandidate: Bool
+    package let firstRequiredSampleIndex: Int
+    package let lastRequiredSampleIndex: Int
+    package let evaluatedLagCount: Int
 }
 
 /// Prepared direct correlation tables. Input PCM is checked once by the owning
@@ -51,8 +51,9 @@ package final class PulseSearchKernel {
     private let diagnostics: WorkerDiagnostics
     var workspaceBytes: Int { bins.count * MemoryLayout<PulseCorrelationBin>.stride }
 
-    init(_ configuration: PulseConfiguration, diagnostics: WorkerDiagnostics = WorkerDiagnostics())
-    {
+    package init(
+        _ configuration: PulseConfiguration, diagnostics: WorkerDiagnostics = WorkerDiagnostics()
+    ) {
         self.configuration = configuration
         self.diagnostics = diagnostics
         bins = .allocate(capacity: configuration.maximumCandidateLagCount + 2)
@@ -136,7 +137,7 @@ package final class PulseSearchKernel {
             lastRequiredSampleIndex: requiredLast, peak: peak, varyingSupport: varying)
     }
 
-    func match(
+    package func match(
         _ samples: UnsafeBufferPointer<Double>, anchor: Double, frequency: Double,
         direction: PulseSearchDirection
     ) throws -> PulseSearchMatch {

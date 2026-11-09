@@ -215,3 +215,11 @@ measurements and positive allocation/ARC controls. Run
 `python3 Tools/HNR/benchmark.py timing --shard ac16000` (or `allocation`), selecting
 one of six method/rate shards, `stress` or `export`. The full matrix and distinct
 internal-stage probe are described in the [HNR protocol](../Tools/HNR/README.md#host-performance-matrix).
+
+Pulse tracking registers 88 workloads with separate preparation and complete
+processing operations: three sample rates, both precisions, whole intervals and
+independent chunked blocks, changing F0, irregular/noisy signals, a licensed vowel,
+and deliberate owned snapshots. Run `python3 Tools/Pulses/benchmark.py timing
+--shard steady16000`, then the other shards and separate `allocation` mode.
+The [pulse protocol](../Tools/Pulses/README.md#host-performance-matrix) defines
+the input identities, counts, memory, delay, and separate per-attempt stage probe.

@@ -1,0 +1,94 @@
+name: Pulse references
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '27 10 * * 4'
+  pull_request:
+    paths:
+      - 'Sources/HDXLVoiceProcessing/Pulses/**'
+      - 'Sources/HDXLVoiceProcessing/YIN/**'
+      - 'Sources/HDXLVoiceProcessing/Contracts/**'
+      - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
+      - 'Tests/HDXLVoiceProcessingTests/Pulse*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Pulse*/**'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/YIN/**'
+      - 'Tools/Pulses/**'
+      - 'Tools/YIN/**'
+      - 'Tools/Reference/**'
+      - 'Tools/Tests/test_pulse*'
+      - 'Package.swift'
+      - '.github/workflows/pulse-references.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pulse-references-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    name: Pulse equations, histories and YIN integration / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 90
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Acquire pinned reference and verify committed evidence
+        run: |
+          python3 Tools/Reference/setup.py
+          python3 Tools/verify-provenance.py
+          python3 Tools/Pulses/verify.py --directory Tests/HDXLVoiceProcessingTests/Fixtures/Pulses
+          python3 Tools/Pulses/verify_stages.py --f0-directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseF0Stages --matching-directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseMatchingStages --reference-directory Tests/HDXLVoiceProcessingTests/Fixtures/Pulses
+          python3 Tools/Pulses/trace_reference.py --verify --directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseHistories
+          python3 Tools/Pulses/yin_reference.py --verify --directory Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN
+          python3 -m unittest discover -s Tools/Tests -p 'test_pulse*.py'
+      - name: Regenerate injected-F0 and isolated-stage evidence
+        run: |
+          set -o pipefail
+          mkdir -p .build/pulse-reference-evidence
+          python3 Tools/Pulses/generate.py --output .build/pulse-reference-evidence/external | tee .build/pulse-reference-evidence/external.log
+          python3 Tools/Pulses/verify.py --directory .build/pulse-reference-evidence/external
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/Pulses/manifest.json .build/pulse-reference-evidence/external/manifest.json
+          python3 Tools/Pulses/stage_probe.py --mode f0 --output .build/pulse-reference-evidence/f0 | tee .build/pulse-reference-evidence/f0.log
+          python3 Tools/Pulses/stage_probe.py --mode matching --reference-directory .build/pulse-reference-evidence/external --output .build/pulse-reference-evidence/matching | tee .build/pulse-reference-evidence/matching.log
+          python3 Tools/Pulses/verify_stages.py --f0-directory .build/pulse-reference-evidence/f0 --matching-directory .build/pulse-reference-evidence/matching --reference-directory .build/pulse-reference-evidence/external
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/PulseF0Stages/summary.json .build/pulse-reference-evidence/f0/summary.json
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/PulseMatchingStages/summary.json .build/pulse-reference-evidence/matching/summary.json
+      - name: Regenerate independent histories and separate estimated-F0 integration
+        run: |
+          set -o pipefail
+          python3 Tools/Pulses/trace_reference.py --directory .build/pulse-reference-evidence/histories | tee .build/pulse-reference-evidence/histories.log
+          python3 Tools/Pulses/trace_reference.py --verify --directory .build/pulse-reference-evidence/histories
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/PulseHistories/manifest.json .build/pulse-reference-evidence/histories/manifest.json
+          python3 Tools/Pulses/yin_reference.py --directory .build/pulse-reference-evidence/yin | tee .build/pulse-reference-evidence/yin.log
+          python3 Tools/Pulses/yin_reference.py --verify --directory .build/pulse-reference-evidence/yin
+          cmp Tests/HDXLVoiceProcessingTests/Fixtures/PulseYIN/manifest.json .build/pulse-reference-evidence/yin/manifest.json
+      - name: Native comparison against freshly regenerated candidates
+        env:
+          HDXL_PULSE_REFERENCE_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/external
+          HDXL_PULSE_F0_STAGE_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/f0
+          HDXL_PULSE_MATCHING_STAGE_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/matching
+          HDXL_PULSE_HISTORY_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/histories
+          HDXL_PULSE_YIN_DIRECTORY: ${{ github.workspace }}/.build/pulse-reference-evidence/yin
+          HDXL_PULSE_REFERENCE_REPORT: ${{ github.workspace }}/.build/pulse-reference-evidence/native-external.json
+          HDXL_PULSE_YIN_REPORT: ${{ github.workspace }}/.build/pulse-reference-evidence/native-yin.json
+        run: |
+          set -o pipefail
+          swift test -c release --filter '(pulse|Pulse)' | tee .build/pulse-reference-evidence/native.log
+      - name: Retain reproducible pulse evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pulse-references-${{ github.run_attempt }}
+          path: .build/pulse-reference-evidence/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

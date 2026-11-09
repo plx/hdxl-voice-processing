@@ -35,6 +35,24 @@ are seconds relative to its integer `startSample`. Compute periods in that relat
 coordinate system, before adding a large absolute clock offset. Source time,
 epoch, input precision, F0 identity, and configuration identity stay separate.
 
+Configuration and F0 contours have validated Codable representations and stable
+canonical identities. Unknown keys, unsupported schema versions, and changed
+fixed numerical definitions fail decoding. Retain both when persisting an analysis
+recipe; the optional upstream profile does not replace the F0 content identity.
+Changing configuration requires preparing a new worker. Result records and owned
+snapshots are Sendable values, with explicit seconds and normalized-amplitude
+units; they do not define a versioned archive format. Borrowed pointers cannot
+cross the callback or concurrency boundary.
+
+The result's `unavailability` describes whether any eligible period exists. With
+none, fully excluded input reports `excluded`, zero PCM reports `silence`, fewer
+than two raw points reports `insufficientData`, and other rejected sequences
+report `lowConfidence`. Individual amplitude and pair eligibility remain separate:
+an available period sequence need not contain an available amplitude. Invalid
+PCM, contexts, capacities or lifecycle calls throw without publishing a fabricated
+zero result. Source/host anchors and a supplied completion timestamp are retained;
+the tracker does not invent a host-clock completion reading.
+
 ## Complete support and chunked delivery
 
 Each maximal voiced F0 interval starts from an absolute waveform extremum near
@@ -154,4 +172,7 @@ The shared record budget and every-sixteenth-frame sampling policy still apply;
 long blocks can suppress later stage records. These sampled spans are not an
 unbiased per-cycle performance distribution. Dedicated workloads must measure
 accepted/rejected cycle costs and complete throughput separately, with setup and
-snapshot allocation outside steady-state measurement.
+owned-snapshot cases separated from borrowed steady-state processing. The
+[host performance matrix](../Tools/Pulses/README.md#host-performance-matrix)
+and [initial evidence](Evidence/pulses-performance.md) retain both measurements
+and their instrumentation/clock-resolution limits.
