@@ -20,8 +20,9 @@ local dB is in decibels.
 
 Original black-box experiments establish the pinned normalization population:
 **all selected amplitudes except the final one**, independently of numerator
-period/amplitude-ratio rejections. Zeros remain in this population. Thus `[1,2]`
-has local shimmer 1, while `[2,1]` has 0.5; both have the same dB value. This
+period/amplitude-ratio rejections. Zeros remain in this population. When an
+amplitude factor of at least 2 permits the pair, `[1,2]` has local shimmer 1,
+while `[2,1]` has 0.5; both have the same dB value. This
 asymmetry is explicit reference behavior, not a physiological claim. Owner
 attention issue [#158](https://github.com/plx/hdxl-voice-processing/issues/158)
 records the convention for later review.
@@ -170,6 +171,8 @@ any nonzero maximum heap count/bytes/object allocation in a prepared operation.
 Artifacts are in `Benchmarks/.build/artifacts/shimmer-*`; CI runs each shard and
 retains its original distributions and independently validated receipts.
 No fixed machine-independent timing gate or physical-device claim is made.
-Device capture, thermal behavior and sustained real-time evidence remain in
+Deployment cadence and any need for incremental aggregation are tracked in
+[#160](https://github.com/plx/hdxl-voice-processing/issues/160). Device capture,
+thermal behavior and sustained real-time evidence remain in
 [#74](https://github.com/plx/hdxl-voice-processing/issues/74) and
 [#102](https://github.com/plx/hdxl-voice-processing/issues/102).

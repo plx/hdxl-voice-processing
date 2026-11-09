@@ -134,3 +134,6 @@ incremental history management, not incremental constant-time statistics.
 `evaluatedAmplitudeCount` exposes the scanned work. The PCM adapter itself analyzes
 the complete supplied interval and defaults exploratory queries to its trailing
 configured window; callers needing an amplitude history use the rolling worker.
+The [performance protocol](../Tools/Shimmer/README.md#host-performance-matrix)
+measures this cost explicitly. Target-hardware cadence and optimization decisions
+remain tracked in [#160](https://github.com/plx/hdxl-voice-processing/issues/160).
