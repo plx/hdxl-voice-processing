@@ -1,0 +1,14 @@
+begin	shimmer-reference-v1
+count	5
+amplitude	1	0.00390625	1
+amplitude	2	0.01171875	2
+amplitude	3	0.01953125	100
+amplitude	4	0.02734375	4
+amplitude	5	0.03515625	8
+local	0.09345794392523364
+db	6.020599913279624
+apq3	--undefined--
+apq5	--undefined--
+apq11	--undefined--
+dda	--undefined--
+end	shimmer-reference-v1

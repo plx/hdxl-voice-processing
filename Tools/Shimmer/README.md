@@ -1,0 +1,73 @@
+# Shimmer reference development
+
+Issue [#51](https://github.com/plx/hdxl-voice-processing/issues/51) adds local
+normalized shimmer, local dB, APQ3, APQ5, APQ11 and DDA. The reference foundation
+is independent of native outputs: original supplied amplitude sequences, exact
+rational equations and 100-digit logarithms are compared with the hash-pinned
+Praat 7.0.02 executable. No external implementation source is used. Praat is a
+development process and never a package runtime dependency.
+
+## Equations and populations
+
+The [public definitions](https://www.fon.hum.uva.nl/praat/manual/Voice_3__Shimmer.html)
+define local shimmer as the mean absolute adjacent amplitude difference divided
+by a mean amplitude. Local dB is the mean of
+`20 * abs(log10(a[i+1] / a[i]))`, **not** a difference of dBFS analysis frames.
+APQ3/5/11 average the absolute deviation of the central amplitude from its
+three/five/eleven-amplitude neighborhood mean, then normalize. DDA is three
+times APQ3 under the identical neighborhoods. Relative outputs are fractions;
+local dB is in decibels.
+
+Original black-box experiments establish the pinned normalization population:
+**all selected amplitudes except the final one**, independently of numerator
+period/amplitude-ratio rejections. Zeros remain in this population. Thus `[1,2]`
+has local shimmer 1, while `[2,1]` has 0.5; both have the same dB value. This
+asymmetry is explicit reference behavior, not a physiological claim. Owner
+attention issue [#158](https://github.com/plx/hdxl-voice-processing/issues/158)
+records the convention for later review.
+
+Every numerator window requires consecutive positive amplitudes, all adjacent
+timestamp differences inside inclusive period bounds, and each adjacent
+`max(a,b)/min(a,b)` at or below the amplitude factor. No rejected edge is
+removed and reconnected. Local/dB need two amplitudes, APQ3/DDA three, APQ5
+five, and APQ11 eleven. A constant eligible sequence produces numerical zero;
+an empty, zero-energy or inadequately observed sequence is unavailable.
+
+The supplied-tier query is constructed from points in the closed selected
+range. It does not claim equivalence to extracting amplitudes from a cropped
+waveform/PointProcess query, which needs neighboring pulses to define support.
+Native source reliability and explicit continuity are additional to these
+raw mathematical tier rules.
+
+## Evidence and reproduction
+
+The 94-case catalog covers every short constant length, alternation, ramps,
+sinusoidal modulation, outliers, zeros, reversal, gain/time scaling, inclusive
+thresholds and adjacent binary64 values, split neighborhoods, cropped tiers,
+and 24 deterministic non-dyadic sequences. Development interchange bounds are
+30,000 records in 60 seconds, timestamp separation at least `1e-12`, and
+amplitudes zero or in `[1e-150,1e150]`. These are fixture limits, not PCM units.
+
+```sh
+/opt/homebrew/opt/python@3.14/bin/python3.14 Tools/Shimmer/generate.py \
+  --output .build/shimmer-candidates
+/opt/homebrew/opt/python@3.14/bin/python3.14 Tools/Shimmer/verify.py \
+  .build/shimmer-candidates --canonical Tests/HDXLVoiceProcessingTests/Fixtures/Shimmer
+/opt/homebrew/opt/python@3.14/bin/python3.14 -m unittest discover \
+  -s Tools/Tests -p test_shimmer_reference.py
+```
+
+Generation only writes an absent directory under `.build`. The canonical set
+contains 283 files: inputs, scripts, raw transcripts, independent equations,
+membership indices, rejection reasons, comparisons, hashes and a manifest.
+Offline verification reconstructs everything without running the reference.
+Corruption tests include rehashed wrong answers and forged normalization or
+neighborhood membership; a checksum alone is insufficient.
+
+Availability and membership decisions are exact. For arithmetic comparisons,
+`g = 16 * ulp(1) * (n + 64)`; fractional bounds are
+`g * (1 + maximumSelectedAmplitude / meanAmplitude)`, and the dB bound is
+`g * (1 + abs(expectedDB))`. The factor covers ordinary binary64 accumulation,
+up to eleven terms per neighborhood and normalization/logarithm operations.
+This is numerical conformance allowance, not a recorded-voice error estimate.
+External DDA must additionally equal `3 * APQ3` exactly.
