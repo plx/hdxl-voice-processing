@@ -3,6 +3,73 @@ import Testing
 
 @testable import HDXLVoiceProcessing
 
+/// Test-only synchronous sink. It is used by one worker on one test thread;
+/// production sinks cannot mutate or retain the non-Sendable worker.
+private final class JitterReentrySink: DiagnosticSink, @unchecked Sendable {
+    var action: (() -> Void)?
+    func begin(_ record: DiagnosticRecord) -> DiagnosticIntervalToken? {
+        action?()
+        return .recorded
+    }
+    func end(_ record: DiagnosticRecord, token: DiagnosticIntervalToken) {}
+    func event(_ record: DiagnosticRecord) -> Bool {
+        if record.stage == .reset { action?() }
+        return true
+    }
+}
+
+@Test func jitterStatisticsRejectDiagnosticReentryDuringQueryAndReset() throws {
+    let source = try SourceInterval(
+        epoch: StreamEpoch(streamID: UUID()),
+        startSample: 0, sampleCount: 160, sampleRate: 16000)
+    let timing = try AnalysisTiming(source: source, includedSampleCount: 160)
+    let period = try JitterPeriodInput(startSeconds: 0, endSeconds: 0.01)
+    let batchSink = JitterReentrySink()
+    let batch = try PreparedJitter(
+        configuration: JitterConfiguration(sampleRate: 16000),
+        maximumPeriodCount: 4, diagnostics: WorkerDiagnostics(mode: .detailed, sink: batchSink))
+    var batchCalls = 0
+    batchSink.action = {
+        batchCalls += 1
+        #expect(throws: JitterError.reentrantCall) { try batch.reset() }
+        #expect(throws: JitterError.reentrantCall) {
+            try [period].withUnsafeBufferPointer { try batch.analyze($0, dependencyTiming: timing) }
+        }
+    }
+    defer { batchSink.action = nil }
+    _ = try [period].withUnsafeBufferPointer { try batch.analyze($0, dependencyTiming: timing) }
+    try batch.reset()
+    #expect(batchCalls == 2 && batch.executionStatistics.analyzedQueryCount == 0)
+
+    let rollingSink = JitterReentrySink()
+    let rolling = try PreparedRollingJitter(
+        configuration: JitterConfiguration(
+            sampleRate: 16000,
+            applicability: .exploratoryRolling, rollingWindowSampleCount: 1600),
+        origin: SourceInterval(
+            epoch: source.epoch, startSample: 0, sampleCount: 0, sampleRate: 16000),
+        maximumPeriodCount: 4, diagnostics: WorkerDiagnostics(mode: .detailed, sink: rollingSink))
+    var rollingCalls = 0
+    rollingSink.action = {
+        rollingCalls += 1
+        #expect(throws: JitterError.reentrantCall) { try rolling.reset() }
+        #expect(throws: JitterError.reentrantCall) {
+            try rolling.append(period, dependency: source)
+        }
+        #expect(throws: JitterError.reentrantCall) {
+            try rolling.requiredDependency(atSourceSample: 160)
+        }
+        #expect(throws: JitterError.reentrantCall) {
+            try rolling.result(atSourceSample: 160, dependencyTiming: timing)
+        }
+    }
+    defer { rollingSink.action = nil }
+    try rolling.append(period, dependency: source)
+    _ = try rolling.result(atSourceSample: 160, dependencyTiming: timing)
+    try rolling.reset()
+    #expect(rollingCalls == 2 && rolling.executionStatistics.retainedInputCount == 0)
+}
+
 @Test func jitterDiagnosticsPreserveResultsAndSeparatePulseFromStatisticsScopes() throws {
     let samples = pulseCycleTrain(count: 160)
     let contour = try pulseContour(count: samples.count)

@@ -329,3 +329,12 @@ retaining the existing token42 pulse scopes. This separates waveform-tracking
 cost from the inexpensive period statistics. Both use whole-query sampling and
 the shared record budget. `JitterDiagnosticsTests` checks all three modes,
 numerical equality, balanced scopes, metadata and consumer exclusion.
+
+`PreparedRollingJitter` uses the same token50 `Perturbation` scope for each
+successful query, including expirations, reading the sum tree and constructing
+the report. `processed` is the number of appended periods; `frame` counts queries.
+Appends do not emit per-period events. The rolling workload measures append/update
+cost explicitly, separate from query-only cost. Tree-node counters expose bounded
+incremental work without logging period values. Source-envelope validation occurs
+before the interval, and public calls reject diagnostic reentry during a query or
+reset. `JitterRollingTests` covers numerical identity across instrumentation modes.

@@ -46,6 +46,8 @@ public final class PreparedJitter {
 
     public func reset() throws {
         guard !busy else { throw JitterError.reentrantCall }
+        busy = true
+        defer { busy = false }
         analyzedCount = 0
         lastInputCount = 0
         diagnostics.reset()
@@ -92,11 +94,22 @@ public final class PreparedJitter {
         let query =
             try requestedQuery
             ?? JitterQueryRange(startSeconds: 0, endSeconds: timing.source.durationSeconds)
-        guard query.endSeconds <= timing.source.durationSeconds,
-            configuration.rollingWindowDurationSeconds.map({
-                query.startSeconds >= max(0, query.endSeconds - $0)
-            }) ?? true
-        else { throw JitterError.unexpectedContext }
+        guard query.endSeconds <= timing.source.durationSeconds else {
+            throw JitterError.unexpectedContext
+        }
+        if let window = configuration.rollingWindowDurationSeconds {
+            let minimum = max(0, query.endSeconds - window)
+            // Integer sample endpoints divided separately can differ from
+            // end-minus-duration by a few rounding steps. Accept that arithmetic
+            // discrepancy without moving either query boundary. The cap prevents
+            // coarse, very large Double coordinates from widening a window.
+            let allowance = min(
+                0.5 / Double(configuration.sampleRate),
+                2 * (query.endSeconds.ulp + window.ulp))
+            guard query.startSeconds >= minimum || minimum - query.startSeconds <= allowance else {
+                throw JitterError.unexpectedContext
+            }
+        }
         // Validate the whole call before changing execution state. Rejected source
         // intervals may extend outside acquisition only when explicitly identified.
         for i in periods.indices {

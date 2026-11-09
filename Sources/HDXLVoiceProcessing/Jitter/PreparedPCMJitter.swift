@@ -83,6 +83,8 @@ public final class PreparedPCMJitter<Sample: BinaryFloatingPoint & Sendable> {
 
     public func reset() throws {
         guard !busy else { throw JitterError.reentrantCall }
+        busy = true
+        defer { busy = false }
         try pulseWorker.reset()
         try statistics.reset()
     }

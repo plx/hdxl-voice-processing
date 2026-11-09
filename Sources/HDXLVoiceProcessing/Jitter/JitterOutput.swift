@@ -60,7 +60,8 @@ public struct JitterRejectionCounts: Sendable, Hashable, Encodable {
 }
 
 public struct JitterCoverage: Sendable, Hashable, Encodable {
-    /// Full supplied sequence, including periods outside the selected query.
+    /// Batch: full supplied sequence. Rolling: retained complete periods plus
+    /// the immediate preceding context, not the lifetime observation count.
     public let inputPeriodCount: Int
     public let selectedPeriodCount: Int
     public let acceptedPeriodCount: Int
@@ -131,6 +132,9 @@ public struct JitterAnalysisResult: Sendable, Hashable, Encodable {
     public let applicability: JitterApplicability
     public let dependencyTiming: AnalysisTiming
     public let query: JitterQueryRange
+    /// Exact integer query identity for the incremental sample-clock API.
+    /// Arbitrary Double-bound batch queries leave this nil.
+    public let sampleAlignedQuery: SourceInterval?
     public let inputProvenance: JitterInputProvenance
     public let coverage: JitterCoverage
     public let local: JitterEstimate
@@ -142,9 +146,15 @@ public struct JitterAnalysisResult: Sendable, Hashable, Encodable {
     /// Approximate absolute display coordinate; exact source identity remains the
     /// integer source interval plus the relative query. Supplied anchors survive.
     public var queryCenterSourceSeconds: Double {
-        (dependencyTiming.sourceStartSeconds
+        let center =
+            sampleAlignedQuery.map {
+                Double($0.startSample - dependencyTiming.source.startSample) / $0.sampleRate
+                    + $0.durationSeconds / 2
+            } ?? query.centerSeconds
+        return
+            (dependencyTiming.sourceStartSeconds
             ?? Double(dependencyTiming.source.startSample) / dependencyTiming.source.sampleRate)
-            + query.centerSeconds
+            + center
     }
 
     public func estimate(_ variant: JitterVariant) -> JitterEstimate {
@@ -194,16 +204,19 @@ public struct JitterAnalysisResult: Sendable, Hashable, Encodable {
         raw: JitterKernelResult, configuration: JitterConfiguration, identity: ProfileIdentity,
         timing: AnalysisTiming, query: JitterQueryRange, provenance: JitterInputProvenance,
         inputCount: Int, sourceRejections: JitterRejectionCounts,
-        sourceUnavailability: UnavailabilityReason?, requested: JitterRequestedVariants
+        sourceUnavailability: UnavailabilityReason?, requested: JitterRequestedVariants,
+        sampleAlignedQuery: SourceInterval? = nil
     ) {
         schemaVersion = 1
         profile = identity
         applicability = configuration.applicability
         dependencyTiming = timing
         self.query = query
+        self.sampleAlignedQuery = sampleAlignedQuery
         inputProvenance = provenance
         coverage = JitterCoverage(
-            raw: raw, inputCount: inputCount, duration: query.durationSeconds,
+            raw: raw, inputCount: inputCount,
+            duration: sampleAlignedQuery?.durationSeconds ?? query.durationSeconds,
             sourceRejections: sourceRejections)
         func unavailable(_ variant: JitterVariant) -> UnavailabilityReason {
             if timing.includedSampleCount == 0 && timing.source.sampleCount > 0 { return .excluded }

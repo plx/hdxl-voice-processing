@@ -88,6 +88,13 @@ Acquisition coverage in `AnalysisTiming` remains separate: acquired audio can
 contain few reliable cycles. Source rejection flags declare immutable selection
 for each supplied period; a total acquisition exclusion also excludes all periods.
 
+For a rolling batch query, the maximum duration check permits the rounding
+error of separately dividing sample-aligned endpoints versus subtracting a
+duration. Its allowance is `2 * (queryEnd.ulp + windowDuration.ulp)`, capped at
+half a source sample. This validates the declared length; it does not move the
+query bounds or round period membership to a sample grid. A whole extra sample
+is rejected. Exact sample-window queries are available in the incremental API.
+
 Availability is per variant. Insufficient observations, silence, exclusions,
 missing acquisition, invalid source observations, discontinuities, unsupported
 period bounds and low-confidence sequences have explicit unavailable reasons.
@@ -103,11 +110,87 @@ persist the selected query and counts. Use `queryCenterSourceSeconds` to plot
 the query center, including a supplied source-clock anchor. The exact source
 interval remains integer-valued even when its absolute display coordinate is
 too large for exact Double representation.
+Incremental reports additionally retain `sampleAlignedQuery`, an exact integer
+source interval for their window; arbitrary-bound batch queries leave it nil.
 
 Fraction-to-percent conversion is explicit and changes the measurement unit.
 Absolute jitter cannot be exported as percent or as a frequency deviation.
 Exploratory scalar exports carry the `exploratoryApplicability` warning; incomplete
 period coverage carries `partialCoverage`. No confidence probability is invented.
+
+## Incremental rolling periods
+
+`PreparedRollingJitter` requires an exploratory configuration, a zero-length
+`SourceInterval` origin and an explicit retained-period capacity. All appended
+period coordinates are relative to that **fixed origin**, even when an append's
+upstream dependency begins later. The source sample origin remains Int64;
+subtract integer sample positions before converting a block offset to seconds.
+Period durations and fractional endpoints remain Double values without sample
+quantization. Reset with a new zero-length origin when changing continuity epochs
+or rebasing a very long stream. Sample rate changes require a new configuration.
+
+Each `append(period, dependency:)` declares the whole upstream support that made
+the period available. A pulse-derived period depends on its complete tracking
+block. Append the block's complete chronological record sequence before querying.
+Keep rejected intervals in that sequence and assign globally distinct run IDs to
+independently anchored blocks. Reusing an ID never bridges a timestamp gap.
+The rolling provenance describes supplied periods and an optional source profile;
+retain each original PCM report separately for its individual F0-contour identity.
+One rolling report cannot pretend that several contours share one exact identity.
+
+The query window is the exact integer source interval
+`[max(origin.startSample, clock - windowSamples), clock]`. Queries cannot precede
+the latest upstream dependency or move backwards. Appending later upstream
+support can expire old periods before a query; the window never moves backwards.
+Capacity includes retained complete periods, with one additional fixed slot for
+the preceding interval. Capacity checks occur before any eviction or mutation.
+Per-call failures leave the state intact; reset clears all history and counters.
+
+Call `requiredDependency(atSourceSample:)` before constructing the query's
+`AnalysisTiming`. That read leaves state untouched and returns a conservative
+envelope containing the window, retained upstream support, and connected left
+context needed by the denominator. Supply actual acquisition coverage and any
+source/host anchors for that envelope; the worker does not invent them from
+overlapping blocks. Query results retain that timing and express their exact
+integer window in `sampleAlignedQuery`, with a relative Double presentation in
+`query`. Window duration/coverage use the integer sample count. Timing cannot
+start before the declared origin. Period selection is immutable: reset and replay
+if a selection mask changes. A completely excluded query produces excluded
+estimates and zero accepted counts without rewriting retained input flags.
+
+```swift
+let rollingProfile = try JitterConfiguration(
+    sampleRate: 16_000, applicability: .exploratoryRolling,
+    rollingWindowSampleCount: 16_000)
+let origin = try SourceInterval(
+    epoch: source.epoch, startSample: source.startSample,
+    sampleCount: 0, sampleRate: source.sampleRate)
+let rolling = try PreparedRollingJitter(
+    configuration: rollingProfile, origin: origin, maximumPeriodCount: 1_024)
+for period in periods { try rolling.append(period, dependency: source) }
+let support = try rolling.requiredDependency(atSourceSample: source.endSample)
+// This example's entire declared source interval was acquired and included.
+let rollingTiming = try AnalysisTiming(source: support, includedSampleCount: support.sampleCount)
+let latest = try rolling.result(
+    atSourceSample: source.endSample, dependencyTiming: rollingTiming)
+```
+
+Appending changes at most five neighborhood contributions. A preallocated ring
+and balanced sum tree update or expire each contribution in `O(log capacity)`
+work. Query totals take constant time after any necessary expirations; advancing
+past many periods costs proportional to the number expired. Sums are rebuilt
+from nonnegative child totals rather than repeatedly subtracting floating-point
+values. Prepared storage is capped at 512 MiB; steady updates own no growing
+arrays. The optional initializer `variant` calculates one numerator family for
+combined-versus-separate cost comparisons. RAP and DDP share their required
+triplet numerator. Other estimates remain explicitly `notRequested`.
+
+No future right neighbor is invented. An appended neighbor can change the former
+tail period's mean membership. An evicted immediate left neighbor remains context
+for the first survivor, even when that neighbor is outside numerical period bounds;
+an unreliable neighbor breaks continuity. Once all complete periods expire, the
+result is unavailable (`stale`), with zero accepted counts. An empty stream or a
+window crossed by one incomplete long interval remains `insufficientData`.
 
 ## PCM and acoustic pulses
 
@@ -128,8 +211,8 @@ The tracker's complete waveform, global amplitude reference and midpoint
 anchoring remain dependencies. This adapter does not make that estimator causal.
 An exploratory configuration defaults to its trailing query within the supplied
 complete input. Its earliest permitted start is calculated as
-`max(0, queryEnd - configuredWindowDuration)`; this avoids inconsistent repeated
-floating-point subtraction when a sample-aligned window is expressed in seconds.
+`max(0, queryEnd - configuredWindowDuration)`; explicit sample-aligned bounds also
+receive the bounded floating-point validation allowance described above.
 Independently anchored blocks retain their distinct pulse profile and cannot
 claim cycle continuity across blocks. See [acoustic pulse tracking](Pulses.md)
 for support, delay and exclusion details.
