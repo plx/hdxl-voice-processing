@@ -166,6 +166,13 @@ report and native fixture-validation signposts make no DSP performance claim.
 
 ## Algorithm workloads
 
+Jitter registers 68 cases and 240 operation distributions per mode, covering
+0.25/1/3/10-second accepted and densely rejected period runs, bounded rolling
+updates, combined versus genuine single-variant execution, and direct
+pulse/PCM/statistics cost comparisons. Run `python3 Tools/Jitter/benchmark.py
+timing --shard duration250` (or `allocation`); the five shards and independently
+validated receipts are described in the [jitter protocol](../Tools/Jitter/README.md#host-performance-matrix).
+
 The [framing matrix](../Tools/Framing/README.md) covers 88 frame/window configurations.
 The [Fourier matrix](../Tools/Fourier/README.md) covers 22 size/precision configurations,
 setup and prepared transforms, spectra, inverse-cepstrum workload primitives, scalar

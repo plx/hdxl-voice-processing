@@ -84,6 +84,9 @@ The [YIN guide](Documentation/YIN.md) defines PCM pitch estimation, raw candidat
 periodicity, actual observed support, optional causal tracking and separate history timing.
 The [pulse guide](Documentation/Pulses.md) defines injected-F0 waveform matching,
 explicit period/pair eligibility, cycle amplitudes, and bounded chunked delivery.
+The [jitter guide](Documentation/Jitter.md) defines local, absolute, RAP, PPQ5 and
+DDP statistics, coverage-aware PCM analysis and incremental exploratory windows
+with explicit denominator context and source timing.
 The [masking guide](Documentation/Masks.md) defines independent annotation, energy,
 and spectral-flatness sources, original-timeline coverage, separate-region routing,
 and inspectable exclusions without an implicit periodicity gate.

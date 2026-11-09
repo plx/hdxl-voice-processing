@@ -1,0 +1,14 @@
+begin	jitter-reference-v1
+count	4
+point	1	0
+point	2	0.0009765625
+point	3	0.0087890625
+point	4	0.009765625
+periodCount	0
+meanPeriod	--undefined--
+local	--undefined--
+absolute	--undefined--
+rap	--undefined--
+ppq5	--undefined--
+ddp	--undefined--
+end	jitter-reference-v1
