@@ -1,0 +1,42 @@
+# Original query wrapper; no external implementation source.
+Create AmplitudeTier: "shimmer", 0.0, 0.14772797203462687
+Add point: 0.00390625, 7.252014039549977
+Add point: 0.010137440223625163, 0.9699043578002602
+Add point: 0.016566962380456973, 1.2872354509308934
+Add point: 0.022707605329342188, 0.8250287182163447
+Add point: 0.02905964097561082, 1.1632570340298116
+Add point: 0.03509128875375609, 0.6506364450324327
+Add point: 0.04125674849303323, 0.8647355828434229
+Add point: 0.04765181125636445, 1.2321004213299602
+Add point: 0.054020487646921536, 1.1898822248913348
+Add point: 0.06023702216058154, 0.9464552218560129
+Add point: 0.06624591456857161, 0.6142278527840972
+Add point: 0.07240386670746375, 0.8527234222274274
+Add point: 0.07846039863332407, 0.6904510813765228
+Add point: 0.08491183377671405, 6.611481147119775
+Add point: 0.09139142745276331, 1.3673498816788197
+Add point: 0.09782759583409643, 1.2978694101329893
+Add point: 0.1042750768258702, 1.3159695868380368
+Add point: 0.11022045154837543, 0.5125995560083538
+Add point: 0.11647797203462687, 1.0120327780023217
+appendInfoLine: "begin", tab$, "shimmer-reference-v1"
+count = Get number of points
+appendInfoLine: "count", tab$, count
+for i from 1 to count
+    time = Get time from index: i
+    amplitude = Get value at index: i
+    appendInfoLine: "amplitude", tab$, i, tab$, time, tab$, amplitude
+endfor
+value = Get shimmer (local): 0.0001, 0.02, 1.6
+appendInfoLine: "local", tab$, value
+value = Get shimmer (local_dB): 0.0001, 0.02, 1.6
+appendInfoLine: "db", tab$, value
+value = Get shimmer (apq3): 0.0001, 0.02, 1.6
+appendInfoLine: "apq3", tab$, value
+value = Get shimmer (apq5): 0.0001, 0.02, 1.6
+appendInfoLine: "apq5", tab$, value
+value = Get shimmer (apq11): 0.0001, 0.02, 1.6
+appendInfoLine: "apq11", tab$, value
+value = Get shimmer (dda): 0.0001, 0.02, 1.6
+appendInfoLine: "dda", tab$, value
+appendInfoLine: "end", tab$, "shimmer-reference-v1"

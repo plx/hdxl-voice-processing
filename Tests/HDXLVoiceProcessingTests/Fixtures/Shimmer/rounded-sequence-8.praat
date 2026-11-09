@@ -1,0 +1,54 @@
+# Original query wrapper; no external implementation source.
+Create AmplitudeTier: "shimmer", 0.0, 0.16014698718470752
+Add point: 0.00390625, 5.76195415109396
+Add point: 0.007899057461472694, 0.5827379075344652
+Add point: 0.01208722695252315, 1.0516067785210907
+Add point: 0.01625767936561412, 1.0090857914183289
+Add point: 0.0203256079350831, 0.7630285667255521
+Add point: 0.024642731611093042, 1.3610968224238604
+Add point: 0.028777903714896337, 0.9244130491279066
+Add point: 0.032889015215526646, 0.866667601512745
+Add point: 0.0371079635383406, 1.125475974753499
+Add point: 0.04133002376368192, 1.1329445408191532
+Add point: 0.0453916383361017, 0.7478749738074839
+Add point: 0.04948615703401932, 0.8268448750022799
+Add point: 0.053736836676835084, 1.201631142757833
+Add point: 0.05803432290801235, 6.56983477412723
+Add point: 0.06223496824066387, 1.0815487983636558
+Add point: 0.06650566167275732, 1.2496642370242625
+Add point: 0.07050574533253287, 0.6002007834613323
+Add point: 0.07485789489379385, 1.445158947026357
+Add point: 0.07920471448538592, 1.4323670198209584
+Add point: 0.0833504375910464, 0.9497354535851628
+Add point: 0.08736791543099874, 0.6419468158856034
+Add point: 0.09143449041303635, 0.7597799568902701
+Add point: 0.09558816155874714, 0.9688107497058809
+Add point: 0.09973367078967083, 0.9492221542168409
+Add point: 0.10400130235628846, 1.242315759882331
+Add point: 0.1081164215686537, 0.8762861096765846
+Add point: 0.11243841214774875, 6.8638869491405785
+Add point: 0.11640544198822074, 0.5208716171327978
+Add point: 0.12059901529787262, 1.0645759431645274
+Add point: 0.12456062525947344, 0.5078639078419656
+Add point: 0.12889698718470752, 1.4072686205618083
+appendInfoLine: "begin", tab$, "shimmer-reference-v1"
+count = Get number of points
+appendInfoLine: "count", tab$, count
+for i from 1 to count
+    time = Get time from index: i
+    amplitude = Get value at index: i
+    appendInfoLine: "amplitude", tab$, i, tab$, time, tab$, amplitude
+endfor
+value = Get shimmer (local): 0.0001, 0.02, 1.6
+appendInfoLine: "local", tab$, value
+value = Get shimmer (local_dB): 0.0001, 0.02, 1.6
+appendInfoLine: "db", tab$, value
+value = Get shimmer (apq3): 0.0001, 0.02, 1.6
+appendInfoLine: "apq3", tab$, value
+value = Get shimmer (apq5): 0.0001, 0.02, 1.6
+appendInfoLine: "apq5", tab$, value
+value = Get shimmer (apq11): 0.0001, 0.02, 1.6
+appendInfoLine: "apq11", tab$, value
+value = Get shimmer (dda): 0.0001, 0.02, 1.6
+appendInfoLine: "dda", tab$, value
+appendInfoLine: "end", tab$, "shimmer-reference-v1"
