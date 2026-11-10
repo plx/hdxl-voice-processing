@@ -14,6 +14,8 @@ make the paper's otherwise underspecified discrete interpolation and boundaries
 reproducible. They are frozen before generating native comparison fixtures.
 Changes require an explicit profile/fixture review, not regeneration to make a
 native mismatch disappear.
+Decision [#162](https://github.com/plx/hdxl-voice-processing/issues/162) records the
+profile choices and the pre-native pure-tone accuracy finding below.
 
 ## Discrete profile
 
@@ -101,13 +103,38 @@ and analytic spectra. The native path will use the independently supplied vDSP
 real transform. Neither generates expected results for the other.
 
 Interior stationary pure tones with at least eight samples per period must have
-at most **10 cents** absolute error and at least **90% voiced coverage** of full
+at most **50 cents** absolute error and at least **90% voiced coverage** of full
 frames. Clean identifiable harmonic and missing-fundamental sources must have at
 most **20 cents**, no gross/octave errors, and at least **90% voiced coverage**.
 Dominant upper harmonics, inharmonic mixtures, range boundaries, transitions,
 noise, and real speech remain separate characterizations with all denominators
 retained. No universal superiority over YIN is claimed. A clean analytic source
 failure must be investigated before native implementation or golden promotion.
+
+The first contract commit (`1905674`) proposed a 10-cent pure-tone gate. The
+independent oracle failed that proposal **before any native implementation or
+golden promotion**. A 228-frame preflight across two pitch ranges, two phases,
+and 16/44.1/48 kHz found a maximum absolute error of 34.494 cents, without
+unvoiced frames. Substituting an independently derived exact Hann-tone DTFT
+still gave 27.682 cents for a 165.054 Hz tone at 44.1 kHz; changing to cubic
+magnitude interpolation did not remove the bias in exploratory comparisons.
+These calculations show pure-sinusoid bias in this discrete profile.
+Thirty harmonic/missing-fundamental preflight cases at the same three rates had
+maximum absolute error below 3.53 cents. These are bounded observations, not
+general accuracy promises.
+
+Accordingly, v1 keeps the specified algorithm and records the unmet **10-cent
+quality goal** separately in reports. Its pure-tone regression ceiling is a
+conservative half-semitone, 50 cents, committed before reference promotion.
+The numerical parity budgets and 20-cent harmonic gate are unchanged. This
+amendment does not count the original 10-cent proposal as passing, discard
+unfavorable frames, or introduce an empirical pitch correction. The reproducible
+investigation and #162 retain the evidence for future profile evaluation.
+
+```sh
+python3 Tools/SWIPE/investigate.py --output .build/swipe-tone-investigation.json
+python3 -m unittest discover -s Tools/Tests -p 'test_swipe*.py'
+```
 
 Compare both estimators on identical PCM with their own actual support and
 delivery delay. Match support midpoints explicitly; do not equate frame indices
