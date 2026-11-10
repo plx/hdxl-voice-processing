@@ -34,7 +34,7 @@ public final class PreparedSWIPEPrimeAnalyzer<Sample: BinaryFloatingPoint & Send
     public var preparedBufferBytes: Int {
         guard let storage else { return 0 }
         return storage.estimator.executionStatistics.preparedBufferBytes
-            + 3 * configuration.requiredSampleCount * MemoryLayout<Sample>.stride
+            + storage.framer.preparedBufferBytes
     }
 
     private enum State { case prepared, finished, cancelled, failed }

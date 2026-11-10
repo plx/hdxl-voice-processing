@@ -29,6 +29,8 @@ private func swipeStream<Sample: BinaryFloatingPoint & Sendable>(
 ) throws -> ([SWIPEStreamCapture], SWIPEPrimeCompletion) {
     let worker = try PreparedSWIPEPrimeAnalyzer<Sample>(
         configuration: configuration, origin: origin)
+    let preparedBytes = worker.preparedBufferBytes
+    #expect(preparedBytes > 0 && preparedBytes < 64 * 1024 * 1024)
     var results: [SWIPEStreamCapture] = []
     var offset = 0
     var index = 0
@@ -42,6 +44,7 @@ private func swipeStream<Sample: BinaryFloatingPoint & Sendable>(
                 UnsafeBufferPointer(rebasing: input[offset..<offset + count]), interval: interval
             ) { results.append(SWIPEStreamCapture($0)) }
             #expect(report.consumedSampleCount == count && !report.isCancelled)
+            #expect(worker.preparedBufferBytes == preparedBytes)
             offset += count
             index += 1
         }
@@ -49,7 +52,70 @@ private func swipeStream<Sample: BinaryFloatingPoint & Sendable>(
     let end = try worker.finish { results.append(SWIPEStreamCapture($0)) }
     #expect(try worker.finish { _ in Issue.record("Repeated finish emitted") } == end)
     #expect(worker.nextInputSample == origin.source.startSample + Int64(samples.count))
+    #expect(worker.preparedBufferBytes == preparedBytes)
+    worker.cancel()
+    #expect(worker.preparedBufferBytes == 0 && worker.estimatorStatistics == nil)
     return (results, end)
+}
+
+private func checkMaximumSWIPEStreaming<Sample: BinaryFloatingPoint & Sendable>(
+    _ sampleType: Sample.Type, precision: AnalysisPrecision
+) throws {
+    let c = try SWIPEPrimeConfiguration(
+        sampleRate: 192000, inputPrecision: precision, pitchFloorHz: 20, pitchCeilingHz: 48000,
+        hopLength: 1920, candidatesPerOctave: 192)
+    #expect(c.requiredSampleCount == 131072)
+    let origin = try swipeStreamOrigin(c, epoch: StreamEpoch(streamID: UUID()), start: 123)
+    let samples = (0..<131072 + 1920 + 7).map { index -> Sample in
+        let phase = 2 * Double.pi * 200 * Double(index) / 192000
+        return Sample(0.4 * sin(phase) + 0.1 * sin(2 * phase))
+    }
+    let direct = try PreparedSWIPEPrime<Sample>(c)
+    let streamed = try PreparedSWIPEPrimeAnalyzer<Sample>(configuration: c, origin: origin)
+    #expect(
+        streamed.preparedBufferBytes == direct.executionStatistics.preparedBufferBytes
+            + 3 * 131072 * MemoryLayout<Sample>.stride)
+    #expect(streamed.preparedBufferBytes < 64 * 1024 * 1024)
+    streamed.cancel()
+    #expect(streamed.preparedBufferBytes == 0)
+
+    // Literal slices independently specify two full frames and the earliest
+    // nonempty partial tail at the advertised maximum support.
+    var expected: [SWIPEStreamCapture] = []
+    try samples.withUnsafeBufferPointer { input in
+        for (index, start) in [0, 1920, 3840].enumerated() {
+            let end = min(start + 131072, input.count)
+            let timing = try AnalysisTiming(
+                source: SourceInterval(
+                    epoch: origin.source.epoch, startSample: 123 + Int64(start),
+                    sampleCount: Int64(end - start), sampleRate: 192000),
+                includedSampleCount: Int64(end - start))
+            try direct.analyze(
+                UnsafeBufferPointer(rebasing: input[start..<end]), timing: timing,
+                frameIndex: UInt64(index)
+            ) { expected.append(SWIPEStreamCapture($0)) }
+        }
+    }
+    let whole = try swipeStream(
+        samples, configuration: c, origin: origin, chunks: [samples.count])
+    let partitioned = try swipeStream(
+        samples, configuration: c, origin: origin, chunks: [1, 17, 4093, 2, 8191])
+    #expect(whole.0 == expected && partitioned.0 == expected)
+    #expect(whole.1 == partitioned.1 && whole.1.framing.completeFrameCount == 2)
+    #expect(whole.1.framing.disposition == .unavailablePartial)
+    #expect(expected.count == 3)
+    #expect(expected[0].result.status == .voiced && expected[1].result.status == .voiced)
+    #expect(expected[2].result.status == .unavailable)
+    #expect(expected[2].result.timing.source.startSample == 3963)
+    #expect(expected[2].result.timing.source.sampleCount == 129159)
+}
+
+@Test func swipePrimeMaximumFloatStreamingPreservesDirectResultsAndBoundedStorage() throws {
+    try checkMaximumSWIPEStreaming(Float.self, precision: .float32)
+}
+
+@Test func swipePrimeMaximumDoubleStreamingPreservesDirectResultsAndBoundedStorage() throws {
+    try checkMaximumSWIPEStreaming(Double.self, precision: .float64)
 }
 
 @Test func swipePrimeStreamingChunksPreserveEveryCandidateAndClock() throws {

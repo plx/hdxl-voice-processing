@@ -176,16 +176,50 @@ The prepared native worker passes every retained spectral/candidate stage and
 final F0 comparison, both directly and through batch/irregular streaming delivery
 (374 direct frames and 748 streamed frames). Core lifecycle, borrowing, export
 budgets and diagnostics tests pass on the separately recorded local development
-toolchain. Optional scheduler/archive integration, performance, and final review/CI
-gates remain under development for #44. This is not a completed issue or a
+toolchain. Optional scheduler, archive, and capture-result integration is also
+implemented and covered by local tests. Performance and final review/CI gates
+remain under development for #44. This is not a completed issue or a
 performance claim. See the [native guide](../../Documentation/SWIPEPrime.md).
 Preparation must retain reusable FFT plans, Hann tables, frequency interpolation
 indices/weights, and normalized candidate kernels. Processing storage must remain
 bounded independently of recording duration. Owned intermediate exports allocate
 explicitly and are measured separately.
 
-The required performance matrix includes narrow/wide ranges, 5/10/20 ms requested
-hops, multiple window counts, 16/44.1/48 kHz, and both input precisions. Record
-preparation memory/time separately, prepared execution allocation/CPU distributions,
-matched-input YIN cost/support, hardware/toolchain/profile identities, and bounded
-Pitch-stage signposts. Register the completed matrix under #25 and #18.
+## Paired workload validation
+
+The workload checker covers 44 inputs and 88 paired SWIPE′/YIN FFT rows. The 36
+ordinary inputs span 16/44.1/48 kHz, Float/Double, 80–400 Hz and 25–2000 Hz ranges,
+and 5/10/20 ms requested hops. Eight additional inputs cover both precisions at
+the maximum geometry, ten-second silence/noise, and owned intermediate export.
+The maximum profile uses 192 kHz, 20–48000 Hz, 192 candidates/octave, and 131072
+observed samples. Its shared framing prerequisite is #165 / #166.
+
+Both algorithms receive identical PCM bytes and retain their own support and
+valid hop. YIN tracking is disabled. The checker compares 256-sample, 137-sample,
+and whole-input delivery, coverage, observable checksums, and stable buffer
+payloads. `workloads.py` independently enumerates every case, regenerates the PCM
+hashes, and validates profiles, identities, frame counts, support/delay, owned
+export sizes, and exact payload accounting on the supported 64-bit Apple ABI.
+All worker payloads must remain below 64 MiB; input storage is reported separately.
+
+`probe_audit.py` checks the first, middle, and last complete scalar estimate in
+each row against the original independent SWIPE′ and scalar YIN oracles. The
+existing frozen numerical budgets apply. These probes run outside measurement;
+they complement the complete staged fixture suite. Their report retains source
+hashes, expected/actual estimates, and errors, and rejects source edits during
+the audit.
+
+```sh
+mkdir -p .build
+swift run --package-path Benchmarks --scratch-path .build/swipe-check \
+  --configuration release --force-resolved-versions SWIPEPrimeWorkloadCheck \
+  > .build/swipe-workloads.json
+python3 Tools/SWIPE/probe_audit.py .build/swipe-workloads.json \
+  --output .build/swipe-probes.json
+```
+
+Timing/allocation collection and its registrations under #25/#18 remain pending.
+Record construction separately from prepared execution and owned export, with
+locked dependencies, allocation/ARC positive controls, raw distributions, p99
+sample counts, and hardware/toolchain identities. Full-batch throughput does not
+establish worst-frame latency or physical capture performance.
