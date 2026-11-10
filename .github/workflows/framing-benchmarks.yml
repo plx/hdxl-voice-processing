@@ -10,7 +10,8 @@ on:
       - 'Sources/HDXLVoiceProcessing/Contracts/**'
       - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
       - 'Benchmarks/**'
-      - 'Tools/Framing/benchmark.py'
+      - 'Tools/Framing/**'
+      - 'Tools/Tests/test_framing*'
       - 'Tools/benchmark.py'
       - '.github/workflows/framing-benchmarks.yml'
 

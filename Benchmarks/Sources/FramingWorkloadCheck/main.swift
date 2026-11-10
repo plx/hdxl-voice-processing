@@ -6,11 +6,13 @@ precondition(matrix.count == 88)
 precondition(Set(matrix.map(\.name)).count == matrix.count)
 for item in matrix {
     let workload = try item.makeWorkload()
+    precondition(workload.preparedBufferBytes == item.preparedBufferBytes)
     for chunk in [item.inputSampleCount, item.smallChunkSamples] {
         try workload.restart()
         try workload.run(chunkSize: chunk)
         precondition(workload.checksum == workload.expectedChecksum)
         precondition(workload.frameCount == item.expectedFrameCount)
+        precondition(workload.preparedBufferBytes == item.preparedBufferBytes)
     }
 }
 let encoder = JSONEncoder()

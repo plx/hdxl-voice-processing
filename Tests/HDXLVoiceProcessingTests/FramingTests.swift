@@ -334,7 +334,7 @@ private func captureFrames(
     #expect(try framer.finish { _, _ in }.disposition == .empty)
 }
 
-@Test func framingFloatAndMaximumPreparedWindowPreserveSamples() throws {
+@Test func framingFloatAndHistoricalMaximumPreparedWindowPreserveSamples() throws {
     let config = try framingConfiguration(length: 65_536, hop: 65_536, precision: .float32)
     let framer = try PCMFramer<Float>(configuration: config, epoch: framingEpoch)
     let input = (0..<65_536).map { Float($0 % 256) / 128 }
@@ -420,5 +420,7 @@ private func captureFrames(
     }
     #expect(throws: ContractError.invalidConfiguration) { try framingConfiguration(hop: 0) }
     #expect(throws: ContractError.invalidConfiguration) { try framingConfiguration(offset: -1) }
-    #expect(throws: ContractError.invalidConfiguration) { try framingConfiguration(length: 65_537) }
+    #expect(throws: ContractError.invalidConfiguration) {
+        try framingConfiguration(length: 131_073)
+    }
 }

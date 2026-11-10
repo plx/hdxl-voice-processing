@@ -16,6 +16,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "Tools"))
 import ci
+from Framing.workloads import validate_matrix
 
 SPEC = importlib.util.spec_from_file_location("smoke_benchmark", ROOT / "Tools/benchmark.py")
 smoke = importlib.util.module_from_spec(SPEC)
@@ -127,8 +128,7 @@ def main():
             run(["swift", "build", *common, "--product", "FramingWorkloadCheck"])
             binary_dir = Path(ci.capture("swift", "build", *common, "--show-bin-path"))
             matrix = json.loads(ci.capture(str(binary_dir / "FramingWorkloadCheck")))
-            if len(matrix) != 88 or len({item["name"] for item in matrix}) != 88:
-                raise ValueError("Framing workload matrix coverage mismatch")
+            validate_matrix(matrix)
             (output / "workloads.json").write_text(json.dumps(matrix, indent=2) + "\n")
             if baseline.exists():
                 raise ValueError("Fresh baseline unexpectedly exists")

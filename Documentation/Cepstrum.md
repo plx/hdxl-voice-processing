@@ -150,7 +150,8 @@ try worker.finish { output in
 ## Bounds and evidence
 
 Analysis rates are integer 4–192 kHz; pitch-floor settings are 20–1000 Hz, additionally
-bounded by the 65,536-sample window limit. Hops are 0.1 ms through physical frame
+bounded by this profile’s 65,536-sample limit (`maximumFrameLength`), independent
+of the larger shared framing capacity. Hops are 0.1 ms through physical frame
 support, and preview hops must land on the integer analysis grid. Pre-emphasis is
 0 Hz through analysis Nyquist. Declared source bandwidth must support analysis
 Nyquist; upsampling cannot supply absent bandwidth. Lower-level conditioning limits
