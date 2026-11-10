@@ -106,6 +106,10 @@ reentrant calls are rejected.
 
 ## Evidence and limitations
 
+The [evidence record](Evidence/swipe-prime.md) reports numerical comparisons,
+coverage and error denominators, support/delay, prepared storage, paired host
+timing, and explicit export costs with their measurement limits.
+
 The independent fixture catalog covers 74 cases, including harmonic and missing
 fundamental signals, salient upper harmonics, inharmonic mixtures, transitions,
 noise, boundary impulses, extreme scales, both precisions, three input rates,

@@ -247,5 +247,7 @@ Run measurements use one warmup and ten measured operations; preparation/control
 use three warmups and up to thirty measured operations. At least ten samples per
 metric are required. The p99 of ten observations is effectively their maximum,
 not a stable estimate of a population tail. Full-batch throughput does not
-establish worst-frame latency or physical capture performance. Actual measured
-distributions, final CI evidence, and registrations under #25/#18 remain pending.
+establish worst-frame latency or physical capture performance. The
+[evidence record](../../Documentation/Evidence/swipe-prime.md) reports supplemental
+host measurements and their toolchain limits. The implementing PR retains the
+complete final-head hosted matrix and registrations under #25/#18.
