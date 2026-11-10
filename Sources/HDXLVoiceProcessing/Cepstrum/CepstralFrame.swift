@@ -64,7 +64,8 @@ public struct CepstralFrameContext: Sendable, Hashable, Codable {
             timing.source.sampleRate == origin.sampleRate,
             timing.source.startSample >= origin.startSample,
             firstAnalysisSampleIndex >= -1,
-            (0...WindowSpecification.maximumSampleCount).contains(suppliedAnalysisSampleCount),
+            (0...PowerCepstrumConfiguration.maximumFrameLength).contains(
+                suppliedAnalysisSampleCount),
             centerSecondsFromOrigin.isFinite, centerSecondsFromOrigin >= 0
         else {
             throw CepstrumError.unexpectedInterval

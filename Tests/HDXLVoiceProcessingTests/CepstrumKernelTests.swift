@@ -17,6 +17,22 @@ func cepstrumContext(count: Int, rate: Int = 4000) throws -> CepstralFrameContex
         centerSecondsFromOrigin: source.durationSeconds / 2)
 }
 
+@Test func cepstralContextKeepsItsProfileCapacityWhenSharedFramingGrows() throws {
+    #expect(PowerCepstrumConfiguration.maximumFrameLength == 65_536)
+    let context = try cepstrumContext(count: 65_536)
+    #expect(context.suppliedAnalysisSampleCount == 65_536)
+    #expect(throws: CepstrumError.unexpectedInterval) { try cepstrumContext(count: 65_537) }
+    var object = try #require(
+        JSONSerialization.jsonObject(with: JSONEncoder().encode(context)) as? [String: Any])
+    object["suppliedAnalysisSampleCount"] = 65_537
+    #expect(throws: CepstrumError.unexpectedInterval) {
+        try JSONDecoder().decode(
+            CepstralFrameContext.self, from: JSONSerialization.data(withJSONObject: object))
+    }
+    #expect(
+        try PowerCepstrumConfiguration(sampleRate: 192_000, pitchFloorHz: 20).frameLength == 57_600)
+}
+
 @Test func cepstralConfigurationRejectsContradictoryDefinitions() throws {
     let reference = try CepstrogramConfiguration(
         sourceSampleRate: 48_000, declaredInputBandwidthHz: 24_000)

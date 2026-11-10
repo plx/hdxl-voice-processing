@@ -33,7 +33,9 @@ public enum WindowDefinition: String, Sendable, Hashable, Codable, CaseIterable 
 
 /// Nominal sample support (including zero-valued endpoints) is distinct from effective duration.
 public struct WindowSpecification: Sendable, Hashable, Codable {
-    public static let maximumSampleCount = 65_536
+    /// Bounded to support the widest SWIPE-prime window at 192 kHz / 20 Hz.
+    /// Three Double sample buffers occupy at most 3 MiB; all supported platforms use 64-bit Int.
+    public static let maximumSampleCount = 131_072
     public let definition: WindowDefinition
     public let sampleCount: Int
     public let sampleRate: Double

@@ -5,6 +5,11 @@ validation on 2026-11-04; the leaf PR records final hosted runs and both reviewe
 outcomes before merge. These observations are host evidence, not physical-device
 qualification or a performance budget.
 
+The measurements below retain the original 65,536-sample maximum. The subsequent
+capacity extension in [#165](https://github.com/plx/hdxl-voice-processing/issues/165)
+raises the shared bound to 131,072 samples and reruns the six maximum-size benchmark
+cases with independent geometry checks. The historical p99 table is unchanged.
+
 ## Correctness and numerical provenance
 
 - Debug, release, Address Sanitizer, and Thread Sanitizer lanes passed 55 xUnit

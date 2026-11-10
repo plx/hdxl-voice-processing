@@ -55,7 +55,9 @@ claim; that collection remains follow-up #74.
 `python3 Tools/Fourier/large_benchmark.py timing` and `allocation` measure a
 separate Float/Double matrix at N=131072,262144,524288,1048576,2097152,4194304,
 all at 48 kHz. These sizes support the whole-interval reference conditioning
-requirement in #31/#95. They do not expand the 65,536-sample window contract.
+requirement in #31/#95. Those changes retained the then-current 65,536-sample
+window bound; the shared framing capacity was later extended separately to
+131,072 samples in #165. Fourier capacity remains 4,194,304.
 
 Every iteration measures **one** plan preparation/destruction or **one** prepared
 real/complex forward/inverse transform. Input seed 95, transform identity, precision,
