@@ -138,7 +138,13 @@ python3 -m unittest discover -s Tools/Tests -p 'test_swipe*.py'
 
 Compare both estimators on identical PCM with their own actual support and
 delivery delay. Match support midpoints explicitly; do not equate frame indices
-or hops. Report unmatched frames, partial tails, available and accepted coverage,
+or hops. YIN uses the SWIPE′ requested hop when it fits YIN's shorter support;
+otherwise its explicitly serialized comparison hop equals that support. This
+produces a denser valid YIN stream, not a change to either estimator's mathematics.
+Match each complete SWIPE′ frame to the nearest unused complete YIN midpoint
+within half the actual YIN hop; ties choose the earlier midpoint. Preserve the
+half-sample displacement of odd YIN support and both actual support intervals.
+Report unmatched frames, partial tails, available and accepted coverage,
 fine cents error conditional on non-gross available estimates, gross errors
 (>20% relative Hz), and octave errors (gross and within 20% of half/twice truth).
 Unknown corpus truth stays unknown. Physical-device and human-label evidence
