@@ -45,6 +45,15 @@ support directly. `executionStatistics` reports owned buffer bytes and the
 number of complete frames analyzed. Object bookkeeping and opaque FFT setup
 tables are excluded from that byte count.
 
+For shared file or live-worker delivery, set `AnalysisScheduleProfile.swipePrime`.
+The optional lane has its own `ScheduledFrameValue.swipePrime`, completion, and
+latest capture-result slot. Omitting it preserves existing schedule encodings and
+identities. Native YIN/level/cepstral measurements are not filtered by its output.
+`SessionArchiveProfile.swipePrime` retains a standalone recipe, and schedule recipes
+include it when enabled. Scalar archive exports retain F0 availability, warnings,
+the algorithm identity, and source timing; use the typed diagnostic export when
+pitch-strength values are required.
+
 ## Interpret strength and availability
 
 An observation retains discrete and refined frequency and pitch strength, the
@@ -84,7 +93,8 @@ configured. It never pads acquisition. Repeated finish is idempotent. Invalid
 PCM, source intervals, or clock completion timestamps are rejected before
 consumption. Optional source and host anchors are rebased onto each frame;
 absent clocks stay absent and a process-call completion timestamp is not reused
-by a later finish call.
+by a later finish call. Host nanoseconds use nearest, ties-to-even rounding, matching
+the shared acquisition-clock projection even at half-nanosecond boundaries.
 
 `reset` requires an explicit discontinuity, discards pending PCM, and restarts
 the local sample grid at zero. Ordinary resets reuse prepared storage.

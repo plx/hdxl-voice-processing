@@ -289,7 +289,14 @@ public final class PreparedSWIPEPrimeAnalyzer<Sample: BinaryFloatingPoint & Send
         let rate = UInt64(configuration.sampleRate)
         let count = UInt64(samples)
         let whole = (count / rate).multipliedReportingOverflow(by: 1_000_000_000)
-        let fraction = ((count % rate) * 1_000_000_000 + rate / 2) / rate
+        let numerator = (count % rate) * 1_000_000_000
+        var fraction = numerator / rate
+        let twiceRemainder = (numerator % rate) * 2
+        // Match the shared acquisition clock exactly, including half-nanosecond
+        // ties, without converting a growing absolute sample index to Double.
+        if twiceRemainder > rate || (twiceRemainder == rate && fraction % 2 == 1) {
+            fraction += 1
+        }
         let delta = whole.partialValue.addingReportingOverflow(fraction)
         let result = anchor.addingReportingOverflow(delta.partialValue)
         guard !whole.overflow, !delta.overflow, !result.overflow else {

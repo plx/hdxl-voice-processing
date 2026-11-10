@@ -14,7 +14,7 @@ public enum AnalysisScheduleMode: String, Sendable, Hashable, Codable {
 }
 
 public enum ScheduledAlgorithm: String, Sendable, Hashable, Codable {
-    case levels, yin, cpps, hnr
+    case levels, yin, cpps, hnr, swipePrime
 }
 
 public enum AnalysisScheduleChannelConversion: String, Sendable, Hashable, Codable {
@@ -64,6 +64,7 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
     public let pitch: YINProfile?
     public let cpps: CPPSProfile?
     public let hnr: HNRConfiguration?
+    public let swipePrime: SWIPEPrimeConfiguration?
 
     public var inputPrecision: AnalysisPrecision {
         inputFormat.encoding == .float32 ? .float32 : .float64
@@ -77,12 +78,13 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
     public init(
         inputFormat: PCMFormat, channels: PCMChannelSelection,
         levels: LevelConfiguration? = nil, pitch: YINProfile? = nil,
-        cpps: CPPSProfile? = nil, hnr: HNRConfiguration? = nil
+        cpps: CPPSProfile? = nil, hnr: HNRConfiguration? = nil,
+        swipePrime: SWIPEPrimeConfiguration? = nil
     ) throws {
         guard let rate = Int(exactly: inputFormat.sampleRate),
             (4000...192_000).contains(rate), (1...32).contains(inputFormat.channelCount),
             channels.channelIndex.map({ $0 < inputFormat.channelCount }) ?? true,
-            levels != nil || pitch != nil || cpps != nil || hnr != nil
+            levels != nil || pitch != nil || cpps != nil || hnr != nil || swipePrime != nil
         else { throw AnalysisScheduleError.invalidConfiguration }
         let precision: AnalysisPrecision =
             inputFormat.encoding == .float32 ? .float32 : .float64
@@ -110,6 +112,11 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
                 throw AnalysisScheduleError.invalidConfiguration
             }
         }
+        if let swipePrime {
+            guard swipePrime.sampleRate == rate, swipePrime.inputPrecision == precision else {
+                throw AnalysisScheduleError.invalidConfiguration
+            }
+        }
         schemaVersion = 1
         self.inputFormat = inputFormat
         self.channels = channels
@@ -118,6 +125,7 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
         self.pitch = pitch
         self.cpps = cpps
         self.hnr = hnr
+        self.swipePrime = swipePrime
     }
 
     public func validate(mode: AnalysisScheduleMode) throws {
@@ -201,11 +209,23 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
                     placement: offline ? .centeredCompleteInterval : .leftAlignedFractionalGrid,
                     history: offline ? .completeInterval : .finiteWindow))
         }
+        if let c = swipePrime {
+            result.append(
+                AnalysisScheduleRequirements(
+                    algorithm: .swipePrime, analysisSampleRate: Double(c.sampleRate),
+                    frameSupportSeconds: c.supportDurationSeconds,
+                    outputIntervalSeconds: Double(c.hopLength) / Double(c.sampleRate),
+                    filterWarmupSourceSamples: 0, filterLookaheadSeconds: 0,
+                    centeredSmoothingLookaheadSeconds: 0, requiresCompleteInterval: false,
+                    partialWindowPolicy: c.partialWindowPolicy,
+                    placement: .leftAlignedIntegerGrid, history: .finiteWindow))
+        }
         return result
     }
 
     private enum CodingKeys: String, CodingKey, CaseIterable {
-        case schemaVersion, inputFormat, channels, channelConversion, levels, pitch, cpps, hnr
+        case schemaVersion, inputFormat, channels, channelConversion, levels, pitch, cpps, hnr,
+            swipePrime
     }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
@@ -220,7 +240,8 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
             levels: c.decodeIfPresent(LevelConfiguration.self, forKey: .levels),
             pitch: c.decodeIfPresent(YINProfile.self, forKey: .pitch),
             cpps: c.decodeIfPresent(CPPSProfile.self, forKey: .cpps),
-            hnr: c.decodeIfPresent(HNRConfiguration.self, forKey: .hnr))
+            hnr: c.decodeIfPresent(HNRConfiguration.self, forKey: .hnr),
+            swipePrime: c.decodeIfPresent(SWIPEPrimeConfiguration.self, forKey: .swipePrime))
         guard
             try c.decode(AnalysisScheduleChannelConversion.self, forKey: .channelConversion)
                 == channelConversion
@@ -238,5 +259,7 @@ public struct AnalysisScheduleProfile: Sendable, Hashable, Codable {
         try c.encode(cpps, forKey: .cpps)
         // Preserve the identities of existing schedules when HNR is not enabled.
         try c.encodeIfPresent(hnr, forKey: .hnr)
+        // Omitting the advanced estimator preserves every baseline schedule hash.
+        try c.encodeIfPresent(swipePrime, forKey: .swipePrime)
     }
 }

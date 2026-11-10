@@ -13,6 +13,7 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     case cpps(CPPSProfile)
     case hnr(HNRConfiguration)
     case hnrStatistic(HNRStatisticProfile)
+    case swipePrime(SWIPEPrimeConfiguration)
 
     public func identity() throws -> ProfileIdentity {
         switch self {
@@ -25,6 +26,7 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         case .cpps(let value): try value.identity()
         case .hnr(let value): try value.identity()
         case .hnrStatistic(let value): try value.identity()
+        case .swipePrime(let value): try value.identity()
         }
     }
 
@@ -42,6 +44,7 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         case .cpps(let value): Double(value.cepstrogram.conditioning.sourceSampleRate)
         case .hnr(let value): Double(value.sampleRate)
         case .hnrStatistic(let value): Double(value.measurement.sampleRate)
+        case .swipePrime(let value): Double(value.sampleRate)
         }
     }
 
@@ -76,6 +79,9 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
             if let hnr = value.hnr {
                 result.formUnion(try Self.hnr(hnr).descriptors())
             }
+            if let swipePrime = value.swipePrime {
+                result.formUnion(try Self.swipePrime(swipePrime).descriptors())
+            }
             return result
         case .levels:
             let algorithm = try identity().identifier
@@ -96,7 +102,7 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
                 try MeasurementDescriptor(
                     kind: .fundamentalFrequency, unit: .hertz, algorithm: identity().identifier)
             ]
-        case .yin:
+        case .yin, .swipePrime:
             return [
                 try MeasurementDescriptor(
                     kind: .fundamentalFrequency, unit: .hertz, algorithm: identity().identifier)
@@ -121,7 +127,7 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     }
 
     private enum Kind: String, Codable {
-        case analysis, schedule, levels, yin, trackedYIN, cpp, cpps, hnr, hnrStatistic
+        case analysis, schedule, levels, yin, trackedYIN, cpp, cpps, hnr, hnrStatistic, swipePrime
     }
     private enum CodingKeys: String, CodingKey, CaseIterable { case kind, recipe }
 
@@ -139,6 +145,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         case .hnr: self = .hnr(try c.decode(HNRConfiguration.self, forKey: .recipe))
         case .hnrStatistic:
             self = .hnrStatistic(try c.decode(HNRStatisticProfile.self, forKey: .recipe))
+        case .swipePrime:
+            self = .swipePrime(try c.decode(SWIPEPrimeConfiguration.self, forKey: .recipe))
         }
     }
 
@@ -158,6 +166,7 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         case .cpps(let value): try encode(.cpps, value)
         case .hnr(let value): try encode(.hnr, value)
         case .hnrStatistic(let value): try encode(.hnrStatistic, value)
+        case .swipePrime(let value): try encode(.swipePrime, value)
         }
     }
 }

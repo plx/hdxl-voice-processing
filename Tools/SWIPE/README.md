@@ -172,9 +172,13 @@ python3 Tools/SWIPE/swipe_verify.py
 ```
 
 The Swift configuration and layout match all 74 profile identities and geometries.
-Native spectral/F0 parity, streaming, optional scheduler integration, performance,
-and final review/CI gates remain under development for #44. No completed analyzer
-or benchmark result is claimed yet.
+The prepared native worker passes every retained spectral/candidate stage and
+final F0 comparison, both directly and through batch/irregular streaming delivery
+(374 direct frames and 748 streamed frames). Core lifecycle, borrowing, export
+budgets and diagnostics tests pass on the separately recorded local development
+toolchain. Optional scheduler/archive integration, performance, and final review/CI
+gates remain under development for #44. This is not a completed issue or a
+performance claim. See the [native guide](../../Documentation/SWIPEPrime.md).
 Preparation must retain reusable FFT plans, Hann tables, frequency interpolation
 indices/weights, and normalized candidate kernels. Processing storage must remain
 bounded independently of recording duration. Owned intermediate exports allocate
