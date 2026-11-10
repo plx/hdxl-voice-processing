@@ -218,8 +218,34 @@ python3 Tools/SWIPE/probe_audit.py .build/swipe-workloads.json \
   --output .build/swipe-probes.json
 ```
 
-Timing/allocation collection and its registrations under #25/#18 remain pending.
-Record construction separately from prepared execution and owned export, with
-locked dependencies, allocation/ARC positive controls, raw distributions, p99
-sample counts, and hardware/toolchain identities. Full-batch throughput does not
-establish worst-frame latency or physical capture performance.
+## Timing and allocation collection
+
+On the exact toolchain declared in `Configuration/build.json`, run each of the
+ten shards exposed by `benchmark.py --help` in both modes:
+
+```sh
+python3 Tools/SWIPE/benchmark.py timing --shard MaximumGeometry
+python3 Tools/SWIPE/benchmark.py allocation --shard MaximumGeometry
+```
+
+The dedicated workflow runs all ten shards. Each mode uses a separate optimized
+build and a fresh named baseline. Timing rejects allocator interposition;
+allocation mode verifies its linkage and positive malloc/object/ARC controls.
+Every non-export prepared Run must have zero maximum malloc count, malloc bytes,
+and object allocations. OwnedDiagnostics allocates explicitly. Construction is
+measured separately, excluding input generation and destructor cost. A Run
+includes reset, chunked processing, scalar consumption, and finalization.
+
+Artifacts under `Benchmarks/.build/artifacts/swipe-prime-*` retain the environment,
+source and dependency hashes, complete workloads and oracle probes, command log,
+raw distributions, measured counts/maxima, p99 exports, and a fail-closed result.
+Input generation, workload validation, and independent scalar probes occur before
+measurement. Sources and the resolved dependency lock must remain unchanged.
+Failed unarchived baselines remain available locally for investigation.
+
+Run measurements use one warmup and ten measured operations; preparation/control
+use three warmups and up to thirty measured operations. At least ten samples per
+metric are required. The p99 of ten observations is effectively their maximum,
+not a stable estimate of a population tail. Full-batch throughput does not
+establish worst-frame latency or physical capture performance. Actual measured
+distributions, final CI evidence, and registrations under #25/#18 remain pending.
