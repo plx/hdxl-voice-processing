@@ -198,6 +198,13 @@ captures. Retained raw-distribution SHA-256 values:
 
 ## Reproducible gates and deferred evidence
 
+The first local review found that scheduled SWIPE-prime F0 series could be
+archived but the audio replay router still selected only YIN. A new round-trip
+regression reproduced `incompatibleProfile` before the fix. Replay now selects
+the stored SWIPE-prime algorithm identifier explicitly. All eight archive replay
+tests pass, including SWIPE-only and combined SWIPE/YIN schedules across both
+precisions and layouts, exact source clocks, and retained tracked-YIN output.
+
 `swipe-references.yml` regenerates the independent catalog and audits complete
 native stage/streaming parity and corruption controls. `swipe-benchmarks.yml`
 runs ten shards in timing and allocation modes: 44 paired inputs, 88 workload
