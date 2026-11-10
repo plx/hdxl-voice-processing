@@ -360,6 +360,7 @@ private final class CalibrationAudioFixture {
                     switch frame.algorithm {
                     case .levels: metrics = [.rms, .levelDBFS]
                     case .yin: metrics = [.fundamentalFrequency]
+                    case .swipePrime: metrics = [.fundamentalFrequency]
                     case .cpps: metrics = [.cpp, .cpps]
                     case .hnr: metrics = [.harmonicToNoiseRatio]
                     }

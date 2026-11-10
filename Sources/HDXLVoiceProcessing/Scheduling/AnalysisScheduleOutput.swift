@@ -4,6 +4,7 @@ public enum ScheduledFrameValue: Sendable, Hashable {
     case pitch(raw: YINFrameResult, tracked: YINTrackedFrameResult?)
     case cpps(CPPSFrameResult)
     case hnr(HNRAnalysisResult)
+    case swipePrime(SWIPEPrimeFrameResult)
 }
 
 public enum ScheduledMetric: String, Sendable, Hashable, Codable {
@@ -46,6 +47,7 @@ public struct ScheduledFrame: Sendable, Hashable {
         case .pitch: .yin
         case .cpps: .cpps
         case .hnr: .hnr
+        case .swipePrime: .swipePrime
         }
     }
 
@@ -89,6 +91,8 @@ public struct ScheduledFrame: Sendable, Hashable {
             native = try value.measurementResult()
         case (.hnr(let value), .harmonicToNoiseRatio):
             native = try value.measurementResult()
+        case (.swipePrime(let value), .fundamentalFrequency):
+            native = try value.measurementResult()
         default: throw AnalysisScheduleError.invalidConfiguration
         }
         return try MeasurementResult(
@@ -117,6 +121,7 @@ public struct AnalysisScheduleCompletion: Sendable, Hashable {
     public let cpps: CPPSCompletion?
     public let hnrInterval: HNRCompletion?
     public let hnrStream: HNRStreamingCompletion?
+    public let swipePrime: SWIPEPrimeCompletion?
     public let isCancelled: Bool
 }
 

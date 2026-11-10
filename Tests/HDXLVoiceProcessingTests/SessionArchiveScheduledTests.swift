@@ -73,6 +73,7 @@ private func sessionScheduledProfile() throws -> AnalysisScheduleProfile {
         switch frame.algorithm {
         case .levels: requested = [.rms, .levelDBFS, .clippingFraction, .kWeightedEnergy]
         case .yin: requested = [.fundamentalFrequency, .trackedFundamentalFrequency]
+        case .swipePrime: requested = [.fundamentalFrequency]
         case .cpps: requested = [.cpp, .cpps]
         case .hnr: requested = [.harmonicToNoiseRatio]
         }

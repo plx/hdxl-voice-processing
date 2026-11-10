@@ -16,6 +16,14 @@ intervals, partial metadata, reset epochs and callback cancellation in all modes
 See [YIN](YIN.md) for the distinction between current-frame and history-dependency
 timing; neither signpost duration is physical capture latency.
 
+`PreparedSWIPEPrime` uses `Pitch` with profile token 44. Each prepared window's
+`FFT` interval nests inside the pitch calculation. Metadata contains only the
+frame index, observed sample count, and full/partial status. The same whole-frame
+sampling and balanced-lifetime tests cover disabled, sampled, and detailed modes,
+including reset and cancellation from output. Candidate grids, kernels, PCM and
+per-sample values are never logged. See [SWIPE-prime](SWIPEPrime.md) for support,
+strength, and the distinction between borrowed diagnostics and owned exports.
+
 The implementation follows [Apple OSSignposter](https://developer.apple.com/documentation/os/ossignposter)
 and [Recording Performance Data](https://developer.apple.com/documentation/os/recording-performance-data).
 The current macOS/iOS 27 deployment floor supports this API. `canImport(os)` and

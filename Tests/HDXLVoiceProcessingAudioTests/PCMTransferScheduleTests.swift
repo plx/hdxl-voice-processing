@@ -5,7 +5,7 @@ import Testing
 @testable import HDXLVoiceProcessingAudio
 
 private func transferScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
-    _: Sample.Type, layout: PCMLayout
+    _: Sample.Type, layout: PCMLayout, includeSWIPEPrime: Bool = false
 ) throws {
     let count = 6601
     let epoch = StreamEpoch(streamID: UUID(uuidString: "00000000-0000-0000-0000-000000000240")!)
@@ -32,7 +32,11 @@ private func transferScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
                 prominence: CPPConfiguration(fitMethod: .leastSquares))),
         hnr: HNRConfiguration(
             method: .forwardCrossCorrelation, sampleRate: 44100,
-            inputPrecision: precision, normalization: .causalWindow))
+            inputPrecision: precision, normalization: .causalWindow),
+        swipePrime: includeSWIPEPrime
+            ? SWIPEPrimeConfiguration(
+                sampleRate: 44100, inputPrecision: precision,
+                pitchFloorHz: 100, pitchCeilingHz: 700, hopLength: 441) : nil)
     let start: Int64 = (1 << 54) + 51
     let source = try SourceInterval(
         epoch: epoch, startSample: start, sampleCount: 0, sampleRate: 44100)
@@ -133,6 +137,17 @@ private func transferScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
     #expect(frames == expected)
     #expect(completion == expectedCompletion)
     #expect(latest.levels != nil && latest.pitch != nil && latest.cpps != nil && latest.hnr != nil)
+    #expect((latest.swipePrime != nil) == includeSWIPEPrime)
+    if includeSWIPEPrime {
+        #expect(
+            try latest.swipePrime?.frame.measurementResult(.fundamentalFrequency).outcome
+                == .unavailable(.insufficientData))
+        #expect(
+            expected.contains {
+                guard case .swipePrime(let value) = $0.value else { return false }
+                return value.observation != nil
+            })
+    }
     #expect(
         try latest.hnr?.frame.measurementResult(.harmonicToNoiseRatio).outcome
             == .unavailable(.insufficientData))
@@ -147,6 +162,13 @@ private func transferScheduleParity<Sample: BinaryFloatingPoint & Sendable>(
     for layout in [PCMLayout.interleaved, .planar] {
         try transferScheduleParity(Float.self, layout: layout)
         try transferScheduleParity(Double.self, layout: layout)
+    }
+}
+
+@Test func swipePrimeTransferAndLatestCaptureSlotPreserveBothPrecisionsAndLayouts() throws {
+    for layout in [PCMLayout.interleaved, .planar] {
+        try transferScheduleParity(Float.self, layout: layout, includeSWIPEPrime: true)
+        try transferScheduleParity(Double.self, layout: layout, includeSWIPEPrime: true)
     }
 }
 

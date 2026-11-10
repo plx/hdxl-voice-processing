@@ -1,0 +1,85 @@
+name: SWIPE-prime references
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 12 * * 4'
+  pull_request:
+    paths:
+      - 'Sources/HDXLVoiceProcessing/SWIPEPrime/**'
+      - 'Sources/HDXLVoiceProcessing/YIN/**'
+      - 'Sources/HDXLVoiceProcessing/Fourier/**'
+      - 'Sources/HDXLVoiceProcessing/Framing/**'
+      - 'Sources/HDXLVoiceProcessing/Contracts/**'
+      - 'Sources/HDXLVoiceProcessing/Diagnostics/**'
+      - 'Sources/HDXLVoiceProcessing/Scheduling/**'
+      - 'Sources/HDXLVoiceProcessing/Sessions/**'
+      - 'Sources/HDXLVoiceProcessingAudio/CaptureResultSnapshot.swift'
+      - 'Tests/HDXLVoiceProcessingTests/SWIPEPrime*Tests.swift'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/SWIPE/**'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/**'
+      - 'Tools/SWIPE/**'
+      - 'Tools/YIN/oracle.py'
+      - 'Tools/Reference/**'
+      - 'Tools/Tests/test_swipe*.py'
+      - 'Tools/ci.py'
+      - 'Configuration/build.json'
+      - 'Configuration/provenance.json'
+      - 'Package.swift'
+      - '.github/workflows/swipe-references.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swipe-references-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Independent SWIPE-prime stages and streaming / Xcode 27.0
+    runs-on: xcode-27
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Record and validate pinned software environment
+        run: |
+          PYTHONPATH=Tools python3 - <<'PY'
+          import json
+          from pathlib import Path
+          import ci
+          output = Path('.build/swipe-reference-evidence')
+          output.mkdir(parents=True)
+          environment = ci.environment('release')
+          (output / 'environment.json').write_text(json.dumps(environment, indent=2) + '\n')
+          ci.validate_environment(environment, json.loads(Path('Configuration/build.json').read_text()))
+          PY
+      - name: Recompute every pinned oracle cell and comparison denominator
+        run: |
+          set -o pipefail
+          python3 Tools/verify-provenance.py
+          python3 -m unittest discover -s Tools/Tests -p 'test_swipe*.py'
+          python3 Tools/SWIPE/swipe_verify.py | tee .build/swipe-reference-evidence/independent.log
+      - name: Compare native stages through frame, batch and irregular delivery
+        env:
+          HDXL_SWIPE_REFERENCE_REPORT: ${{ github.workspace }}/.build/swipe-reference-evidence/native.json
+        run: |
+          set -o pipefail
+          swift test --configuration release --scratch-path .build/swipe-reference-swift --jobs 2 --filter swipePrime --xunit-output .build/swipe-reference-evidence/tests.xml | tee .build/swipe-reference-evidence/native.log
+          python3 Tools/SWIPE/audit_native.py .build/swipe-reference-evidence/native.json --report .build/swipe-reference-evidence/native-audit.json --corruption-controls
+      - name: Retain independent and native evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: swipe-references-${{ github.run_attempt }}
+          path: .build/swipe-reference-evidence/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

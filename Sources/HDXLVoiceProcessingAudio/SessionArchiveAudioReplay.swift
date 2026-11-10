@@ -239,6 +239,11 @@ public enum SessionArchiveAudioReplay {
         case .clippingFraction: return (.clippingFraction, .levels)
         case .kWeightedEnergy: return (.kWeightedEnergy, .levels)
         case .fundamentalFrequency:
+            if let swipePrime = profile.swipePrime,
+                try series.measurement.algorithm == swipePrime.identity().identifier
+            {
+                return (.fundamentalFrequency, .swipePrime)
+            }
             guard let pitch = profile.pitch else { throw SessionArchiveError.incompatibleProfile }
             if try series.measurement.algorithm == pitch.estimator.identity().identifier {
                 return (.fundamentalFrequency, .yin)

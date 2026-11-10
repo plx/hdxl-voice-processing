@@ -1,14 +1,15 @@
 # Shared PCM scheduling
 
-`PreparedAnalysisSchedule<Float/Double>` feeds the existing Levels, YIN/tracker and
-CPP/CPPS kernels from one synchronous worker. Memory, file and transport adapters use
+`PreparedAnalysisSchedule<Float/Double>` feeds Levels, YIN/tracker, CPP/CPPS, HNR and
+optional SWIPE-prime kernels from one synchronous worker. Memory, file and transport adapters use
 the same engine. Configure every enabled numerical recipe explicitly: “light” and
 “full” describe benchmark compositions, not universal measurement presets.
 
 ## Preparing and supplying PCM
 
 An `AnalysisScheduleProfile` contains the actual input `PCMFormat`, channel selection,
-and optional `LevelConfiguration`, `YINProfile` and `CPPSProfile`. At least one algorithm
+and optional `LevelConfiguration`, `YINProfile`, `CPPSProfile`, `HNRConfiguration`, and
+`SWIPEPrimeConfiguration`. At least one algorithm
 is required. Input supports integer rates from 4,000 through 192,000 Hz, 1–32 channels,
 Float32/Float64 and interleaved/planar storage. All enabled algorithms must declare the
 same input rate/precision. Each kernel retains its own stricter numerical limits.
@@ -20,6 +21,13 @@ channel count and restores scale before rounding once to the input precision. Th
 avoids overflow for finite extreme channels. The conversion rule is part of the profile.
 CPPS performs its declared conditioning/resampling on the worker; Levels/YIN retain
 source-rate input. No worker method is suitable for a capture callback.
+
+Enable SWIPE-prime with `swipePrime:`. Its result and completion have separate
+`.swipePrime` fields; it neither replaces nor gates YIN. Omitting it preserves the
+prior serialized schedule and identity. Enabling it changes the composition identity
+while retaining each baseline estimator's native profile, support and numeric results.
+Its F0 exports use `.fundamentalFrequency` with the SWIPE-prime algorithm identifier;
+signed strength remains in the typed result and generic confidence stays nil.
 
 Prepare a zero-length `AnalysisScheduleOrigin.source` at the original acquisition
 start, with a separate `continuityEpoch`. Native algorithms start at local sample zero;
