@@ -19,6 +19,8 @@ public enum PowerCepstrumDefinition: String, Sendable, Hashable, Codable {
 /// The pinned definition adds 1e-300 before logging every bin EXCEPT Nyquist.
 /// A zero Nyquist produces unavailable cepstral output, never a fabricated floor.
 public struct PowerCepstrumConfiguration: Sendable, Hashable, Codable {
+    /// This profile's existing capacity is independent of the larger shared framing bound.
+    public static let maximumFrameLength = 65_536
     public let schemaVersion: Int
     public let definition: PowerCepstrumDefinition
     public let sampleRate: Int
@@ -38,7 +40,7 @@ public struct PowerCepstrumConfiguration: Sendable, Hashable, Codable {
         let length = Int(
             (2 * (3 / pitchFloorHz) / (1 / Double(sampleRate)))
                 .rounded(.toNearestOrAwayFromZero))
-        guard (2...WindowSpecification.maximumSampleCount).contains(length) else {
+        guard (2...Self.maximumFrameLength).contains(length) else {
             throw CepstrumError.capacityExceeded
         }
         self.schemaVersion = 1

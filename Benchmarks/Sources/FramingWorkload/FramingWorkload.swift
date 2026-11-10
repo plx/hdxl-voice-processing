@@ -12,6 +12,7 @@ public struct FramingCase: Codable, Sendable {
     public let expectedFrameCount: UInt64
     public let smallChunkSamples: Int
     public let primitiveOperationsPerIteration: Int
+    public let preparedBufferBytes: Int
 
     private init(
         rate: Double, seconds: Double?, hop: Double, precision: AnalysisPrecision,
@@ -37,6 +38,7 @@ public struct FramingCase: Codable, Sendable {
             observedSampleCount: Int64(inputSampleCount))
         smallChunkSamples = 17
         primitiveOperationsPerIteration = 100
+        preparedBufferBytes = 3 * length * (precision == .float32 ? 4 : 8)
     }
 
     /// Common Gaussian supports, maximum supported support, and all other window shapes.
@@ -68,6 +70,7 @@ public struct FramingCase: Codable, Sendable {
 }
 
 public protocol FramingBatch: AnyObject {
+    var preparedBufferBytes: Int { get }
     var checksum: Double { get }
     var expectedChecksum: Double { get }
     var frameCount: UInt64 { get }
@@ -78,6 +81,7 @@ public protocol FramingBatch: AnyObject {
 }
 
 private final class FramingWorkload<Sample: BinaryFloatingPoint & Sendable>: FramingBatch {
+    var preparedBufferBytes: Int { framer.preparedBufferBytes }
     let item: FramingCase
     let input: [Sample]
     let output: UnsafeMutableBufferPointer<Sample>

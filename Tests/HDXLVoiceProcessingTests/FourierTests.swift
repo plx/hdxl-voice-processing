@@ -425,7 +425,7 @@ private func checkRoundTrips<S: BinaryFloatingPoint & Sendable>(
                 == config)
     }
     #expect(FourierConfiguration.maximumLength == 4_194_304)
-    #expect(WindowSpecification.maximumSampleCount == 65_536)
+    #expect(WindowSpecification.maximumSampleCount == 131_072)
     #expect(try FourierConfiguration.lengthPadding(65_537) == 131_072)
     #expect(try FourierConfiguration.lengthPadding(4_194_304) == 4_194_304)
     #expect(throws: FourierError.unsupportedLength) {

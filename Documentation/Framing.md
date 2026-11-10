@@ -45,7 +45,15 @@ select its own reference alignment before claiming reference parity. See
 ## Lifecycle, tails, and ownership
 
 Construction prepares a cached window, an N-sample ring, and an N-sample emission
-buffer. The maximum N is 65,536; H is 1...Int32.max and O is 0...Int32.max.
+buffer. The maximum N is 131,072; H is 1...Int32.max and O is 0...Int32.max.
+The larger bound supports the longest SWIPE-prime window (192 kHz, 20 Hz floor).
+`preparedBufferBytes` reports these three sample payloads: at the limit, 1,572,864
+bytes for Float and 3,145,728 bytes for Double, excluding object/allocator overhead.
+Reset reuses the payloads; cancellation drops ownership and reports zero (an active
+synchronous borrow remains valid until its callback returns). Bounded 64-bit
+sample-buffer arithmetic cannot overflow at this limit; timeline advances retain
+their separate checked Int64 arithmetic. Existing version-1 definitions and
+configuration identities are unchanged for previously accepted sizes.
 Configuration identities include window definition/version, count, rate, precision,
 hop, offset, and tail policy. Projection initializers from `AnalysisProfile`
 validate only framing/window fields; the consuming algorithm validates its full

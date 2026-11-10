@@ -52,6 +52,13 @@ public final class PCMFramer<Sample: BinaryFloatingPoint & Sendable> {
     public private(set) var nextInputSample: Int64
     public var preparedWindow: PreparedWindow<Sample>? { storage?.window }
 
+    /// Ring, emission, and window-coefficient payload bytes; excludes object/allocator overhead.
+    /// Cancellation drops ownership; a current synchronous emission retains its borrow until return.
+    public var preparedBufferBytes: Int {
+        guard let storage else { return 0 }
+        return 3 * storage.capacity * MemoryLayout<Sample>.stride
+    }
+
     private enum State { case prepared, finished, cancelled }
     private var state = State.prepared
     private var storage: FramerStorage<Sample>?

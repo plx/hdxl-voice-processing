@@ -39,9 +39,13 @@ The first run builds dependencies. Each workload has three warmups, up to 30
 measured iterations and a ten-second limit; validation requires at least ten
 measured samples per metric, including the maximum-size workloads. The workload checker verifies frame counts and
 observable windowed checksums for all configurations/chunk sizes before measuring.
+The independent Python matrix checks every configuration, identity, requested/actual
+geometry, frame count, and prepared sample-buffer byte count, including six literal
+131,072-sample cases. Native buffers must retain their byte count across both
+chunking strategies; the maximum payloads are 1.5 MiB (Float) and 3 MiB (Double).
 
 There are 88 configurations: two precisions × three rates × three Gaussian support
-lengths × four requested hops (72), maximum supported N=65,536 at each rate and
+lengths × four requested hops (72), maximum supported N=131,072 at each rate and
 precision (6), and the other five window shapes at 48 kHz/50 ms/5 ms for both
 precisions (10). Each has five workloads: preparation/destruction, 100 cached window
 writes, 100 resets, a whole-input chunk, and the same input in 17-sample chunks.
