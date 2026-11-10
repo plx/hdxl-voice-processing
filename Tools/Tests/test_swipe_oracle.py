@@ -143,6 +143,12 @@ class SWIPEOracleTests(unittest.TestCase):
         self.assertEqual((partial['status'], partial['reason']), ('unavailable', 'insufficientData'))
         self.assertEqual(partial['windows'], [])
         self.assertIsNone(partial['rms'])
+        impulse = [1.] + [0.] * (support - 1)
+        edge = analyzer.frame(impulse)
+        self.assertGreater(edge['rms'], 0.)
+        self.assertEqual((edge['status'], edge['reason'], edge['frequencyHz']),
+                         ('unavailable', 'analysisFailure', None))
+        self.assertTrue(all(x is None for x in edge['candidateStrengths']))
         for samples in [[0.] * (support + 1), [float('nan')], [float('inf')], [True]]:
             with self.assertRaises(ValueError):
                 analyzer.frame(samples)

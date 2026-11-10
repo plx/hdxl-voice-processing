@@ -240,7 +240,7 @@ class PreparedOracle:
                        key=lambda i: (strengths[i], -i), default=None)
         frequency = strength = discrete = None
         refined = False
-        status, reason = 'unavailable', 'numericalFailure'
+        status, reason = 'unavailable', 'analysisFailure'
         if rms <= self.profile['silenceRMSThreshold']:
             status, reason, selected = 'unvoiced', 'silence', None
         elif max(samples) == min(samples):

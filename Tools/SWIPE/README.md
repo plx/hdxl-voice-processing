@@ -77,7 +77,9 @@ profile choices and the pre-native pure-tone accuracy finding below.
   voice health. RMS at or below the explicit silence threshold (default 1e-7 in
   unit-peak PCM) is unvoiced/silence. A nonzero exactly constant frame is unvoiced/
   lowConfidence. Such frames retain intermediate diagnostics but select no F0.
-  Undefined spectra/kernel norms are unavailable, never 0 Hz.
+  Undefined spectra/kernel norms are unavailable/analysisFailure, never 0 Hz.
+  This includes a nonzero isolated boundary sample whose Hann-windowed support
+  cannot supply any complete candidate; its nonzero raw RMS stays visible.
 - Streaming starts at the continuity epoch's first sample and advances by an
   integer hop, 1...fullLength. It reports full observed support and its midpoint;
   earliest delivery is half that duration after the midpoint. Hop is not latency.

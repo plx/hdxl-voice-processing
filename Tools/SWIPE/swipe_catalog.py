@@ -39,6 +39,8 @@ def cases():
         add(f'snr-{snr}', kind='snr', snrDB=snr)
     for kind in ('silence', 'constant'):
         add(kind, kind=kind, group='no-pitch')
+    for position in ('first', 'last', 'center'):
+        add(f'isolated-impulse-{position}', kind='impulse', position=position, full_frames=1)
     for kind in ('chirp', 'vibrato', 'octave-jump'):
         add(kind, kind=kind, full_frames=30)
     add('dc-offset', kind='offset-tone', amplitude=1e-4, dc=.5)
@@ -133,6 +135,9 @@ def source_samples(case):
                 value = 0.
             elif kind == 'constant':
                 value = .25
+            elif kind == 'impulse':
+                location = {'first': 0, 'last': count - 1, 'center': count // 2}[source['position']]
+                value = 1. if j == location else 0.
             else:
                 raise ValueError('Unknown original source kind')
             samples.append(value)
@@ -148,7 +153,7 @@ def target_hz(case, start, support):
     """Known source law at observed midpoint; mixed jump support has no single truth."""
     source, rate = case['source'], case['profile']['sampleRate']
     kind = source['kind']
-    if kind in ('licensed-speech', 'inharmonic', 'two-tone', 'silence', 'constant', 'noise', 'fricative'):
+    if kind in ('licensed-speech', 'inharmonic', 'two-tone', 'silence', 'constant', 'noise', 'fricative', 'impulse'):
         return None
     midpoint = (start + support / 2) / rate
     duration = source['sampleCount'] / rate
