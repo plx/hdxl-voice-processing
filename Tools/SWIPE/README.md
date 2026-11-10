@@ -154,8 +154,27 @@ remains assigned to #74/#102 and does not waive software correctness gates.
 
 ## Implementation and evidence status
 
-The independent oracle and analytic checks are being developed for #44.
-No native parity, benchmark result, or completed implementation is claimed yet.
+The independently recomputed reference catalog contains 74 cases, 374 SWIPE′
+frames (300 complete and 74 partial tails), 1982 YIN frames, and 300 pairs matched
+by actual support midpoint. Its 146 artifacts include input and generator hashes,
+all spectral/candidate stages, kernel probes, both profiles, and complete coverage
+and error denominators. Derived speech outputs inherit the governed corpus's
+attribution; its PCM is read from the existing corpus paths. Synthetic inputs are
+lossless Float64 WAV, including explicitly rounded Float32 cases.
+
+Generate candidates separately from promotion; verification recomputes every
+record and audits the exact inventory. Expected values never come from Swift.
+
+```sh
+python3 Tools/SWIPE/swipe_reference.py --output .build/swipe-candidates
+python3 Tools/SWIPE/swipe_verify.py .build/swipe-candidates
+python3 Tools/SWIPE/swipe_verify.py
+```
+
+The Swift configuration and layout match all 74 profile identities and geometries.
+Native spectral/F0 parity, streaming, optional scheduler integration, performance,
+and final review/CI gates remain under development for #44. No completed analyzer
+or benchmark result is claimed yet.
 Preparation must retain reusable FFT plans, Hann tables, frequency interpolation
 indices/weights, and normalized candidate kernels. Processing storage must remain
 bounded independently of recording duration. Owned intermediate exports allocate
