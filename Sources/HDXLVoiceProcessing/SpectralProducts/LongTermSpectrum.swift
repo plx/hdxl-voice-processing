@@ -41,7 +41,7 @@ public final class LongTermSpectrumAccumulator {
     private var previousEnd: Int64
     private var lastMeasuredEnd: Int64
     private var hasEnergy = false
-    private var receivedPartialTail = false
+    private var partialTailEnd: Int64?
 
     public init(
         layout: SpectrogramLayout, epoch: StreamEpoch, startSample: Int64 = 0,
@@ -59,7 +59,9 @@ public final class LongTermSpectrumAccumulator {
     }
 
     public func append<Sample>(_ row: BorrowedSpectrogramFrame<Sample>) throws {
-        try append(layout: row.layout, info: row.info, values: row.binPower)
+        try row.binPower.withSpectralScalars(
+            doubles: { try append(layout: row.layout, info: row.info, values: $0) },
+            floats: { try append(layout: row.layout, info: row.info, values: $0) })
     }
 
     public func append(_ row: SpectrogramFrame) throws {
@@ -75,11 +77,12 @@ public final class LongTermSpectrumAccumulator {
         guard rowLayout == layout, info.selectionProfile == selectionProfile else {
             throw ContractError.invalidFingerprint
         }
-        guard !receivedPartialTail, info.source.epoch == epoch,
+        guard partialTailEnd == nil, info.source.epoch == epoch,
             info.epochStartSample == startSample,
             previousIndex.map({ $0 < info.frameIndex }) ?? true
         else { throw FramingError.unexpectedInterval }
         let source = info.source
+        guard source.endSample >= previousEnd else { throw FramingError.unexpectedInterval }
         let newlyCovered = source.endSample - max(source.startSample, lastMeasuredEnd)
         if info.status.isMeasured {
             guard info.newlyCoveredSamples == newlyCovered else {
@@ -112,7 +115,7 @@ public final class LongTermSpectrumAccumulator {
         } else if case .unavailable(let reason) = info.status {
             unavailable[reason, default: 0] += 1
         }
-        receivedPartialTail = info.status == .unavailable(.insufficientData)
+        if info.status == .unavailable(.insufficientData) { partialTailEnd = source.endSample }
         previousIndex = info.frameIndex
         previousEnd = max(previousEnd, source.endSample)
     }
@@ -125,6 +128,9 @@ public final class LongTermSpectrumAccumulator {
             observedSource.sampleRate == layout.framing.window.sampleRate,
             observedSource.endSample >= previousEnd
         else {
+            throw FramingError.unexpectedInterval
+        }
+        guard partialTailEnd == nil || observedSource.endSample == partialTailEnd else {
             throw FramingError.unexpectedInterval
         }
         let timing = try AnalysisTiming(source: observedSource, includedSampleCount: coveredSamples)

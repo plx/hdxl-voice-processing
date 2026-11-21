@@ -20,14 +20,14 @@ TARGET = "SpectralProductBenchmarks"
 CONTROL = "Capability.SpectralProductAllocationARC"
 BOUNDARIES = {
     "Generate": "One whole PCM interval and finish, including a scalar probe per borrowed spectrum.",
-    "LTAS": "Append precomputed ordered, eligible owned spectra to a fresh linear-power accumulator.",
+    "LTAS": "Borrow precomputed ordered, eligible spectra and append them to a fresh linear-power accumulator.",
     "Retain8": "Copy each borrowed spectrum into an eight-column ring, including eviction.",
     "Retain64": "Copy each borrowed spectrum into a 64-column ring, including eviction.",
     "Export": "Make an independent owned copy of each borrowed spectrum, consuming one bin and replacing the preceding copy.",
     "CepGenerate": "Stream and finish the canonical finite-FIR preview cepstrogram, consuming one quefrency bin per row.",
     "CepRetain8": "Insert precomputed owned canonical rows into an eight-column ring with eviction.",
     "CepRetain64": "Insert precomputed owned canonical rows into a 64-column ring with eviction.",
-    "CepExport": "Copy canonical linear cepstral powers into a fresh consumer array per row, including the unavailable tail.",
+    "CepExport": "Export each borrowed canonical power column with the public exporter, including profile checks, normalization and the unavailable tail.",
 }
 METRICS = {
     "wallClock": "Time (wall clock)", "cpuTotal": "Time (total CPU)",
@@ -77,6 +77,12 @@ def validate_memory(rows):
         raise ValueError("Live heap growth exceeded the 16 MiB synthetic regression allowance")
 
 
+def validate_copy_allocations(operation, frame_count, maximum):
+    # The owned destination allocates per frame. Widening a scalar must not allocate per bin.
+    if operation in {"Retain8", "Retain64", "Export"} and maximum > 2 * frame_count:
+        raise ValueError(f"Excessive heap allocations while copying {operation}: {maximum} for {frame_count} frames")
+
+
 def distributions(raw, exported, baseline, records, mode):
     case_by_op = {f"SpectralProducts.{op}.{item['name']}": (op, item) for item in records for op in BOUNDARIES}
     expected = set(case_by_op)
@@ -101,6 +107,9 @@ def distributions(raw, exported, baseline, records, mode):
                     or sum(histogram["counts"]) != count or type(maximum) is not int or maximum < 0
                     or (metric == "wallClock" or name == CONTROL) and maximum == 0):
                 raise ValueError(f"Invalid distribution for {name}/{metric}")
+            if metric == "mallocCountTotal" and name != CONTROL:
+                operation, record = case_by_op[name]
+                validate_copy_allocations(operation, record["expectedFrames"], maximum)
             path = exported / f"{baseline}.{TARGET}.{name}.{metric}.histogram.percentiles.tsv"
             lines = path.read_text().splitlines()
             points = [tuple(map(int, line.split("\t"))) for line in lines[1:]]
@@ -117,8 +126,8 @@ def distributions(raw, exported, baseline, records, mode):
             op, item = case_by_op[name]
             frames = item["expectedCepstralFrames" if op.startswith("Cep") else "expectedFrames"]
             rates.append(dict(operation=name, framesPerTrial=frames, sourceSeconds=item["durationSeconds"],
-                              p50FramesPerSecond=frames * 1e9 / row["wallClock"]["p50"],
-                              p99FramesPerSecond=frames * 1e9 / row["wallClock"]["p99"]))
+                              framesPerSecondAtP50Latency=frames * 1e9 / row["wallClock"]["p50"],
+                              framesPerSecondAtP99Latency=frames * 1e9 / row["wallClock"]["p99"]))
     return data, p99, rates
 
 

@@ -30,6 +30,12 @@ class SpectralProductEvidenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             products.validate_memory(rows[:-1])
 
+    def test_owned_copy_rejects_per_bin_heap_allocations(self):
+        for operation in ("Retain8", "Retain64", "Export"):
+            products.validate_copy_allocations(operation, 99, 99)
+            with self.assertRaises(ValueError):
+                products.validate_copy_allocations(operation, 99, 25_542)
+
     def test_distributions_require_all_operations_and_actual_observations(self):
         case = dict(name="test", durationSeconds=1, expectedFrames=99, expectedCepstralFrames=100)
         names = [f"SpectralProducts.{operation}.test" for operation in products.BOUNDARIES]
@@ -48,6 +54,7 @@ class SpectralProductEvidenceTests(unittest.TestCase):
             self.assertEqual(len(p99), 2 * len(names))
             self.assertEqual(data[names[0]]["wallClock"]["p95"], 595)
             self.assertEqual({r["framesPerTrial"] for r in throughput}, {99, 100})
+            self.assertAlmostEqual(throughput[0]["framesPerSecondAtP99Latency"], 99e9 / 599)
             raw["results"][-1][0]["statistics"]["histogram"]["_totalCount"] = 9
             with self.assertRaises(ValueError):
                 products.distributions(raw, root, "run", [case], "timing")

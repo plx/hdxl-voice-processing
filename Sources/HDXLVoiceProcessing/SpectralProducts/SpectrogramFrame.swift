@@ -25,15 +25,69 @@ public struct SpectralFrameInfo: Sendable, Hashable, Codable {
         let start = try layout.framing.frameStartSample(
             ordinal: frameIndex, epochStart: epochStartSample)
         let complete = source.sampleCount == Int64(layout.framing.window.sampleCount)
+        switch status {
+        case .measured, .noEnergy, .unavailable(.analysisFailure):
+            guard complete else { throw ContractError.invalidCoverage }
+        case .unavailable(.insufficientData):
+            guard !complete, layout.framing.partialWindowPolicy == .emitUnavailable else {
+                throw ContractError.invalidCoverage
+            }
+        case .unavailable(.excluded), .unavailable(.missingAcquisition):
+            guard complete, selectionProfile != nil else { throw ContractError.invalidCoverage }
+        case .unavailable: throw ContractError.invalidValue
+        }
+        guard layout.conditioning == nil || selectionProfile == nil else {
+            throw ContractError.invalidConfiguration
+        }
         guard source.sampleRate == layout.framing.window.sampleRate, start == source.startSample,
             source.sampleCount > 0, source.sampleCount <= Int64(layout.framing.window.sampleCount),
             (0...source.sampleCount).contains(newlyCoveredSamples),
-            complete == (status != .unavailable(.insufficientData)),
             status.isMeasured
                 ? (newlyCoveredSamples > 0
                     && weight == (layout.weighting == .equalFrames ? 1 : newlyCoveredSamples))
                 : (weight == 0 && newlyCoveredSamples == 0)
         else { throw ContractError.invalidCoverage }
+    }
+}
+
+extension SpectralFrameInfo {
+    private enum CodingKeys: String, CodingKey, CaseIterable {
+        case epochStartSample, frameIndex, source, selectionProfile, status, newlyCoveredSamples,
+            weight
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
+        let source = try c.decode(SourceInterval.self, forKey: .source)
+        let origin = try c.decode(Int64.self, forKey: .epochStartSample)
+        let status = try c.decode(SpectralFrameStatus.self, forKey: .status)
+        let coverage = try c.decode(Int64.self, forKey: .newlyCoveredSamples)
+        let weight = try c.decode(Int64.self, forKey: .weight)
+        guard (0...source.startSample).contains(origin), source.sampleCount > 0,
+            (0...source.sampleCount).contains(coverage),
+            status.isMeasured
+                ? (coverage > 0 && (weight == 1 || weight == coverage))
+                : (coverage == 0 && weight == 0)
+        else { throw ContractError.invalidCoverage }
+        self.init(
+            epochStartSample: origin, frameIndex: try c.decode(UInt64.self, forKey: .frameIndex),
+            source: source,
+            selectionProfile: try c.decodeIfPresent(
+                ProfileIdentity.self, forKey: .selectionProfile),
+            status: status, newlyCoveredSamples: coverage, weight: weight)
+    }
+}
+
+extension UnsafeBufferPointer where Element: BinaryFloatingPoint {
+    /// PreparedWindow admits exactly these two sample types. Dispatch once per column so
+    /// copying or widening bins can use the concrete scalar implementation.
+    func withSpectralScalars<Result>(
+        doubles: (UnsafeBufferPointer<Double>) throws -> Result,
+        floats: (UnsafeBufferPointer<Float>) throws -> Result
+    ) rethrows -> Result {
+        if Element.self == Double.self { return try withMemoryRebound(to: Double.self, doubles) }
+        precondition(Element.self == Float.self)
+        return try withMemoryRebound(to: Float.self, floats)
     }
 }
 
@@ -44,7 +98,9 @@ public struct BorrowedSpectrogramFrame<Sample: BinaryFloatingPoint & Sendable> {
     public let binPower: UnsafeBufferPointer<Sample>
 
     public func owned() -> SpectrogramFrame {
-        SpectrogramFrame(layout: layout, info: info, binPower: binPower.map(Double.init))
+        let values = binPower.withSpectralScalars(
+            doubles: { Array($0) }, floats: { $0.map(Double.init) })
+        return SpectrogramFrame(layout: layout, info: info, binPower: values)
     }
 }
 
@@ -75,12 +131,27 @@ public struct SpectrogramFrame: Sendable, Hashable, Codable {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
         let layout = try c.decode(SpectrogramLayout.self, forKey: .layout)
         let info = try c.decode(SpectralFrameInfo.self, forKey: .info)
-        let powers = try c.decode([Double].self, forKey: .binPower)
         try info.validate(layout: layout)
-        guard powers.count == (info.status.isMeasured ? layout.frequency.count : 0),
-            powers.allSatisfy({ $0.isFinite && $0 >= 0 }),
-            !info.status.isMeasured || (powers.contains { $0 > 0 }) == (info.status == .measured)
-        else { throw ContractError.invalidValue }
+        let expected = info.status.isMeasured ? layout.frequency.count : 0
+        var entries = try c.nestedUnkeyedContainer(forKey: .binPower)
+        guard entries.count == nil || entries.count == expected else {
+            throw ContractError.invalidValue
+        }
+        var powers: [Double] = []
+        powers.reserveCapacity(entries.count ?? 0)
+        var hasEnergy = false
+        while !entries.isAtEnd {
+            guard powers.count < expected else { throw ContractError.invalidValue }
+            let value = try entries.decode(Double.self)
+            guard value.isFinite, value >= 0,
+                layout.framing.window.precision != .float32 || Float(exactly: value) != nil
+            else { throw ContractError.invalidValue }
+            hasEnergy = hasEnergy || value > 0
+            powers.append(value == 0 ? 0 : value)
+        }
+        guard powers.count == expected, hasEnergy == (info.status == .measured) else {
+            throw ContractError.invalidValue
+        }
         self.init(layout: layout, info: info, binPower: powers)
     }
 }

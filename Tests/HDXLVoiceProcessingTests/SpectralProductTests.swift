@@ -388,3 +388,125 @@ extension SpectralProductTests {
         }
     }
 }
+
+extension SpectralProductTests {
+    @Test func opaqueTemporalConditioningCannotBeSelectedUsingOnlyNominalWindow() throws {
+        let plain = try layout()
+        let conditioned = try SpectrogramLayout(
+            framing: plain.framing, transformLength: plain.spectrum.transform.length,
+            channels: plain.channels, conditioning: plain.profile)
+        let mask = try MaskTimeline(
+            MaskPlan(
+                source: source(0, 64), provenances: [], policy: MaskSelectionPolicy(),
+                observations: []))
+        #expect(throws: ContractError.invalidConfiguration) {
+            try PreparedSpectrogram<Double>(layout: conditioned, epoch: epoch, selection: mask)
+        }
+        let (_, result) = try analyze(.init(repeating: 1, count: 64), conditioned)
+        #expect(result.status == .measured)
+        let (rows, _) = try analyze(.init(repeating: 1, count: 64), plain, mask: mask)
+        let ring = try RollingSpectralProducts(layout: plain, capacity: 2)
+        try ring.append(rows[0])
+        let display = try ring.snapshot().displayColumns(framesPerColumn: 1, aggregation: .maximum)[
+            0]
+        #expect(
+            display.selectionProfile != nil
+                && display.selectionProfile == rows[0].info.selectionProfile)
+    }
+
+    @Test func nonzeroFourierPowerUnderflowCannotEnterAverageAsSilence() throws {
+        let profile = try layout(precision: .float32)
+        let worker = try PreparedSpectrogram<Float>(layout: profile, epoch: epoch)
+        let ltas = try LongTermSpectrumAccumulator(layout: profile, epoch: epoch)
+        var owned: [SpectrogramFrame] = []
+        let pcm = [Float](repeating: 1e-30, count: 64) + [Float](repeating: 0.25, count: 64)
+        _ = try pcm.withUnsafeBufferPointer {
+            try worker.process($0, interval: source(0, 128)) { row in
+                owned.append(row.owned())
+                do { try ltas.append(row) } catch { Issue.record(error) }
+            }
+        }
+        #expect(owned.map(\.info.status) == [.unavailable(.analysisFailure), .measured])
+        #expect(owned[0].info.weight == 0 && owned[0].binPower.isEmpty)
+        let average = try ltas.snapshot(observedSource: source(0, 128))
+        #expect(average.totalWeight == 1 && average.timing.includedSampleCount == 64)
+        #expect(average.meanBinPower[0] == 0.0625)
+        let (doubles, _) = try analyze(.init(repeating: 1e-200, count: 64), layout())
+        #expect(doubles[0].info.status == .unavailable(.analysisFailure))
+    }
+
+    @Test func replayRejectsImpossibleStatesAndInexactFloat32Powers() throws {
+        let regular = try layout()
+        let discard = try SpectrogramLayout(
+            framing: FramingConfiguration(
+                window: regular.framing.window, hopLength: 64,
+                partialWindowPolicy: .discard), transformLength: 64, channels: regular.channels)
+        let partial = try analyze(.init(repeating: 1, count: 4), regular).0[0]
+        let measured = try analyze(.init(repeating: 1, count: 64), regular).0[0]
+        let ltas = try LongTermSpectrumAccumulator(layout: regular, epoch: epoch)
+        try ltas.append(partial)
+        #expect(throws: FramingError.unexpectedInterval) {
+            try ltas.snapshot(observedSource: source(0, 5))
+        }
+        func object<T: Encodable>(_ value: T) throws -> [String: Any] {
+            try #require(
+                JSONSerialization.jsonObject(with: JSONEncoder().encode(value)) as? [String: Any])
+        }
+        func rejects(_ value: [String: Any]) throws {
+            let encoded = try JSONSerialization.data(withJSONObject: value)
+            #expect(throws: (any Error).self) {
+                try JSONDecoder().decode(SpectrogramFrame.self, from: encoded)
+            }
+        }
+        var short = try object(partial)
+        short["layout"] = try object(discard)
+        try rejects(short)
+        var complete = try object(measured)
+        var info = try object(measured.info)
+        info["weight"] = 0
+        info["newlyCoveredSamples"] = 0
+        for reason in [
+            UnavailabilityReason.excluded, .missingAcquisition, .cancelled, .insufficientData,
+        ] {
+            info["status"] = try object(SpectralFrameStatus.unavailable(reason))
+            complete["info"] = info
+            complete["binPower"] = []
+            try rejects(complete)
+        }
+        var inexact = try object(measured)
+        inexact["layout"] = try object(layout(precision: .float32))
+        for invalid in [1e100, 0.12345678901234567, 1e-100] {
+            var powers = measured.binPower
+            powers[0] = invalid
+            inexact["binPower"] = powers
+            try rejects(inexact)
+        }
+        inexact["binPower"] = [Double](repeating: 1, count: 10_000)
+        try rejects(inexact)
+    }
+
+    @Test func wholeIntervalCepstralDisplayCentersSurviveIdenticalDependencyEnvelopes() throws {
+        let config = try CepstrogramConfiguration(
+            sourceSampleRate: 16_000, analysisSampleRate: 4000,
+            pitchFloorHz: 100, hopSeconds: 0.005, declaredInputBandwidthHz: 8000)
+        let interval = try source(999, 2560, rate: 16_000)
+        let worker = try PreparedIntervalCepstrogram<Double>(
+            configuration: config, source: interval)
+        let ring = try RollingSpectralProducts(configuration: config, capacity: 64)
+        let export = try PowerCepstrogramExporter(configuration: config)
+        let pcm = (0..<2560).map { 0.25 * cos(Double($0) * 0.13) }
+        try pcm.withUnsafeBufferPointer { try worker.append($0, interval: interval) }
+        _ = try worker.finish { output in
+            do {
+                let canonical = try export.owned(output)
+                #expect(try canonical.withBorrowedColumn { try export.owned($0) } == canonical)
+                try ring.append(canonical)
+            } catch { Issue.record(error) }
+        }
+        let reduced = try ring.snapshot().displayColumns(framesPerColumn: 3, aggregation: .maximum)
+        #expect(reduced.count > 2)
+        #expect(reduced[0].originSample == 999 && reduced[1].originSample == 999)
+        #expect(reduced[0].sourceEnvelope == reduced[1].sourceEnvelope)
+        #expect(reduced[0].lastCenterSecondsFromOrigin < reduced[1].firstCenterSecondsFromOrigin)
+    }
+}

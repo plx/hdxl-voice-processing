@@ -13,10 +13,12 @@ public final class CepstralProductTrial {
     let item: ProductCase
     let input: [Double]
     let frames: [PowerCepstrumFrame]
+    let exporter: PowerCepstrogramExporter
     let expectedSum: Double
     var generator: PreparedPreviewCepstrogram<Double>?
     var ring: RollingSpectralProducts?
-    var lastCopy: [Double] = []
+    var lastCopy: PowerCepstrumFrame?
+    var availableCount = 0
     var count = 0
     var sum = 0.0
 
@@ -26,6 +28,7 @@ public final class CepstralProductTrial {
         let prepared = try PreparedPreviewCepstrogram<Double>(
             configuration: item.cepstrogram, epoch: item.source.epoch)
         let exporter = try PowerCepstrogramExporter(configuration: item.cepstrogram)
+        self.exporter = exporter
         var rows: [PowerCepstrumFrame] = []
         rows.reserveCapacity(item.expectedCepstralFrames)
         let emit: (BorrowedPowerCepstrum<Double>) -> Void = { rows.append(try! exporter.owned($0)) }
@@ -36,6 +39,11 @@ public final class CepstralProductTrial {
         precondition(
             rows.count == item.expectedCepstralFrames
                 && rows.last?.unavailability == .insufficientData)
+        precondition(
+            rows.dropLast().allSatisfy {
+                $0.unavailability == nil && $0.values.count == item.cepstrogram.frame.binCount
+            })
+        precondition(rows.last?.values.isEmpty == true)
         frames = rows
         expectedSum = rows.reduce(0) { $0 + ($1.values.first ?? 0) }
         precondition(expectedSum.isFinite && expectedSum > 0)
@@ -44,7 +52,8 @@ public final class CepstralProductTrial {
     public func prepare(_ operation: CepstralProductOperation) throws {
         count = 0
         sum = 0
-        lastCopy = []
+        lastCopy = nil
+        availableCount = 0
         switch operation {
         case .generate:
             generator = try PreparedPreviewCepstrogram(
@@ -60,7 +69,9 @@ public final class CepstralProductTrial {
         switch operation {
         case .generate:
             let emit: (BorrowedPowerCepstrum<Double>) -> Void = { row in
-                self.sum += row.stage(.powerCepstrum).values.first ?? 0
+                let stage = row.stage(.powerCepstrum)
+                self.sum += stage.values.first ?? 0
+                if stage.isComplete { self.availableCount += 1 }
                 self.count += 1
             }
             let generator = generator!
@@ -73,8 +84,10 @@ public final class CepstralProductTrial {
             for row in frames { try ring.append(row) }
         case .export:
             for row in frames {
-                lastCopy = row.values.withUnsafeBufferPointer { Array($0) }
-                sum += lastCopy.first ?? 0
+                let copy = try row.withBorrowedColumn { try exporter.owned($0) }
+                lastCopy = copy
+                if copy.unavailability == nil { availableCount += 1 }
+                sum += copy.values.first ?? 0
                 count += 1
             }
         }
@@ -83,7 +96,9 @@ public final class CepstralProductTrial {
     public func verify(_ operation: CepstralProductOperation) {
         switch operation {
         case .generate, .export:
-            precondition(count == frames.count && sum == expectedSum)
+            precondition(
+                count == frames.count && sum == expectedSum && availableCount == frames.count - 1)
+            if operation == .export { precondition(lastCopy == frames.last) }
         case .retain8, .retain64:
             let kept = min(operation.capacity, frames.count)
             let snapshot = ring!.snapshot()

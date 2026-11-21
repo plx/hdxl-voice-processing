@@ -116,6 +116,29 @@ public final class BoundedCepstrogram {
     }
 }
 
+/// Borrowed view of the canonical power stage. Values expire when the enclosing callback returns.
+public struct BorrowedCepstrogramColumn {
+    public let configuration: PowerCepstrumConfiguration
+    public let profile: ProfileIdentity
+    public let context: CepstralFrameContext
+    public let values: UnsafeBufferPointer<Double>
+    public let unavailability: UnavailabilityReason?
+}
+
+extension PowerCepstrumFrame {
+    /// Stream retained or decoded canonical columns through the same exporter as live output.
+    public func withBorrowedColumn<Result>(_ body: (BorrowedCepstrogramColumn) throws -> Result)
+        rethrows -> Result
+    {
+        try values.withUnsafeBufferPointer {
+            try body(
+                BorrowedCepstrogramColumn(
+                    configuration: configuration.frame, profile: profile,
+                    context: context, values: $0, unavailability: unavailability))
+        }
+    }
+}
+
 /// Copies canonical #33 output one row at a time. Preparing once avoids hashing a configuration per row.
 public struct PowerCepstrogramExporter: Sendable {
     public let configuration: CepstrogramConfiguration
@@ -132,13 +155,21 @@ public struct PowerCepstrogramExporter: Sendable {
     }
 
     public func owned(_ output: BorrowedPowerCepstrum<Double>) throws -> PowerCepstrumFrame {
-        guard output.configuration == configuration.frame, output.profile == profile else {
+        let stage = output.stage(.powerCepstrum)
+        return try owned(
+            BorrowedCepstrogramColumn(
+                configuration: output.configuration, profile: output.profile,
+                context: output.context, values: stage.values, unavailability: stage.unavailability)
+        )
+    }
+
+    public func owned(_ column: BorrowedCepstrogramColumn) throws -> PowerCepstrumFrame {
+        guard column.configuration == configuration.frame, column.profile == profile else {
             throw ContractError.invalidFingerprint
         }
-        let stage = output.stage(.powerCepstrum)
         return try PowerCepstrumFrame(
-            configuration: configuration, profile: profile, context: output.context,
-            values: Array(stage.values), unavailability: stage.unavailability)
+            configuration: configuration, profile: profile, context: column.context,
+            values: Array(column.values), unavailability: column.unavailability)
     }
 }
 

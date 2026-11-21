@@ -134,7 +134,7 @@ public final class ProductTrial {
             _ = try generator.finish { _ in preconditionFailure("Unexpected padded frame") }
         case .average:
             let accumulator = accumulator!
-            for row in frames { try accumulator.append(row) }
+            for row in frames { try row.withBorrowedFrame { try accumulator.append($0) } }
         case .retain8, .retain64:
             let ring = ring!
             for row in frames { try row.withBorrowedFrame { try ring.append($0) } }

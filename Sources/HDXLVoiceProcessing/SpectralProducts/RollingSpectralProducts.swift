@@ -31,11 +31,31 @@ public enum SpectralProductColumn: Sendable, Hashable, Encodable {
         }
     }
 
+    var originSample: Int64 {
+        switch self {
+        case .spectrum(let row): row.info.epochStartSample
+        case .powerCepstrum(let row): row.context.origin.startSample
+        }
+    }
+    var centerSecondsFromOrigin: Double {
+        switch self {
+        case .spectrum(let row):
+            (Double(row.info.source.startSample - row.info.epochStartSample) + Double(
+                row.layout.framing.window.sampleCount) / 2) / row.info.source.sampleRate
+        case .powerCepstrum(let row): row.context.centerSecondsFromOrigin
+        }
+    }
+    var selectionProfile: ProfileIdentity? {
+        if case .spectrum(let row) = self { return row.info.selectionProfile }
+        return nil
+    }
+
     func canFollow(_ previous: Self) -> Bool {
         guard frameIndex > previous.frameIndex else { return false }
         switch (previous, self) {
         case (.spectrum(let a), .spectrum(let b)):
-            return a.info.status != .unavailable(.insufficientData)
+            return b.info.source.endSample >= a.info.source.endSample
+                && a.info.status != .unavailable(.insufficientData)
                 && a.info.epochStartSample == b.info.epochStartSample
                 && a.info.source.epoch == b.info.source.epoch
                 && a.info.selectionProfile == b.info.selectionProfile
@@ -51,6 +71,10 @@ public enum SpectralDisplayAggregation: String, Sendable, Codable { case maximum
 
 /// A time-reduced display column. Every bin uses the same complete input columns.
 public struct SpectralDisplayColumn: Sendable, Hashable, Encodable {
+    public let originSample: Int64
+    public let firstCenterSecondsFromOrigin: Double
+    public let lastCenterSecondsFromOrigin: Double
+    public let selectionProfile: ProfileIdentity?
     public let profile: ProfileIdentity
     public let firstFrameIndex: UInt64
     public let lastFrameIndex: UInt64
@@ -119,6 +143,10 @@ public struct SpectralProductSnapshot: Sendable, Hashable, Encodable {
                 sampleRate: first.source.sampleRate)
             result.append(
                 SpectralDisplayColumn(
+                    originSample: first.originSample,
+                    firstCenterSecondsFromOrigin: first.centerSecondsFromOrigin,
+                    lastCenterSecondsFromOrigin: columns[end - 1].centerSecondsFromOrigin,
+                    selectionProfile: first.selectionProfile,
                     profile: profile, firstFrameIndex: first.frameIndex,
                     lastFrameIndex: columns[end - 1].frameIndex,
                     sourceEnvelope: source, availableFrameCount: included,

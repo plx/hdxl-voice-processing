@@ -23,6 +23,9 @@ public final class PreparedSpectrogram<Sample: BinaryFloatingPoint & Sendable> {
     ) throws {
         let diagnostics = WorkerDiagnostics(mode: diagnosticMode.facadeMode)
         if let selection {
+            // An opaque upstream filter/resampler identity cannot map the original samples
+            // that influenced each analysis window. Same-grid channel selection is pointwise.
+            guard layout.conditioning == nil else { throw ContractError.invalidConfiguration }
             guard selection.plan.source.epoch == epoch,
                 selection.plan.source.sampleRate == layout.framing.window.sampleRate
             else {
@@ -101,8 +104,23 @@ public final class PreparedSpectrogram<Sample: BinaryFloatingPoint & Sendable> {
                         try spectrum.writePower(input, into: $0)
                     }
                 }
-                return power.prefix(layout.frequency.count).contains(where: { $0 > 0 })
-                    ? .measured : .noEnergy
+                return power.withUnsafeBufferPointer { full in
+                    let supported = UnsafeBufferPointer(
+                        rebasing: full.prefix(layout.frequency.count))
+                    return bins.withUnsafeBufferPointer { transformed in
+                        supported.withSpectralScalars(
+                            doubles: { values in
+                                transformed.withMemoryRebound(to: FourierBin<Double>.self) {
+                                    Self.classify(values, transformed: $0)
+                                }
+                            },
+                            floats: { values in
+                                transformed.withMemoryRebound(to: FourierBin<Float>.self) {
+                                    Self.classify(values, transformed: $0)
+                                }
+                            })
+                    }
+                }
             } catch {
                 return .unavailable(.analysisFailure)
             }
@@ -121,4 +139,20 @@ public final class PreparedSpectrogram<Sample: BinaryFloatingPoint & Sendable> {
             emit(BorrowedSpectrogramFrame(layout: layout, info: info, binPower: values))
         }
     }
+
+    private static func classify<Value>(
+        _ powers: UnsafeBufferPointer<Value>, transformed: UnsafeBufferPointer<FourierBin<Value>>
+    ) -> SpectralFrameStatus {
+        var hasEnergy = false
+        for index in powers.indices {
+            if powers[index] > 0 {
+                hasEnergy = true
+            } else if transformed[index].real != 0 || transformed[index].imaginary != 0 {
+                // A finite, nonzero coefficient can square to zero in the selected precision.
+                return .unavailable(.analysisFailure)
+            }
+        }
+        return hasEnergy ? .measured : .noEnergy
+    }
+
 }
