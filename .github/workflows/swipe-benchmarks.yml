@@ -18,6 +18,7 @@ on:
       - 'Tools/Reference/common.py'
       - 'Tools/Tests/test_swipe*.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - 'Tools/ci.py'
       - 'Configuration/build.json'
       - '.github/workflows/swipe-benchmarks.yml'

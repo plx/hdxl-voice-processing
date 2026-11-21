@@ -121,9 +121,10 @@ def main():
             "DYLD_INSERT_LIBRARIES", "LD_PRELOAD",
         )):
             raise ValueError("Remove allocator/backend environment overrides")
-        environment = ci.environment("release")
+        environment = smoke.measurement_environment(args.mode)
         ci.validate_environment(environment, json.loads((ROOT / "Configuration/build.json").read_text()))
         environment.update({
+            "input": "48000 Hz; payload scalar at slot offset i is (i % 127) / 128 in the case precision. Channels, layout and capacity are in configuration.",
             "purpose": "synthetic bounded PCM capture-offer microbenchmarks",
             "measurement": "capture offers only; allocation/preparation, worker drain and verification excluded",
             "firstOffer": "first call per freshly prepared instance; process/runtime already initialized",
@@ -163,6 +164,7 @@ def main():
             # The framework export is retained alongside raw histograms; histogram
             # maxima, not a rounded p99 export, enforce the no-heap gate above.
             exported.rename(output / "p99.json")
+            result["workloadManifestSHA256"] = smoke.write_workload_manifest(output, args.mode)
             result.update(status="passed", workloadCount=len(matrix), benchmarkCount=len(summary),
                           heapActivityMaximum=0 if args.mode == "allocation" else None,
                           instrumentation="malloc/ARC positive controls" if args.mode == "allocation" else "disabled")

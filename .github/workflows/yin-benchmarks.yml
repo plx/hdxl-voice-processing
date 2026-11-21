@@ -15,6 +15,7 @@ on:
       - 'Tools/YIN/benchmark.py'
       - 'Tools/Tests/test_yin_benchmark.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/yin-benchmarks.yml'
 
 permissions:

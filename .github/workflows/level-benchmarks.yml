@@ -12,6 +12,7 @@ on:
       - 'Benchmarks/**'
       - 'Tools/Levels/benchmark.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/level-benchmarks.yml'
 
 permissions:

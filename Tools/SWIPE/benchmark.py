@@ -156,7 +156,7 @@ def main():
                      'DYLD_INSERT_LIBRARIES', 'LD_PRELOAD')
         if any(key in os.environ for key in overrides):
             raise ValueError('Remove allocator/backend environment overrides')
-        environment = ci.environment('release')
+        environment = smoke.measurement_environment(args.mode)
         ci.validate_environment(environment, json.loads((ROOT / 'Configuration/build.json').read_text()))
         environment.update(dict(
             hardwareModel=ci.capture('sysctl', '-n', 'hw.model'), mode=args.mode, shard=args.shard,
@@ -225,6 +225,7 @@ def main():
             exports = json.loads((output / f'{name}.json').read_text())
             values = validate_export(exports, summary, args.mode)
             (output / 'p99.json').write_text(json.dumps(values, indent=2) + '\n')
+            result["workloadManifestSHA256"] = smoke.write_workload_manifest(output, args.mode)
             (output / f'{name}.json').unlink()
             if source_hashes() != sources:
                 raise ValueError('Measurement sources changed during the run')

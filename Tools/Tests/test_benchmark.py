@@ -15,14 +15,15 @@ class BenchmarkExportTests(unittest.TestCase):
         metrics = ('Time (wall clock)', 'Time (total CPU)') if mode == 'timing' else (
             'Time (wall clock)', *benchmark.DIAGNOSTICS)
         names = (benchmark.SMOKE,) if mode == 'timing' else (benchmark.SMOKE, benchmark.PROBE)
-        return [{'name': f'{name} - {metric}', 'value': 1, 'unit': '#'}
+        return [{'name': f'{name} - {metric}', 'value': 1, 'unit': 'ns' if metric.startswith('Time (') else '#'}
                 for name in names for metric in metrics]
 
     def test_empty_missing_duplicate_nonfinite_and_extra_exports_fail(self):
         rows = self.rows('timing')
         bad = [[], rows[:1], rows + rows, rows + [{'name': 'unknown', 'value': 1, 'unit': '#'}],
                [{**rows[0], 'value': float('nan')}, rows[1]],
-               [{**rows[0], 'value': 0}, rows[1]]]
+               [{**rows[0], 'value': 0}, rows[1]],
+               [{**rows[0], 'unit': '#'}, rows[1]]]
         for data in bad:
             with self.subTest(data=data), self.assertRaises(ValueError):
                 benchmark.validate_results(data, 'timing')

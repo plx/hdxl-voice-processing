@@ -18,6 +18,7 @@ on:
       - 'Benchmarks/**'
       - 'Tools/CPPS/benchmark.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/cpps-benchmarks.yml'
 
 permissions:

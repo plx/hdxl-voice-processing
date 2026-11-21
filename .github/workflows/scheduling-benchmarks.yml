@@ -15,6 +15,7 @@ on:
       - 'Tools/Reference/common.py'
       - 'Tests/HDXLVoiceProcessingTests/Fixtures/Levels/k-weighting.json'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/scheduling-benchmarks.yml'
 
 permissions:

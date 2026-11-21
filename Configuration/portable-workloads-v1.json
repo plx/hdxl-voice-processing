@@ -1,0 +1,670 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "rawYIN",
+  "workloads": [
+    {
+      "id": "yin/tone-80/v1",
+      "fixture": "tone-80",
+      "transform": "identity",
+      "pcmSHA256": "aeb82358e882df6acf51606f6bf625d7865bcb71ade526d1879c9bacaf24b83b",
+      "sourceWAVSHA256": "7ff7ff500a22fead428dc90dd43cc31fc579fc416031644edb24c78f1b228b6a",
+      "sourceStartSample": 0,
+      "sampleCount": 1920,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 1920
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float64",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 9,
+        "available": 8,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 8,
+          "uncertain": 0,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
+    },
+    {
+      "id": "yin/tone-123.45/v1",
+      "fixture": "tone-123.45",
+      "transform": "identity",
+      "pcmSHA256": "922488e41ba3358d777f562521d3d46eb15bff2559b585625b42e4659922c442",
+      "sourceWAVSHA256": "e5e949e7d512ce104bd141d515c23aa4e5358185e705a8ba2f5566ff5744cdf1",
+      "sourceStartSample": 0,
+      "sampleCount": 1920,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 1920
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float64",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 9,
+        "available": 8,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 8,
+          "uncertain": 0,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
+    },
+    {
+      "id": "yin/tone-650/v1",
+      "fixture": "tone-650",
+      "transform": "identity",
+      "pcmSHA256": "e0f24565482888a6c15dcafbc72ff0191d5660d0773fa088bbb11e7584fcd2aa",
+      "sourceWAVSHA256": "e372151daf0f550c2da53751707e04f9524e86b267e0eba7cfafb80ad8fa0533",
+      "sourceStartSample": 0,
+      "sampleCount": 1920,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 1920
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float64",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 9,
+        "available": 8,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 8,
+          "uncertain": 0,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
+    },
+    {
+      "id": "yin/float32-tone/v1",
+      "fixture": "float32-tone",
+      "transform": "identity",
+      "pcmSHA256": "283bcafde075bbbcaca8f182bf7ad602e6a71d7b69036e27f1bdf0700751b584",
+      "sourceWAVSHA256": "ba1ec270eb2159b349e2a962f3373dc8e5932c2e251ec9a72eb1462b0e0d8516",
+      "sourceStartSample": 0,
+      "sampleCount": 1920,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float32LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 1920
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float32",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "8001ff48bac7cb3bb4397ae743b85b3fb4efde90eeb448fd43e4838d01c55f92",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 9,
+        "available": 8,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 8,
+          "uncertain": 0,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
+    },
+    {
+      "id": "yin/grid-48000-0.01-50/v1",
+      "fixture": "grid-48000-0.01-50",
+      "transform": "identity",
+      "pcmSHA256": "04354e4411a7d0b3cce627d6cd48ab474870d0b65249e0e7683728bcb3094ffc",
+      "sourceWAVSHA256": "30f2def98980dc2459e9b57ca9511277532fb67f852f4c054f1a634c193be0d5",
+      "sourceStartSample": 0,
+      "sampleCount": 4800,
+      "sampleRate": 48000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.1,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 4800
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 480,
+        "inputPrecision": "float64",
+        "integrationLength": 960,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 48000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "0d16ca0be31953b034a0b93c7e7e32d0808d60843c3ea777933342cc0195efbf",
+      "windowSamples": 1921,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 7,
+        "available": 6,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 6,
+          "uncertain": 0,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "56d03d781419022083be1eb53aa89b01701b660d8e70e300a902d092647afbec"
+    },
+    {
+      "id": "yin/speech-bl01-vowel-a/v1",
+      "fixture": "speech-bl01-vowel-a",
+      "transform": "identity",
+      "pcmSHA256": "734ac82fc28cd2fa573d17240d4e3d7fd7ab6e14d8eb2eea6af6ec5cb512c0d8",
+      "sourceWAVSHA256": "e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437",
+      "sourceStartSample": 0,
+      "sampleCount": 5292,
+      "sampleRate": 44100,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 5292
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 441,
+        "inputPrecision": "float64",
+        "integrationLength": 882,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 44100,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "7a373d4e1919956441cf0b9e0c9615b41626a538a365037bcd226640611befa9",
+      "windowSamples": 1765,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 9,
+        "available": 8,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 8,
+          "uncertain": 0,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "1e8de2bddc459b083717cb2d5083110d99628a7302a46c89474e7480652be3d4"
+    },
+    {
+      "id": "yin/speech-bl02-consonant-rich/v1",
+      "fixture": "speech-bl02-consonant-rich",
+      "transform": "identity",
+      "pcmSHA256": "9bfdf511695ff9a49cbde78d619ed3ef9ec1a4a33a76955dd30168e168bc2062",
+      "sourceWAVSHA256": "9690921351c85ffa6435dfcb881dc8399efa0d7f79ab189252d75f0a22520775",
+      "sourceStartSample": 0,
+      "sampleCount": 5292,
+      "sampleRate": 44100,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 5292
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 441,
+        "inputPrecision": "float64",
+        "integrationLength": 882,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 44100,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "7a373d4e1919956441cf0b9e0c9615b41626a538a365037bcd226640611befa9",
+      "windowSamples": 1765,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 9,
+        "available": 8,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 0,
+          "uncertain": 8,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "54dc88e8520cef91e3a35f81bd855eb9bac892e5977ee4b67699e768d91bac0e"
+    },
+    {
+      "id": "yin/silence/v1",
+      "fixture": "silence",
+      "transform": "identity",
+      "pcmSHA256": "0299f757a85a1aad6cbe1ad2b0eda925d8df667cd04e646af8917f65cbf24537",
+      "sourceWAVSHA256": "a9835498b64f5438706a45cca61bb1023399fbac2c9c67f1578d6e34ea44b787",
+      "sourceStartSample": 0,
+      "sampleCount": 1920,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 1920
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float64",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 9,
+        "available": 0,
+        "unavailable": 9,
+        "byStatus": {
+          "voiced": 0,
+          "uncertain": 0,
+          "unvoiced": 8,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "69e3eab85202c1be26503a8bcbac4501024bceaa3632c520f7dd35f96eed065d"
+    },
+    {
+      "id": "yin/noise/v1",
+      "fixture": "noise",
+      "transform": "identity",
+      "pcmSHA256": "248cdbf143605c0ecf8d477242164ed60fcd4842bc5866454433697ca61053c3",
+      "sourceWAVSHA256": "c2b29573e0023a15d32af1929b83e402ab2172acd61682b0f78ad9f5cba30147",
+      "sourceStartSample": 0,
+      "sampleCount": 2880,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.18,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 2880
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float64",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 15,
+        "available": 14,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 0,
+          "uncertain": 14,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "7a4ed1e91f57c07a8f9df4b7751a12e649cf8593df939f0c44fd219eea1b91f5"
+    },
+    {
+      "id": "yin/octave-jump/v1",
+      "fixture": "octave-jump",
+      "transform": "identity",
+      "pcmSHA256": "2d2d4de425a9dc76129049666f2192a667252b6815ec4314457f542294a29719",
+      "sourceWAVSHA256": "d6e97ecf8e78c88c5cf429bf2f98a0a69322e27183578148ba9c875d9b1972fa",
+      "sourceStartSample": 0,
+      "sampleCount": 2880,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.18,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 2880
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float64",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 15,
+        "available": 14,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 12,
+          "uncertain": 2,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "3f2afd7120d5ca6d1bbf517206802aebe92a1e316e5d3cd4707b72a45526081e"
+    },
+    {
+      "id": "yin/tone-123.45-clipped/v1",
+      "fixture": "tone-123.45",
+      "transform": "clipped",
+      "pcmSHA256": "562eb292e77c60a1e6740367cdac15c0852d4f8131272d760b6f9ef6ac42c547",
+      "sourceWAVSHA256": "e5e949e7d512ce104bd141d515c23aa4e5358185e705a8ba2f5566ff5744cdf1",
+      "sourceStartSample": 0,
+      "sampleCount": 1920,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 1920
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float64",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 9,
+        "available": 8,
+        "unavailable": 1,
+        "byStatus": {
+          "voiced": 8,
+          "uncertain": 0,
+          "unvoiced": 0,
+          "unavailable": 1
+        }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
+    },
+    {
+      "id": "yin/tone-123.45-gap/v1",
+      "fixture": "tone-123.45",
+      "transform": "gap",
+      "pcmSHA256": "922488e41ba3358d777f562521d3d46eb15bff2559b585625b42e4659922c442",
+      "sourceWAVSHA256": "e5e949e7d512ce104bd141d515c23aa4e5358185e705a8ba2f5566ff5744cdf1",
+      "sourceStartSample": 0,
+      "sampleCount": 1920,
+      "sampleRate": 16000,
+      "channelLayout": "mono",
+      "encoding": "float64LE",
+      "utteranceSeconds": 0.12,
+      "segments": [
+        {
+          "startSample": 0,
+          "sampleCount": 960
+        },
+        {
+          "startSample": 1120,
+          "sampleCount": 800
+        }
+      ],
+      "profile": {
+        "arithmeticPrecision": "float64",
+        "definition": "hdxl-yin-fixed-time-2002-steps2to5",
+        "differenceBackend": "scalar",
+        "hopLength": 160,
+        "inputPrecision": "float64",
+        "integrationLength": 320,
+        "interpolation": "cmndOrdinateRawDifferencePeriod",
+        "neighboringTimeRefinement": "disabled",
+        "normalization": "observedPeak",
+        "partialWindowPolicy": "emitUnavailable",
+        "pitchCeilingHz": 700,
+        "pitchFloorHz": 50,
+        "rangeBoundaryToleranceSamples": 2e-06,
+        "sampleRate": 16000,
+        "schemaVersion": 1,
+        "silenceRMSThreshold": 1e-07,
+        "supportPolicy": "fixedIntegrationPlusMaximumLagAndNeighbor",
+        "threshold": 0.1
+      },
+      "profileSHA256": "a9d5c9ca1f5fe142d8373a004fdfbe5363dccf2e6d666bec0cdc9cc4390d1c70",
+      "windowSamples": 641,
+      "fftLength": null,
+      "availabilityPolicy": "voicedOrUncertain",
+      "expected": {
+        "processed": 5,
+        "available": 3,
+        "unavailable": 2,
+        "byStatus": {
+          "voiced": 3,
+          "uncertain": 0,
+          "unvoiced": 0,
+          "unavailable": 2
+        }
+      },
+      "expectedFrameSequenceSHA256": "ab8f8ee21177d1127b8787c16835de67a74298ae25828f2fc69e4f8d298b5da1"
+    }
+  ]
+}

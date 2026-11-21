@@ -18,6 +18,7 @@ on:
       - 'Package.swift'
       - 'Tools/Tests/test_pulse_benchmark.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/pulse-benchmarks.yml'
 
 permissions:
