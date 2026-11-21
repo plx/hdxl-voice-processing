@@ -122,6 +122,11 @@ def verify_identity(expected, root=ROOT):
         raise ValueError("Build inputs, dependency resolution or toolchain changed during the paired run")
 
 
+def verify_calibration(path, expected):
+    if framework.sha(path) != expected:
+        raise ValueError(f"Calibration bytes changed in {path.name}")
+
+
 def archive_percentiles(directory, destination):
     # Store just the exported filenames and contents, without host account metadata.
     with tarfile.open(destination, "w:gz", compresslevel=1) as archive:
@@ -157,6 +162,8 @@ def unit(item, record=None):
         return None, None
     if op in {"preEmphasis", "resample"}:
         return "conditioned output sample", item["outputSamples"]
+    if op == "splitReal":
+        return "packed even/odd pair", item["outputSamples"]
     if op in {"magnitude", "power", "fftInverse", "logPower", "inverseCepstrum"}:
         return "input bin", item["transformLength"] // 2 + 1
     if op == "ringOverlap":
@@ -210,6 +217,8 @@ def validate_plan(rows):
         ):
             raise ValueError(f"Invalid calibration record {row['name']}")
         op = item["operation"]
+        if op == "splitReal" and 2 * item["outputSamples"] != item["transformLength"]:
+            raise ValueError(f"Incorrect split-complex pair count for {row['name']}")
         is_float = item["precision"] == "float32"
         if not math.isclose(
             row["expectedSample"],
@@ -392,7 +401,7 @@ def distributions(raw, records, mode, exported, baseline):
     return summary, p99
 
 
-def measure(mode, root, plan_path, records, pinned, identity):
+def measure(mode, root, records, pinned, identity, plan_bytes, plan_digest):
     output = root / ("kernels-" + mode)
     output.mkdir()
     lock = PACKAGE / "Package.resolved"
@@ -402,6 +411,11 @@ def measure(mode, root, plan_path, records, pinned, identity):
     result = dict(schemaVersion=1, status="failed", mode=mode, commands=[])
     try:
         verify_identity(identity)
+        snapshot = output / "workloads.json"
+        snapshot.write_bytes(plan_bytes)
+        verify_calibration(snapshot, plan_digest)
+        os.environ["HDXL_KERNEL_PLAN"] = str(snapshot)
+        os.environ["HDXL_KERNEL_PLAN_SHA256"] = plan_digest
         flags = swift(mode)
         env = framework.measurement_environment(mode)
         if pinned:
@@ -410,7 +424,7 @@ def measure(mode, root, plan_path, records, pinned, identity):
             mode=mode,
             frameworkScalingFactor=1,
             operations=BOUNDARIES,
-            calibrationSHA256=framework.sha(plan_path),
+            calibrationSHA256=plan_digest,
             buildIdentity=identity,
             swiftPMArguments=[ci.redact(arg) for arg in flags],
             toolchainPolicy="pinned" if pinned else "development",
@@ -421,7 +435,6 @@ def measure(mode, root, plan_path, records, pinned, identity):
         )
         write(output / "environment.json", env)
         (output / "resolution.json").write_bytes(resolution)
-        shutil.copyfile(plan_path, output / "workloads.json")
         plugin = [
             "swift",
             "package",
@@ -466,6 +479,7 @@ def measure(mode, root, plan_path, records, pinned, identity):
                 archive_percentiles(Path(temp), archive)
                 result["frameworkPercentilesSHA256"] = framework.sha(archive)
             verify_identity(identity)
+            verify_calibration(snapshot, plan_digest)
             write(output / "distributions.json", distribution)
             write(output / "p99.json", p99)
             result.update(
@@ -580,21 +594,28 @@ def main():
     binary = Path(ci.capture("swift", "build", *common, "--show-bin-path")) / "KernelWorkloadCheck"
     with plan.open("wb") as out:
         subprocess.run([binary], stdout=out, check=True)
-    records = json.loads(plan.read_bytes())
+    plan_bytes = plan.read_bytes()
+    plan_digest = hashlib.sha256(plan_bytes).hexdigest()
+    records = json.loads(plan_bytes)
     validate_plan(records)
     verify_identity(identity)
     write(root / "calibration-build.json", dict(buildIdentity=identity, checkerSHA256=framework.sha(binary)))
-    os.environ["HDXL_KERNEL_PLAN"] = str(plan)
-    clean = measure("timing", root, plan, records, not opts.development_toolchain, identity)
-    diagnostics = measure("allocation", root, plan, records, not opts.development_toolchain, identity)
+    clean = measure(
+        "timing", root, records, not opts.development_toolchain, identity, plan_bytes, plan_digest
+    )
+    diagnostics = measure(
+        "allocation", root, records, not opts.development_toolchain, identity, plan_bytes, plan_digest
+    )
     verify_identity(identity)
+    for path in (plan, root / "kernels-timing/workloads.json", root / "kernels-allocation/workloads.json"):
+        verify_calibration(path, plan_digest)
     table(root / "kernels.csv", records, clean, diagnostics)
     write(
         root / "result.json",
         dict(
             status="passed",
             cases=len(records),
-            calibrationSHA256=framework.sha(plan),
+            calibrationSHA256=plan_digest,
             calibrationBuildSHA256=framework.sha(root / "calibration-build.json"),
             tableSHA256=framework.sha(root / "kernels.csv"),
             timingResultSHA256=framework.sha(root / "kernels-timing/result.json"),

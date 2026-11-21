@@ -279,5 +279,14 @@ public final class PCMFramer<Sample: BinaryFloatingPoint & Sendable> {
             precondition((0..<storage.capacity).contains(index))
             return storage.ring[index]
         }
+
+        public func resetEmission(to value: Sample) {
+            storage.emission.update(repeating: value, count: storage.capacity)
+        }
+
+        public func emittedSample(at index: Int) -> Sample {
+            precondition((0..<storage.capacity).contains(index))
+            return storage.emission[index]
+        }
     }
 #endif

@@ -2,12 +2,16 @@ import Benchmark
 import Foundation
 
 #if KernelBenchmarks
+    import CryptoKit
     import KernelWorkload
 #endif
 
 let benchmarks: @Sendable () -> Void = {
     #if KernelBenchmarks
-        guard let path = ProcessInfo.processInfo.environment["HDXL_KERNEL_PLAN"] else {
+        let environment = ProcessInfo.processInfo.environment
+        guard let path = environment["HDXL_KERNEL_PLAN"],
+            let expectedDigest = environment["HDXL_KERNEL_PLAN_SHA256"]
+        else {
             FileHandle.standardError.write(
                 Data(
                     "Use python3 Tools/Kernels/benchmark.py to calibrate and run the DSP kernel matrix.\n"
@@ -16,8 +20,10 @@ let benchmarks: @Sendable () -> Void = {
         }
         let records: [KernelRecord]
         do {
-            records = try JSONDecoder().decode(
-                [KernelRecord].self, from: Data(contentsOf: URL(fileURLWithPath: path)))
+            let bytes = try Data(contentsOf: URL(fileURLWithPath: path))
+            let actualDigest = SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
+            guard actualDigest == expectedDigest else { throw KernelError.invalidPlan }
+            records = try JSONDecoder().decode([KernelRecord].self, from: bytes)
         } catch {
             FileHandle.standardError.write(
                 Data("Could not load the calibrated DSP kernel plan: \(error)\n".utf8))

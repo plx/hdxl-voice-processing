@@ -17,9 +17,16 @@
         var needsFreshInput: Bool {
             self == .windowInPlace || self == .preEmphasis || self == .filter
                 || self == .ringOverlap || self == .ringWriteContiguous || self == .ringWriteWrapped
-                || self == .splitReal
+                || self == .ringReadContiguous || self == .ringReadWrapped || self == .splitReal
         }
 
+        func fourierOutputCount(length: Int) -> Int {
+            switch self {
+            case .splitReal: length / 2
+            case .fftInverse: length
+            default: length / 2 + 1
+            }
+        }
     }
 
     public struct KernelCase: Codable, Sendable {
@@ -116,7 +123,7 @@
                         ] {
                             cases.append(
                                 Self(
-                                    op, p, input: n, output: op == .fftInverse ? fft : fft / 2 + 1,
+                                    op, p, input: n, output: op.fourierOutputCount(length: fft),
                                     fft: fft, nearFloor: low))
                         }
                     }
@@ -126,7 +133,7 @@
                 for n in [2, 4, 8, 16, 64] {
                     for op in [KernelOperation.fftPrepare, .splitReal, .fftForward, .fftInverse] {
                         cases.append(
-                            Self(op, p, input: n, output: op == .fftInverse ? n : n / 2 + 1, fft: n)
+                            Self(op, p, input: n, output: op.fourierOutputCount(length: n), fft: n)
                         )
                     }
                 }

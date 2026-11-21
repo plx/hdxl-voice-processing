@@ -61,6 +61,58 @@ def summarize(xml, stage):
     return dict(sampledStacks=total, attributedStacks=attributed, matchedSymbols=sorted(matched))
 
 
+def capture_stage(binary, stage, directory):
+    trace = directory / (stage + ".trace")
+    stdout = directory / (stage + ".txt")
+    subprocess.run(
+        [
+            "xcrun",
+            "xctrace",
+            "record",
+            "--template",
+            "Time Profiler",
+            "--output",
+            str(trace),
+            "--time-limit",
+            "1m",
+            "--target-stdout",
+            str(stdout),
+            "--launch",
+            "--",
+            str(binary),
+            "--profile",
+            stage,
+        ],
+        check=True,
+        timeout=120,
+    )
+    trial = re.fullmatch(r"(\S+) (\d+) verified batches of (\d+) operations", stdout.read_text().strip())
+    if not trial or not trial[1].startswith(stage + ".") or min(int(trial[2]), int(trial[3])) < 1:
+        raise ValueError(f"Synthetic stage did not finish its verified workload: {stage}")
+    xml = directory / (stage + ".xml")
+    subprocess.run(
+        [
+            "xcrun",
+            "xctrace",
+            "export",
+            "--input",
+            str(trace),
+            "--xpath",
+            '/trace-toc/run[@number="1"]/data/table[@schema="time-profile"]',
+            "--output",
+            str(xml),
+        ],
+        check=True,
+        timeout=120,
+    )
+    return dict(
+        summarize(xml, stage),
+        workload=trial[1],
+        verifiedBatches=int(trial[2]),
+        operationsPerBatch=int(trial[3]),
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
@@ -78,58 +130,18 @@ def main():
         hardwareModel=kernels.ci.capture("sysctl", "-n", "hw.model"),
         stages={},
     )
-    # Raw system traces contain host/process details. Export only the allowlisted attribution counts.
-    with tempfile.TemporaryDirectory() as tmp:
-        for stage in SYMBOLS:
-            trace = Path(tmp) / (stage + ".trace")
-            stdout = Path(tmp) / (stage + ".txt")
-            subprocess.run(
-                [
-                    "xcrun",
-                    "xctrace",
-                    "record",
-                    "--template",
-                    "Time Profiler",
-                    "--output",
-                    str(trace),
-                    "--time-limit",
-                    "1m",
-                    "--target-stdout",
-                    str(stdout),
-                    "--launch",
-                    "--",
-                    str(binary),
-                    "--profile",
-                    stage,
-                ],
-                check=True,
-            )
-            trial = re.fullmatch(
-                r"(\S+) (\d+) verified batches of (\d+) operations", stdout.read_text().strip()
-            )
-            if not trial or not trial[1].startswith(stage + ".") or min(int(trial[2]), int(trial[3])) < 1:
-                raise ValueError(f"Synthetic stage did not finish its verified workload: {stage}")
-            xml = Path(tmp) / (stage + ".xml")
-            subprocess.run(
-                [
-                    "xcrun",
-                    "xctrace",
-                    "export",
-                    "--input",
-                    str(trace),
-                    "--xpath",
-                    '/trace-toc/run[@number="1"]/data/table[@schema="time-profile"]',
-                    "--output",
-                    str(xml),
-                ],
-                check=True,
-            )
-            report["stages"][stage] = dict(
-                summarize(xml, stage),
-                workload=trial[1],
-                verifiedBatches=int(trial[2]),
-                operationsPerBatch=int(trial[3]),
-            )
+    # Keep raw system traces temporary. A recording can stall even after its target exits.
+    for stage in SYMBOLS:
+        for attempt in (1, 2):
+            with tempfile.TemporaryDirectory() as tmp:
+                try:
+                    observed = capture_stage(binary, stage, Path(tmp))
+                except subprocess.TimeoutExpired:
+                    if attempt == 2:
+                        raise
+                    continue
+            report["stages"][stage] = dict(observed, attempts=attempt)
+            break
     kernels.verify_identity(identity)
     kernels.write(args.output / "attribution.json", report)
     print(args.output / "attribution.json")

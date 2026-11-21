@@ -125,6 +125,40 @@ class KernelEvidenceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Build inputs"):
                 kernels.verify_identity(identity, root)
 
+    def test_changed_calibration_bytes_are_rejected(self):
+        path = self.directory / "workloads.json"
+        path.write_bytes(b'[{"operation":"ringReadWrapped"}]')
+        expected = kernels.framework.sha(path)
+        kernels.verify_calibration(path, expected)
+        path.write_bytes(b'[{"operation":"ringReadContiguous"}]')
+        with self.assertRaisesRegex(ValueError, "Calibration bytes changed"):
+            kernels.verify_calibration(path, expected)
+
+    def test_split_real_geometry_counts_packed_pairs(self):
+        item = dict(
+            operation="splitReal",
+            precision="float32",
+            sourceRate=16_000,
+            inputSamples=320,
+            outputSamples=256,
+            nearFloor=False,
+            transformLength=512,
+        )
+        self.assertEqual(kernels.unit(item), ("packed even/odd pair", 256))
+        item["outputSamples"] = 257
+        item["name"] = kernels.case_id(item)
+        row = dict(
+            name=item["name"],
+            workload=item,
+            operationsPerBatch=1,
+            calibrationMedianNanoseconds=50_000,
+            generator="kernel-analytic-v1",
+            expectedSample=1,
+            verifiedSample=1,
+        )
+        with self.assertRaisesRegex(ValueError, "split-complex pair count"):
+            kernels.validate_plan([row])
+
     def test_normalization_keeps_batch_tail_and_input_denominator(self):
         t, _ = self.checked(self.capture("timing"), "timing")
         a, _ = self.checked(self.capture("allocation"), "allocation")

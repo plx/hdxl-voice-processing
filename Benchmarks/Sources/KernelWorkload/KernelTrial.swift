@@ -128,15 +128,40 @@
                     }
                 case .ringReadWrapped, .ringReadContiguous:
                     return KernelTrial(expected: Double(signal.values[mid])) {
+                        ring.resetEmission(to: 4)
+                    } checkOutput: {
+                        for i in [0, mid, n - 1, (n - offset) % n] {
+                            let actual = ring.emittedSample(at: i)
+                            guard actual == signal.values[i] else {
+                                throw KernelError.sample(
+                                    name, actual: Double(actual), expected: Double(signal.values[i])
+                                )
+                            }
+                        }
+                    } run: {
                         Double(ring.read(count: n, sample: mid))
                     }
                 case .ringOverlap:
-                    return KernelTrial(expected: Double(signal.values[h / 2])) {
+                    let incoming = Buffer((0..<h).map { S(2 + Double($0 % 13) / 16) })
+                    let retained = n - h
+                    return KernelTrial(expected: Double(incoming.values[h / 2])) {
                         ring.resetCursor(to: 0)
                         ring.append(signal.input)
+                        ring.resetEmission(to: 4)
+                    } checkOutput: {
+                        for i in [0, retained / 2, retained - 1, retained, retained + h / 2, n - 1]
+                        {
+                            let actual = ring.emittedSample(at: i)
+                            let expected =
+                                i < retained ? signal.values[h + i] : incoming.values[i - retained]
+                            guard actual == expected else {
+                                throw KernelError.sample(
+                                    name, actual: Double(actual), expected: Double(expected))
+                            }
+                        }
                     } run: {
-                        ring.append(UnsafeBufferPointer(rebasing: signal.input[..<h]))
-                        return Double(ring.read(count: n, sample: n - h + h / 2))
+                        ring.append(incoming.input)
+                        return Double(ring.read(count: n, sample: retained + h / 2))
                     }
                 default: preconditionFailure("Unexpected framing operation")
                 }
