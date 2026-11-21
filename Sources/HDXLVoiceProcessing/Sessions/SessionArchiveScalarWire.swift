@@ -21,6 +21,7 @@ enum SessionArchiveScalarWire {
         .normalizedAmplitudeSeconds, .normalizedSquaredAmplitudeSecondsSquared,
         .inverseSeconds, .inverseSecondsSquared, .decibelsRatio, .decibelsFullScale,
         .decibelsSPL, .decibelsPerOctave, .decibelsPerHertz, .fraction, .percent, .dimensionless,
+        .normalizedSquaredAmplitudePerHertz,
     ]
 
     static func encode(

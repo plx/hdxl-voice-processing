@@ -115,6 +115,9 @@ func sessionTestMeasurement(
     #expect(Set(SessionArchiveScalarWire.reasons) == Set(UnavailabilityReason.allCases))
     #expect(Set(SessionArchiveScalarWire.tags) == Set(MaskTag.allCases))
     #expect(Set(SessionArchiveScalarWire.units) == Set(MeasurementUnit.allCases))
+    #expect(SessionArchiveScalarWire.units.firstIndex(of: .dimensionless) == 16)
+    #expect(
+        SessionArchiveScalarWire.units.firstIndex(of: .normalizedSquaredAmplitudePerHertz) == 17)
 }
 
 @Test func sessionScalarRejectsMalformedFieldsBeforeReturningAValue() throws {

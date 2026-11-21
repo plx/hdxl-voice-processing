@@ -274,6 +274,8 @@ extension SpectralProductTests {
     @Test func boundedRollingRetentionSourceIndependenceAndPeakPreservation() throws {
         let profile = try layout(length: 4, hop: 4, fft: 4)
         let ring = try RollingSpectralProducts(layout: profile, capacity: 4)
+        #expect(ring.snapshot().configuration == .spectrogram(profile))
+        #expect(ring.snapshot().columns.isEmpty)
         #expect(throws: ContractError.intermediateBudgetExceeded) {
             try RollingSpectralProducts(layout: profile, capacity: 30_001)
         }
@@ -318,7 +320,11 @@ extension SpectralProductTests {
             do {
                 try ring.append(row)
                 try canonical.append(row)
-                #expect(try export.owned(row) == canonical.frames.last)
+                let slice = try export.slice(row)
+                #expect(slice.frame == canonical.frames.last)
+                #expect(
+                    slice.quefrency == export.quefrency && slice.powerUnit == .inverseSecondsSquared
+                )
             } catch { Issue.record(error) }
         }
         _ = try signal.withUnsafeBufferPointer {
@@ -336,6 +342,22 @@ extension SpectralProductTests {
         #expect(
             display.availableFrameCount == 2 && display.unavailableFrames[.insufficientData] == 1)
         #expect(try JSONEncoder().encode(result).count > 0)
+    }
+
+    @Test func replayCannotAppendAfterAnExportedPartialTail() throws {
+        let profile = try layout()
+        let (ended, _) = try analyze(.init(repeating: 0.25, count: 68), profile)
+        let (longer, _) = try analyze(.init(repeating: 0.25, count: 192), profile)
+        let ltas = try LongTermSpectrumAccumulator(layout: profile, epoch: epoch)
+        let ring = try RollingSpectralProducts(layout: profile, capacity: 2)
+        for row in ended {
+            try ltas.append(row)
+            try ring.append(row)
+        }
+        #expect(throws: FramingError.unexpectedInterval) { try ltas.append(longer[2]) }
+        #expect(throws: FramingError.unexpectedInterval) { try ring.append(longer[2]) }
+        #expect(ring.evictedCount == 0)
+        #expect(try ltas.snapshot(observedSource: source(0, 68)).measuredFrames == 1)
     }
 
     @Test func decodedSpectralFramesRejectCorruptGridWeightsAndEnergy() throws {

@@ -28,7 +28,7 @@ public struct SpectralFrameInfo: Sendable, Hashable, Codable {
         guard source.sampleRate == layout.framing.window.sampleRate, start == source.startSample,
             source.sampleCount > 0, source.sampleCount <= Int64(layout.framing.window.sampleCount),
             (0...source.sampleCount).contains(newlyCoveredSamples),
-            complete || status == .unavailable(.insufficientData),
+            complete == (status != .unavailable(.insufficientData)),
             status.isMeasured
                 ? (newlyCoveredSamples > 0
                     && weight == (layout.weighting == .equalFrames ? 1 : newlyCoveredSamples))

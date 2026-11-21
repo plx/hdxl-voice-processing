@@ -153,7 +153,7 @@ Unit codes are fixed:
 | 5 | normalizedAmplitudeSeconds | 14 | fraction |
 | 6 | normalizedSquaredAmplitudeSecondsSquared | 15 | percent |
 | 7 | inverseSeconds | 16 | dimensionless |
-| 8 | inverseSecondsSquared | | |
+| 8 | inverseSecondsSquared | 17 | normalizedSquaredAmplitudePerHertz |
 
 ## Media and replay records
 

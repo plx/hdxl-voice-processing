@@ -8,6 +8,7 @@ public enum SpectralWeighting: String, Sendable, Codable {
 
 /// Uniform zero-origin grid. Indices beyond count have no measured value.
 public struct SpectralProductAxis: Sendable, Hashable, Codable {
+    public let origin: Double
     public let count: Int
     public let step: Double
     public let unit: MeasurementUnit
@@ -16,6 +17,7 @@ public struct SpectralProductAxis: Sendable, Hashable, Codable {
         guard count > 0, step.isFinite, step > 0, (Double(count - 1) * step).isFinite,
             unit == .hertz || unit == .seconds
         else { throw ContractError.invalidConfiguration }
+        self.origin = 0
         self.count = count
         self.step = step
         self.unit = unit
@@ -25,9 +27,12 @@ public struct SpectralProductAxis: Sendable, Hashable, Codable {
         (0..<count).contains(index) ? Double(index) * step : nil
     }
 
-    private enum CodingKeys: String, CodingKey, CaseIterable { case count, step, unit }
+    private enum CodingKeys: String, CodingKey, CaseIterable { case origin, count, step, unit }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
+        guard try c.decode(Double.self, forKey: .origin) == 0 else {
+            throw ContractError.invalidConfiguration
+        }
         try self.init(
             count: c.decode(Int.self, forKey: .count), step: c.decode(Double.self, forKey: .step),
             unit: c.decode(MeasurementUnit.self, forKey: .unit))

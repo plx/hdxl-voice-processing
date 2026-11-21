@@ -41,6 +41,7 @@ public final class LongTermSpectrumAccumulator {
     private var previousEnd: Int64
     private var lastMeasuredEnd: Int64
     private var hasEnergy = false
+    private var receivedPartialTail = false
 
     public init(
         layout: SpectrogramLayout, epoch: StreamEpoch, startSample: Int64 = 0,
@@ -74,7 +75,8 @@ public final class LongTermSpectrumAccumulator {
         guard rowLayout == layout, info.selectionProfile == selectionProfile else {
             throw ContractError.invalidFingerprint
         }
-        guard info.source.epoch == epoch, info.epochStartSample == startSample,
+        guard !receivedPartialTail, info.source.epoch == epoch,
+            info.epochStartSample == startSample,
             previousIndex.map({ $0 < info.frameIndex }) ?? true
         else { throw FramingError.unexpectedInterval }
         let source = info.source
@@ -110,6 +112,7 @@ public final class LongTermSpectrumAccumulator {
         } else if case .unavailable(let reason) = info.status {
             unavailable[reason, default: 0] += 1
         }
+        receivedPartialTail = info.status == .unavailable(.insufficientData)
         previousIndex = info.frameIndex
         previousEnd = max(previousEnd, source.endSample)
     }

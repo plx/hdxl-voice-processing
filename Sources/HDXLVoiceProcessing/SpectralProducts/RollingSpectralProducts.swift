@@ -35,7 +35,8 @@ public enum SpectralProductColumn: Sendable, Hashable, Encodable {
         guard frameIndex > previous.frameIndex else { return false }
         switch (previous, self) {
         case (.spectrum(let a), .spectrum(let b)):
-            return a.info.epochStartSample == b.info.epochStartSample
+            return a.info.status != .unavailable(.insufficientData)
+                && a.info.epochStartSample == b.info.epochStartSample
                 && a.info.source.epoch == b.info.source.epoch
                 && a.info.selectionProfile == b.info.selectionProfile
         case (.powerCepstrum(let a), .powerCepstrum(let b)):
@@ -62,7 +63,13 @@ public struct SpectralDisplayColumn: Sendable, Hashable, Encodable {
     public let linearPower: [Double]
 }
 
+public enum SpectralProductConfiguration: Sendable, Hashable, Encodable {
+    case spectrogram(SpectrogramLayout)
+    case powerCepstrogram(CepstrogramConfiguration)
+}
+
 public struct SpectralProductSnapshot: Sendable, Hashable, Encodable {
+    public let configuration: SpectralProductConfiguration
     public let profile: ProfileIdentity
     public let axis: SpectralProductAxis
     public let powerUnit: MeasurementUnit
@@ -126,6 +133,7 @@ public struct SpectralProductSnapshot: Sendable, Hashable, Encodable {
 /// Evicts the oldest owned column at capacity. Snapshotting copies the chronological list;
 /// its immutable rows can outlive the ring. Allocation occurs on the analysis worker.
 public final class RollingSpectralProducts {
+    public let configuration: SpectralProductConfiguration
     public let capacity: Int
     public let axis: SpectralProductAxis
     public let powerUnit: MeasurementUnit
@@ -141,7 +149,8 @@ public final class RollingSpectralProducts {
         layout: SpectrogramLayout, capacity: Int, diagnosticMode: RuntimeDiagnosticMode = .disabled
     ) throws {
         try self.init(
-            axis: layout.frequency, powerUnit: layout.powerUnit, profile: layout.profile,
+            configuration: .spectrogram(layout), axis: layout.frequency,
+            powerUnit: layout.powerUnit, profile: layout.profile,
             cepstrum: nil, capacity: capacity, diagnosticMode: diagnosticMode)
     }
     public convenience init(
@@ -150,17 +159,20 @@ public final class RollingSpectralProducts {
     ) throws {
         let exporter = try PowerCepstrogramExporter(configuration: configuration)
         try self.init(
-            axis: exporter.quefrency, powerUnit: exporter.unit, profile: exporter.profile,
+            configuration: .powerCepstrogram(configuration), axis: exporter.quefrency,
+            powerUnit: exporter.unit, profile: exporter.profile,
             cepstrum: exporter, capacity: capacity, diagnosticMode: diagnosticMode)
     }
     private init(
-        axis: SpectralProductAxis, powerUnit: MeasurementUnit, profile: ProfileIdentity,
+        configuration: SpectralProductConfiguration, axis: SpectralProductAxis,
+        powerUnit: MeasurementUnit, profile: ProfileIdentity,
         cepstrum: PowerCepstrogramExporter?,
         capacity: Int, diagnosticMode: RuntimeDiagnosticMode
     ) throws {
         guard (1...30_000).contains(capacity), capacity <= 16_777_216 / axis.count else {
             throw ContractError.intermediateBudgetExceeded
         }
+        self.configuration = configuration
         self.axis = axis
         self.powerUnit = powerUnit
         self.profile = profile
@@ -219,7 +231,7 @@ public final class RollingSpectralProducts {
             let oldest = count < capacity ? 0 : next
             let columns = (0..<count).map { slots[(oldest + $0) % capacity]! }
             return SpectralProductSnapshot(
-                profile: profile, axis: axis, powerUnit: powerUnit,
+                configuration: configuration, profile: profile, axis: axis, powerUnit: powerUnit,
                 capacity: capacity, evictedCount: evictedCount, columns: columns)
         }
     }
