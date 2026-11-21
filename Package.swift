@@ -11,6 +11,11 @@ let package = Package(
         .library(
             name: "HDXLVoiceProcessingVisualization", targets: ["HDXLVoiceProcessingVisualization"]),
     ],
+    traits: [
+        .trait(
+            name: "KernelBenchmarkAccess",
+            description: "Expose isolated DSP stages to the development benchmark harness")
+    ],
     targets: [
         .executableTarget(
             name: "PulseStageProbe", dependencies: ["HDXLVoiceProcessing"],

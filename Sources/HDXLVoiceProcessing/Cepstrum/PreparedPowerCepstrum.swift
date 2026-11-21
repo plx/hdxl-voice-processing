@@ -167,10 +167,9 @@ public final class PreparedPowerCepstrum {
                 context: context, unavailability: reason, stages: storage))
     }
 
-    private func transform(_ input: UnsafeBufferPointer<Double>) -> UnavailabilityReason? {
-        let c = configuration
-        let s = storage
-        guard input.count == c.frameLength else { return .insufficientData }
+    private static func removeMean(
+        _ input: UnsafeBufferPointer<Double>, into output: UnsafeMutableBufferPointer<Double>
+    ) -> Bool? {
         // Neumaier compensation in the working precision. An overflow is explicitly
         // unavailable; it cannot silently become a finite or all-zero cepstrum.
         var sum: Double = 0
@@ -183,11 +182,47 @@ public final class PreparedPowerCepstrum {
             sum = next
         }
         let mean = (sum + correction) / Double(input.count)
-        guard mean.isFinite else { return .analysisFailure }
+        guard mean.isFinite else { return nil }
         for i in input.indices {
-            s.windowed[i] = input[i] - mean
-            guard s.windowed[i].isFinite else { return .analysisFailure }
+            output[i] = input[i] - mean
+            guard output[i].isFinite else { return nil }
         }
+        return isZero
+    }
+
+    private func writeLogPower(isZero: Bool) -> UnavailabilityReason? {
+        let s = storage
+        let c = configuration
+        for k in 0..<c.binCount {
+            let operand = Double(s.powerSpectrum[k]) + (k == c.binCount - 1 ? 0 : 1e-300)
+            guard operand > 0 else { return isZero ? .silence : .analysisFailure }
+            let value = Double(log(operand))
+            guard value.isFinite else { return .analysisFailure }
+            s.logPowerSpectrum[k] = value
+            s.bins[k] = FourierBin(real: value)
+            s.validLog += 1
+        }
+        return nil
+    }
+
+    private func writeSignedCepstrum() throws -> UnavailabilityReason? {
+        let s = storage
+        let c = configuration
+        try s.fft.inverseReal(UnsafeBufferPointer(s.bins), into: s.inverse)
+        for k in 0..<c.binCount {
+            let value = s.inverse[k] * Double(c.sampleRate)
+            guard value.isFinite else { return .analysisFailure }
+            s.signedCepstrum[k] = value
+            s.validSigned += 1
+        }
+        return nil
+    }
+
+    private func transform(_ input: UnsafeBufferPointer<Double>) -> UnavailabilityReason? {
+        let c = configuration
+        let s = storage
+        guard input.count == c.frameLength else { return .insufficientData }
+        guard let isZero = Self.removeMean(input, into: s.windowed) else { return .analysisFailure }
         do {
             _ = try s.window.write(
                 UnsafeBufferPointer(rebasing: s.windowed[0..<input.count]),
@@ -211,22 +246,8 @@ public final class PreparedPowerCepstrum {
                 s.powerSpectrum[k] = power
                 s.validPower += 1
             }
-            for k in 0..<c.binCount {
-                let operand = Double(s.powerSpectrum[k]) + (k == c.binCount - 1 ? 0 : 1e-300)
-                guard operand > 0 else { return isZero ? .silence : .analysisFailure }
-                let value = Double(log(operand))
-                guard value.isFinite else { return .analysisFailure }
-                s.logPowerSpectrum[k] = value
-                s.bins[k] = FourierBin(real: value)
-                s.validLog += 1
-            }
-            try s.fft.inverseReal(UnsafeBufferPointer(s.bins), into: s.inverse)
-            for k in 0..<c.binCount {
-                let value = s.inverse[k] * Double(c.sampleRate)
-                guard value.isFinite else { return .analysisFailure }
-                s.signedCepstrum[k] = value
-                s.validSigned += 1
-            }
+            if let reason = writeLogPower(isZero: isZero) { return reason }
+            if let reason = try writeSignedCepstrum() { return reason }
             for k in 0..<c.binCount {
                 let value = s.signedCepstrum[k] * s.signedCepstrum[k]
                 guard value.isFinite else { return .analysisFailure }
@@ -237,3 +258,44 @@ public final class PreparedPowerCepstrum {
         } catch { return .analysisFailure }
     }
 }
+
+#if KernelBenchmarkAccess
+    extension PreparedPowerCepstrum {
+        public func removeMeanForBenchmark(_ input: UnsafeBufferPointer<Double>, at index: Int)
+            -> Double?
+        {
+            precondition(input.count == configuration.frameLength && input.indices.contains(index))
+            guard Self.removeMean(input, into: storage.windowed) != nil else { return nil }
+            return storage.windowed[index]
+        }
+
+        public func loadPowerForBenchmark(_ input: UnsafeBufferPointer<Double>) {
+            precondition(input.count == configuration.binCount)
+            storage.powerSpectrum.baseAddress!.update(from: input.baseAddress!, count: input.count)
+        }
+
+        public func loadLogSpectrumForBenchmark(_ input: UnsafeBufferPointer<Double>) {
+            precondition(input.count == configuration.binCount)
+            for i in input.indices { storage.bins[i] = FourierBin(real: input[i]) }
+        }
+
+        public func inverseCepstrumForBenchmark(at index: Int) throws -> Double? {
+            precondition(storage.signedCepstrum.indices.contains(index))
+            storage.validSigned = 0
+            guard try writeSignedCepstrum() == nil else { return nil }
+            return storage.signedCepstrum[index]
+        }
+
+        public func logPowerSampleForBenchmark(at index: Int) -> Double {
+            precondition((0..<storage.validLog).contains(index))
+            return storage.logPowerSpectrum[index]
+        }
+
+        public func logPowerForBenchmark(at index: Int, isZero: Bool) -> Double? {
+            precondition(storage.powerSpectrum.indices.contains(index))
+            storage.validLog = 0
+            guard writeLogPower(isZero: isZero) == nil else { return nil }
+            return storage.logPowerSpectrum[index]
+        }
+    }
+#endif

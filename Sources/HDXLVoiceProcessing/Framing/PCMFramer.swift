@@ -255,3 +255,29 @@ public final class PCMFramer<Sample: BinaryFloatingPoint & Sendable> {
         }
     }
 }
+
+#if KernelBenchmarkAccess
+    /// Development-only access to the same ring and emission buffer owned by PCMFramer.
+    public final class KernelBenchmarkRing<Sample: BinaryFloatingPoint & Sendable> {
+        private let storage: FramerStorage<Sample>
+
+        public init(_ window: WindowSpecification) throws { storage = try FramerStorage(window) }
+
+        public func resetCursor(to position: Int) {
+            precondition((0..<storage.capacity).contains(position))
+            storage.cursor = position
+        }
+
+        public func append(_ samples: UnsafeBufferPointer<Sample>) { storage.append(samples) }
+
+        public func read(count: Int, sample index: Int) -> Sample {
+            precondition((1...storage.capacity).contains(count) && (0..<count).contains(index))
+            return storage.borrowSuffix(count: count)[index]
+        }
+
+        public func storedSample(at index: Int) -> Sample {
+            precondition((0..<storage.capacity).contains(index))
+            return storage.ring[index]
+        }
+    }
+#endif
