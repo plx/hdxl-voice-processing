@@ -19,6 +19,8 @@ The [shared scheduler matrix](../Tools/Scheduling/README.md) adds 20 explicit li
 compositions with direct native-kernel reference checks, source coverage, reset/replay,
 stereo layouts and separate whole-interval/preview conditioning.
 
+The isolated DSP kernel matrix measures framing, buffer reuse, channel conversion, conditioning, Fourier, cepstrum and CPP stages. Its paired runs share one calibrated workload plan and export a per-operation table. [DSP kernel benchmarks](../Tools/Kernels/README.md)
+
 ## One-command modes
 
 From the repository root with Xcode 27.0 (27A266a), Swift 6.4 and Python 3.14.8:

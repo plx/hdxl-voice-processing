@@ -316,3 +316,22 @@ private func compensatedAdd(_ value: Double, sum: inout Double, correction: inou
     correction += abs(sum) >= abs(value) ? (sum - next) + value : (value - next) + sum
     sum = next
 }
+
+#if KernelBenchmarkAccess
+    extension PreparedCPP {
+        public func loadDecibelsForBenchmark(_ input: UnsafeBufferPointer<Double>) {
+            precondition(!busy && layout.unavailability == nil && input.count == db.count)
+            db.baseAddress!.update(from: input.baseAddress!, count: input.count)
+        }
+
+        public func fitForBenchmark() -> (slope: Double, intercept: Double) {
+            precondition(!busy && layout.unavailability == nil)
+            return fit()
+        }
+
+        public func peakForBenchmark() -> (q: Double, db: Double, tie: Bool) {
+            precondition(!busy && layout.unavailability == nil)
+            return findPeak()
+        }
+    }
+#endif

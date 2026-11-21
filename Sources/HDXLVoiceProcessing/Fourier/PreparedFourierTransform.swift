@@ -71,10 +71,7 @@ public final class PreparedFourierTransform<Sample: BinaryFloatingPoint & Sendab
             throw FourierError.invalidBufferSize
         }
         for x in input where !x.isFinite { throw FourierError.nonfiniteInput }
-        for i in 0..<n / 2 {
-            real[i] = 2 * i < input.count ? input[2 * i] : 0
-            imaginary[i] = 2 * i + 1 < input.count ? input[2 * i + 1] : 0
-        }
+        packReal(input)
         run(realTransform: true, inverse: false)
         // vDSP's real forward result is twice the conventional DFT.
         for i in 0..<n / 2 {
@@ -174,6 +171,13 @@ public final class PreparedFourierTransform<Sample: BinaryFloatingPoint & Sendab
         for i in 0..<n { output[i] = FourierBin(real: real[i], imaginary: imaginary[i]) }
     }
 
+    private func packReal(_ input: UnsafeBufferPointer<Sample>) {
+        for i in 0..<configuration.length / 2 {
+            real[i] = 2 * i < input.count ? input[2 * i] : 0
+            imaginary[i] = 2 * i + 1 < input.count ? input[2 * i + 1] : 0
+        }
+    }
+
     private func validate(_ input: UnsafeBufferPointer<FourierBin<Sample>>) throws {
         for z in input where !z.real.isFinite || !z.imaginary.isFinite {
             throw FourierError.nonfiniteInput
@@ -206,3 +210,25 @@ public final class PreparedFourierTransform<Sample: BinaryFloatingPoint & Sendab
         }
     }
 }
+
+#if KernelBenchmarkAccess
+    extension PreparedFourierTransform {
+        public func packRealForBenchmark(_ input: UnsafeBufferPointer<Sample>, at index: Int)
+            -> (even: Sample, odd: Sample)
+        {
+            precondition((1...configuration.length).contains(input.count))
+            packReal(input)
+            return packedPairForBenchmark(at: index)
+        }
+
+        public func resetPackedPairsForBenchmark(to value: Sample) {
+            real.update(repeating: value, count: configuration.length / 2)
+            imaginary.update(repeating: value, count: configuration.length / 2)
+        }
+
+        public func packedPairForBenchmark(at index: Int) -> (even: Sample, odd: Sample) {
+            precondition((0..<(configuration.length / 2)).contains(index))
+            return (real[index], imaginary[index])
+        }
+    }
+#endif

@@ -83,3 +83,31 @@ struct LevelCompensatedSum {
         !reliable || !value.isFinite || value <= 32 * Double.ulpOfOne * absoluteUpdates
     }
 }
+
+#if KernelBenchmarkAccess
+    public struct KernelBenchmarkFilter {
+        private var filter: LevelKFilter
+
+        public init(sampleRate: Int) throws {
+            filter = try LevelKFilter(KWeightingCoefficients(sampleRate: sampleRate))
+        }
+
+        public var shelfGain: Double { filter.shelf.coefficients.b0 }
+        public mutating func reset() { filter.reset() }
+
+        public mutating func apply<Sample: BinaryFloatingPoint>(
+            _ input: UnsafeBufferPointer<Sample>, into output: UnsafeMutableBufferPointer<Double>
+        ) throws {
+            precondition(input.count == output.count)
+            for i in input.indices { output[i] = try filter.process(Double(input[i])) }
+        }
+    }
+
+    public func benchmarkLevelReduction<Sample: BinaryFloatingPoint>(
+        _ input: UnsafeBufferPointer<Sample>
+    ) throws -> LevelEnergy {
+        var sum = LevelScaledSum()
+        for x in input { sum.append(Double(x)) }
+        return try sum.energy(sampleCount: input.count)
+    }
+#endif

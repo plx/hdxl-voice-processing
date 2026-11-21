@@ -6,6 +6,8 @@ let package = Package(
     name: "VoiceBenchmarks",
     platforms: [.macOS("27.0")],
     products: [
+        .executable(name: "DSPKernelBenchmarks", targets: ["DSPKernelBenchmarks"]),
+        .executable(name: "KernelWorkloadCheck", targets: ["KernelWorkloadCheck"]),
         .executable(name: "SWIPEPrimeBenchmarks", targets: ["SWIPEPrimeBenchmarks"]),
         .executable(name: "SWIPEPrimeWorkloadCheck", targets: ["SWIPEPrimeWorkloadCheck"]),
         .executable(name: "ShimmerBenchmarks", targets: ["ShimmerBenchmarks"]),
@@ -47,10 +49,16 @@ let package = Package(
     ],
     traits: [
         .trait(
-            name: "AllocationDiagnostics", description: "Enable malloc and ARC diagnostic metrics")
+            name: "AllocationDiagnostics", description: "Enable malloc and ARC diagnostic metrics"),
+        .trait(name: "KernelBenchmarks", description: "Measure individual production DSP kernels"),
     ],
     dependencies: [
-        .package(name: "HDXLVoiceProcessing", path: ".."),
+        .package(
+            name: "HDXLVoiceProcessing", path: "..",
+            traits: [
+                .trait(
+                    name: "KernelBenchmarkAccess", condition: .when(traits: ["KernelBenchmarks"]))
+            ]),
         .package(
             url: "https://github.com/ordo-one/benchmark.git", exact: "1.38.0",
             traits: [
@@ -59,6 +67,19 @@ let package = Package(
             ]),
     ],
     targets: [
+        .target(
+            name: "KernelWorkload",
+            dependencies: [
+                "FramingWorkload",
+                .product(name: "Benchmark", package: "benchmark"),
+                .product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing"),
+            ]),
+        .executableTarget(name: "KernelWorkloadCheck", dependencies: ["KernelWorkload"]),
+        .executableTarget(
+            name: "DSPKernelBenchmarks",
+            dependencies: ["KernelWorkload", .product(name: "Benchmark", package: "benchmark")],
+            path: "Benchmarks/DSPKernelBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .target(
             name: "SWIPEPrimeWorkload",
             dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),

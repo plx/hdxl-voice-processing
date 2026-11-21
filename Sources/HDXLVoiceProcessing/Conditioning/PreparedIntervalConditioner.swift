@@ -350,3 +350,38 @@ public final class PreparedIntervalConditioner<Sample: BinaryFloatingPoint & Sen
         storage = nil
     }
 }
+
+#if KernelBenchmarkAccess
+    /// The same prepared whole-interval workspace used at finish. Input restoration can be
+    /// placed outside the timer when measuring the in-place pre-emphasis stage alone.
+    public final class KernelBenchmarkConditioner<Sample: BinaryFloatingPoint & Sendable> {
+        private let storage: IntervalConditioningStorage<Sample>
+
+        public init(_ layout: IntervalConditioningLayout) throws {
+            guard
+                Sample.self == Float.self && layout.configuration.precision == .float32
+                    || Sample.self == Double.self && layout.configuration.precision == .float64
+            else { throw ConditioningError.precisionMismatch }
+            storage = try IntervalConditioningStorage(layout, diagnostics: WorkerDiagnostics())
+        }
+
+        public var scalarWorkspaceBytes: Int { storage.scalarWorkspaceBytes }
+
+        public func loadInput(_ samples: UnsafeBufferPointer<Sample>) {
+            precondition(samples.count == storage.input.count)
+            storage.input.baseAddress!.update(from: samples.baseAddress!, count: samples.count)
+        }
+
+        public func loadOutput(_ samples: UnsafeBufferPointer<Sample>) {
+            precondition(samples.count == storage.output.count)
+            storage.output.baseAddress!.update(from: samples.baseAddress!, count: samples.count)
+        }
+
+        public func resample() throws { try storage.resample() }
+        public func preEmphasize() throws { try storage.preEmphasize() }
+        public func output(at index: Int) -> Sample {
+            precondition(storage.output.indices.contains(index))
+            return storage.output[index]
+        }
+    }
+#endif

@@ -239,32 +239,10 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             while consumed < Int(interval.sampleCount), state == .prepared {
                 let amount = min(
                     sourceTileCapacity - tileCount, Int(interval.sampleCount) - consumed)
-                for frame in 0..<amount {
-                    if let channel = profile.channels.channelIndex {
-                        tile[tileCount + frame] = sampleAt(consumed + frame, channel)
-                    } else {
-                        var peak = 0.0
-                        for channel in 0..<channels {
-                            peak = max(peak, abs(Double(sampleAt(consumed + frame, channel))))
-                        }
-                        var sum = 0.0
-                        var correction = 0.0
-                        if peak > 0 {
-                            for channel in 0..<channels {
-                                let value = Double(sampleAt(consumed + frame, channel)) / peak
-                                let next = sum + value
-                                correction +=
-                                    abs(sum) >= abs(value)
-                                    ? (sum - next) + value : (value - next) + sum
-                                sum = next
-                            }
-                        }
-                        // The exact normalized mean lies within [-1, 1]. Clamp only
-                        // rounding beyond that bound before restoring extreme scale.
-                        let normalized = max(-1, min(1, (sum + correction) / Double(channels)))
-                        tile[tileCount + frame] = Sample(normalized * peak)
-                    }
-                }
+                Self.copyMono(
+                    amount: amount, inputOffset: consumed, channels: channels,
+                    selected: profile.channels.channelIndex, sampleAt: sampleAt,
+                    into: tile, outputOffset: tileCount)
                 consumed += amount
                 receivedSampleCount += Int64(amount)
                 tileCount += amount
@@ -276,6 +254,39 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         } catch {
             if state != .cancelled { state = .failed }
             throw error
+        }
+    }
+
+    private static func copyMono(
+        amount: Int, inputOffset: Int, channels: Int, selected: Int?,
+        sampleAt: (Int, Int) -> Sample, into output: UnsafeMutableBufferPointer<Sample>,
+        outputOffset: Int
+    ) {
+        for frame in 0..<amount {
+            if let channel = selected {
+                output[outputOffset + frame] = sampleAt(inputOffset + frame, channel)
+            } else {
+                var peak = 0.0
+                for channel in 0..<channels {
+                    peak = max(peak, abs(Double(sampleAt(inputOffset + frame, channel))))
+                }
+                var sum = 0.0
+                var correction = 0.0
+                if peak > 0 {
+                    for channel in 0..<channels {
+                        let value = Double(sampleAt(inputOffset + frame, channel)) / peak
+                        let next = sum + value
+                        correction +=
+                            abs(sum) >= abs(value)
+                            ? (sum - next) + value : (value - next) + sum
+                        sum = next
+                    }
+                }
+                // The exact normalized mean lies within [-1, 1]. Clamp only
+                // rounding beyond that bound before restoring extreme scale.
+                let normalized = max(-1, min(1, (sum + correction) / Double(channels)))
+                output[outputOffset + frame] = Sample(normalized * peak)
+            }
         }
     }
 
@@ -591,3 +602,17 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         tileCount = 0
     }
 }
+
+#if KernelBenchmarkAccess
+    extension PreparedAnalysisSchedule {
+        public static func copyMonoForBenchmark(
+            channels: Int, selected: Int?, sampleAt: (Int, Int) -> Sample,
+            into output: UnsafeMutableBufferPointer<Sample>
+        ) {
+            precondition(channels > 0 && selected.map { (0..<channels).contains($0) } != false)
+            copyMono(
+                amount: output.count, inputOffset: 0, channels: channels, selected: selected,
+                sampleAt: sampleAt, into: output, outputOffset: 0)
+        }
+    }
+#endif

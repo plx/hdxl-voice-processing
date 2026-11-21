@@ -58,6 +58,7 @@ before computing rates. Reports from before the contract are marked `legacy-unbo
 | Workload family | Case metadata and interpretation |
 | --- | --- |
 | Gain/energy and allocation controls | [Bootstrap](../Benchmarks/README.md) |
+| Isolated DSP kernels, buffer reuse and calibrated loop controls | [Kernel workload and reporting guide](../Tools/Kernels/README.md) |
 | Windowing, ordinary and whole-interval Fourier, conditioning, levels | [Framing](../Tools/Framing/README.md), [Fourier](../Tools/Fourier/README.md), [conditioning](../Tools/Conditioning/README.md), [levels](../Tools/Levels/README.md) |
 | Cepstrum, CPP and CPPS | [Cepstrum](../Tools/Cepstrum/README.md), [CPP](../Tools/CPP/README.md), [CPPS](../Tools/CPPS/README.md) |
 | Selection, F0 and harmonicity | [Masks](../Tools/Masks/README.md), [YIN](../Tools/YIN/README.md), [SWIPE-prime](../Tools/SWIPE/README.md), [HNR](../Tools/HNR/README.md) |
