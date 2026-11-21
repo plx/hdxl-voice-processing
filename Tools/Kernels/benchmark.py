@@ -13,6 +13,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import uuid
 
@@ -42,6 +43,21 @@ METRIC_NAMES = dict(
 )
 METRIC_NAMES.update(wallClock="Time (wall clock)", cpuTotal="Time (total CPU)")
 PREPARATION = {"fftPrepare", "filterPrepare", "resamplerPrepare"}
+BUILD_INPUTS = (
+    "Package.swift",
+    "Package.resolved",
+    "Sources",
+    "Benchmarks/Package.swift",
+    "Benchmarks/Package.resolved",
+    "Benchmarks/Sources",
+    "Benchmarks/Benchmarks",
+    "Tools/Kernels/benchmark.py",
+    "Tools/Kernels/profile.py",
+    "Tools/benchmark.py",
+    "Tools/ci.py",
+    "Tools/Performance/records.py",
+    "Configuration/build.json",
+)
 BOUNDARIES = {
     "control": "Empty non-inlined scalar call with loop, checksum and result consumption.",
     "ringWriteContiguous": "One full contiguous write into prepared frame storage and one scalar read.",
@@ -79,6 +95,41 @@ BOUNDARIES = {
 
 def write(path, data):
     path.write_text(json.dumps(data, indent=2, allow_nan=False) + "\n")
+
+
+def build_identity(root=ROOT):
+    # Read working files so two different uncommitted source trees have different identities.
+    names = subprocess.check_output(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z", "--", *BUILD_INPUTS],
+        cwd=root,
+    ).split(b"\x00")
+    digest = hashlib.sha256()
+    for name in sorted(set(filter(None, names))):
+        path = root / os.fsdecode(name)
+        if path.is_file():
+            digest.update(name + b"\x00" + hashlib.sha256(path.read_bytes()).digest())
+    return dict(
+        commit=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
+        buildInputsSHA256=digest.hexdigest(),
+        packageResolvedSHA256=framework.sha(root / "Benchmarks/Package.resolved"),
+        xcode=ci.capture("xcodebuild", "-version"),
+        swift=ci.capture("swift", "--version"),
+    )
+
+
+def verify_identity(expected, root=ROOT):
+    if build_identity(root) != expected:
+        raise ValueError("Build inputs, dependency resolution or toolchain changed during the paired run")
+
+
+def archive_percentiles(directory, destination):
+    # Store just the exported filenames and contents, without host account metadata.
+    with tarfile.open(destination, "w:gz", compresslevel=1) as archive:
+        for path in sorted(directory.glob("*.histogram.percentiles.tsv")):
+            member = tarfile.TarInfo(path.name)
+            member.size = path.stat().st_size
+            with path.open("rb") as data:
+                archive.addfile(member, data)
 
 
 def swift(mode):
@@ -319,8 +370,10 @@ def distributions(raw, records, mode, exported, baseline):
                     op = names[name]["workload"]["operation"]
                     if op not in PREPARATION | {"ownedWindow"} and maximum != 0:
                         raise ValueError(f"Allocated in prepared path {name} {metric}: maximum {maximum}")
-                    if op == "ownedWindow" and metric == "mallocCountTotal" and maximum == 0:
-                        raise ValueError(f"Owned output allocation was not observed for {name}")
+                    if op == "ownedWindow" and metric == "mallocCountTotal":
+                        width = names[name]["operationsPerBatch"]
+                        if hist["counts"][0] or hist["minNonZeroValue"] < width:
+                            raise ValueError(f"Fewer than {width} owned allocations in a batch for {name}")
             filename = f"{baseline}.{TARGET}.{raw_name}.{metric}.histogram.percentiles.tsv".replace(" ", "_")
             path = exported / filename
             lines = path.read_text().splitlines()
@@ -339,7 +392,7 @@ def distributions(raw, records, mode, exported, baseline):
     return summary, p99
 
 
-def measure(mode, root, plan_path, records, pinned):
+def measure(mode, root, plan_path, records, pinned, identity):
     output = root / ("kernels-" + mode)
     output.mkdir()
     lock = PACKAGE / "Package.resolved"
@@ -348,6 +401,8 @@ def measure(mode, root, plan_path, records, pinned):
     baseline = PACKAGE / ".benchmarkBaselines" / TARGET / base_name
     result = dict(schemaVersion=1, status="failed", mode=mode, commands=[])
     try:
+        verify_identity(identity)
+        flags = swift(mode)
         env = framework.measurement_environment(mode)
         if pinned:
             ci.validate_environment(env, json.loads((ROOT / "Configuration/build.json").read_bytes()))
@@ -356,6 +411,8 @@ def measure(mode, root, plan_path, records, pinned):
             frameworkScalingFactor=1,
             operations=BOUNDARIES,
             calibrationSHA256=framework.sha(plan_path),
+            buildIdentity=identity,
+            swiftPMArguments=[ci.redact(arg) for arg in flags],
             toolchainPolicy="pinned" if pinned else "development",
             packageResolvedSHA256=hashlib.sha256(resolution).hexdigest(),
             exportStatistic="Unscaled per-batch distribution. Division by batch size gives a mean within that batch.",
@@ -365,7 +422,6 @@ def measure(mode, root, plan_path, records, pinned):
         write(output / "environment.json", env)
         (output / "resolution.json").write_bytes(resolution)
         shutil.copyfile(plan_path, output / "workloads.json")
-        flags = swift(mode)
         plugin = [
             "swift",
             "package",
@@ -388,8 +444,10 @@ def measure(mode, root, plan_path, records, pinned):
             raw["machine"]["hostname"] = "<host>"
             with gzip.open(output / "raw-baseline.json.gz", "wt") as stream:
                 json.dump(raw, stream, separators=(",", ":"), allow_nan=False)
+            result["rawBaselineSHA256"] = framework.sha(output / "raw-baseline.json.gz")
             binary = Path(ci.capture("swift", "build", *flags, "--show-bin-path")) / TARGET
             result["binary"] = framework.inspect_binary(binary, mode)
+            result["binary"]["sha256"] = framework.sha(binary)
             with tempfile.TemporaryDirectory(dir=output) as temp:
                 run(
                     [
@@ -404,6 +462,10 @@ def measure(mode, root, plan_path, records, pinned):
                     ]
                 )
                 distribution, p99 = distributions(raw, records, mode, Path(temp), base_name)
+                archive = output / "framework-percentiles.tar.gz"
+                archive_percentiles(Path(temp), archive)
+                result["frameworkPercentilesSHA256"] = framework.sha(archive)
+            verify_identity(identity)
             write(output / "distributions.json", distribution)
             write(output / "p99.json", p99)
             result.update(
@@ -442,6 +504,8 @@ def table(path, records, timing, allocation):
         "batchP99ns",
         "meanNsPerOperationInP50Batch",
         "meanNsPerUnitInP50Batch",
+        "operationsPerSecondInP50Batch",
+        "unitsPerSecondInP50Batch",
         "maxMallocCountPerBatch",
         "maxMallocBytesPerBatch",
         "maxObjectsPerBatch",
@@ -458,6 +522,7 @@ def table(path, records, timing, allocation):
             alloc = allocation[name]
             kind, count = unit(r["workload"], r)
             avg = measure["p50"] / batch
+            throughput = 1e9 / avg if avg else None
             writer.writerow(
                 dict(
                     case=name,
@@ -475,6 +540,8 @@ def table(path, records, timing, allocation):
                     batchP99ns=measure["p99"],
                     meanNsPerOperationInP50Batch=avg,
                     meanNsPerUnitInP50Batch=avg / count if count else None,
+                    operationsPerSecondInP50Batch=throughput,
+                    unitsPerSecondInP50Batch=throughput * count if throughput and count else None,
                     maxMallocCountPerBatch=alloc["mallocCountTotal"]["maximum"],
                     maxMallocBytesPerBatch=alloc["mallocBytesCount"]["maximum"],
                     maxObjectsPerBatch=alloc["objectAllocCount"]["maximum"],
@@ -506,6 +573,7 @@ def main():
     root.mkdir(parents=True)
     print(f"Kernel evidence directory {root}", flush=True)
     plan = root / "calibration.json"
+    identity = build_identity()
     common = swift("timing")
     with (root / "calibration.log").open("w") as log:
         ci.run_command(["swift", "build", *common, "--product", "KernelWorkloadCheck"], log, [])
@@ -514,9 +582,12 @@ def main():
         subprocess.run([binary], stdout=out, check=True)
     records = json.loads(plan.read_bytes())
     validate_plan(records)
+    verify_identity(identity)
+    write(root / "calibration-build.json", dict(buildIdentity=identity, checkerSHA256=framework.sha(binary)))
     os.environ["HDXL_KERNEL_PLAN"] = str(plan)
-    clean = measure("timing", root, plan, records, not opts.development_toolchain)
-    diagnostics = measure("allocation", root, plan, records, not opts.development_toolchain)
+    clean = measure("timing", root, plan, records, not opts.development_toolchain, identity)
+    diagnostics = measure("allocation", root, plan, records, not opts.development_toolchain, identity)
+    verify_identity(identity)
     table(root / "kernels.csv", records, clean, diagnostics)
     write(
         root / "result.json",
@@ -524,6 +595,7 @@ def main():
             status="passed",
             cases=len(records),
             calibrationSHA256=framework.sha(plan),
+            calibrationBuildSHA256=framework.sha(root / "calibration-build.json"),
             tableSHA256=framework.sha(root / "kernels.csv"),
             timingResultSHA256=framework.sha(root / "kernels-timing/result.json"),
             allocationResultSHA256=framework.sha(root / "kernels-allocation/result.json"),

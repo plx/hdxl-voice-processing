@@ -264,35 +264,36 @@ public final class PreparedPowerCepstrum {
         public func removeMeanForBenchmark(_ input: UnsafeBufferPointer<Double>, at index: Int)
             -> Double?
         {
-            precondition(input.count == configuration.frameLength && input.indices.contains(index))
+            precondition(
+                !busy && input.count == configuration.frameLength && input.indices.contains(index))
             guard Self.removeMean(input, into: storage.windowed) != nil else { return nil }
             return storage.windowed[index]
         }
 
         public func loadPowerForBenchmark(_ input: UnsafeBufferPointer<Double>) {
-            precondition(input.count == configuration.binCount)
+            precondition(!busy && input.count == configuration.binCount)
             storage.powerSpectrum.baseAddress!.update(from: input.baseAddress!, count: input.count)
         }
 
         public func loadLogSpectrumForBenchmark(_ input: UnsafeBufferPointer<Double>) {
-            precondition(input.count == configuration.binCount)
+            precondition(!busy && input.count == configuration.binCount)
             for i in input.indices { storage.bins[i] = FourierBin(real: input[i]) }
         }
 
         public func inverseCepstrumForBenchmark(at index: Int) throws -> Double? {
-            precondition(storage.signedCepstrum.indices.contains(index))
+            precondition(!busy && storage.signedCepstrum.indices.contains(index))
             storage.validSigned = 0
             guard try writeSignedCepstrum() == nil else { return nil }
             return storage.signedCepstrum[index]
         }
 
         public func logPowerSampleForBenchmark(at index: Int) -> Double {
-            precondition((0..<storage.validLog).contains(index))
+            precondition(!busy && (0..<storage.validLog).contains(index))
             return storage.logPowerSpectrum[index]
         }
 
         public func logPowerForBenchmark(at index: Int, isZero: Bool) -> Double? {
-            precondition(storage.powerSpectrum.indices.contains(index))
+            precondition(!busy && storage.powerSpectrum.indices.contains(index))
             storage.validLog = 0
             guard writeLogPower(isZero: isZero) == nil else { return nil }
             return storage.logPowerSpectrum[index]

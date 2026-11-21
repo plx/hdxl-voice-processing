@@ -48,6 +48,7 @@
                 observed = try trial.run()
                 let elapsed = DispatchTime.now().uptimeNanoseconds - start
                 if repeatIndex >= 2 { samples.append(elapsed) }
+                try trial.checkOutput()
                 try Self.check(observed, expected: trial.expected, item: item)
             }
             verifiedSample = observed
@@ -102,6 +103,7 @@
             return checksum
         }
         public func verify(_ checksum: Double) throws {
+            for trial in trials { try trial.checkOutput() }
             try KernelRecord.check(
                 checksum / Double(record.operationsPerBatch), expected: record.expectedSample,
                 item: record.workload)

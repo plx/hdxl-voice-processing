@@ -217,8 +217,17 @@ public final class PreparedFourierTransform<Sample: BinaryFloatingPoint & Sendab
             -> (even: Sample, odd: Sample)
         {
             precondition((1...configuration.length).contains(input.count))
-            precondition((0..<(configuration.length / 2)).contains(index))
             packReal(input)
+            return packedPairForBenchmark(at: index)
+        }
+
+        public func resetPackedPairsForBenchmark(to value: Sample) {
+            real.update(repeating: value, count: configuration.length / 2)
+            imaginary.update(repeating: value, count: configuration.length / 2)
+        }
+
+        public func packedPairForBenchmark(at index: Int) -> (even: Sample, odd: Sample) {
+            precondition((0..<(configuration.length / 2)).contains(index))
             return (real[index], imaginary[index])
         }
     }

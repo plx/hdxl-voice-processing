@@ -1,7 +1,10 @@
 import csv
+import subprocess
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from Tools.Kernels import benchmark as kernels
 from Tools.Kernels.profile import summarize
@@ -73,6 +76,55 @@ class KernelEvidenceTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.checked(raw, "allocation")
 
+    def test_every_owned_copy_must_allocate_even_in_the_lowest_observation(self):
+        self.record["workload"]["operation"] = "ownedWindow"
+        raw = self.capture("allocation")
+        measurement = next(m for m in raw["results"][1] if "mallocCountTotal" in m["metric"])
+        histogram = measurement["statistics"]["histogram"]
+        histogram.update(maxValue=12, minNonZeroValue=8, counts=[0, 20])
+        self.checked(raw, "allocation")
+        for minimum, counts in ((7, [0, 20]), (8, [1, 19])):
+            with self.subTest(minimum=minimum, counts=counts):
+                histogram.update(minNonZeroValue=minimum, counts=counts)
+                with self.assertRaisesRegex(ValueError, "owned allocations"):
+                    self.checked(raw, "allocation")
+
+    def test_full_percentile_exports_are_preserved_without_host_paths(self):
+        self.capture("timing")
+        target = self.directory / "framework-percentiles.tar.gz"
+        kernels.archive_percentiles(self.directory, target)
+        with tarfile.open(target) as archive:
+            self.assertEqual(set(archive.getnames()), {p.name for p in self.directory.glob("*.tsv")})
+            for m in archive.getmembers():
+                self.assertEqual(archive.extractfile(m).read(), (self.directory / m.name).read_bytes())
+                self.assertEqual((m.uname, m.gname), ("", ""))
+
+    def test_dirty_build_sources_and_dependency_changes_invalidate_a_pair(self):
+        root = self.directory
+
+        def git(*args):
+            subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
+
+        git("init", "--quiet")
+        lock = root / "Benchmarks/Package.resolved"
+        lock.parent.mkdir()
+        lock.write_text("pinned")
+        git("add", "Benchmarks/Package.resolved")
+        git("-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-qm", "initial")
+        source = root / "Sources/Kernel.swift"
+        source.parent.mkdir()
+        source.write_text("first")
+        with patch.object(kernels.ci, "capture", return_value="test toolchain"):
+            identity = kernels.build_identity(root)
+            kernels.verify_identity(identity, root)
+            source.write_text("second")
+            with self.assertRaisesRegex(ValueError, "Build inputs"):
+                kernels.verify_identity(identity, root)
+            source.write_text("first")
+            lock.write_text("changed")
+            with self.assertRaisesRegex(ValueError, "Build inputs"):
+                kernels.verify_identity(identity, root)
+
     def test_normalization_keeps_batch_tail_and_input_denominator(self):
         t, _ = self.checked(self.capture("timing"), "timing")
         a, _ = self.checked(self.capture("allocation"), "allocation")
@@ -83,6 +135,8 @@ class KernelEvidenceTests(unittest.TestCase):
         self.assertEqual(int(row["batchP99ns"]), 198)
         self.assertEqual(float(row["meanNsPerOperationInP50Batch"]), 100 / 8)
         self.assertEqual(float(row["meanNsPerUnitInP50Batch"]), 100 / (8 * 17))
+        self.assertEqual(float(row["operationsPerSecondInP50Batch"]), 8 * 1e9 / 100)
+        self.assertEqual(float(row["unitsPerSecondInP50Batch"]), 17 * 8 * 1e9 / 100)
         self.assertEqual(kernels.unit({"operation": "fftPrepare"}), (None, None))
         self.assertEqual(kernels.unit({"operation": "ringOverlap", "hop": 32}), ("new ingress sample", 32))
 
@@ -96,3 +150,6 @@ class KernelEvidenceTests(unittest.TestCase):
         self.assertEqual((result["sampledStacks"], result["attributedStacks"]), (2, 2))
         with self.assertRaises(ValueError):
             summarize(xml, "logPower")
+        xml.write_text(xml.read_text().replace("PreparedCPP.fit()", "PreparedCPP.fitForBenchmark()"))
+        with self.assertRaisesRegex(ValueError, "No target-process sampled stack"):
+            summarize(xml, "backgroundFit")

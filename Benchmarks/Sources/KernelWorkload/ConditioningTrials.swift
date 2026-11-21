@@ -1,4 +1,5 @@
 #if KernelBenchmarks
+    import Benchmark
     import Foundation
     import HDXLVoiceProcessing
 
@@ -12,7 +13,9 @@
             let worker = try KernelBenchmarkConditioner<S>(layout)
             if operation == .resamplerPrepare {
                 return KernelTrial(expected: Double(worker.scalarWorkspaceBytes)) {
-                    Double(try KernelBenchmarkConditioner<S>(layout).scalarWorkspaceBytes)
+                    let prepared = try KernelBenchmarkConditioner<S>(layout)
+                    blackHole(prepared)
+                    return Double(prepared.scalarWorkspaceBytes)
                 }
             }
             let mid = layout.outputSampleCount / 2
@@ -66,7 +69,9 @@
             let coefficients = try KWeightingCoefficients(sampleRate: sourceRate)
             if operation == .filterPrepare {
                 return KernelTrial(expected: coefficients.shelf.b0) {
-                    try KernelBenchmarkFilter(sampleRate: sourceRate).shelfGain
+                    let prepared = try KernelBenchmarkFilter(sampleRate: sourceRate)
+                    blackHole(prepared)
+                    return prepared.shelfGain
                 }
             }
             // Independent direct form I. The production filter uses transposed direct form II.

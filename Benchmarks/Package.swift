@@ -71,6 +71,7 @@ let package = Package(
             name: "KernelWorkload",
             dependencies: [
                 "FramingWorkload",
+                .product(name: "Benchmark", package: "benchmark"),
                 .product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing"),
             ]),
         .executableTarget(name: "KernelWorkloadCheck", dependencies: ["KernelWorkload"]),

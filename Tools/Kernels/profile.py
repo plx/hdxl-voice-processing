@@ -18,11 +18,14 @@ else:
     from Tools.Kernels import benchmark as kernels
 
 SYMBOLS = {
-    "meanRemoval": ("removeMean",),
-    "logPower": ("writeLogPower", "logPowerForBenchmark"),
-    "inverseCepstrum": ("writeSignedCepstrum", "inverseCepstrumForBenchmark", "inverseReal"),
-    "peakParabolic": ("PreparedCPP.findPeak", "PreparedCPP.peakFromSide", "peakForBenchmark"),
-    "backgroundFit": ("PreparedCPP.fit", "CPPSelection."),
+    "meanRemoval": ("PreparedPowerCepstrum.removeMean(",),
+    "logPower": ("PreparedPowerCepstrum.writeLogPower(",),
+    "inverseCepstrum": (
+        "PreparedPowerCepstrum.writeSignedCepstrum(",
+        "PreparedFourierTransform.inverseReal(",
+    ),
+    "peakParabolic": ("PreparedCPP.findPeak(", "PreparedCPP.peakFromSide("),
+    "backgroundFit": ("PreparedCPP.fit(", "CPPSelection.select(", "CPPSelection.median("),
 }
 
 
@@ -49,7 +52,7 @@ def summarize(xml, stage):
             image = resolved(frame.find("binary"))
             if image is not None and image.get("name") == "KernelWorkloadCheck":
                 symbols.append(frame.get("name", ""))
-        hits = {key for key in SYMBOLS[stage] if any(key in symbol for symbol in symbols)}
+        hits = {symbol for symbol in symbols if any(key in symbol for key in SYMBOLS[stage])}
         if hits:
             attributed += 1
             matched.update(hits)
@@ -63,13 +66,15 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
+    identity = kernels.build_identity()
     flags = kernels.swift("timing")
     subprocess.run(["swift", "build", *flags, "--product", "KernelWorkloadCheck"], check=True)
     binary = Path(kernels.ci.capture("swift", "build", *flags, "--show-bin-path")) / "KernelWorkloadCheck"
     report = dict(
         template="Time Profiler",
         binarySHA256=kernels.framework.sha(binary),
-        environment=kernels.ci.environment("release"),
+        buildIdentity=identity,
+        environment={**kernels.ci.environment("release"), "execution": "synthetic host profile"},
         hardwareModel=kernels.ci.capture("sysctl", "-n", "hw.model"),
         stages={},
     )
@@ -125,7 +130,8 @@ def main():
                 verifiedBatches=int(trial[2]),
                 operationsPerBatch=int(trial[3]),
             )
-            kernels.write(args.output / "attribution.json", report)
+    kernels.verify_identity(identity)
+    kernels.write(args.output / "attribution.json", report)
     print(args.output / "attribution.json")
 
 

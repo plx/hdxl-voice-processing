@@ -16,7 +16,8 @@
         /// Each in-place/stateful operation gets its original input or filter history before timing.
         var needsFreshInput: Bool {
             self == .windowInPlace || self == .preEmphasis || self == .filter
-                || self == .ringOverlap
+                || self == .ringOverlap || self == .ringWriteContiguous || self == .ringWriteWrapped
+                || self == .splitReal
         }
 
     }

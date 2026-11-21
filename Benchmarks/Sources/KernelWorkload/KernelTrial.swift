@@ -23,12 +23,16 @@
     public final class KernelTrial {
         public let expected: Double
         public let reset: () -> Void
+        let checkOutput: () throws -> Void
         public let run: () throws -> Double
 
-        init(expected: Double, reset: @escaping () -> Void = {}, run: @escaping () throws -> Double)
-        {
+        init(
+            expected: Double, reset: @escaping () -> Void = {},
+            checkOutput: @escaping () throws -> Void = {}, run: @escaping () throws -> Double
+        ) {
             self.expected = expected
             self.reset = reset
+            self.checkOutput = checkOutput
             self.run = run
         }
     }
@@ -105,7 +109,20 @@
                 ring.append(signal.input)
                 switch operation {
                 case .ringWriteWrapped, .ringWriteContiguous:
+                    let sentinel = Buffer(Array(repeating: S(2), count: n))
                     return KernelTrial(expected: Double(signal.values[mid])) {
+                        ring.append(sentinel.input)
+                    } checkOutput: {
+                        // Check both sides of the split, including a one-element segment.
+                        for i in [0, mid, n - 1, (n - offset) % n] {
+                            let actual = ring.storedSample(at: (offset + i) % n)
+                            guard actual == signal.values[i] else {
+                                throw KernelError.sample(
+                                    name, actual: Double(actual), expected: Double(signal.values[i])
+                                )
+                            }
+                        }
+                    } run: {
                         ring.append(signal.input)
                         return Double(ring.storedSample(at: (offset + mid) % n))
                     }

@@ -1,4 +1,5 @@
 #if KernelBenchmarks
+    import Benchmark
     import Foundation
     import HDXLVoiceProcessing
 
@@ -14,7 +15,9 @@
                 length: n, sampleRate: Double(sourceRate), precision: precision)
             if operation == .fftPrepare {
                 return KernelTrial(expected: Double(2 * n * MemoryLayout<S>.stride)) {
-                    Double(try PreparedFourierTransform<S>(config).scalarWorkspaceBytes)
+                    let prepared = try PreparedFourierTransform<S>(config)
+                    blackHole(prepared)
+                    return Double(prepared.scalarWorkspaceBytes)
                 }
             }
             let plan = try PreparedFourierTransform<S>(config)
@@ -26,9 +29,27 @@
             let time = Buffer(Array(repeating: S.zero, count: n))
             switch operation {
             case .splitReal:
-                return KernelTrial(expected: a) {
+                for i in 0..<m { input.values[i] = S(amplitude * Double(i % 7 + 1) / 8) }
+                let firstPair = Double(input.values[0]) + 2 * Double(input.values[1])
+                return KernelTrial(expected: firstPair) {
+                    plan.resetPackedPairsForBenchmark(to: -1)
+                } checkOutput: {
+                    for j in 0..<n / 2 {
+                        let pair = plan.packedPairForBenchmark(at: j)
+                        let even = 2 * j < m ? input.values[2 * j] : 0
+                        let odd = 2 * j + 1 < m ? input.values[2 * j + 1] : 0
+                        guard pair.even == even else {
+                            throw KernelError.sample(
+                                name, actual: Double(pair.even), expected: Double(even))
+                        }
+                        guard pair.odd == odd else {
+                            throw KernelError.sample(
+                                name, actual: Double(pair.odd), expected: Double(odd))
+                        }
+                    }
+                } run: {
                     let values = plan.packRealForBenchmark(input.input, at: 0)
-                    return Double(values.even) + Double(values.odd)
+                    return Double(values.even) + 2 * Double(values.odd)
                 }
             case .fftForward:
                 let phase = -2 * Double.pi * Double(k) / Double(n)
