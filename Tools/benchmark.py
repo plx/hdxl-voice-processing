@@ -15,6 +15,7 @@ import tempfile
 import uuid
 
 import ci
+from Performance.records import compilation_settings, system_state, write_index as write_workload_manifest
 
 ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "Benchmarks"
@@ -36,6 +37,8 @@ def validate_results(rows, mode):
             raise ValueError(f"Duplicate/invalid metric: {name}")
         if not math.isfinite(value) or value < 0 or not isinstance(row.get("unit"), str) or not row["unit"]:
             raise ValueError(f"Nonfinite/negative/untyped metric: {name}")
+        if " - Time (" in name and row["unit"] not in ("ns", "μs", "ms", "s"):
+            raise ValueError(f"Unexpected time unit: {name}: {row['unit']}")
         values[name] = value
     metrics = ("Time (wall clock)", "Time (total CPU)") if mode == "timing" else (
         "Time (wall clock)", *DIAGNOSTICS)
@@ -69,6 +72,20 @@ def swift_arguments(mode):
     return args
 
 
+def measurement_environment(mode):
+    environment = ci.environment("release")
+    state = system_state()
+    quality = {"state": "unscreened", "reason": "Operator and sustained conditions have not been assessed"}
+    if state["thermalState"] in ("serious", "critical"):
+        quality = {"state": "contaminated", "reason": "Elevated preflight thermal state"}
+    environment.update(execution="host benchmark", assessment=quality, hardwareModel=ci.capture("sysctl", "-n", "hw.model"),
+                       measurementMode=mode, preflightState=state,
+                       externalProfiler="unobserved",
+                       allocatorBackend="malloc-interposer" if mode == "allocation" else "disabled",
+                       swiftPMArguments=[ci.redact(a) for a in swift_arguments(mode)])
+    return environment
+
+
 def inspect_binary(path, mode):
     links = ci.capture("otool", "-L", str(path))
     symbols = ci.capture("nm", "-g", str(path))
@@ -79,7 +96,9 @@ def inspect_binary(path, mode):
         raise ValueError("Unexpected legacy jemalloc backend in Swift 6.4 build")
     if mode == "timing" and ("interposer" in symbols.lower() or "replacement_malloc" in symbols):
         raise ValueError("Timing binary unexpectedly contains allocator interposition symbols")
-    return {"linkedLibraries": ci.redact(links), "allocatorLinkVerified": True}
+    pif = next((p / "manifest.pif" for p in path.resolve().parents if (p / "manifest.pif").is_file()), None)
+    return {"linkedLibraries": ci.redact(links), "allocatorLinkVerified": True,
+            "compilation": compilation_settings(pif, path.name)}
 
 
 def baseline_path(name):
@@ -157,7 +176,7 @@ def main():
                      "DYLD_INSERT_LIBRARIES", "LD_PRELOAD")
         if any(name in os.environ for name in overrides):
             raise ValueError("Remove allocator/backend environment overrides; modes are selected by explicit traits")
-        environment = ci.environment("release")
+        environment = measurement_environment(args.mode)
         ci.validate_environment(environment, json.loads((ROOT / "Configuration/build.json").read_text()))
         environment.update({"purpose": "host benchmark smoke/capability check, not a performance baseline",
                             "mode": args.mode, "operation": args.operation,
@@ -184,6 +203,15 @@ def main():
                 if workload["mode"] != args.mode or not workload["outputChanged"]:
                     raise ValueError("Optimized workload probe or trait selection failed")
                 (output / "workload.json").write_text(json.dumps(workload, indent=2) + "\n")
+                operations = [{"id": SMOKE, "role": "preparedKernel",
+                               "framesPerIteration": workload["framesPerBatch"],
+                               "boundary": "gain and energy on a preallocated 1024-sample buffer, repeated 1000 times"}]
+                if args.mode == "allocation":
+                    operations.append({"id": PROBE, "role": "instrumentationControl", "operationsPerIteration": 1})
+                (output / "workload-manifest.json").write_text(json.dumps({
+                    "schemaVersion": 1, "mode": args.mode, "caseFile": "workload.json",
+                    "caseFileSHA256": hashlib.sha256((output / "workload.json").read_bytes()).hexdigest(),
+                    "denominator": "one recorded outer iteration", "operations": operations}, indent=2) + "\n")
                 run([*plugin, "list"])
                 checkout = ROOT / ".build" / args.mode / "checkouts" / "benchmark"
                 selected = json.loads(ci.capture("swift", "package", "--package-path", str(checkout), "dump-package"))

@@ -14,6 +14,7 @@ on:
       - 'Benchmarks/**'
       - 'Tools/Conditioning/benchmark.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/conditioning-benchmarks.yml'
 
 permissions:

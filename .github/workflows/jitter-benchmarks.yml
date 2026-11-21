@@ -17,6 +17,7 @@ on:
       - 'Tools/Reference/**'
       - 'Tools/Tests/test_jitter_performance.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - 'Tools/ci.py'
       - 'Tests/HDXLVoiceProcessingTests/Fixtures/Pulses/**'
       - 'Configuration/build.json'

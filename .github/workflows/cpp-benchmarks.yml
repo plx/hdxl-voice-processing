@@ -16,6 +16,7 @@ on:
       - 'Benchmarks/**'
       - 'Tools/CPP/benchmark.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/cpp-benchmarks.yml'
 
 permissions:

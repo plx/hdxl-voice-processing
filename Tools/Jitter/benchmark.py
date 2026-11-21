@@ -44,7 +44,7 @@ def main():
         overrides=('MALLOC_INTERPOSER_LOCAL_PATH','RUNTIME_INTERPOSER_LOCAL_PATH',
             'BENCHMARK_DISABLE_MALLOC_INTERPOSER','BENCHMARK_DISABLE_JEMALLOC','DYLD_INSERT_LIBRARIES','LD_PRELOAD')
         if any(k in os.environ for k in overrides): raise ValueError('Remove allocator/backend environment overrides')
-        environment=ci.environment('release')
+        environment=smoke.measurement_environment(args.mode)
         ci.validate_environment(environment,json.loads((ROOT/'Configuration/build.json').read_text()))
         environment.update(hardwareModel=ci.capture('sysctl','-n','hw.model'),mode=args.mode,shard=args.shard,
             purpose='A13 period-statistics and incremental rolling costs, with separate pinned PCM comparison; physical evidence deferred74/102',
@@ -98,6 +98,7 @@ def main():
             distributions=validate_raw(raw,matrix,args.mode)
             (output/'distributions.json').write_text(json.dumps(distributions,indent=2)+'\n')
             result['binary']=smoke.inspect_binary(binary_dir/'JitterBenchmarks',args.mode)
+            smoke.write_workload_manifest(output, args.mode)
             run([*plugin,'baseline','read',name,'--format','jsonSmallerIsBetter','--path',str(output)])
             values=validate_export(json.loads((output/(name+'.json')).read_text()),names,args.mode)
             (output/'p99.json').write_text(json.dumps(values,indent=2)+'\n')

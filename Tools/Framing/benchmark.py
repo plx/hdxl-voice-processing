@@ -104,7 +104,7 @@ def main():
                      "DYLD_INSERT_LIBRARIES", "LD_PRELOAD")
         if any(key in os.environ for key in overrides):
             raise ValueError("Remove allocator/backend environment overrides")
-        environment = ci.environment("release")
+        environment = smoke.measurement_environment(args.mode)
         ci.validate_environment(environment, json.loads((ROOT / "Configuration/build.json").read_text()))
         environment.update({"hardwareModel": ci.capture("sysctl", "-n", "hw.model"),
                             "purpose": "A01 host framing/window matrix, not physical-device evidence",
@@ -142,6 +142,7 @@ def main():
             summary = validate_raw(raw, matrix, args.mode)
             (output / "distributions.json").write_text(json.dumps(summary, indent=2) + "\n")
             result["binary"] = smoke.inspect_binary(binary_dir / "FramingBenchmarks", args.mode)
+            smoke.write_workload_manifest(output, args.mode)
             run([*plugin, "baseline", "read", name, "--format", "jsonSmallerIsBetter", "--path", str(output)])
             exports = json.loads((output / f"{name}.json").read_text())
             values = validate_export(exports, summary, args.mode)

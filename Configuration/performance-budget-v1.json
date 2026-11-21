@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "status": "deferred",
+  "followupIssue": "https://github.com/plx/hdxl-voice-processing/issues/74",
+  "scope": "Physical target hardware, OS, profile and acquisition schedule",
+  "reason": "Per-device acceptance limits await sustained measurements and scheduling requirements.",
+  "limits": null
+}

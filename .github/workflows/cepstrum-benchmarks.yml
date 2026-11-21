@@ -15,6 +15,7 @@ on:
       - 'Benchmarks/**'
       - 'Tools/Cepstrum/benchmark.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/cepstrum-benchmarks.yml'
 
 permissions:

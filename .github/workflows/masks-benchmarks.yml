@@ -15,6 +15,7 @@ on:
       - 'Benchmarks/**'
       - 'Tools/Masks/benchmark.py'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/masks-benchmarks.yml'
 
 permissions:

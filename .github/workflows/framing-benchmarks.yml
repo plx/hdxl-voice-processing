@@ -13,6 +13,7 @@ on:
       - 'Tools/Framing/**'
       - 'Tools/Tests/test_framing*'
       - 'Tools/benchmark.py'
+      - 'Tools/Performance/records.py'
       - '.github/workflows/framing-benchmarks.yml'
 
 permissions:

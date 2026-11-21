@@ -121,9 +121,10 @@ def main():
             "DYLD_INSERT_LIBRARIES", "LD_PRELOAD",
         )):
             raise ValueError("Remove allocator/backend environment overrides")
-        environment = ci.environment("release")
+        environment = smoke.measurement_environment(args.mode)
         ci.validate_environment(environment, json.loads((ROOT / "Configuration/build.json").read_text()))
         environment.update({
+            "input": "48000 Hz; payload scalar at slot offset i is (i % 127) / 128 in the case precision. Channels, layout and capacity are in configuration.",
             "purpose": "synthetic bounded PCM capture-offer microbenchmarks",
             "measurement": "capture offers only; allocation/preparation, worker drain and verification excluded",
             "firstOffer": "first call per freshly prepared instance; process/runtime already initialized",
@@ -157,6 +158,7 @@ def main():
             summary = validate_raw(raw, names, args.mode)
             (output / "distributions.json").write_text(json.dumps(summary, indent=2) + "\n")
             result["binary"] = smoke.inspect_binary(binary_dir / "TransportBenchmarks", args.mode)
+            smoke.write_workload_manifest(output, args.mode)
             run([*plugin, "baseline", "read", name, "--format", "jsonSmallerIsBetter", "--path", str(output)])
             exported = output / f"{name}.json"
             validate_export(json.loads(exported.read_text()), summary, args.mode)

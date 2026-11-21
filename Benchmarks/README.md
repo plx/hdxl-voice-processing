@@ -235,3 +235,7 @@ and deliberate owned snapshots. Run `python3 Tools/Pulses/benchmark.py timing
 --shard steady16000`, then the other shards and separate `allocation` mode.
 The [pulse protocol](../Tools/Pulses/README.md#host-performance-matrix) defines
 the input identities, counts, memory, delay, and separate per-attempt stage probe.
+
+The [workload and measurement contract](../Documentation/BenchmarkProtocol.md) defines
+portable fixture identities, operation boundaries, counter capabilities, valid-work
+denominators and target-specific budget approvals for the complete benchmark suite.
