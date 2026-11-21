@@ -41,7 +41,8 @@ def simulator():
 
 
 def compare(host, mobile, manifest_hash, manifest):
-    expected = [{k: row[k] for k in ("id", "pcmSHA256", "profileSHA256")} | {"counts": row["expected"]}
+    expected = [{k: row[k] for k in ("id", "pcmSHA256", "profileSHA256")}
+                | {"counts": row["expected"], "frameSequenceSHA256": row["expectedFrameSequenceSHA256"]}
                 for row in manifest["workloads"]]
     for report, chunk in ((host, max(r["sampleCount"] for r in manifest["workloads"])), (mobile, 17)):
         if (report["workloads"] != expected or report["manifestSHA256"] != manifest_hash

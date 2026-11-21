@@ -30,6 +30,7 @@ private struct Workload: Decodable {
     let windowSamples: Int
     let availabilityPolicy: String
     let expected: FrameCounts
+    let expectedFrameSequenceSHA256: String
 }
 
 public struct FrameCounts: Codable, Equatable, Sendable {
@@ -56,6 +57,7 @@ public struct WorkloadResult: Encodable, Sendable {
     public let pcmSHA256: String
     public let profileSHA256: String
     public let counts: FrameCounts
+    public let frameSequenceSHA256: String
 }
 
 public struct ReplayReport: Encodable, Sendable {
@@ -72,8 +74,18 @@ public enum WorkloadError: Error {
 
 private func run<T: BinaryFloatingPoint & Sendable>(
     _ row: Workload, _ pcm: [T], chunkSize: Int
-) throws -> FrameCounts {
+) throws -> WorkloadResult {
     var counts = FrameCounts()
+    var sequence = SHA256()
+    func observe(_ output: BorrowedYINAnalysisOutput) {
+        counts.observe(output)
+        let frame = output.raw.result
+        let source = frame.timing.source
+        let eligible = frame.observation == nil ? 0 : 1
+        let interval = "\(source.startSample),\(source.sampleCount)"
+        let line = "\(interval),\(frame.status.rawValue),\(eligible)\n"
+        sequence.update(data: Data(line.utf8))
+    }
     var previousEnd = 0
     for segment in row.segments {
         guard segment.startSample >= previousEnd, segment.startSample <= pcm.count,
@@ -93,14 +105,20 @@ private func run<T: BinaryFloatingPoint & Sendable>(
                     interval: SourceInterval(
                         epoch: epoch, startSample: Int64(start), sampleCount: Int64(n),
                         sampleRate: Double(row.sampleRate))
-                ) { counts.observe($0) }
+                ) { observe($0) }
                 start += n
             }
         }
-        try worker.finish { counts.observe($0) }
+        try worker.finish { observe($0) }
         previousEnd = end
     }
-    return counts
+    let hash = sequence.finalize().map { String(format: "%02x", $0) }.joined()
+    guard counts == row.expected, hash == row.expectedFrameSequenceSHA256 else {
+        throw WorkloadError.coverageMismatch(row.id)
+    }
+    return WorkloadResult(
+        id: row.id, pcmSHA256: row.pcmSHA256, profileSHA256: row.profileSHA256,
+        counts: counts, frameSequenceSHA256: hash)
 }
 
 private func samples<T: BinaryFloatingPoint>(_ type: T.Type, from data: Data) -> [T] {
@@ -133,13 +151,10 @@ public func replayWorkloads(at directory: URL, maximumChunkSamples: Int) throws 
         guard pcm.count.isMultiple(of: width), pcm.count / width == row.sampleCount,
             digest(pcm) == row.pcmSHA256
         else { throw WorkloadError.invalidWorkload(row.id) }
-        let counts =
+        return
             try width == 4
             ? run(row, samples(Float.self, from: pcm), chunkSize: maximumChunkSamples)
             : run(row, samples(Double.self, from: pcm), chunkSize: maximumChunkSamples)
-        guard counts == row.expected else { throw WorkloadError.coverageMismatch(row.id) }
-        return WorkloadResult(
-            id: row.id, pcmSHA256: row.pcmSHA256, profileSHA256: row.profileSHA256, counts: counts)
     }
     return ReplayReport(
         manifestSHA256: digest(bytes), maximumChunkSamples: maximumChunkSamples, workloads: results)

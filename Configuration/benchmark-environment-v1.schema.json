@@ -3,6 +3,10 @@
   "title": "HDXL host benchmark environment v1",
   "description": "environment.json in each framework measurement bundle. result.json contains command outcomes, binary linkage, and available per-module compilation settings.",
   "type": "object",
+  "oneOf": [
+    {"properties": {"measurementMode": {"const": "timing"}, "allocatorBackend": {"const": "disabled"}}},
+    {"properties": {"measurementMode": {"const": "allocation"}, "allocatorBackend": {"const": "malloc-interposer"}}}
+  ],
   "required": ["schemaVersion", "recordedAtUTC", "commit", "workingTreeDirty", "hardwareModel", "architecture", "hostOS", "hostOSBuild", "xcode", "swift", "sdks", "configuration", "measurementMode", "swiftPMArguments", "allocatorBackend", "externalProfiler", "preflightState", "assessment"],
   "properties": {
     "schemaVersion": {"const": 1},

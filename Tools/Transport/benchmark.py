@@ -158,13 +158,13 @@ def main():
             summary = validate_raw(raw, names, args.mode)
             (output / "distributions.json").write_text(json.dumps(summary, indent=2) + "\n")
             result["binary"] = smoke.inspect_binary(binary_dir / "TransportBenchmarks", args.mode)
-            smoke.write_workload_manifest(output, args.mode)
             run([*plugin, "baseline", "read", name, "--format", "jsonSmallerIsBetter", "--path", str(output)])
             exported = output / f"{name}.json"
             validate_export(json.loads(exported.read_text()), summary, args.mode)
             # The framework export is retained alongside raw histograms; histogram
             # maxima, not a rounded p99 export, enforce the no-heap gate above.
             exported.rename(output / "p99.json")
+            smoke.write_workload_manifest(output, args.mode)
             result.update(status="passed", workloadCount=len(matrix), benchmarkCount=len(summary),
                           heapActivityMaximum=0 if args.mode == "allocation" else None,
                           instrumentation="malloc/ARC positive controls" if args.mode == "allocation" else "disabled")

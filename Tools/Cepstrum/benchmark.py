@@ -246,11 +246,11 @@ def main():
             summary = validate_raw(raw, matrix, args.mode)
             (output / "distributions.json").write_text(json.dumps(summary, indent=2) + "\n")
             result["binary"] = smoke.inspect_binary(binary_dir / "CepstrumBenchmarks", args.mode)
-            smoke.write_workload_manifest(output, args.mode)
             run([*plugin, "baseline", "read", name, "--format", "jsonSmallerIsBetter", "--path", str(output)])
             exports = json.loads((output / f"{name}.json").read_text())
             values = validate_export(exports, summary, args.mode)
             (output / "p99.json").write_text(json.dumps(values, indent=2) + "\n")
+            smoke.write_workload_manifest(output, args.mode)
             (output / f"{name}.json").unlink()
             result.update({"status": "passed", "workloadCount": len(matrix), "benchmarkCount": len(summary),
                            "metricCount": len(values), "steadyStateAllocationMaximum": 0 if args.mode == "allocation" else None,

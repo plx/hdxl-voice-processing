@@ -15,7 +15,7 @@ import tempfile
 import uuid
 
 import ci
-from Performance.records import compilation_settings, system_state, write_index as write_workload_manifest
+from Performance.records import compilation_settings, sha, system_state, write_index as write_workload_manifest
 
 ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "Benchmarks"
@@ -208,10 +208,11 @@ def main():
                                "boundary": "gain and energy on a preallocated 1024-sample buffer, repeated 1000 times"}]
                 if args.mode == "allocation":
                     operations.append({"id": PROBE, "role": "instrumentationControl", "operationsPerIteration": 1})
-                (output / "workload-manifest.json").write_text(json.dumps({
+                workload_manifest = {
                     "schemaVersion": 1, "mode": args.mode, "caseFile": "workload.json",
-                    "caseFileSHA256": hashlib.sha256((output / "workload.json").read_bytes()).hexdigest(),
-                    "denominator": "one recorded outer iteration", "operations": operations}, indent=2) + "\n")
+                    "caseFileSHA256": sha(output / "workload.json"),
+                    "environmentFile": "environment.json", "environmentFileSHA256": sha(output / "environment.json"),
+                    "denominator": "one recorded outer iteration", "operations": operations}
                 run([*plugin, "list"])
                 checkout = ROOT / ".build" / args.mode / "checkouts" / "benchmark"
                 selected = json.loads(ci.capture("swift", "package", "--package-path", str(checkout), "dump-package"))
@@ -251,6 +252,10 @@ def main():
                     raise ValueError(f"Expected one fresh benchmark export; found {len(exports)}")
                 result["capabilities"] = validate_results(json.loads(exports[0].read_text()), args.mode)
                 result["export"] = exports[0].name
+            if args.operation != "baseline-read":
+                if "export" in result:
+                    workload_manifest.update(exportFile=result["export"], exportFileSHA256=sha(output / result["export"]))
+                (output / "workload-manifest.json").write_text(json.dumps(workload_manifest, indent=2) + "\n")
             result["status"] = "passed"
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError) as error:
         result["error"] = ci.redact(str(error))

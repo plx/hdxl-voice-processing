@@ -18,6 +18,8 @@ VARIANTS = {
 
 
 def compare(directory):
+    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT))
     directory.mkdir(parents=True, exist_ok=False)
     bins = {}
     for name, flags in VARIANTS.items():
@@ -46,7 +48,7 @@ def compare(directory):
                     raise ValueError("Compiler comparison changed workload identity or valid-work counts")
                 if trial:
                     measurements[name].append(elapsed)
-    return dict(schemaVersion=1, manifestSHA256=manifest_hash,
+    return dict(schemaVersion=1, manifestSHA256=manifest_hash, commit=commit, workingTreeDirty=dirty,
                 boundary="fresh child process launch to exit including bundle reads, checks, all analyses and report export",
                 consumer="separate executable and WorkloadReplay module importing the public HDXLVoiceProcessing product",
                 cachePolicy="one warmup per binary; fresh process per trial; filesystem cache uncontrolled",

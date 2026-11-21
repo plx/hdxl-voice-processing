@@ -1,5 +1,6 @@
 """Audit the denominators of an unscaled smoke export and one scheduled PCM run."""
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -25,8 +26,24 @@ def timing_environment(directory):
     return environment
 
 
+def verify_files(directory, environment, files):
+    manifest_path = directory / "workload-manifest.json"
+    if not manifest_path.is_file() and "measurementMode" not in environment:
+        return "legacy-unbound"
+    manifest = read(directory, manifest_path.name)
+    if manifest["schemaVersion"] != 1 or manifest["mode"] != "timing":
+        raise ValueError("Expected a timing workload manifest")
+    for field, filename in files.items():
+        if (manifest[field] != filename or
+                manifest[field + "SHA256"] != hashlib.sha256((directory / filename).read_bytes()).hexdigest()):
+            raise ValueError(f"Workload manifest digest or filename mismatch: {filename}")
+    return "digest-verified"
+
+
 def smoke(directory):
     env = timing_environment(directory)
+    binding = verify_files(directory, env, {"environmentFile": "environment.json", "caseFile": "workload.json",
+                                            "exportFile": "Current_run.json"})
     case = read(directory, "workload.json")
     if (case["mode"] != "timing" or case["framesPerBatch"] != env["framesPerSmokeIteration"]
             or case["samplesPerFrame"] != env["samplesPerFrame"]):
@@ -36,7 +53,7 @@ def smoke(directory):
     if len(rows) != 1 or rows[0]["unit"] not in TIME_TO_NS:
         raise ValueError("Expected one batch wall-time observation with a known time unit")
     elapsed = positive(rows[0]["value"]) * TIME_TO_NS[rows[0]["unit"]]
-    return dict(operation="Smoke.GainEnergy", commit=env["commit"], batchP99Nanoseconds=elapsed,
+    return dict(operation="Smoke.GainEnergy", commit=env["commit"], artifactBinding=binding, batchP99Nanoseconds=elapsed,
                 framesPerBatch=case["framesPerBatch"], samplesPerFrame=case["samplesPerFrame"],
                 averageNanosecondsPerFrameInP99Batch=elapsed / positive(case["framesPerBatch"]),
                 singleFrameLatencyDistribution="unmeasured")
@@ -44,6 +61,8 @@ def smoke(directory):
 
 def schedule(directory, name):
     env = timing_environment(directory)
+    binding = verify_files(directory, env, {"environmentFile": "environment.json", "caseFile": "workloads.json",
+                                            "distributionFile": "distributions.json", "exportFile": "p99.json"})
     matrix = read(directory, "workloads.json")
     rows = [r for r in matrix if r["name"] == name]
     if len(rows) != 1:
@@ -55,10 +74,12 @@ def schedule(directory, name):
     values = read(directory, "p99.json")
     # Scheduling's wrapper explicitly exports nanoseconds and validates the units before writing p99.json.
     elapsed = positive(values[op + " - Time (wall clock)"])
-    cpu = positive(values[op + " - Time (total CPU)"])
+    cpu = values[op + " - Time (total CPU)"]
     source = positive(row["inputDurationSeconds"])
-    analyzed = positive(row["analyzedDurationSeconds"])
-    return dict(operation=op, commit=env["commit"], pcmSHA256=row["inputSHA256"],
+    analyzed = row["analyzedDurationSeconds"]
+    if any(type(v) not in (int, float) or not math.isfinite(v) or v < 0 for v in (analyzed, cpu)):
+        raise ValueError("Analyzed duration and process CPU must be finite and nonnegative")
+    return dict(operation=op, commit=env["commit"], pcmSHA256=row["inputSHA256"], artifactBinding=binding,
                 wallBatchP99Nanoseconds=elapsed, processCPUBatchP99Nanoseconds=cpu,
                 inputSeconds=source, analyzedSeconds=analyzed,
                 inputSecondsPerWallSecondAtP99=source * 1e9 / elapsed,

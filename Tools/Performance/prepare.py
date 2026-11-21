@@ -58,12 +58,15 @@ def workload(fixture, variant, payloads):
         # Omit one hop from the middle and finish each observed region independently.
         middle = len(samples) // 2
         spans = [(0, middle), (middle + profile["hopLength"], len(samples))]
-        frames = [f for begin, end in spans for f in yin.stream(samples[begin:end], profile)]
+        frames = [f | {"startSample": begin + f["startSample"]}
+                  for begin, end in spans for f in yin.stream(samples[begin:end], profile)]
     code = {"float32": "f", "float64": "d"}[profile["inputPrecision"]]
     payload = struct.pack(f"<{len(samples)}{code}", *samples)
     digest = sha(payload)
     payloads[digest] = payload
     identifier = fixture if variant is None else f"{fixture}-{variant}"
+    sequence = "".join(f"{f['startSample']},{f['observedSampleCount']},{f['status']},"
+                       f"{int(f['selectedCandidateIndex'] is not None)}\n" for f in frames)
     return dict(id="yin/" + identifier + "/v1", fixture=fixture, transform=variant or "identity",
                 pcmSHA256=digest, sourceWAVSHA256=wav["artifactSHA256"], sourceStartSample=start,
                 sampleCount=len(samples), sampleRate=profile["sampleRate"], channelLayout="mono",
@@ -71,7 +74,8 @@ def workload(fixture, variant, payloads):
                 segments=[dict(startSample=b, sampleCount=e-b) for b,e in spans],
                 profile=profile, profileSHA256=record["profileSHA256"],
                 windowSamples=yin.geometry(profile)[-1], fftLength=None,
-                availabilityPolicy="voicedOrUncertain", expected=counts(list(frames)))
+                availabilityPolicy="voicedOrUncertain", expected=counts(frames),
+                expectedFrameSequenceSHA256=sha(sequence.encode("ascii")))
 
 
 def catalog():
@@ -83,8 +87,8 @@ def catalog():
 
 def prepare(destination):
     manifest, payloads = catalog()
-    content = json_bytes(manifest)
-    if content != MANIFEST.read_bytes():
+    content = MANIFEST.read_bytes()
+    if manifest != json.loads(content):
         raise ValueError("Generated manifest differs from the versioned workload definition")
     if destination.exists():
         raise FileExistsError(f"Select a new output directory: {destination}")

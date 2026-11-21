@@ -104,6 +104,7 @@ def index_operations(directory, mode):
                 caseFile="workloads.json", caseFileSHA256=sha(cases_file),
                 environmentFile="environment.json", environmentFileSHA256=sha(directory / "environment.json"),
                 distributionFile="distributions.json", distributionFileSHA256=sha(distribution_file),
+                exportFile="p99.json", exportFileSHA256=sha(directory / "p99.json"),
                 operations=entries)
 
 

@@ -17,6 +17,11 @@ includes the omitted span. Each case carries counts of processed, available and 
 frames plus all four voicing states. An uncertain candidate has a frequency estimate. Keep
 its count visible when reporting coverage.
 
+Each case also publishes an ordered frame digest from the scalar reference. Each UTF-8
+line contains the absolute start sample, observed sample count, status and eligibility
+(0 or 1), separated by commas and terminated by LF. This catches a repeated or skipped
+window even when the aggregate voicing counts match. Epoch UUIDs are local to a replay.
+
 Prepare the bounded bundle once, outside measurement. Ten source fixtures cover low, middle
 and high F0, a pitch transition, a sustained vowel, connected speech, noise, silence, both
 PCM precisions, and 16/44.1/48 kHz. Two derived cases exercise clipping and a discontinuity.
@@ -45,7 +50,9 @@ input recipe or hash, profile, expected work and applicability. The environment 
 generator, preparation and observation boundaries. Two algorithms operating on the same
 SWIPE-prime comparison input resolve to distinct case rows. Allocation controls have their
 own role and no voice frame count. The smoke harness has a single `workload.json` and stores
-the batch size directly in the operation record.
+the batch size directly in the operation record. The manifest binds the validated percentile
+export, workload and environment by SHA-256. The denominator audit verifies these files
+before computing rates. Reports from before the contract are marked `legacy-unbound`.
 
 | Workload family | Case metadata and interpretation |
 | --- | --- |
@@ -131,7 +138,9 @@ An approval records the exact scope, source commit, evidence filenames and SHA-2
 review URL, approver, UTC date, and scheduling rationale. Supply a minimum throughput and
 maxima for sustained CPU, unbatched p50/p95/p99 processing time, result age, peak RSS,
 backlog and dropped buffers. Describe the permitted backlog/dropout behavior. A replacement
-also identifies its predecessor digest and explains the measured change. Validate an approval
+also supplies a bundle-relative `previousApprovalFile`, its `previousApprovalSHA256` and a
+`changeReason`. The validator checks that each predecessor is an approved record for the
+same scope and verifies its evidence chain. Validate an approval
 and its adjacent evidence files with `python3 Tools/Performance/budgets.py RECORD.json`.
 Local scratch baselines are observations. Publishing or replacing an approved baseline
 requires review of that record and its underlying evidence.

@@ -54,7 +54,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
     },
     {
       "id": "yin/tone-123.45/v1",
@@ -108,7 +109,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
     },
     {
       "id": "yin/tone-650/v1",
@@ -162,7 +164,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
     },
     {
       "id": "yin/float32-tone/v1",
@@ -216,7 +219,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
     },
     {
       "id": "yin/grid-48000-0.01-50/v1",
@@ -270,7 +274,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "56d03d781419022083be1eb53aa89b01701b660d8e70e300a902d092647afbec"
     },
     {
       "id": "yin/speech-bl01-vowel-a/v1",
@@ -324,7 +329,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "1e8de2bddc459b083717cb2d5083110d99628a7302a46c89474e7480652be3d4"
     },
     {
       "id": "yin/speech-bl02-consonant-rich/v1",
@@ -378,7 +384,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "54dc88e8520cef91e3a35f81bd855eb9bac892e5977ee4b67699e768d91bac0e"
     },
     {
       "id": "yin/silence/v1",
@@ -432,7 +439,8 @@
           "unvoiced": 8,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "69e3eab85202c1be26503a8bcbac4501024bceaa3632c520f7dd35f96eed065d"
     },
     {
       "id": "yin/noise/v1",
@@ -486,7 +494,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "7a4ed1e91f57c07a8f9df4b7751a12e649cf8593df939f0c44fd219eea1b91f5"
     },
     {
       "id": "yin/octave-jump/v1",
@@ -540,7 +549,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "3f2afd7120d5ca6d1bbf517206802aebe92a1e316e5d3cd4707b72a45526081e"
     },
     {
       "id": "yin/tone-123.45-clipped/v1",
@@ -594,7 +604,8 @@
           "unvoiced": 0,
           "unavailable": 1
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "82ead3481e13c21cc520f68b98bcb326dbc49cff02f02dbe63b2a30fa236688d"
     },
     {
       "id": "yin/tone-123.45-gap/v1",
@@ -652,7 +663,8 @@
           "unvoiced": 0,
           "unavailable": 2
         }
-      }
+      },
+      "expectedFrameSequenceSHA256": "ab8f8ee21177d1127b8787c16835de67a74298ae25828f2fc69e4f8d298b5da1"
     }
   ]
 }

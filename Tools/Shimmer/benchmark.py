@@ -98,10 +98,10 @@ def main():
             distributions=validate_raw(raw,matrix,args.mode)
             (output/'distributions.json').write_text(json.dumps(distributions,indent=2)+'\n')
             result['binary']=smoke.inspect_binary(binary_dir/'ShimmerBenchmarks',args.mode)
-            smoke.write_workload_manifest(output, args.mode)
             run([*plugin,'baseline','read',name,'--format','jsonSmallerIsBetter','--path',str(output)])
             values=validate_export(json.loads((output/(name+'.json')).read_text()),names,args.mode)
             (output/'p99.json').write_text(json.dumps(values,indent=2)+'\n')
+            smoke.write_workload_manifest(output, args.mode)
             if args.mode=='timing': (output/'costs.json').write_text(json.dumps(operation_costs(matrix,values),indent=2)+'\n')
             (output/(name+'.json')).unlink()
             result.update(status='passed',workloadCount=len(matrix),benchmarkCount=len(distributions),metricCount=len(values),
