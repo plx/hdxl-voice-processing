@@ -1,12 +1,19 @@
 {
   "template": "Time Profiler",
-  "binarySHA256": "39499883a940295eff7995010708e8fd031e0797c5fc46f487873f6d8d7848dc",
+  "binarySHA256": "000bb78e5531f0de7c11ff1b00b4cfd7f7cce6fe295b3cb1f3f093ec553a4ce9",
+  "buildIdentity": {
+    "commit": "0e7801a044abfc4aeae7378aded4b9fa1ca73b97",
+    "buildInputsSHA256": "3480e8e9283134c091f343032b3a0e41c3d7c72953158076857d3e67c3e02c9f",
+    "packageResolvedSHA256": "4579e76d404b7287d4571d6bea07a8fa99dfe83e992a72aa5dfc9a36b4a1d9cc",
+    "xcode": "Xcode 27.2\nBuild version 27B52",
+    "swift": "swift-driver version: 1.168.6 Apple Swift version 6.4.2 (swiftlang-6.4.2.1.9 clang-2100.4.1.1)\nTarget: arm64-apple-macosx27.0.0"
+  },
   "environment": {
     "schemaVersion": 1,
     "lane": "release",
-    "recordedAtUTC": "2026-11-21T12:20:21.858197+00:00",
-    "commit": "04aec4c89ab5877d9dd6fd932730420a1cdc92b7",
-    "workingTreeDirty": true,
+    "recordedAtUTC": "2026-11-21T12:41:39.232617+00:00",
+    "commit": "0e7801a044abfc4aeae7378aded4b9fa1ca73b97",
+    "workingTreeDirty": false,
     "hostOS": "27.0.1",
     "hostOSBuild": "26A434",
     "architecture": "arm64",
@@ -31,58 +38,66 @@
   "hardwareModel": "Mac13,1",
   "stages": {
     "meanRemoval": {
-      "sampledStacks": 3010,
-      "attributedStacks": 2974,
+      "sampledStacks": 3012,
+      "attributedStacks": 2985,
       "matchedSymbols": [
-        "PreparedPowerCepstrum.removeMean("
+        "specialized static PreparedPowerCepstrum.removeMean(_:into:)",
+        "static PreparedPowerCepstrum.removeMean(_:into:)"
       ],
       "workload": "meanRemoval.float64.10000Hz.in1000.out1000.fft1024.normal",
-      "verifiedBatches": 51785,
-      "operationsPerBatch": 32
+      "verifiedBatches": 54324,
+      "operationsPerBatch": 32,
+      "attempts": 1
     },
     "logPower": {
-      "sampledStacks": 3011,
-      "attributedStacks": 2980,
+      "sampledStacks": 3010,
+      "attributedStacks": 2978,
       "matchedSymbols": [
-        "PreparedPowerCepstrum.writeLogPower("
+        "PreparedPowerCepstrum.writeLogPower(isZero:)"
       ],
       "workload": "logPower.float64.10000Hz.in1000.out513.fft1024.normal",
-      "verifiedBatches": 45898,
-      "operationsPerBatch": 32
+      "verifiedBatches": 48168,
+      "operationsPerBatch": 32,
+      "attempts": 1
     },
     "inverseCepstrum": {
-      "sampledStacks": 3014,
+      "sampledStacks": 3009,
       "attributedStacks": 2984,
       "matchedSymbols": [
-        "PreparedFourierTransform.inverseReal(",
-        "PreparedPowerCepstrum.writeSignedCepstrum("
+        "PreparedPowerCepstrum.writeSignedCepstrum()",
+        "specialized PreparedFourierTransform.inverseReal(_:into:)"
       ],
       "workload": "inverseCepstrum.float64.10000Hz.in1000.out513.fft1024.normal",
-      "verifiedBatches": 36794,
-      "operationsPerBatch": 32
+      "verifiedBatches": 37783,
+      "operationsPerBatch": 32,
+      "attempts": 1
     },
     "peakParabolic": {
-      "sampledStacks": 3013,
-      "attributedStacks": 2973,
+      "sampledStacks": 3010,
+      "attributedStacks": 2966,
       "matchedSymbols": [
-        "PreparedCPP.findPeak(",
-        "PreparedCPP.peakFromSide("
+        "PreparedCPP.findPeak()",
+        "PreparedCPP.peakFromSide(first:last:reverse:)"
       ],
       "workload": "peakParabolic.float64.10000Hz.in1000.out513.fft1024.normal",
-      "verifiedBatches": 34931,
-      "operationsPerBatch": 128
+      "verifiedBatches": 36024,
+      "operationsPerBatch": 128,
+      "attempts": 1
     },
     "backgroundFit": {
-      "sampledStacks": 3009,
-      "attributedStacks": 2986,
+      "sampledStacks": 3010,
+      "attributedStacks": 2988,
       "matchedSymbols": [
-        "CPPSelection.median(",
-        "CPPSelection.select(",
-        "PreparedCPP.fit("
+        "PreparedCPP.fit()",
+        "specialized static CPPSelection.median(_:count:)",
+        "specialized static CPPSelection.select(_:count:rank:)",
+        "static CPPSelection.median(_:count:)",
+        "static CPPSelection.select(_:count:rank:)"
       ],
       "workload": "backgroundFit.float64.10000Hz.in1000.out513.fft1024.praat7002Robust.normal",
-      "verifiedBatches": 24580,
-      "operationsPerBatch": 1
+      "verifiedBatches": 24742,
+      "operationsPerBatch": 1,
+      "attempts": 1
     }
   }
 }
