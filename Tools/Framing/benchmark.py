@@ -146,7 +146,7 @@ def main():
             exports = json.loads((output / f"{name}.json").read_text())
             values = validate_export(exports, summary, args.mode)
             (output / "p99.json").write_text(json.dumps(values, indent=2) + "\n")
-            smoke.write_workload_manifest(output, args.mode)
+            result["workloadManifestSHA256"] = smoke.write_workload_manifest(output, args.mode)
             (output / f"{name}.json").unlink()
             result.update({"status": "passed", "workloadCount": len(matrix), "benchmarkCount": len(summary),
                            "metricCount": len(values), "steadyStateAllocationMaximum": 0 if args.mode == "allocation" else None,

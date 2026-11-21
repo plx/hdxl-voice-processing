@@ -110,4 +110,6 @@ def index_operations(directory, mode):
 
 def write_index(directory, mode):
     record = index_operations(directory, mode)
-    (directory / "workload-manifest.json").write_text(json.dumps(record, indent=2, allow_nan=False) + "\n")
+    path = directory / "workload-manifest.json"
+    path.write_text(json.dumps(record, indent=2, allow_nan=False) + "\n")
+    return sha(path)

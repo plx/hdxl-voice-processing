@@ -18,19 +18,24 @@ def positive(value):
     return value
 
 
-def timing_environment(directory):
+def timing_environment(directory, files):
     result = read(directory, "result.json")
     environment = read(directory, "environment.json")
     if result["status"] != "passed" or result["mode"] != "timing" or environment["frameworkScalingFactor"] != 1:
         raise ValueError("Expected successful timing evidence at framework scaling factor one")
-    return environment
+    return environment, verify_files(directory, result, environment, files)
 
 
-def verify_files(directory, environment, files):
+def verify_files(directory, result, environment, files):
     manifest_path = directory / "workload-manifest.json"
-    if not manifest_path.is_file() and "measurementMode" not in environment:
+    if not manifest_path.is_file() and "measurementMode" not in environment and "workloadManifestSHA256" not in result:
         return "legacy-unbound"
-    manifest = read(directory, manifest_path.name)
+    if environment.get("measurementMode") != "timing" or environment.get("allocatorBackend") != "disabled":
+        raise ValueError("Timing requires an environment with the allocator backend disabled")
+    content = manifest_path.read_bytes()
+    if result.get("workloadManifestSHA256") != hashlib.sha256(content).hexdigest():
+        raise ValueError("Final result does not match the workload manifest digest")
+    manifest = json.loads(content)
     if manifest["schemaVersion"] != 1 or manifest["mode"] != "timing":
         raise ValueError("Expected a timing workload manifest")
     for field, filename in files.items():
@@ -41,9 +46,8 @@ def verify_files(directory, environment, files):
 
 
 def smoke(directory):
-    env = timing_environment(directory)
-    binding = verify_files(directory, env, {"environmentFile": "environment.json", "caseFile": "workload.json",
-                                            "exportFile": "Current_run.json"})
+    env, binding = timing_environment(directory, {"environmentFile": "environment.json", "caseFile": "workload.json",
+                                                  "exportFile": "Current_run.json"})
     case = read(directory, "workload.json")
     if (case["mode"] != "timing" or case["framesPerBatch"] != env["framesPerSmokeIteration"]
             or case["samplesPerFrame"] != env["samplesPerFrame"]):
@@ -60,9 +64,8 @@ def smoke(directory):
 
 
 def schedule(directory, name):
-    env = timing_environment(directory)
-    binding = verify_files(directory, env, {"environmentFile": "environment.json", "caseFile": "workloads.json",
-                                            "distributionFile": "distributions.json", "exportFile": "p99.json"})
+    env, binding = timing_environment(directory, {"environmentFile": "environment.json", "caseFile": "workloads.json",
+                                                  "distributionFile": "distributions.json", "exportFile": "p99.json"})
     matrix = read(directory, "workloads.json")
     rows = [r for r in matrix if r["name"] == name]
     if len(rows) != 1:

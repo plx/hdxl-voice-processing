@@ -19,7 +19,15 @@
     "hostOSBuild": {"type": "string", "minLength": 1},
     "xcode": {"type": "string", "minLength": 1},
     "swift": {"type": "string", "minLength": 1},
-    "sdks": {"type": "object", "required": ["macosx", "iphoneos", "iphonesimulator"]},
+    "sdks": {
+      "type": "object",
+      "required": ["macosx", "iphoneos", "iphonesimulator"],
+      "properties": {
+        "macosx": {"$ref": "#/$defs/sdkVersion"},
+        "iphoneos": {"$ref": "#/$defs/sdkVersion"},
+        "iphonesimulator": {"$ref": "#/$defs/sdkVersion"}
+      }
+    },
     "configuration": {"const": "release"},
     "measurementMode": {"enum": ["timing", "allocation"]},
     "swiftPMArguments": {"type": "array", "items": {"type": "string"}, "minItems": 1},
@@ -43,5 +51,6 @@
         "reason": {"type": "string", "minLength": 1}
       }
     }
-  }
+  },
+  "$defs": {"sdkVersion": {"type": "string", "pattern": "^[0-9]+([.][0-9]+){1,2}$"}}
 }

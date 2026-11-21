@@ -256,6 +256,7 @@ def main():
                 if "export" in result:
                     workload_manifest.update(exportFile=result["export"], exportFileSHA256=sha(output / result["export"]))
                 (output / "workload-manifest.json").write_text(json.dumps(workload_manifest, indent=2) + "\n")
+                result["workloadManifestSHA256"] = sha(output / "workload-manifest.json")
             result["status"] = "passed"
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError) as error:
         result["error"] = ci.redact(str(error))

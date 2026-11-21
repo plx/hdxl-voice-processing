@@ -52,6 +52,7 @@ class PerformanceContractTests(unittest.TestCase):
             op = "Schedule.Run." + name
             files = {
                 "environment.json": {"frameworkScalingFactor": 1, "commit": "sample", "measurementMode": "timing",
+                                     "allocatorBackend": "disabled",
                                      "operations": {"Run": "one utterance"}},
                 "result.json": {"status": "passed", "mode": "timing"},
                 "distributions.json": {op: {}},
@@ -61,7 +62,10 @@ class PerformanceContractTests(unittest.TestCase):
             }
             for filename, value in files.items():
                 (directory / filename).write_text(json.dumps(value))
-            records.write_index(directory, "timing")
+            def finalize():
+                files["result.json"]["workloadManifestSHA256"] = records.write_index(directory, "timing")
+                (directory / "result.json").write_text(json.dumps(files["result.json"]))
+            finalize()
             result = denominators.schedule(directory, name)
             self.assertEqual(result["artifactBinding"], "digest-verified")
             self.assertEqual(result["analyzedSecondsPerWallSecondAtP99"], 0)
@@ -69,6 +73,15 @@ class PerformanceContractTests(unittest.TestCase):
             files["p99.json"][op + " - Time (wall clock)"] = 800
             (directory / "p99.json").write_text(json.dumps(files["p99.json"]))
             with self.assertRaisesRegex(ValueError, "digest"):
+                denominators.schedule(directory, name)
+            finalize()
+            (directory / "result.json").write_text(json.dumps(files["result.json"] | {"workloadManifestSHA256": "0"*64}))
+            with self.assertRaisesRegex(ValueError, "Final result"):
+                denominators.schedule(directory, name)
+            files["environment.json"]["allocatorBackend"] = "malloc-interposer"
+            (directory / "environment.json").write_text(json.dumps(files["environment.json"]))
+            finalize()
+            with self.assertRaisesRegex(ValueError, "allocator backend"):
                 denominators.schedule(directory, name)
 
     def test_bundle_preserves_published_bytes_and_checks_semantic_values(self):
@@ -81,6 +94,9 @@ class PerformanceContractTests(unittest.TestCase):
                 digest = prepare.prepare(root / "bundle")
                 self.assertEqual((root / "bundle/manifest.json").read_bytes(), manifest.read_bytes())
                 self.assertEqual(digest, records.sha(manifest))
+                manifest.write_text(json.dumps(published | {"schemaVersion": True}))
+                with self.assertRaisesRegex(ValueError, "manifest differs"):
+                    prepare.prepare(root / "boolean")
                 published["workloads"][0]["expectedFrameSequenceSHA256"] = "0" * 64
                 manifest.write_text(json.dumps(published))
                 with self.assertRaisesRegex(ValueError, "manifest differs"):
@@ -91,7 +107,7 @@ class PerformanceContractTests(unittest.TestCase):
             p = Path(temp)
             (p / "trials").write_bytes(b"unit-test evidence")
             record = dict.fromkeys(("deviceModel", "architecture", "osBuild", "profileID", "workloadID",
-                                    "operation", "schedulingRationale", "dropoutPolicy", "backlogPolicy",
+                                    "operation", "acquisitionScheduleID", "schedulingRationale", "dropoutPolicy", "backlogPolicy",
                                     "approvedBy", "reviewURL"), "test")
             record.update(schemaVersion=1, status="approved", approvedAtUTC="2026-01-01T00:00:00Z",
                           reviewURL="https://example.org/reviews/1",
@@ -100,8 +116,11 @@ class PerformanceContractTests(unittest.TestCase):
                           limits={name: dict(unit=unit, value=1, bound="minimum" if name=="throughput" else "maximum")
                                   for name,unit in budgets.UNITS.items()})
             budgets.validate(record, p)
-            with self.assertRaisesRegex(ValueError, "review URL"):
-                budgets.validate(record | {"reviewURL": "test"}, p)
+            for url in ("test", "https://example.org:no-port/r", "https://example.org:99999/r"):
+                with self.subTest(url=url), self.assertRaisesRegex(ValueError, "review URL"):
+                    budgets.validate(record | {"reviewURL": url}, p)
+            with self.assertRaisesRegex(ValueError, "bundle-relative"):
+                budgets.validate(record | {"evidence": [record["evidence"][0] | {"file": str(p / "trials")}]}, p)
             previous = p / "first.json"
             previous.write_text(json.dumps(record))
             replacement = record | dict(change="replacement", changeReason="repeated trials",
@@ -109,6 +128,8 @@ class PerformanceContractTests(unittest.TestCase):
             budgets.validate(replacement, p)
             with self.assertRaisesRegex(ValueError, "scope"):
                 budgets.validate(replacement | {"profileID": "other"}, p)
+            with self.assertRaisesRegex(ValueError, "scope"):
+                budgets.validate(replacement | {"acquisitionScheduleID": "other cadence"}, p)
             with self.assertRaisesRegex(ValueError, "digest"):
                 budgets.validate(replacement | {"previousApprovalSHA256": "0" * 64}, p)
             record["limits"]["processingP50"]["value"] = 2

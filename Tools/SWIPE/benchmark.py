@@ -225,7 +225,7 @@ def main():
             exports = json.loads((output / f'{name}.json').read_text())
             values = validate_export(exports, summary, args.mode)
             (output / 'p99.json').write_text(json.dumps(values, indent=2) + '\n')
-            smoke.write_workload_manifest(output, args.mode)
+            result["workloadManifestSHA256"] = smoke.write_workload_manifest(output, args.mode)
             (output / f'{name}.json').unlink()
             if source_hashes() != sources:
                 raise ValueError('Measurement sources changed during the run')

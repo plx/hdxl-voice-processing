@@ -51,7 +51,8 @@ generator, preparation and observation boundaries. Two algorithms operating on t
 SWIPE-prime comparison input resolve to distinct case rows. Allocation controls have their
 own role and no voice frame count. The smoke harness has a single `workload.json` and stores
 the batch size directly in the operation record. The manifest binds the validated percentile
-export, workload and environment by SHA-256. The denominator audit verifies these files
+export, workload and environment by SHA-256. The final run result includes the digest of
+that manifest. The denominator audit verifies the result, timing mode and referenced files
 before computing rates. Reports from before the contract are marked `legacy-unbound`.
 
 | Workload family | Case metadata and interpretation |
@@ -134,7 +135,8 @@ sustained trials on the intended model, OS, profile and capture schedule. Retain
 trial lengths and counts, power/thermal histories, clocks, background load, workload
 manifest, raw distributions, independent validity checks and any excluded trials.
 
-An approval records the exact scope, source commit, evidence filenames and SHA-256 digests,
+An approval records the exact scope (including a stable `acquisitionScheduleID`), source
+commit, bundle-relative evidence filenames and SHA-256 digests,
 review URL, approver, UTC date, and scheduling rationale. Supply a minimum throughput and
 maxima for sustained CPU, unbatched p50/p95/p99 processing time, result age, peak RSS,
 backlog and dropped buffers. Describe the permitted backlog/dropout behavior. A replacement

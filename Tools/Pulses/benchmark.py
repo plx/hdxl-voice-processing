@@ -299,7 +299,7 @@ def main():
             exports = json.loads((output / f"{name}.json").read_text())
             values = validate_export(exports, summary, args.mode)
             (output / "p99.json").write_text(json.dumps(values, indent=2) + "\n")
-            smoke.write_workload_manifest(output, args.mode)
+            result["workloadManifestSHA256"] = smoke.write_workload_manifest(output, args.mode)
             if args.mode == 'timing':
                 (output / 'costs.json').write_text(json.dumps(operation_costs(matrix, values), indent=2) + '\n')
             (output / f"{name}.json").unlink()

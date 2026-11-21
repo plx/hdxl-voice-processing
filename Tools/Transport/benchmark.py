@@ -164,7 +164,7 @@ def main():
             # The framework export is retained alongside raw histograms; histogram
             # maxima, not a rounded p99 export, enforce the no-heap gate above.
             exported.rename(output / "p99.json")
-            smoke.write_workload_manifest(output, args.mode)
+            result["workloadManifestSHA256"] = smoke.write_workload_manifest(output, args.mode)
             result.update(status="passed", workloadCount=len(matrix), benchmarkCount=len(summary),
                           heapActivityMaximum=0 if args.mode == "allocation" else None,
                           instrumentation="malloc/ARC positive controls" if args.mode == "allocation" else "disabled")

@@ -19,10 +19,12 @@ UNITS = {
 }
 
 
-SCOPE = ("deviceModel", "architecture", "osBuild", "profileID", "workloadID", "operation")
+SCOPE = ("deviceModel", "architecture", "osBuild", "profileID", "workloadID", "operation", "acquisitionScheduleID")
 
 
 def evidence_file(directory, name, digest):
+    if Path(name).is_absolute():
+        raise ValueError("Evidence filenames must be bundle-relative")
     path = (directory / name).resolve()
     if (not path.is_relative_to(directory.resolve()) or not path.is_file()
             or hashlib.sha256(path.read_bytes()).hexdigest() != digest):
@@ -41,7 +43,12 @@ def validate(record, directory):
         if not isinstance(record.get(key), str) or not record[key].strip():
             raise ValueError(f"Missing budget scope or approval: {key}")
     url = urlsplit(record["reviewURL"])
-    if url.scheme not in ("http", "https") or not url.hostname or any(c.isspace() for c in record["reviewURL"]):
+    try:
+        port = url.port
+    except ValueError as error:
+        raise ValueError("Invalid port in budget review URL") from error
+    if (url.scheme not in ("http", "https") or not url.hostname or port == 0 or url.netloc.endswith(":")
+            or any(c.isspace() for c in record["reviewURL"])):
         raise ValueError("Expected a review URL with an HTTP(S) scheme and host")
     if not re.fullmatch(r"[0-9a-f]{40}", record["commit"]):
         raise ValueError("Expected a complete measured revision")

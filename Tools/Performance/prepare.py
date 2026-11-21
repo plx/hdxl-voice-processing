@@ -88,7 +88,9 @@ def catalog():
 def prepare(destination):
     manifest, payloads = catalog()
     content = MANIFEST.read_bytes()
-    if manifest != json.loads(content):
+    generated = json.dumps(manifest, sort_keys=True, allow_nan=False)
+    published = json.dumps(json.loads(content), sort_keys=True, allow_nan=False)
+    if generated != published:
         raise ValueError("Generated manifest differs from the versioned workload definition")
     if destination.exists():
         raise FileExistsError(f"Select a new output directory: {destination}")

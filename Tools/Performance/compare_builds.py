@@ -20,13 +20,15 @@ VARIANTS = {
 def compare(directory):
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT))
+    compiler = subprocess.check_output(["xcrun", "--sdk", "macosx", "--find", "swiftc"], text=True).strip()
+    compiler_version = subprocess.check_output([compiler, "--version"], text=True).strip()
     directory.mkdir(parents=True, exist_ok=False)
     bins = {}
     for name, flags in VARIANTS.items():
         scratch = ROOT / ".build" / ("b02-xcode-" + name)
         args = ["xcodebuild", "-scheme", "ReplayWorkloads", "-configuration", "Release",
                 "-destination", "platform=macOS,arch=arm64", "-derivedDataPath", str(scratch),
-                "CODE_SIGNING_ALLOWED=NO", *flags, "build"]
+                "CODE_SIGNING_ALLOWED=NO", "SWIFT_EXEC=" + compiler, *flags, "build"]
         with (directory / (name + ".log")).open("w") as log:
             subprocess.run(args, cwd=ROOT / "Tools/Performance/Portable", stdout=log, stderr=subprocess.STDOUT, check=True)
         bins[name] = scratch / "Build/Products/Release/ReplayWorkloads"
@@ -54,7 +56,7 @@ def compare(directory):
                 cachePolicy="one warmup per binary; fresh process per trial; filesystem cache uncontrolled",
                 inputs=len(reference["workloads"]), chunkSamples=17, clock="parent monotonic perf_counter_ns",
                 xcode=subprocess.check_output(["xcodebuild", "-version"], text=True).strip(),
-                swift=subprocess.check_output(["swift", "--version"], text=True).strip(),
+                swift=compiler_version, swiftCompiler=compiler,
                 hardwareModel=subprocess.check_output(["sysctl", "-n", "hw.model"], text=True).strip(),
                 variants={name: dict(xcodeSettings=VARIANTS[name], samplesNanoseconds=values,
                                      medianNanoseconds=statistics.median(values))
