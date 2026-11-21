@@ -26,6 +26,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     private var intervalWorker: PreparedIntervalCPPS<Sample>?
     private var hnrStreamWorker: PreparedHNRStream<Sample>?
     private var hnrIntervalWorker: PreparedIntervalHNR<Sample>?
+    private var swipePrimeWorker: PreparedSWIPEPrimeAnalyzer<Sample>?
     private var callbackError: (any Error)?
     private var completion: AnalysisScheduleCompletion?
     private let cppsIdentity: ProfileIdentity?
@@ -40,6 +41,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             + (intervalWorker?.smoothingRecordWorkspaceBytes ?? 0)
             + (hnrStreamWorker?.preparedBufferBytes ?? 0)
             + (hnrIntervalWorker?.preparedBufferBytes ?? 0)
+            + (swipePrimeWorker?.preparedBufferBytes ?? 0)
     }
 
     public init(
@@ -115,6 +117,10 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     }
 
     private func prepareWorkers() throws {
+        if let configuration = profile.swipePrime {
+            swipePrimeWorker = try PreparedSWIPEPrimeAnalyzer(
+                configuration: configuration, epoch: origin.continuityEpoch)
+        }
         if let levels = profile.levels {
             levelWorker = try PreparedLevelAnalyzer(
                 configuration: levels, epoch: origin.continuityEpoch)
@@ -303,6 +309,11 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         if state == .prepared, callbackError == nil, let hnrIntervalWorker {
             try hnrIntervalWorker.append(input, interval: interval)
         }
+        if state == .prepared, callbackError == nil, let swipePrimeWorker {
+            _ = try swipePrimeWorker.process(input, interval: interval) { value in
+                deliver(.swipePrime(value.result), emit: emit)
+            }
+        }
         dispatchedSampleCount += Int64(tileCount)
         tileCount = 0
         if let callbackError { throw callbackError }
@@ -337,6 +348,11 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             case .hnr(let value):
                 native = value.dependencyTiming
                 center = value.centerSourceSeconds
+            case .swipePrime(let value):
+                native = value.timing
+                center =
+                    Double(native.source.startSample) / native.source.sampleRate
+                    + native.source.durationSeconds / 2
             }
             let timing = try origin.mappedTiming(native)
             emittedFrameCount += 1
@@ -404,6 +420,10 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
                 state == .prepared
                 ? try hnrIntervalWorker?.finish { deliver(.hnr($0.result), emit: emit) } : nil
             if let callbackError { throw callbackError }
+            let swipePrime =
+                state == .prepared
+                ? try swipePrimeWorker?.finish { deliver(.swipePrime($0.result), emit: emit) } : nil
+            if let callbackError { throw callbackError }
             let observed = try origin.sourceInterval(
                 for: localInterval(start: 0, count: receivedSampleCount))
             let result = try AnalysisScheduleCompletion(
@@ -412,7 +432,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
                 coverage: mask?.coverage(of: observed) ?? .acquired(observed.sampleCount),
                 mask: mask?.provenance,
                 emittedFrames: emittedFrameCount, levels: levels, pitch: pitch, cpps: cpps,
-                hnrInterval: hnrInterval, hnrStream: hnrStream,
+                hnrInterval: hnrInterval, hnrStream: hnrStream, swipePrime: swipePrime,
                 isCancelled: isCancelled)
             if state != .cancelled {
                 state = .finished
@@ -465,6 +485,13 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         } else {
             newPitch = nil
         }
+        let newSWIPEPrime: PreparedSWIPEPrimeAnalyzer<Sample>?
+        if swipePrimeWorker == nil, let configuration = profile.swipePrime {
+            newSWIPEPrime = try PreparedSWIPEPrimeAnalyzer(
+                configuration: configuration, epoch: next.continuityEpoch)
+        } else {
+            newSWIPEPrime = nil
+        }
         let newPreview: PreparedPreviewCPPS<Sample>?
         if previewWorker == nil, let profile = profile.cpps,
             profile.cepstrogram.previewHopLength != nil
@@ -504,12 +531,14 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
 
         try levelWorker?.reset(for: boundary)
         try pitchWorker?.reset(for: boundary)
+        try swipePrimeWorker?.reset(for: boundary)
         try previewWorker?.reset(for: boundary)
         if reuseInterval { try intervalWorker?.reset(source: nextInterval) }
         try hnrStreamWorker?.reset(for: boundary)
         if reuseHNRInterval { try hnrIntervalWorker?.reset(timing: nextHNRTiming) }
         if let newLevel { levelWorker = newLevel }
         if let newPitch { pitchWorker = newPitch }
+        if let newSWIPEPrime { swipePrimeWorker = newSWIPEPrime }
         if let newPreview { previewWorker = newPreview }
         if !reuseInterval { intervalWorker = newInterval }
         if let newHNRStream { hnrStreamWorker = newHNRStream }
@@ -541,6 +570,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         completion = nil
         hnrStreamWorker?.cancel()
         hnrIntervalWorker?.cancel()
+        swipePrimeWorker?.cancel()
         if !busy { releaseIfCancelled() }
     }
 
@@ -552,6 +582,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         intervalWorker = nil
         hnrStreamWorker = nil
         hnrIntervalWorker = nil
+        swipePrimeWorker = nil
         if tile.baseAddress != nil {
             tile.deinitialize()
             tile.deallocate()

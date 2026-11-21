@@ -8,6 +8,7 @@ public struct CaptureResultFrames: Sendable, Hashable {
     public internal(set) var pitch: PCMTransferScheduledFrame?
     public internal(set) var cpps: PCMTransferScheduledFrame?
     public internal(set) var hnr: PCMTransferScheduledFrame?
+    public internal(set) var swipePrime: PCMTransferScheduledFrame?
 
     mutating func accept(_ value: PCMTransferScheduledFrame) {
         switch value.frame.algorithm {
@@ -15,6 +16,7 @@ public struct CaptureResultFrames: Sendable, Hashable {
         case .yin: pitch = value
         case .cpps: cpps = value
         case .hnr: hnr = value
+        case .swipePrime: swipePrime = value
         }
     }
 }

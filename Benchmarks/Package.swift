@@ -6,6 +6,8 @@ let package = Package(
     name: "VoiceBenchmarks",
     platforms: [.macOS("27.0")],
     products: [
+        .executable(name: "SWIPEPrimeBenchmarks", targets: ["SWIPEPrimeBenchmarks"]),
+        .executable(name: "SWIPEPrimeWorkloadCheck", targets: ["SWIPEPrimeWorkloadCheck"]),
         .executable(name: "ShimmerBenchmarks", targets: ["ShimmerBenchmarks"]),
         .executable(name: "ShimmerWorkloadCheck", targets: ["ShimmerWorkloadCheck"]),
         .executable(name: "JitterBenchmarks", targets: ["JitterBenchmarks"]),
@@ -57,6 +59,17 @@ let package = Package(
             ]),
     ],
     targets: [
+        .target(
+            name: "SWIPEPrimeWorkload",
+            dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
+        .executableTarget(name: "SWIPEPrimeWorkloadCheck", dependencies: ["SWIPEPrimeWorkload"]),
+        .executableTarget(
+            name: "SWIPEPrimeBenchmarks",
+            dependencies: [
+                "SWIPEPrimeWorkload", .product(name: "Benchmark", package: "benchmark"),
+            ],
+            path: "Benchmarks/SWIPEPrimeBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .target(
             name: "ShimmerWorkload",
             dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),

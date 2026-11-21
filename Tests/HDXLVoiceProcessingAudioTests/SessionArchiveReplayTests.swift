@@ -18,7 +18,7 @@ private struct SessionAudioReplayFixture {
 
     init(
         directory: URL, precision: AnalysisPrecision = .float64, layout: PCMLayout = .planar,
-        allMetrics: Bool = false, masked: Bool = false,
+        allMetrics: Bool = false, masked: Bool = false, swipePrime: Bool = false,
         hnrMethod: HNRMethod = .forwardCrossCorrelation,
         hnrNormalization: HNRNormalizationDefinition = .causalWindow
     ) throws {
@@ -33,6 +33,11 @@ private struct SessionAudioReplayFixture {
         mediaURL = directory.appendingPathComponent("original-\(UUID()).wav")
         original = try Data(contentsOf: temporary)
         try original.write(to: mediaURL)
+        let swipe =
+            swipePrime
+            ? try SWIPEPrimeConfiguration(
+                sampleRate: rate, inputPrecision: precision,
+                pitchFloorHz: 250, pitchCeilingHz: 1000, hopLength: 160) : nil
         if allMetrics {
             let base = try fileScheduleProfile(precision: precision, layout: layout, rate: rate)
             profile = try AnalysisScheduleProfile(
@@ -42,12 +47,20 @@ private struct SessionAudioReplayFixture {
                     tracker: YINTrackerConfiguration()), cpps: base.cpps,
                 hnr: HNRConfiguration(
                     method: hnrMethod, sampleRate: rate,
-                    inputPrecision: precision, normalization: hnrNormalization))
+                    inputPrecision: precision, normalization: hnrNormalization),
+                swipePrime: swipe)
             metrics = [
                 .meanSquare, .rms, .peakAmplitude, .crestFactor, .levelDBFS,
                 .clippingFraction, .kWeightedEnergy, .fundamentalFrequency,
                 .trackedFundamentalFrequency, .cpp, .cpps, .harmonicToNoiseRatio,
             ]
+        } else if let swipe {
+            profile = try AnalysisScheduleProfile(
+                inputFormat: PCMFormat(
+                    sampleRate: Double(rate), channelCount: 2,
+                    encoding: precision == .float32 ? .float32 : .float64, layout: layout),
+                channels: .arithmeticMean, swipePrime: swipe)
+            metrics = [.fundamentalFrequency]
         } else {
             profile = try AnalysisScheduleProfile(
                 inputFormat: PCMFormat(
@@ -118,7 +131,8 @@ private struct SessionAudioReplayFixture {
                     for metric in selectedMetrics {
                         let algorithm: ScheduledAlgorithm
                         switch metric {
-                        case .fundamentalFrequency, .trackedFundamentalFrequency: algorithm = .yin
+                        case .fundamentalFrequency: algorithm = swipePrime ? .swipePrime : .yin
+                        case .trackedFundamentalFrequency: algorithm = .yin
                         case .cpp, .cpps: algorithm = .cpps
                         case .harmonicToNoiseRatio: algorithm = .hnr
                         default: algorithm = .levels
@@ -294,6 +308,47 @@ private func expectNoSessionStage(_ directory: URL) throws {
         #expect(result.profile == values.first?.result.profile)
     }
     try expectNoSessionStage(directory)
+}
+
+@Test func sessionAudioReplayRoutesSWIPEPrimeAloneAndAlongsideYIN() throws {
+    let directory = try sessionFileTestDirectory()
+    defer { try? FileManager.default.removeItem(at: directory) }
+    for precision in [AnalysisPrecision.float32, .float64] {
+        for layout in [PCMLayout.planar, .interleaved] {
+            for combined in [false, true] {
+                let fixture = try SessionAudioReplayFixture(
+                    directory: directory, precision: precision, layout: layout,
+                    allMetrics: combined, swipePrime: true)
+                let url = try fixture.archive(directory: directory)
+                let selected: [ScheduledMetric] =
+                    combined
+                    ? [.fundamentalFrequency, .trackedFundamentalFrequency]
+                    : [.fundamentalFrequency]
+                for metric in selected {
+                    let index = try #require(fixture.metrics.firstIndex(of: metric))
+                    var values: [ScheduledMeasurementExport] = []
+                    let result = try SessionArchiveAudioReplay.run(
+                        at: url, planIndex: UInt32(index), scratchDirectory: directory,
+                        archiveLimits: SessionArchiveLimits(),
+                        replayLimits: SessionArchiveReplayLimits(
+                            decodedChunkCapacity: 251, sourceTileCapacity: 128)
+                    ) { values.append($0) }
+                    #expect(values == fixture.expected[metric] && values.count > 1)
+                    #expect(result.seriesIndex == UInt32(index))
+                    #expect(
+                        result.source == fixture.interval && result.source.startSample > (1 << 54))
+                    #expect(result.decodedSamples == fixture.interval.sampleCount)
+                    #expect(result.emittedMeasurements == UInt64(values.count))
+                    if metric == .fundamentalFrequency {
+                        let configuration = try #require(fixture.profile.swipePrime)
+                        let identifier = try configuration.identity().identifier
+                        #expect(values.allSatisfy { $0.result.measurement.algorithm == identifier })
+                    }
+                }
+                try expectNoSessionStage(directory)
+            }
+        }
+    }
 }
 
 @Test func sessionAudioReplayPreservesFullMaskForOneContinuityRegionAndReportsNewRuntime() throws {

@@ -148,7 +148,7 @@ private func schedulingMaskOrigin() throws -> AnalysisScheduleOrigin {
             switch frame.value {
             case .levels(let value): #expect(value.unweighted.energy == nil)
             case .pitch(let raw, _): #expect(raw.observation == nil)
-            case .cpps, .hnr: Issue.record("Unexpected CPPS or HNR")
+            case .cpps, .hnr, .swipePrime: Issue.record("Unexpected optional algorithm")
             }
         }
         if baseline.isEmpty {
@@ -329,7 +329,7 @@ private func schedulingMaskOrigin() throws -> AnalysisScheduleOrigin {
                 switch value {
                 case .levels(let value): value.unweighted.energy == nil
                 case .pitch(let raw, _): raw.observation == nil
-                case .cpps, .hnr: false
+                case .cpps, .hnr, .swipePrime: false
                 }
             })
     }

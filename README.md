@@ -82,6 +82,8 @@ defines the pinned smoothing recipe, whole-interval and preview PCM paths, selec
 statistics, bounded rolling windows, and explicit freshness/coverage.
 The [YIN guide](Documentation/YIN.md) defines PCM pitch estimation, raw candidates,
 periodicity, actual observed support, optional causal tracking and separate history timing.
+The [SWIPE-prime guide](Documentation/SWIPEPrime.md) defines the optional multi-window
+pitch estimator, signed strength, bounded intermediate exports and independent parity evidence.
 The [pulse guide](Documentation/Pulses.md) defines injected-F0 waveform matching,
 explicit period/pair eligibility, cycle amplitudes, and bounded chunked delivery.
 The [jitter guide](Documentation/Jitter.md) defines local, absolute, RAP, PPQ5 and

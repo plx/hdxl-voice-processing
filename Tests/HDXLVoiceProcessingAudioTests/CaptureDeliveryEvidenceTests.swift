@@ -33,6 +33,7 @@
                     .meanSquare, .rms, .peakAmplitude, .crestFactor, .levelDBFS, .clippingFraction,
                 ]
             case .yin: metrics = [.fundamentalFrequency]
+            case .swipePrime: metrics = [.fundamentalFrequency]
             case .cpps: metrics = [.cpp, .cpps]
             case .hnr: metrics = [.harmonicToNoiseRatio]
             }
