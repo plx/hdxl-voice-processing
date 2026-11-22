@@ -96304,6 +96304,37 @@
       },
       "expectedProfile": "hdxl-swipe-prime-centered-2008 version 1; separately identified fixed-time YIN comparison; SWIPE settings SHA256 f764744b9b18c1c18d04fdda2a76129e7e5bc2c9243099561b0a307d83f3c0ec",
       "referenceOutputIdentity": "sha256:5d853589183f8e4b4a89201233f8ef1759c105bf453b92d57cee3a005aeb1f1b"
+    },
+    {
+      "id": "burg-formant-reference-v1",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Formants/burg.json",
+      "sha256": "7c10cd6c484f3a18e59e0d99093ff6917d57325926466917f79b6b7decd425a3",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/46",
+        "versionOrHash": "b6dc067b96a57213df01ee06a00fa1b5ba4b70c50cb780c96045f23246473714"
+      },
+      "generator": {
+        "path": "Tools/Formants/reference.py",
+        "version": "1",
+        "sha256": "b6dc067b96a57213df01ee06a00fa1b5ba4b70c50cb780c96045f23246473714"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Contains synthetic integers and numerical measurements only. Measured corpus sources retain their existing PVQD attribution and consent records."
+      },
+      "transformations": [
+        "Independent all-pole synthesis and quantization to mono PCM16.",
+        "Pinned Praat 7.0.02 keep-all and Burg formants on identical PCM, including bounded PVQD slices with source hashes in the corpus manifest."
+      ],
+      "expectedProfile": "Untracked Burg formants. Per-case order, ceiling, hop, conditioning and source coordinates are serialized.",
+      "referenceOutputIdentity": "sha256:7c10cd6c484f3a18e59e0d99093ff6917d57325926466917f79b6b7decd425a3"
     }
   ],
   "optionalModels": []

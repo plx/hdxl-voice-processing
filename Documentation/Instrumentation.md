@@ -371,3 +371,7 @@ Pass a `RuntimeDiagnosticMode` when preparing the spectrogram, LTAS accumulator,
 ## Spectral shape
 
 A prepared descriptor worker emits one `SpectralShape` interval around conversion of live Float32 bin powers to Double, the requested reductions, and result assembly. Its token is 4501. Frame sampling uses the source frame index. LTAS sampling uses a monotonically increasing evaluation ordinal on each prepared worker, starting at zero. Aggregate metadata puts the measured-frame support in the processed count. The sample count is the observed source interval, clamped to UInt32. Frame and LTAS evaluations share the same sampling policy. The metadata contains no bin values or user-defined band names.
+
+## Burg formants
+
+Pass a `RuntimeDiagnosticMode` when preparing the formant analyzer. The whole-interval conditioner records its existing resampling and pre-emphasis stages. The worker then emits one `BurgFormants` scope per admitted frame, with nested `BurgLPC`, `FormantRoots` and `FormantSelection` scopes for work actually performed. Selection records exclusions even after a failed fit. User callbacks that consume the result run after the frame scope. Sampled mode admits every sixteenth frame, starting at zero, across calls on the same worker. Token 4601, a sequence number and a bounded sample count identify the work. PCM, pitch and pole values stay out of diagnostic records. [Formant workloads](../Tools/Formants/README.md)

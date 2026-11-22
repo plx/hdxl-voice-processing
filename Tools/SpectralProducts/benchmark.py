@@ -161,6 +161,8 @@ class SpectralBenchmarkSuite:
     allocation_check: Callable | None = None
     extra_timing_probe: Callable | None = None
     comparisons: Callable | None = None
+    kernel_stages: bool = False
+    minimum_trials: int = 10
 
 
 PRODUCTS = SpectralBenchmarkSuite(
@@ -192,8 +194,9 @@ def distributions(raw, exported, baseline, records, mode, suite=PRODUCTS):
             metric, = measurement["metric"]
             histogram = measurement["statistics"]["histogram"]
             count, maximum = histogram["_totalCount"], histogram["maxValue"]
+            minimum_trials = 10 if name == suite.control else suite.minimum_trials
             if (metric not in metrics or metric in row or measurement["scalingFactor"] != 1
-                    or measurement["timeUnits"] != "nanoseconds" or type(count) is not int or count < 10
+                    or measurement["timeUnits"] != "nanoseconds" or type(count) is not int or count < minimum_trials
                     or sum(histogram["counts"]) != count or type(maximum) is not int or maximum < 0
                     or (metric == "wallClock" or name == suite.control) and maximum == 0):
                 raise ValueError(f"Invalid distribution for {name}/{metric}")
@@ -253,6 +256,11 @@ def main(suite=PRODUCTS):
         (output / "environment.json").write_text(ci.redact(json.dumps(environment, indent=2)) + "\n")
         (output / "resolution.json").write_bytes(resolution)
         flags = framework.swift_arguments(mode)
+        if suite.kernel_stages:
+            if "--traits" in flags:
+                flags[flags.index("--traits") + 1] += ",KernelBenchmarks"
+            else:
+                flags += ["--traits", "KernelBenchmarks"]
         plugin = ["swift", "package", *flags, "--allow-writing-to-package-directory", "benchmark", "--target", suite.target,
                   "--time-units", "nanoseconds", "--no-progress"]
         with (output / "commands.log").open("w") as log:

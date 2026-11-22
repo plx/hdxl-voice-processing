@@ -103,6 +103,7 @@ windows. Definitions are version 1, with no gain normalization:
 | `hann-periodic`, `hann-symmetric` | `0.5 - 0.5*cos(2*pi*n/D)` |
 | `hamming-periodic`, `hamming-symmetric` | `0.54 - 0.46*cos(2*pi*n/D)` |
 | `praat-gaussian-2-physical` | `u=(2*n+1-N)/N`; `(exp(-12*u*u)-exp(-12))/(1-exp(-12))` |
+| `praat-burg-gaussian-physical` | `u=(2*n+1-N)/(N+1)` and `(exp(-12*u*u)-exp(-12))/(1-exp(-12))` |
 
 All N=1 windows explicitly equal `[1]`. Symmetric Hann at N=2 is `[0,0]`, with
 zero gain; downstream gain correction must handle that degeneracy. Float32
