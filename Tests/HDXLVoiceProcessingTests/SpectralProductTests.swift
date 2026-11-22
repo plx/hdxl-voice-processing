@@ -33,7 +33,7 @@ import Testing
     {
         let worker = try PreparedSpectrogram<Double>(layout: layout, epoch: epoch, selection: mask)
         let aggregate = try LongTermSpectrumAccumulator(
-            layout: layout, epoch: epoch, selectionProfile: worker.selectionProfile)
+            layout: layout, epoch: epoch, selection: mask)
         var rows: [SpectrogramFrame] = []
         let emit: (BorrowedSpectrogramFrame<Double>) -> Void = { row in
             rows.append(row.owned())
@@ -49,7 +49,7 @@ import Testing
         }
         let completion = try worker.finish(emit: emit)
         return (
-            rows, try aggregate.snapshot(observedSource: completion.observedSource, selection: mask)
+            rows, try aggregate.snapshot(observedSource: completion.observedSource)
         )
     }
 
@@ -508,5 +508,193 @@ extension SpectralProductTests {
         #expect(reduced[0].originSample == 999 && reduced[1].originSample == 999)
         #expect(reduced[0].sourceEnvelope == reduced[1].sourceEnvelope)
         #expect(reduced[0].lastCenterSecondsFromOrigin < reduced[1].firstCenterSecondsFromOrigin)
+    }
+}
+
+extension SpectralProductTests {
+    private func changed(_ row: SpectrogramFrame, edit: (inout [String: Any]) throws -> Void) throws
+        -> SpectrogramFrame
+    {
+        var object = try #require(
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(row)) as? [String: Any])
+        try edit(&object)
+        return try JSONDecoder().decode(
+            SpectrogramFrame.self, from: JSONSerialization.data(withJSONObject: object))
+    }
+
+    @Test func selectedCoverageRequiresTheActualMaskAtAccumulation() throws {
+        let profile = try layout()
+        let timeline = try MaskTimeline(
+            MaskPlan(
+                source: source(0, 128),
+                provenances: [
+                    MaskProvenance(
+                        kind: .externalAnnotation,
+                        identifier: VersionedIdentifier(name: "second-half-excluded", version: 1))
+                ], policy: MaskSelectionPolicy(rejectedTags: [.nonSpeechDetected]),
+                observations: [
+                    MaskObservation(
+                        source: source(64, 64), provenanceIndex: 0, tags: [.nonSpeechDetected])
+                ]))
+        let (rows, _) = try analyze(.init(repeating: 1, count: 128), profile, mask: timeline)
+        let moved = try changed(rows[0]) { object in
+            var info = try #require(object["info"] as? [String: Any])
+            var support = try #require(info["source"] as? [String: Any])
+            info["frameIndex"] = 1
+            support["startSample"] = 64
+            info["source"] = support
+            object["info"] = info
+        }
+        let verified = try LongTermSpectrumAccumulator(
+            layout: profile, epoch: epoch, selection: timeline)
+        #expect(throws: ContractError.invalidCoverage) { try verified.append(moved) }
+        for row in rows { try verified.append(row) }
+        #expect(
+            try verified.snapshot(observedSource: source(0, 128)).selectionCoverage?
+                .selectedCoverage == 1)
+        let raw = try LongTermSpectrumAccumulator(
+            layout: profile, epoch: epoch, selectionProfile: moved.info.selectionProfile)
+        try raw.append(moved)
+        #expect(try raw.snapshot(observedSource: source(0, 128)).selectionCoverage == nil)
+    }
+
+    @Test func replayEnforcesEarliestTailAndPossibleGridWeights() throws {
+        let profile = try layout(hop: 16, weighting: .newlyCoveredSamples)
+        let (rows, _) = try analyze(.init(repeating: 1, count: 70), profile)
+        #expect(rows.count == 2 && rows[1].info.frameIndex == 1)
+        #expect(throws: ContractError.invalidCoverage) {
+            try changed(rows[1]) { object in
+                var info = try #require(object["info"] as? [String: Any])
+                var support = try #require(info["source"] as? [String: Any])
+                info["frameIndex"] = 4
+                support["startSample"] = 64
+                support["sampleCount"] = 6
+                info["source"] = support
+                object["info"] = info
+            }
+        }
+        for weight in [1, 16, 48] {
+            #expect(throws: ContractError.invalidCoverage) {
+                try changed(rows[0]) { object in
+                    var info = try #require(object["info"] as? [String: Any])
+                    info["newlyCoveredSamples"] = weight
+                    info["weight"] = weight
+                    object["info"] = info
+                }
+            }
+        }
+        let regular = try layout()
+        let tail = try analyze(.init(repeating: 0, count: 68), regular).0[1]
+        let ring = try RollingSpectralProducts(layout: regular, capacity: 1)
+        try ring.append(tail)
+        let display = try ring.snapshot().displayColumns(framesPerColumn: 1, aggregation: .maximum)[
+            0]
+        #expect(display.firstCenterSecondsFromOrigin == 66.0 / 1024)
+        #expect(display.lastCenterSecondsFromOrigin == display.firstCenterSecondsFromOrigin)
+    }
+
+    @Test func unsupportedOverflowDoesNotInvalidateTheSupportedBand() throws {
+        let amplitude = Float(sign: .plus, exponent: 66, significand: 1)
+        let pcm = (0..<64).map { $0.isMultiple(of: 2) ? amplitude : -amplitude }
+        for limited in [true, false] {
+            let profile = try layout(bandwidth: limited ? 7 : nil, precision: .float32)
+            let worker = try PreparedSpectrogram<Float>(layout: profile, epoch: epoch)
+            var output: SpectrogramFrame?
+            _ = try pcm.withUnsafeBufferPointer {
+                try worker.process($0, interval: source(0, 64)) { output = $0.owned() }
+            }
+            let row = try #require(output)
+            if limited {
+                #expect(row.info.status == .noEnergy && row.binPower == [0] && row.info.weight == 1)
+            } else {
+                #expect(row.info.status == .unavailable(.analysisFailure))
+            }
+        }
+    }
+
+    @Test func scaledLtasAndDisplayMeansPreserveRepresentableSubnormalPower() throws {
+        let profile = try layout()
+        let minimum = Double.leastNonzeroMagnitude
+        for positives in [1, 2] {
+            let inputs =
+                [Double](repeating: 0, count: (3 - positives) * 64)
+                + [Double](repeating: 1, count: positives * 64)
+            let (reference, _) = try analyze(inputs, profile)
+            let ltas = try LongTermSpectrumAccumulator(layout: profile, epoch: epoch)
+            let ring = try RollingSpectralProducts(layout: profile, capacity: 3)
+            for original in reference {
+                var row = original
+                if row.info.status == .measured {
+                    row = try changed(original) { object in
+                        var powers = original.binPower
+                        powers[0] = minimum
+                        object["binPower"] = powers
+                    }
+                    #expect(
+                        row.value(at: 0, presentation: .powerDensityPerHertz)
+                            == .unavailable(.analysisFailure))
+                }
+                try ltas.append(row)
+                try ring.append(row)
+            }
+            let mean = try ltas.snapshot(observedSource: source(0, 192))
+            let display = try ring.snapshot().displayColumns(
+                framesPerColumn: 3, aggregation: .arithmeticMean)[0]
+            if positives == 2 {
+                #expect(mean.meanBinPower.first == minimum && display.linearPower.first == minimum)
+                #expect(
+                    mean.value(at: 0, presentation: .decibels(referencePower: 1)).estimate != nil)
+            } else {
+                #expect(mean.status == .unavailable(.analysisFailure) && mean.meanBinPower.isEmpty)
+                #expect(
+                    display.reductionUnavailability == .analysisFailure
+                        && display.linearPower.isEmpty)
+            }
+        }
+    }
+
+    @Test func cepstralRingRejectsMixedIntervalsAndPostTailFrames() throws {
+        for preview in [false, true] {
+            let config = try CepstrogramConfiguration(
+                sourceSampleRate: 16_000, analysisSampleRate: 4000, pitchFloorHz: 100,
+                hopSeconds: 0.005, declaredInputBandwidthHz: 8000,
+                conditioningMethod: preview
+                    ? .streamingPreview(lobes: 16, cutoffFraction: 0.9)
+                    : .praat7WholeInterval(interpolationDepth: 50))
+            func rows(_ length: Int) throws -> [PowerCepstrumFrame] {
+                let pcm = (0..<length).map { 0.25 * cos(Double($0) * 0.12) }
+                let support = try source(0, length, rate: 16_000)
+                let exporter = try PowerCepstrogramExporter(configuration: config)
+                var result: [PowerCepstrumFrame] = []
+                let emit: (BorrowedPowerCepstrum<Double>) -> Void = { row in
+                    do { result.append(try exporter.owned(row)) } catch { Issue.record(error) }
+                }
+                if preview {
+                    let worker = try PreparedPreviewCepstrogram<Double>(
+                        configuration: config, epoch: epoch)
+                    _ = try pcm.withUnsafeBufferPointer {
+                        try worker.process($0, interval: support, emit: emit)
+                    }
+                    _ = try worker.finish(emit: emit)
+                } else {
+                    let worker = try PreparedIntervalCepstrogram<Double>(
+                        configuration: config, source: support)
+                    try pcm.withUnsafeBufferPointer { try worker.append($0, interval: support) }
+                    _ = try worker.finish(emit: emit)
+                }
+                return result
+            }
+            let shorter = try rows(2560)
+            let longer = try rows(5120)
+            let first = preview ? shorter.last! : shorter[0]
+            let next = try #require(
+                longer.last {
+                    $0.unavailability == nil && $0.context.frameIndex > first.context.frameIndex
+                })
+            let ring = try RollingSpectralProducts(configuration: config, capacity: 2)
+            try ring.append(first)
+            #expect(throws: FramingError.unexpectedInterval) { try ring.append(next) }
+            #expect(ring.count == 1)
+        }
     }
 }

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Measure bounded spectral products and bind the distributions to the shared workload manifest."""
 import argparse
+from bisect import bisect_left
 import csv
 import gzip
 import json
+import math
 import os
 from pathlib import Path
 import shutil
@@ -77,6 +79,48 @@ def validate_memory(rows):
         raise ValueError("Live heap growth exceeded the 16 MiB synthetic regression allowance")
 
 
+def histogram_percentiles(histogram):
+    """Reconstruct the pinned HdrHistogram's clipped highest-equivalent values at integer percentiles."""
+    counts = histogram["counts"]
+    half = histogram["subBucketHalfCountMagnitude"]
+    unit = histogram["unitMagnitude"]
+    total, maximum = histogram["_totalCount"], histogram["maxValue"]
+    if (type(half) is not int or not 0 <= half <= 20 or type(unit) is not int or not 0 <= unit <= 63
+            or type(total) is not int or total <= 0 or type(maximum) is not int or maximum < 0
+            or not counts or any(type(n) is not int or n < 0 for n in counts)):
+        raise ValueError("Malformed histogram geometry or counts")
+    cumulative, upper = [], []
+    observed = 0
+    first_lower = last_lower = 0
+    for index, n in enumerate(counts):
+        if not n:
+            continue
+        bucket = (index >> half) - 1
+        sub = index if bucket < 0 else (index & ((1 << half) - 1)) + (1 << half)
+        shift = max(0, bucket) + unit
+        lower = sub << shift
+        if not observed:
+            first_lower = lower
+        last_lower = lower
+        observed += n
+        cumulative.append(observed)
+        upper.append(lower + (1 << shift) - 1)
+    minimum = 0 if counts[0] else histogram["minNonZeroValue"]
+    if (observed != total or not first_lower <= minimum <= upper[0]
+            or not last_lower <= maximum <= upper[-1] or minimum > maximum):
+        raise ValueError("Raw extrema or observation count contradict occupied histogram buckets")
+    result = [minimum]
+    for q in range(1, 100):
+        rank = max(1, math.ceil(math.nextafter(float(q), 0.0) * total / 100))
+        result.append(max(minimum, min(maximum, upper[bisect_left(cumulative, rank)])))
+    return [*result, maximum]
+
+
+def validate_control(histogram):
+    if histogram["counts"][0] or histogram["minNonZeroValue"] <= 0:
+        raise ValueError("Allocation capability control missed known work in a measured trial")
+
+
 def validate_copy_allocations(operation, frame_count, maximum):
     # The owned destination allocates per frame. Widening a scalar must not allocate per bin.
     if operation in {"Retain8", "Retain64", "Export"} and maximum > 2 * frame_count:
@@ -107,16 +151,19 @@ def distributions(raw, exported, baseline, records, mode):
                     or sum(histogram["counts"]) != count or type(maximum) is not int or maximum < 0
                     or (metric == "wallClock" or name == CONTROL) and maximum == 0):
                 raise ValueError(f"Invalid distribution for {name}/{metric}")
+            if name == CONTROL:
+                validate_control(histogram)
             if metric == "mallocCountTotal" and name != CONTROL:
                 operation, record = case_by_op[name]
                 validate_copy_allocations(operation, record["expectedFrames"], maximum)
             path = exported / f"{baseline}.{TARGET}.{name}.{metric}.histogram.percentiles.tsv"
             lines = path.read_text().splitlines()
             points = [tuple(map(int, line.split("\t"))) for line in lines[1:]]
-            if not lines[0].startswith("Percentile\t") or [q for q, _ in points] != list(range(101)):
+            unit = " (ns) *" if metric in ("wallClock", "cpuTotal") else " *"
+            if lines[0] != "Percentile\t" + METRICS[metric] + unit or [q for q, _ in points] != list(range(101)):
                 raise ValueError(f"Incomplete percentiles for {name}/{metric}")
             quantiles = [value for _, value in points]
-            if quantiles != sorted(quantiles) or quantiles[0] < 0:
+            if quantiles != histogram_percentiles(histogram):
                 raise ValueError(f"Invalid percentiles for {name}/{metric}")
             row[metric] = dict(sampleCount=count, maximum=maximum, p50=quantiles[50], p95=quantiles[95], p99=quantiles[99])
             p99[f"{name} - {METRICS[metric]}"] = quantiles[99]

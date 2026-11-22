@@ -49,7 +49,7 @@ public final class PreparedSpectrogram<Sample: BinaryFloatingPoint & Sendable> {
         spectrum = try PreparedSpectrum(layout.spectrum)
         windowed = .init(repeating: 0, count: layout.framing.window.sampleCount)
         bins = .init(repeating: FourierBin(real: 0), count: layout.spectrum.transform.realBinCount)
-        power = .init(repeating: 0, count: bins.count)
+        power = .init(repeating: 0, count: layout.frequency.count)
     }
 
     @discardableResult
@@ -80,16 +80,8 @@ public final class PreparedSpectrogram<Sample: BinaryFloatingPoint & Sendable> {
         let status: SpectralFrameStatus = diagnostics.withFrame(metadata, stage: .spectrogram) {
             if let reason = support.unavailability { return .unavailable(reason) }
             do {
-                if let selection {
-                    guard source.startSample >= selection.plan.source.startSample,
-                        source.endSample <= selection.plan.source.endSample
-                    else { return .unavailable(.excluded) }
-                    guard try selection.eligibleRegion(containing: source) != nil else {
-                        return .unavailable(.missingAcquisition)
-                    }
-                    guard try selection.selectedRegion(containing: source) != nil else {
-                        return .unavailable(.excluded)
-                    }
+                if let reason = try selection?.spectralExclusion(for: source) {
+                    return .unavailable(reason)
                 }
                 _ = try windowed.withUnsafeMutableBufferPointer {
                     try window.write(samples, into: $0)
@@ -101,13 +93,11 @@ public final class PreparedSpectrogram<Sample: BinaryFloatingPoint & Sendable> {
                 }
                 try bins.withUnsafeBufferPointer { input in
                     try power.withUnsafeMutableBufferPointer {
-                        try spectrum.writePower(input, into: $0)
+                        try spectrum.writePowerPrefix(input, into: $0)
                     }
                 }
-                return power.withUnsafeBufferPointer { full in
-                    let supported = UnsafeBufferPointer(
-                        rebasing: full.prefix(layout.frequency.count))
-                    return bins.withUnsafeBufferPointer { transformed in
+                return power.withUnsafeBufferPointer { supported in
+                    bins.withUnsafeBufferPointer { transformed in
                         supported.withSpectralScalars(
                             doubles: { values in
                                 transformed.withMemoryRebound(to: FourierBin<Double>.self) {

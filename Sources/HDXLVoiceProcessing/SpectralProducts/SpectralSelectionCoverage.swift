@@ -53,3 +53,16 @@ extension MaskPlan {
             sha256: SHA256.hash(data: canonicalJSON()).map { String(format: "%02x", $0) }.joined())
     }
 }
+
+extension MaskTimeline {
+    func spectralExclusion(for source: SourceInterval) throws -> UnavailabilityReason? {
+        guard source.epoch == plan.source.epoch, source.sampleRate == plan.source.sampleRate else {
+            throw MaskError.unexpectedInterval
+        }
+        guard source.startSample >= plan.source.startSample,
+            source.endSample <= plan.source.endSample
+        else { return .excluded }
+        guard try eligibleRegion(containing: source) != nil else { return .missingAcquisition }
+        return try selectedRegion(containing: source) == nil ? .excluded : nil
+    }
+}

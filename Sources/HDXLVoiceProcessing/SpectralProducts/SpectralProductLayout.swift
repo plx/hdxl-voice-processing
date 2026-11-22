@@ -159,7 +159,9 @@ public enum SpectrumPresentation: Sendable, Hashable, Codable {
         switch self {
         case .binPower: value = power
         case .binRMSAmplitude: value = sqrt(power)
-        case .powerDensityPerHertz: value = power / spacing
+        case .powerDensityPerHertz:
+            value = power / spacing
+            if power > 0 && value == 0 { return .unavailable(.analysisFailure) }
         case .decibels(let reference):
             guard reference.isFinite, reference > 0 else { return .unavailable(.invalidInput) }
             guard power > 0 else { return .unavailable(.silence) }

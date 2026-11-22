@@ -29,12 +29,21 @@ public struct SpectralFrameInfo: Sendable, Hashable, Codable {
         case .measured, .noEnergy, .unavailable(.analysisFailure):
             guard complete else { throw ContractError.invalidCoverage }
         case .unavailable(.insufficientData):
-            guard !complete, layout.framing.partialWindowPolicy == .emitUnavailable else {
+            let total = source.endSample - epochStartSample
+            guard !complete, layout.framing.partialWindowPolicy == .emitUnavailable,
+                try frameIndex == layout.framing.completeFrameCount(observedSampleCount: total)
+            else {
                 throw ContractError.invalidCoverage
             }
         case .unavailable(.excluded), .unavailable(.missingAcquisition):
             guard complete, selectionProfile != nil else { throw ContractError.invalidCoverage }
         case .unavailable: throw ContractError.invalidValue
+        }
+        if status.isMeasured && newlyCoveredSamples != source.sampleCount {
+            let hop = Int64(layout.framing.hopLength)
+            guard newlyCoveredSamples > 0, newlyCoveredSamples.isMultiple(of: hop),
+                UInt64(newlyCoveredSamples / hop) <= frameIndex
+            else { throw ContractError.invalidCoverage }
         }
         guard layout.conditioning == nil || selectionProfile == nil else {
             throw ContractError.invalidConfiguration

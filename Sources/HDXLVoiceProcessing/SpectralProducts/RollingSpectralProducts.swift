@@ -40,8 +40,8 @@ public enum SpectralProductColumn: Sendable, Hashable, Encodable {
     var centerSecondsFromOrigin: Double {
         switch self {
         case .spectrum(let row):
-            (Double(row.info.source.startSample - row.info.epochStartSample) + Double(
-                row.layout.framing.window.sampleCount) / 2) / row.info.source.sampleRate
+            (Double(row.info.source.startSample - row.info.epochStartSample)
+                + Double(row.info.source.sampleCount) / 2) / row.info.source.sampleRate
         case .powerCepstrum(let row): row.context.centerSecondsFromOrigin
         }
     }
@@ -60,8 +60,15 @@ public enum SpectralProductColumn: Sendable, Hashable, Encodable {
                 && a.info.source.epoch == b.info.source.epoch
                 && a.info.selectionProfile == b.info.selectionProfile
         case (.powerCepstrum(let a), .powerCepstrum(let b)):
-            return a.context.origin == b.context.origin
-                && a.context.centerSecondsFromOrigin < b.context.centerSecondsFromOrigin
+            guard a.context.origin == b.context.origin,
+                a.context.centerSecondsFromOrigin < b.context.centerSecondsFromOrigin
+            else { return false }
+            if a.configuration.previewHopLength != nil {
+                return
+                    !(a.unavailability == .insufficientData
+                    && a.context.suppliedAnalysisSampleCount < a.configuration.frame.frameLength)
+            }
+            return a.context.timing.source == b.context.timing.source
         default: return false
         }
     }
@@ -79,6 +86,7 @@ public struct SpectralDisplayColumn: Sendable, Hashable, Encodable {
     public let firstFrameIndex: UInt64
     public let lastFrameIndex: UInt64
     public let sourceEnvelope: SourceInterval
+    public let reductionUnavailability: UnavailabilityReason?
     public let availableFrameCount: Int
     public let unavailableFrames: [UnavailabilityReason: Int]
     public let aggregation: SpectralDisplayAggregation
@@ -116,6 +124,8 @@ public struct SpectralProductSnapshot: Sendable, Hashable, Encodable {
             var endSample = first.source.endSample
             var missing: [UnavailabilityReason: Int] = [:]
             var powers: [Double] = []
+            var sums: [SpectralPowerSum] = []
+            var reductionUnavailability: UnavailabilityReason?
             var included = 0
             for column in group {
                 startSample = min(startSample, column.source.startSample)
@@ -126,15 +136,27 @@ public struct SpectralProductSnapshot: Sendable, Hashable, Encodable {
                 }
                 included += 1
                 let values = column.powers
-                if included == 1 {
-                    powers = values
-                    continue
-                }
-                for i in powers.indices {
-                    switch aggregation {
-                    case .maximum: powers[i] = max(powers[i], values[i])
-                    case .arithmeticMean: powers[i] += (values[i] - powers[i]) / Double(included)
+                switch aggregation {
+                case .maximum:
+                    if included == 1 {
+                        powers = values
+                    } else {
+                        for i in powers.indices { powers[i] = max(powers[i], values[i]) }
                     }
+                case .arithmeticMean:
+                    if included == 1 {
+                        sums = Array(repeating: SpectralPowerSum(), count: values.count)
+                    }
+                    for i in sums.indices { sums[i].add(values[i], weight: 1) }
+                }
+            }
+            if included == 0 {
+                reductionUnavailability = .insufficientData
+            } else if aggregation == .arithmeticMean {
+                if let mean = SpectralPowerSum.means(sums, weight: Int64(included)) {
+                    powers = mean
+                } else {
+                    reductionUnavailability = .analysisFailure
                 }
             }
             let source = try SourceInterval(
@@ -149,7 +171,8 @@ public struct SpectralProductSnapshot: Sendable, Hashable, Encodable {
                     selectionProfile: first.selectionProfile,
                     profile: profile, firstFrameIndex: first.frameIndex,
                     lastFrameIndex: columns[end - 1].frameIndex,
-                    sourceEnvelope: source, availableFrameCount: included,
+                    sourceEnvelope: source, reductionUnavailability: reductionUnavailability,
+                    availableFrameCount: included,
                     unavailableFrames: missing, aggregation: aggregation,
                     axis: axis, powerUnit: powerUnit, linearPower: powers))
             offset = end

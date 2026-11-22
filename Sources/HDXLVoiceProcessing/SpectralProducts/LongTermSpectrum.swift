@@ -32,7 +32,8 @@ public final class LongTermSpectrumAccumulator {
     public let startSample: Int64
     public let selectionProfile: ProfileIdentity?
     private let diagnostics: WorkerDiagnostics
-    private var means: [Double]
+    private let selection: MaskTimeline?
+    private var sums: [SpectralPowerSum]
     private var coveredSamples: Int64 = 0
     private var totalWeight: Int64 = 0
     private var measuredFrames: UInt64 = 0
@@ -45,17 +46,31 @@ public final class LongTermSpectrumAccumulator {
 
     public init(
         layout: SpectrogramLayout, epoch: StreamEpoch, startSample: Int64 = 0,
-        selectionProfile: ProfileIdentity? = nil, diagnosticMode: RuntimeDiagnosticMode = .disabled
+        selectionProfile: ProfileIdentity? = nil, selection: MaskTimeline? = nil,
+        diagnosticMode: RuntimeDiagnosticMode = .disabled
     ) throws {
         guard startSample >= 0 else { throw ContractError.invalidInterval }
         self.layout = layout
         self.epoch = epoch
         self.startSample = startSample
-        self.selectionProfile = selectionProfile
+        if let selection {
+            guard layout.conditioning == nil else { throw ContractError.invalidConfiguration }
+            guard selection.plan.source.epoch == epoch,
+                selection.plan.source.sampleRate == layout.framing.window.sampleRate
+            else { throw MaskError.unexpectedInterval }
+            let identity = try selection.plan.spectralSelectionIdentity()
+            guard selectionProfile == nil || selectionProfile == identity else {
+                throw ContractError.invalidFingerprint
+            }
+            self.selectionProfile = identity
+        } else {
+            self.selectionProfile = selectionProfile
+        }
+        self.selection = selection
         previousEnd = startSample
         lastMeasuredEnd = startSample
         diagnostics = WorkerDiagnostics(mode: diagnosticMode.facadeMode)
-        means = .init(repeating: 0, count: layout.frequency.count)
+        sums = .init(repeating: SpectralPowerSum(), count: layout.frequency.count)
     }
 
     public func append<Sample>(_ row: BorrowedSpectrogramFrame<Sample>) throws {
@@ -83,6 +98,17 @@ public final class LongTermSpectrumAccumulator {
         else { throw FramingError.unexpectedInterval }
         let source = info.source
         guard source.endSample >= previousEnd else { throw FramingError.unexpectedInterval }
+        if let selection, info.status != .unavailable(.insufficientData) {
+            if let reason = try selection.spectralExclusion(for: source) {
+                guard info.status == .unavailable(reason) else {
+                    throw ContractError.invalidCoverage
+                }
+            } else if info.status == .unavailable(.excluded)
+                || info.status == .unavailable(.missingAcquisition)
+            {
+                throw ContractError.invalidCoverage
+            }
+        }
         let newlyCovered = source.endSample - max(source.startSample, lastMeasuredEnd)
         if info.status.isMeasured {
             guard info.newlyCoveredSamples == newlyCovered else {
@@ -91,21 +117,12 @@ public final class LongTermSpectrumAccumulator {
             // Weights and union counts cannot exceed the representable span of this epoch.
             let (newWeight, overflow) = totalWeight.addingReportingOverflow(info.weight)
             guard !overflow else { throw ContractError.arithmeticOverflow }
-            let fraction = Double(info.weight) / Double(newWeight)
+            let weight = Double(info.weight)
             var metadata = DiagnosticMetadata()
             metadata.frameSequence = info.frameIndex
             metadata.sampleCount = UInt32(clamping: values.count)
             diagnostics.withFrame(metadata, stage: .longTermSpectrum) {
-                for i in values.indices {
-                    let power = Double(values[i])
-                    // Pick the nearer endpoint for stability when weights are highly asymmetric.
-                    if fraction <= 0.5 {
-                        means[i] += (power - means[i]) * fraction
-                    } else {
-                        means[i] =
-                            power + (means[i] - power) * (Double(totalWeight) / Double(newWeight))
-                    }
-                }
+                for i in values.indices { sums[i].add(Double(values[i]), weight: weight) }
             }
             lastMeasuredEnd = source.endSample
             coveredSamples += newlyCovered
@@ -121,7 +138,7 @@ public final class LongTermSpectrumAccumulator {
     }
 
     /// Supply the entire observed interval to count offsets, gaps and discarded tails in coverage.
-    public func snapshot(observedSource: SourceInterval, selection: MaskTimeline? = nil) throws
+    public func snapshot(observedSource: SourceInterval) throws
         -> LongTermSpectrum
     {
         guard observedSource.epoch == epoch, observedSource.startSample == startSample,
@@ -134,16 +151,19 @@ public final class LongTermSpectrumAccumulator {
             throw FramingError.unexpectedInterval
         }
         let timing = try AnalysisTiming(source: observedSource, includedSampleCount: coveredSamples)
-        if let selection, try selection.plan.spectralSelectionIdentity() != selectionProfile {
-            throw ContractError.invalidFingerprint
-        }
         let coverage =
             selectionProfile == nil || selection != nil
             ? try SpectralSelectionCoverage(
                 observed: observedSource, measured: coveredSamples, selection: selection) : nil
         let status: SpectralFrameStatus
+        var means: [Double] = []
         if measuredFrames > 0 {
-            status = hasEnergy ? .measured : .noEnergy
+            if let values = SpectralPowerSum.means(sums, weight: totalWeight) {
+                status = hasEnergy ? .measured : .noEnergy
+                means = values
+            } else {
+                status = .unavailable(.analysisFailure)
+            }
         } else {
             // Preserve the full histogram alongside the highest-priority reason.
             let reason =
@@ -159,7 +179,7 @@ public final class LongTermSpectrumAccumulator {
             timing: timing, status: status,
             measuredFrames: measuredFrames, unavailableFrames: unavailable,
             totalWeight: totalWeight,
-            meanBinPower: measuredFrames == 0 ? [] : means,
+            meanBinPower: means,
             warnings: coveredSamples < observedSource.sampleCount ? [.partialCoverage] : [])
     }
 }
