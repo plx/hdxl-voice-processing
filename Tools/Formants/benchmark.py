@@ -29,7 +29,7 @@ def validate_cases(records):
         rate, ceiling, order, hop = key
         if key not in expected or key in seen or item['name'] != f'r{rate}-c{ceiling}-o{order}-h{hop}':
             raise ValueError(f'Invalid or duplicate Burg benchmark case {key}')
-        expected_profile = dict(sourceSampleRate=rate, ceilingHz=ceiling, order=order, hopMilliseconds=hop,
+        expected_profile = dict(schemaVersion=1, sourceSampleRate=rate, ceilingHz=ceiling, order=order, hopMilliseconds=hop,
                                 inputPrecision='float64', declaredBandwidthHz=rate // 2, preEmphasisFromHz=50)
         encoded = json.dumps(expected_profile, sort_keys=True, separators=(',', ':')).encode()
         identity = dict(identifier=dict(name='burg-formants-untracked', version=1),

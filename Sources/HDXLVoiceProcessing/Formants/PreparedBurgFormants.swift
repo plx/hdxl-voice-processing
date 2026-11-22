@@ -31,6 +31,7 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
             (Sample.self == Float.self && configuration.inputPrecision == .float32)
                 || (Sample.self == Double.self && configuration.inputPrecision == .float64)
         else { throw ConditioningError.precisionMismatch }
+        guard source.sampleCount > 0 else { throw ConditioningError.insufficientData }
         conditioner = try PreparedIntervalConditioner(
             configuration: configuration.conditioning, source: source, diagnostics: diagnostics)
         layout = conditioner.layout
@@ -129,10 +130,7 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
         if failure == nil {
             let lo = Int(support.startSample - source.startSample)
             let hi = Int(support.endSample - source.startSample)
-            let observed = original[lo..<hi]
-            if let first = observed.first, observed.allSatisfy({ $0 == first }) {
-                failure = first == 0 ? .silent : .constant
-            }
+            failure = originalFailure(original, lower: lo, upper: hi)
         }
         var fit: FormantBurgFit?
         var solution: FormantRootSolution?
@@ -162,6 +160,15 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
             centerSecondsFromOrigin: center, index: index, pitch: observation,
             diagnostics: .init(fit: fit, solution: solution),
             failure: failure, cautions: selection.cautions, candidates: selection.candidates)
+    }
+
+    private func originalFailure(_ samples: UnsafeBufferPointer<Sample>, lower: Int, upper: Int)
+        -> FormantFitFailure?
+    {
+        guard lower < upper else { return .shortWindow }
+        let first = samples[lower]
+        for index in (lower + 1)..<upper where samples[index] != first { return nil }
+        return first == 0 ? .silent : .constant
     }
 
     private func sourceWindow(_ samples: Range<Int>, in source: SourceInterval) throws

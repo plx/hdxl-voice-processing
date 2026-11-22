@@ -221,10 +221,20 @@ public struct SessionArchiveMeasurement: Sendable, Hashable {
     public let timestamp: SessionArchiveTimestamp
     public let result: MeasurementResult
     public let scheduled: SessionArchiveScheduledMetadata?
+    /// Original PCM dependency of a standalone whole-interval formant measurement.
+    public let conditioningSupport: SourceInterval?
 
     public init(timestamp: SessionArchiveTimestamp, result: MeasurementResult) {
         self.timestamp = timestamp
         self.result = result
+        scheduled = nil
+        conditioningSupport = nil
+    }
+
+    public init(timestamp: SessionArchiveTimestamp, formant: BurgFormantMeasurement) {
+        self.timestamp = timestamp
+        result = formant.result
+        conditioningSupport = formant.conditioningSupport
         scheduled = nil
     }
 
@@ -248,7 +258,7 @@ public struct SessionArchiveMeasurement: Sendable, Hashable {
 
     init(
         timestamp: SessionArchiveTimestamp, result: MeasurementResult,
-        scheduled: SessionArchiveScheduledMetadata?
+        scheduled: SessionArchiveScheduledMetadata?, conditioningSupport: SourceInterval? = nil
     ) throws {
         if let scheduled {
             guard timestamp.secondsFromOrigin == scheduled.frameCenterSecondsFromOrigin else {
@@ -258,5 +268,6 @@ public struct SessionArchiveMeasurement: Sendable, Hashable {
         self.timestamp = timestamp
         self.result = result
         self.scheduled = scheduled
+        self.conditioningSupport = conditioningSupport
     }
 }

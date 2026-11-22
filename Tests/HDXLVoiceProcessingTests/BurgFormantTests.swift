@@ -121,7 +121,7 @@ struct BurgFormantTests {
         #expect(selection.candidates.count == 3)
         for (pole, pair) in zip(selection.candidates, observed) {
             #expect(pole.isCredible)
-            #expect(abs(pole.frequencyHz - pair.0) < 1e-7)
+            #expect(abs((pole.frequencyHz ?? .infinity) - pair.0) < 1e-7)
             #expect(abs(try #require(pole.bandwidthHz) - pair.1) < 1e-7)
         }
         let limited = FormantPolynomial(coefficients: coefficients).solve(sweepLimit: 1)
@@ -181,7 +181,8 @@ struct BurgFormantTests {
                     let key: (BurgFormantCandidate) -> (Double, Double) = { pole in
                         (
                             abs(pole.imaginary) < 1e-12
-                                ? (pole.real < 0 ? Double(row.ceilingHz) : 0) : pole.frequencyHz,
+                                ? (pole.real < 0 ? Double(row.ceilingHz) : 0)
+                                : pole.frequencyHz ?? .infinity,
                             pole.bandwidthHz ?? .infinity
                         )
                     }
@@ -199,14 +200,14 @@ struct BurgFormantTests {
                     return key(lhs) < key(rhs)
                 }
                 for (p, ref) in zip(nativePairs, referencePairs) {
-                    rawF = max(rawF, abs(p.frequencyHz - ref[0]))
+                    rawF = max(rawF, abs((p.frequencyHz ?? .infinity) - ref[0]))
                     rawB = max(rawB, abs((p.bandwidthHz ?? .infinity) - ref[1]))
                 }
                 for (i, pair) in zip(ranked, oracle.selectedHz).enumerated() {
                     let (p, ref) = pair
                     #expect(p.number == i + 1)
                     #expect(frame.formant(i + 1) == (p.isCredible ? p : nil))
-                    finalF = max(finalF, abs(p.frequencyHz - ref[0]))
+                    finalF = max(finalF, abs((p.frequencyHz ?? .infinity) - ref[0]))
                     finalB = max(finalB, abs((p.bandwidthHz ?? .infinity) - ref[1]))
                     if p.isCredible { retained += 1 }
                 }
@@ -244,7 +245,9 @@ extension BurgFormantTests {
         try x.withUnsafeBufferPointer { pcm in
             try plan.analyze(pcm, source: source) { frame in
                 for (i, p) in frame.candidates.enumerated() where i < 5 {
-                    if let bw = p.bandwidthHz { estimates[i].append((p.frequencyHz, bw)) }
+                    if let frequency = p.frequencyHz, let bw = p.bandwidthHz {
+                        estimates[i].append((frequency, bw))
+                    }
                 }
             }
         }
@@ -299,7 +302,8 @@ extension BurgFormantTests {
                 try processor.analyze(pcm, source: source) { frame in
                     #expect(
                         frame.failure == expected && frame.f1 == nil && frame.candidates.isEmpty)
-                    let outcome = try frame.measurement(number: 1, kind: .formantFrequency).outcome
+                    let outcome = try frame.measurement(number: 1, kind: .formantFrequency).result
+                        .outcome
                     #expect(outcome == .unavailable(expected.reason))
                 }
             }
@@ -381,11 +385,12 @@ extension BurgFormantTests {
         let f = try original.measurement(number: 1, kind: .formantFrequency)
         let bw = try original.measurement(number: 1, kind: .formantBandwidth)
         #expect(
-            f.profile == original.profile && f.timing == original.timing
-                && f.measurement.unit == .hertz)
+            f.result.profile == original.profile && f.result.timing == original.timing
+                && f.conditioningSupport == source
+                && f.result.measurement.unit == .hertz)
         #expect(
-            bw.measurement.kind == .formantBandwidth
-                && bw.outcome.estimate?.value == original.f1?.bandwidthHz)
+            bw.result.measurement.kind == .formantBandwidth
+                && bw.result.outcome.estimate?.value == original.f1?.bandwidthHz)
         var fromFloat: BurgFormantFrame?
         try floats.withUnsafeBufferPointer { input in
             try floatAnalyzer.analyze(input, source: source) {
@@ -497,6 +502,7 @@ extension BurgFormantTests {
         #expect(
             selected.candidates.filter {
                 $0.rejections.contains(.zeroRadius) && $0.bandwidthHz == nil
+                    && $0.frequencyHz == nil
             }.count == 2)
         #expect(selected.cautions.contains(.ceilingSensitive))
         let malformed = FormantPolynomial(coefficients: [1, .nan, 0.8]).solve()
@@ -551,9 +557,9 @@ extension BurgFormantTests {
                         windows += 1
                         #expect(
                             frame.failure == failure && frame.f1 == nil && frame.candidates.isEmpty)
-                        #expect(
-                            try frame.measurement(number: 1, kind: .formantBandwidth).outcome
-                                == .unavailable(failure.reason))
+                        let outcome = try frame.measurement(number: 1, kind: .formantBandwidth)
+                            .result.outcome
+                        #expect(outcome == .unavailable(failure.reason))
                     }
                 }
             }
@@ -628,15 +634,15 @@ extension BurgFormantTests {
             var expected: [MeasurementResult] = []
             for kind in [MeasurementKind.formantFrequency, .formantBandwidth] {
                 let value = try frame.measurement(number: 2, kind: kind)
-                expected.append(value)
+                expected.append(value.result)
                 let series = try writer.addSeries(
                     SessionArchiveSeries(
                         profileIndex: profileIndex, sourceIndex: sourceIndex,
-                        measurement: value.measurement, clock: .sourceSamples))
+                        measurement: value.result.measurement, clock: .sourceSamples))
                 try writer.append(
                     SessionArchiveMeasurement(
                         timestamp: SessionArchiveTimestamp(
-                            sourceSample: frame.timing.source.startSample), result: value),
+                            sourceSample: frame.timing.source.startSample), formant: value),
                     to: series)
             }
             try writer.finish(.completed)
@@ -648,9 +654,111 @@ extension BurgFormantTests {
             }
             var actual: [MeasurementResult] = []
             while let event = try reader.next() {
-                if case .measurement(_, let record) = event { actual.append(record.result) }
+                if case .measurement(_, let record) = event {
+                    #expect(record.conditioningSupport == input)
+                    actual.append(record.result)
+                }
             }
             #expect(actual == expected && reader.seal?.measurementCount == 2)
+        }
+    }
+}
+
+extension BurgFormantTests {
+    @Test func exportsDistinguishEmptyInputAndExcludedRanksAndPersistTheRecipeVersion() throws {
+        let profile = try BurgFormantProfile(sourceSampleRate: 16000)
+        let empty = try support(0, 16000)
+        #expect(throws: ConditioningError.insufficientData) {
+            try PreparedBurgFormants<Double>(configuration: profile, source: empty)
+        }
+        let bytes = try JSONEncoder().encode(profile)
+        var fields = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+        #expect(fields["schemaVersion"] as? Int == 1)
+        fields["schemaVersion"] = 2
+        let future = try JSONSerialization.data(withJSONObject: fields)
+        #expect(throws: ContractError.unsupportedSchemaVersion(2)) {
+            try JSONDecoder().decode(BurgFormantProfile.self, from: future)
+        }
+
+        let row = try #require(
+            FormantReference.load().cases.first { $0.name == "corpus-bl03-consonant-rich" })
+        let samples = try row.samples()
+        let window = try support(samples.count, row.sampleRate)
+        let analyzer = try PreparedBurgFormants<Double>(
+            configuration: BurgFormantProfile(
+                sourceSampleRate: row.sampleRate, ceilingHz: row.ceilingHz, order: row.order,
+                hopMilliseconds: row.hopMilliseconds), source: window)
+        var first: BurgFormantFrame?
+        try samples.withUnsafeBufferPointer { pcm in
+            try analyzer.analyze(pcm, source: window) { if first == nil { first = $0 } }
+        }
+        let frame = try #require(first)
+        let outcome = try frame.measurement(number: 8, kind: .formantFrequency).result.outcome
+        #expect(
+            frame.failure == nil && frame.formant(8) == nil && outcome == .unavailable(.excluded))
+    }
+
+    @Test func equalFramePlacementCanHaveDifferentConditioningDependencies() throws {
+        let epoch = StreamEpoch(streamID: UUID())
+        let profile = try BurgFormantProfile(sourceSampleRate: 16000, ceilingHz: 5000)
+        func export(start: Int) throws -> BurgFormantMeasurement {
+            let source = try SourceInterval(
+                epoch: epoch, startSample: Int64(start), sampleCount: Int64(8000 - start),
+                sampleRate: 16000)
+            let worker = try PreparedBurgFormants<Double>(configuration: profile, source: source)
+            let pcm = (start..<8000).map { sin(Double($0) * 0.07) + 0.01 * cos(Double($0) * 0.213) }
+            var result: BurgFormantMeasurement?
+            try pcm.withUnsafeBufferPointer { input in
+                try worker.analyze(input, source: source) { frame in
+                    if frame.timing.source.startSample == 2080 {
+                        result = try frame.measurement(number: 1, kind: .formantFrequency)
+                    }
+                }
+            }
+            return try #require(result)
+        }
+        let a = try export(start: 0)
+        let b = try export(start: 1600)
+        #expect(
+            a.result.timing.source == b.result.timing.source && a.result.profile == b.result.profile
+        )
+        #expect(a.conditioningSupport.startSample == 0 && b.conditioningSupport.startSample == 1600)
+        #expect(a.conditioningSupport.endSample == b.conditioningSupport.endSample)
+    }
+}
+
+extension BurgFormantTests {
+    @Test func archiveRejectsMissingOrDisjointFormantConditioningSupport() throws {
+        let configuration = try BurgFormantProfile(sourceSampleRate: 16000)
+        let profile = SessionArchiveProfile.burgFormants(configuration)
+        let metadata = try sessionTestSource(start: 0)
+        let window = try SourceInterval(
+            epoch: metadata.origin.source.epoch, startSample: 200, sampleCount: 800,
+            sampleRate: 16000)
+        let descriptor = try configuration.descriptor(number: 2, kind: .formantFrequency)
+        let result = try MeasurementResult(
+            measurement: descriptor, profile: profile.identity(),
+            timing: AnalysisTiming(
+                source: window, includedSampleCount: 800, effectiveDelaySeconds: 0.15),
+            outcome: .available(ScalarEstimate(value: 1500)))
+        var catalog = try SessionArchiveCatalog(limits: SessionArchiveLimits())
+        try catalog.add(profile, payloadBytes: canonicalContractJSON(profile).count)
+        try catalog.add(metadata, payloadBytes: canonicalContractJSON(metadata).count)
+        let series = try SessionArchiveSeries(
+            profileIndex: 0, sourceIndex: 0, measurement: descriptor, clock: .sourceSamples)
+        try catalog.add(series, payloadBytes: canonicalContractJSON(series).count)
+        let timestamp = try SessionArchiveTimestamp(sourceSample: 200)
+        let missing = SessionArchiveMeasurement(timestamp: timestamp, result: result)
+        #expect(throws: SessionArchiveError.invalidMetadata) {
+            try SessionArchiveScalarWire.encode(missing, seriesIndex: 0, catalog: catalog)
+        }
+        let other = try SourceInterval(
+            epoch: window.epoch, startSample: 300, sampleCount: 1000, sampleRate: 16000)
+        let partial = SessionArchiveMeasurement(
+            timestamp: timestamp,
+            formant: BurgFormantMeasurement(result: result, conditioningSupport: other))
+        #expect(throws: SessionArchiveError.invalidMetadata) {
+            try SessionArchiveScalarWire.encode(partial, seriesIndex: 0, catalog: catalog)
         }
     }
 }

@@ -23,7 +23,7 @@ func analyzeFormants(_ pcm: [Float], epoch: StreamEpoch, startSample: Int64) thr
 }
 ```
 
-Read `frame.f1`, `f2`, `f3` or `formant(n)` for a credible rank. A missing F1 leaves F2 at rank 2. To export one scalar, call `try frame.measurement(number: 1, kind: .formantBandwidth)` or use `.formantFrequency`. The result carries hertz, a numbered algorithm identifier, timing, profile digest and an available or typed unavailable outcome. Register `frame.archiveProfile` with `SessionArchiveWriter` to persist either scalar with its base or pitch-bound numerical identity. Keep the frame for its full input, model and rejection evidence.
+Read `frame.f1`, `f2`, `f3` or `formant(n)` for a credible rank. A missing F1 leaves F2 at rank 2. To export one scalar, call `try frame.measurement(number: 1, kind: .formantBandwidth)` or use `.formantFrequency`. The export pairs `result` (the scalar in hertz, numbered algorithm, frame timing, profile and outcome) with `conditioningSupport` (the entire original PCM interval). Register `frame.archiveProfile` with `SessionArchiveWriter` and use `SessionArchiveMeasurement(timestamp:formant:)` to persist both parts. A fitted model with no admitted pole at the requested rank reports `.excluded`. A short window reports `.insufficientData`. Keep the frame for its full input, model and rejection evidence.
 
 ## Settings, support and latency
 
@@ -34,7 +34,7 @@ Read `frame.f1`, `f2`, `f3` or `formant(n)` for a credible rank. A missing F1 le
 | Prediction order | Even 4–16. Order 10 permits up to five conjugate pole pairs. |
 | Conditioning | The whole-interval Praat 7 profile resamples to twice the ceiling with interpolation depth 50. Pre-emphasis follows resampling. The default is 50 Hz, the supported range is 0–1,000 Hz, zero takes a first difference and `nil` disables it. |
 | Window and hop | Physical width 50 ms, effective Gaussian width 25 ms, hop 5 or 10 ms. The window has 400–800 samples at the analysis rate. |
-| Capacity | Prepare for one fixed input length. The conditioner admits at most 2,880,000 input and 4,194,304 output or transform samples. It rejects intervals that round to zero output samples. |
+| Capacity | Prepare for one fixed input length. The conditioner admits at most 2,880,000 input and 4,194,304 output or transform samples. Empty input and intervals that round to zero output samples report insufficient data. |
 
 The frame grid is centered on the conditioned sample centers. One complete window is admitted as soon as the conditioned buffer contains the required number of samples. Longer intervals use the pinned binary64 grid and the 50 ms physical duration. The taper uses `u=(2n+1−N)/(N+1)` and `w=(exp(−12u²)−exp(−12))/(1−exp(−12))`. The profile applies no de-meaning. Praat documents its resampling frequency, pre-emphasis and effective window convention. The separately identified window is checked against pinned command-line observations. [Praat Burg manual](https://www.fon.hum.uva.nl/praat/manual/Sound__To_Formant__burg____.html) · [Window definitions](Framing.md) · [Conditioning](Conditioning.md)
 
@@ -48,7 +48,7 @@ Burg fitting peak-normalizes the window input, applies the Gaussian, and updates
 
 The simultaneous polynomial solver tries two deterministic starts with at most 64 Ehrlich–Aberth sweeps each. Acceptance requires a scaled point residual at most 1e−10 and reconstruction of the entire monic polynomial within 1e−7 of its largest coefficient. A failed solve reports its sweep count and yields no inferred roots. Exact factors of zero retain their multiplicity. Burg scratch grows with window length and order. Root and candidate buffers are bounded by order 16. Processing emits one frame at a time, and the caller controls retention.
 
-For a stable pole with argument θ in the upper half-plane and radius r, `frequencyHz = θ fs / (2π)` and `bandwidthHz = −fs ln(r) / π`, using the **analysis** sample rate. Each conjugate pair appears once. Raw candidates include real poles, zero radii and unstable poles with explicit reasons. Zero and unstable radii have no reported bandwidth. Ranking excludes poles with |imaginary component| ≤ 1e−8 and frequencies within 50 Hz of DC or the ceiling (the endpoints at 50 Hz and ceiling−50 Hz are included).
+For a stable pole with argument θ in the upper half-plane and radius r, `frequencyHz = θ fs / (2π)` and `bandwidthHz = −fs ln(r) / π`, using the **analysis** sample rate. Each conjugate pair appears once. Raw candidates include real poles, zero radii and unstable poles with explicit reasons. Zero and unstable radii have no reported bandwidth. A zero-radius root also has no angle or frequency. Ranking excludes poles with |imaginary component| ≤ 1e−8 and frequencies within 50 Hz of DC or the ceiling (the endpoints at 50 Hz and ceiling−50 Hz are included).
 
 The rule `exploratory-burg-credibility-v1` keeps the rank assigned before these additional checks.
 

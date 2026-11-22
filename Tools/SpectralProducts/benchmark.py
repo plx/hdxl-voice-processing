@@ -244,7 +244,13 @@ def main(suite=PRODUCTS):
     resolution = lock.read_bytes()
     result = dict(mode=mode, status="failed", commands=[])
     try:
-        environment = framework.measurement_environment(mode)
+        flags = framework.swift_arguments(mode)
+        if suite.kernel_stages:
+            if "--traits" in flags:
+                flags[flags.index("--traits") + 1] += ",KernelBenchmarks"
+            else:
+                flags += ["--traits", "KernelBenchmarks"]
+        environment = framework.measurement_environment(mode, swift_pm_arguments=flags)
         if not args.development_toolchain:
             ci.validate_environment(environment, json.loads((ROOT / "Configuration/build.json").read_bytes()))
         environment.update(operations=suite.boundaries, frameworkScalingFactor=1,
@@ -255,12 +261,6 @@ def main(suite=PRODUCTS):
                            packageResolvedSHA256=framework.sha(lock))
         (output / "environment.json").write_text(ci.redact(json.dumps(environment, indent=2)) + "\n")
         (output / "resolution.json").write_bytes(resolution)
-        flags = framework.swift_arguments(mode)
-        if suite.kernel_stages:
-            if "--traits" in flags:
-                flags[flags.index("--traits") + 1] += ",KernelBenchmarks"
-            else:
-                flags += ["--traits", "KernelBenchmarks"]
         plugin = ["swift", "package", *flags, "--allow-writing-to-package-directory", "benchmark", "--target", suite.target,
                   "--time-units", "nanoseconds", "--no-progress"]
         with (output / "commands.log").open("w") as log:

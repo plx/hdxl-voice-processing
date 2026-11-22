@@ -145,6 +145,19 @@ struct SessionArchiveCatalog {
         else {
             throw SessionArchiveError.invalidMetadata
         }
+        guard profile.recipe.requiresConditioningSupport == (record.conditioningSupport != nil)
+        else {
+            throw SessionArchiveError.invalidMetadata
+        }
+        if let dependency = record.conditioningSupport {
+            try validate(dependency, source: source)
+            let window = record.result.timing.source
+            guard dependency.startSample <= window.startSample,
+                dependency.endSample >= window.endSample
+            else {
+                throw SessionArchiveError.invalidMetadata
+            }
+        }
         try validate(record.result.timing.source, source: source)
         if let sample = record.timestamp.sourceSample, sample < source.origin.source.startSample {
             throw SessionArchiveError.invalidMetadata
@@ -189,7 +202,8 @@ struct SessionArchiveCatalog {
         let sourceIndex = series[Int(seriesIndex)].sourceIndex
         var end = max(
             record.result.timing.source.endSample,
-            record.scheduled?.dependencyTiming.source.endSample ?? 0)
+            record.scheduled?.dependencyTiming.source.endSample ?? 0,
+            record.conditioningSupport?.endSample ?? 0)
         for intermediate in record.result.intermediates {
             end = max(end, intermediate.source.endSample)
         }

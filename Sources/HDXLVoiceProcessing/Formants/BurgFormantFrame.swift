@@ -38,12 +38,13 @@ public struct FormantPitchEvidence: Sendable, Hashable, Encodable {
     }
 }
 
-/// One upper-half-plane pole per conjugate pair, plus any real poles. Both components use Hz.
+/// One upper-half-plane pole per conjugate pair, plus any real poles. Pole coordinates are dimensionless. Frequency and bandwidth use hertz.
 public struct BurgFormantCandidate: Sendable, Hashable, Encodable {
     public let real: Double
     public let imaginary: Double
     public let radius: Double
-    public let frequencyHz: Double
+    /// An origin pole has no argument and therefore no frequency.
+    public let frequencyHz: Double?
     public let bandwidthHz: Double?
     /// Ascending frequency rank after the reference edge and stability exclusions, before credibility screening.
     public let number: Int?
@@ -69,6 +70,12 @@ public struct BurgFormantDiagnostics: Sendable, Hashable, Encodable {
         triedSecondStart = solution?.triedSecondStart ?? false
         maximumRootResidual = solution?.maximumRelativeResidual
     }
+}
+
+/// Scalar formant export with distinct frame placement and complete conditioning support.
+public struct BurgFormantMeasurement: Sendable, Hashable, Encodable {
+    public let result: MeasurementResult
+    public let conditioningSupport: SourceInterval
 }
 
 public struct BurgFormantFrame: Sendable, Hashable, Encodable {
@@ -103,29 +110,33 @@ public struct BurgFormantFrame: Sendable, Hashable, Encodable {
     }
 
     /// Keep an unavailable or low-confidence rank distinct from a measured zero in exported contracts.
-    public func measurement(number: Int, kind: MeasurementKind) throws -> MeasurementResult {
+    public func measurement(number: Int, kind: MeasurementKind) throws -> BurgFormantMeasurement {
         let descriptor = try configuration.descriptor(number: number, kind: kind)
         let outcome: MeasurementOutcome
         if let failure {
             outcome = .unavailable(failure.reason)
         } else if let candidate = candidates.first(where: { $0.number == number }) {
-            if candidate.isCredible, let bandwidth = candidate.bandwidthHz {
+            if candidate.isCredible, let frequency = candidate.frequencyHz,
+                let bandwidth = candidate.bandwidthHz
+            {
                 let warnings: [MeasurementWarning] =
                     cautions.contains(.highPitch) || cautions.contains(.ceilingSensitive)
                         || cautions.contains(.pitchSupportMismatch)
                     ? [.exploratoryApplicability, .lowConfidence] : [.exploratoryApplicability]
                 outcome = .available(
                     try ScalarEstimate(
-                        value: kind == .formantFrequency ? candidate.frequencyHz : bandwidth,
+                        value: kind == .formantFrequency ? frequency : bandwidth,
                         warnings: warnings))
             } else {
                 outcome = .unavailable(.lowConfidence)
             }
         } else {
-            outcome = .unavailable(.insufficientData)
+            outcome = .unavailable(.excluded)
         }
-        return try MeasurementResult(
-            measurement: descriptor, profile: profile, timing: timing, outcome: outcome)
+        return try BurgFormantMeasurement(
+            result: MeasurementResult(
+                measurement: descriptor, profile: profile, timing: timing, outcome: outcome),
+            conditioningSupport: conditioningSupport)
     }
 
 }
@@ -159,8 +170,8 @@ struct FormantSelection {
         var rank = 0
         var list: [BurgFormantCandidate] = []
         for z in upper {
-            let frequency = atan2(abs(z.imaginary), z.real) * rate / (2 * .pi)
             let radius = z.magnitude
+            let frequency = radius == 0 ? nil : atan2(abs(z.imaginary), z.real) * rate / (2 * .pi)
             let bandwidth = radius > 0 && radius < 1 ? -log(radius) * rate / .pi : nil
             var reasons: [FormantRejection] = []
             if abs(z.imaginary) <= 1e-8 { reasons.append(.realOrNearReal) }
@@ -169,15 +180,16 @@ struct FormantSelection {
             } else if radius >= 1 {
                 reasons.append(.unstablePole)
             }
-            if frequency < BurgFormantProfile.edgeExclusionHz
-                || frequency > ceiling - BurgFormantProfile.edgeExclusionHz
+            if let frequency,
+                frequency < BurgFormantProfile.edgeExclusionHz
+                    || frequency > ceiling - BurgFormantProfile.edgeExclusionHz
             {
                 reasons.append(.outsideEdgeMargin)
             }
             let admitted = reasons.isEmpty
-            if admitted {
+            if admitted, let frequency, let bandwidth {
                 rank += 1
-                if bandwidth! > min(1000, frequency) { reasons.append(.broadBandwidth) }
+                if bandwidth > min(1000, frequency) { reasons.append(.broadBandwidth) }
                 if let matchedPitch, frequency < 2 * matchedPitch {
                     reasons.append(.sparseHarmonics)
                 }
@@ -190,7 +202,9 @@ struct FormantSelection {
         }
         if !roots.isEmpty
             && (rank < min(3, profile.maximumFormants)
-                || list.contains(where: { $0.number != nil && $0.frequencyHz > 0.9 * ceiling }))
+                || list.contains(where: {
+                    $0.number != nil && ($0.frequencyHz ?? 0) > 0.9 * ceiling
+                }))
         {
             cautions.append(.ceilingSensitive)
         }

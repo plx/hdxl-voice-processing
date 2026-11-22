@@ -18,6 +18,13 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     case pitchBoundBurgFormants(
         BurgFormantProfile, pitchProfile: ProfileIdentity, supportMatched: Bool)
 
+    var requiresConditioningSupport: Bool {
+        switch self {
+        case .burgFormants, .pitchBoundBurgFormants: true
+        default: false
+        }
+    }
+
     public func identity() throws -> ProfileIdentity {
         switch self {
         case .burgFormants(let value): try value.identity()

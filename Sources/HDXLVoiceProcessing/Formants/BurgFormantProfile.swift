@@ -3,6 +3,7 @@ import Foundation
 
 /// Independent, untracked Burg estimates. All numerical work uses binary64.
 public struct BurgFormantProfile: Sendable, Hashable, Codable {
+    public let schemaVersion = 1
     public let sourceSampleRate: Int
     public let inputPrecision: AnalysisPrecision
     public let declaredBandwidthHz: Double
@@ -91,11 +92,13 @@ public struct BurgFormantProfile: Sendable, Hashable, Codable {
     }
 
     private enum CodingKeys: String, CodingKey, CaseIterable {
-        case sourceSampleRate, inputPrecision, declaredBandwidthHz, ceilingHz, order,
+        case schemaVersion, sourceSampleRate, inputPrecision, declaredBandwidthHz, ceilingHz, order,
             hopMilliseconds, preEmphasisFromHz
     }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
+        let version = try c.decode(Int.self, forKey: .schemaVersion)
+        guard version == 1 else { throw ContractError.unsupportedSchemaVersion(version) }
         guard c.contains(.preEmphasisFromHz) else { throw ContractError.invalidConfiguration }
         try self.init(
             sourceSampleRate: c.decode(Int.self, forKey: .sourceSampleRate),
@@ -109,6 +112,7 @@ public struct BurgFormantProfile: Sendable, Hashable, Codable {
 
     public func encode(to encoder: any Encoder) throws {
         var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(schemaVersion, forKey: .schemaVersion)
         try c.encode(sourceSampleRate, forKey: .sourceSampleRate)
         try c.encode(inputPrecision, forKey: .inputPrecision)
         try c.encode(declaredBandwidthHz, forKey: .declaredBandwidthHz)

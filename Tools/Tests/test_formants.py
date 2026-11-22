@@ -5,10 +5,12 @@ import json
 import struct
 import sys
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from Formants.benchmark import BOUNDARIES, throughput, validate_cases
+import benchmark as framework
 from Formants.reference import DIRECTORY, ROOT, parse, read_cases
 
 
@@ -49,7 +51,7 @@ class FormantEvidenceTests(unittest.TestCase):
         records = []
         for rate, ceiling, order, hop in itertools.product((16000, 44100, 48000), (5000, 5500, 6000),
                                                            (8, 10, 12, 16), (5, 10)):
-            profile = dict(sourceSampleRate=rate, ceilingHz=ceiling, order=order, hopMilliseconds=hop,
+            profile = dict(schemaVersion=1, sourceSampleRate=rate, ceilingHz=ceiling, order=order, hopMilliseconds=hop,
                            inputPrecision='float64', declaredBandwidthHz=rate // 2, preEmphasisFromHz=50)
             digest = hashlib.sha256(json.dumps(profile, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
             records.append(dict(
@@ -68,6 +70,15 @@ class FormantEvidenceTests(unittest.TestCase):
         for incomplete in [records[1:], records + records[:1]]:
             with self.assertRaises(ValueError):
                 validate_cases(incomplete)
+
+    def test_environment_records_supplied_effective_traits(self):
+        flags = ['--traits', 'AllocationDiagnostics,KernelBenchmarks']
+        with (patch.object(framework.ci, 'environment', return_value={}),
+              patch.object(framework, 'system_state', return_value={'thermalState': 'nominal'}),
+              patch.object(framework.ci, 'capture', return_value='test-host'),
+              patch.object(framework, 'swift_arguments', side_effect=AssertionError('flags were recomputed'))):
+            evidence = framework.measurement_environment('allocation', swift_pm_arguments=flags)
+        self.assertEqual(evidence['swiftPMArguments'], flags)
 
     def test_each_throughput_names_its_work_and_duration(self):
         item = dict(expectedFrames=11, durationSeconds=.1, source=dict(sampleCount=4800))
