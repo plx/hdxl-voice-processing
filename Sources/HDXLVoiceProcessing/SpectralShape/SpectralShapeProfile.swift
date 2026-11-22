@@ -100,12 +100,16 @@ public struct SpectralShapeProfile: Sendable, Hashable, Codable {
     }
 
     /// Both the descriptor settings and the upstream product's complete identity participate.
-    public func identity(for layout: SpectrogramLayout) throws -> ProfileIdentity {
+    public func identity(for layout: SpectrogramLayout, selectionProfile: ProfileIdentity? = nil)
+        throws -> ProfileIdentity
+    {
         struct Parameters: Encodable {
             let sourceSpectrum: ProfileIdentity
+            let selection: ProfileIdentity?
             let settings: SpectralShapeProfile
         }
-        let value = Parameters(sourceSpectrum: layout.profile, settings: self)
+        let value = Parameters(
+            sourceSpectrum: layout.profile, selection: selectionProfile, settings: self)
         return try ProfileIdentity(
             identifier: VersionedIdentifier(
                 name: "spectral-shape-" + source.rawValue + "-" + weighting.rawValue, version: 1),

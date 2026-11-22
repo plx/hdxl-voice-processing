@@ -1,10 +1,10 @@
 import Foundation
 
-/// The fit retains only prepared coordinates and reusable work arrays. Each new row overwrites
-/// the active prefix with qualifying bins, so gaps and zero-weight observations stay excluded.
+/// Center the fit on a peak-power bin and scale the two weighted deviation vectors separately.
+/// Raw square-root weights keep even the weakest positive Double power eligible for the fit.
 final class SpectralShapeRegression {
     private struct Point {
-        var weight = 0.0
+        var rootWeight = 0.0
         var x = 0.0
         var y = 0.0
     }
@@ -18,12 +18,17 @@ final class SpectralShapeRegression {
         self.bins = range
         self.configuration = configuration
         self.step = step
-        // In linear fits work in bin units, then convert the fitted slope to dB/Hz.
-        // A constant coordinate offset also cancels from a log-frequency slope.
+        // Work in bin units for a linear fit. Convert its slope to dB/Hz on output.
         coordinate = range.map {
             configuration.fitCoordinate == .hertz ? Double($0) : log2(Double($0))
         }
         points = .init(repeating: Point(), count: range.count)
+    }
+
+    private func rootWeight(_ power: Double) -> Double {
+        if configuration.regressionWeighting == .uniform { return 1 }
+        let root = sqrt(power)
+        return configuration.weighting == .power ? root : sqrt(root)
     }
 
     func fit(_ powers: UnsafeBufferPointer<Double>, unavailable: UnavailabilityReason?)
@@ -32,35 +37,37 @@ final class SpectralShapeRegression {
         var fit = SpectralSlopeFit()
         fit.candidateBins = bins.count
         if let unavailable { return (.unavailable(unavailable), fit) }
-        guard bins.count > 0 else { return (.unavailable(.insufficientData), fit) }
-        let peak = powers[bins].max() ?? 0
+        guard var anchor = bins.first else { return (.unavailable(.insufficientData), fit) }
+        for k in bins where powers[k] > powers[anchor] { anchor = k }
+        let peak = powers[anchor]
         guard peak > 0 else { return (.unavailable(.silence), fit) }
         let peakDB = 10 * log10(peak)
-        let weights = SpectralShapeWeights(peak: peak, configuration: configuration)
+        let rootPeak = rootWeight(peak)
         let floor = configuration.relativeLogFloorDB
-        let reference = coordinate[0]
+        let reference = coordinate[anchor - bins.lowerBound]
         var total = LevelCompensatedSum()
         var xs = LevelCompensatedSum()
         var ys = LevelCompensatedSum()
         for k in bins {
             let p = powers[k]
-            if p == 0 && floor == nil { continue }
-            let weight = configuration.regressionWeighting == .uniform ? 1 : weights.weight(p)
-            guard weight > 0 else { continue }
+            if p == 0 && (floor == nil || configuration.regressionWeighting == .shapeWeight) {
+                continue
+            }
             let relativeDB = p == 0 ? -Double.infinity : 10 * log10(p) - peakDB
             let level = max(relativeDB, floor ?? -.infinity)
             let x = coordinate[k - bins.lowerBound] - reference
-            points[fit.usedBins] = Point(weight: weight, x: x, y: level)
+            let root = rootWeight(p)
+            points[fit.usedBins] = Point(rootWeight: root, x: x, y: level)
             fit.usedBins += 1
             if level > relativeDB { fit.flooredBins += 1 }
             let frequency = Double(k) * step
             fit.firstFrequencyHz = fit.firstFrequencyHz ?? frequency
             fit.lastFrequencyHz = frequency
-            total.add(weight)
-            xs.add(weight * x)
-            ys.add(weight * level)
+            let relativeRoot = root / rootPeak
+            total.add(relativeRoot * relativeRoot)
+            xs.add(relativeRoot * (relativeRoot * x))
+            ys.add(relativeRoot * (relativeRoot * level))
         }
-        guard fit.usedBins > 0 else { return (.unavailable(.insufficientData), fit) }
         let meanX = xs.value / total.value
         let meanY = ys.value / total.value
         fit.meanCoordinate =
@@ -70,29 +77,40 @@ final class SpectralShapeRegression {
         guard fit.usedBins >= configuration.minimumFitBins else {
             return (.unavailable(.insufficientData), fit)
         }
+
+        var xScale = 0.0
+        var yScale = 0.0
+        for i in 0..<fit.usedBins {
+            let point = points[i]
+            points[i].x = point.rootWeight * (point.x - meanX)
+            points[i].y = point.rootWeight * (point.y - meanY)
+            xScale = max(xScale, abs(points[i].x))
+            yScale = max(yScale, abs(points[i].y))
+        }
+        guard xScale > 0 else { return (.unavailable(.insufficientData), fit) }
+        guard yScale > 0 else {
+            fit.residualRMSDB = 0
+            return (spectralShapeEstimate(0), fit)
+        }
         var xx = LevelCompensatedSum()
         var xy = LevelCompensatedSum()
         var yy = LevelCompensatedSum()
         for i in 0..<fit.usedBins {
-            let point = points[i]
-            let dx = point.x - meanX
-            let dy = point.y - meanY
-            xx.add(point.weight * dx * dx)
-            xy.add(point.weight * dx * dy)
-            yy.add(point.weight * dy * dy)
+            let x = points[i].x / xScale
+            let y = points[i].y / yScale
+            xx.add(x * x)
+            xy.add(x * y)
+            yy.add(y * y)
         }
-        guard xx.value > 0 else { return (.unavailable(.insufficientData), fit) }
-        let slope = xy.value / xx.value
+        let scaledSlope = xy.value / xx.value
+        let slope = scaledSlope * (yScale / xScale)
         var error = LevelCompensatedSum()
         for i in 0..<fit.usedBins {
-            let point = points[i]
-            let residual = (point.y - meanY) - slope * (point.x - meanX)
-            error.add(point.weight * residual * residual)
+            let residual = (points[i].y / yScale).addingProduct(-scaledSlope, points[i].x / xScale)
+            error.add(residual * residual)
         }
-        let rms = sqrt(error.value / total.value)
-        guard rms.isFinite else { return (.unavailable(.analysisFailure), fit) }
-        fit.residualRMSDB = rms
-        if yy.value > 0 { fit.rSquared = max(0, min(1, 1 - error.value / yy.value)) }
+        fit.residualRMSDB = (yScale / rootPeak) * sqrt(error.value / total.value)
+        fit.rSquared = max(0, min(1, 1 - error.value / yy.value))
         return (
             spectralShapeEstimate(configuration.fitCoordinate == .hertz ? slope / step : slope), fit
         )

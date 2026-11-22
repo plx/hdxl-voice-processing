@@ -42,6 +42,15 @@ extension PreparedSpectralShape {
         let weights = SpectralShapeWeights(peak: peak, configuration: configuration)
         let location = only == nil || only == .spread || only == .centroid
         let flatness = only == nil || only == .flatness
+        let rollOff = (only == nil || only == .rollOff) && configuration.rollOffFraction < 1
+        // Scaling by a power of two preserves binary weights at exact cumulative boundaries.
+        let scale = Double(
+            sign: .plus, exponent: (weights.magnitude ? weights.rootPeak : peak).exponent,
+            significand: 1)
+        func rollWeight(_ power: Double) -> Double {
+            (weights.magnitude ? sqrt(power) : power) / scale
+        }
+        var rollTotal = LevelCompensatedSum()
         let floor = configuration.relativeLogFloorDB.map { $0 * log(10) / 10 }
         let logPeak = log(peak)
         var sum = LevelCompensatedSum()
@@ -56,6 +65,7 @@ extension PreparedSpectralShape {
             let power = powers[k]
             let weight = weights.weight(power)
             sum.add(weight)
+            if rollOff { rollTotal.add(rollWeight(power)) }
             if power > 0 {
                 lastPositive = k
                 if weight < Double.leastNormalMagnitude { hasSubnormalWeight = true }
@@ -123,12 +133,14 @@ extension PreparedSpectralShape {
         }
         if only == .rollOff || only == nil {
             var chosen = lastPositive
-            if configuration.rollOffFraction < 1 {
-                let threshold = sum.value * configuration.rollOffFraction
+            if rollOff {
                 var cumulative = LevelCompensatedSum()
                 for k in bins {
-                    cumulative.add(weights.weight(powers[k]))
-                    if powers[k] > 0 && cumulative.value >= threshold {
+                    cumulative.add(rollWeight(powers[k]))
+                    if powers[k] > 0
+                        && cumulative.value.addingProduct(
+                            -configuration.rollOffFraction, rollTotal.value) >= 0
+                    {
                         chosen = k
                         break
                     }

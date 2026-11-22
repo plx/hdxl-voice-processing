@@ -376,3 +376,118 @@ extension SpectralShapeTests {
             result.bandEnergyRatio?.outcome, 10 * (log10(Double.leastNonzeroMagnitude) - log10(4)))
     }
 }
+
+extension SpectralShapeTests {
+    @Test func rollOffHonorsExactAndAdjacentFractions() throws {
+        for weighting in [SpectralShapeWeighting.power, .binRMSMagnitude] {
+            var powers = [Double](repeating: 0, count: 33)
+            for (k, w) in [(1, 1.0), (4, 5.0), (22, 2.0)] {
+                powers[k] = weighting == .power ? w : w * w
+            }
+            let frame = try row(powers)
+            for (fraction, bin) in [(0.75.nextDown, 4), (0.75, 4), (0.75.nextUp, 22)] {
+                let worker = try PreparedSpectralShape(
+                    layout: frame.layout,
+                    configuration: profile(weighting: weighting, fraction: fraction))
+                try verify(worker.evaluate(frame).rollOff?.outcome, Double(bin) * 16)
+            }
+        }
+    }
+
+    @Test func weightedFitAcrossHundredsOfDecades() throws {
+        var powers = [Double](repeating: 0, count: 33)
+        powers[2] = 1e200
+        powers[4] = 1e-200
+        let frame = try row(powers)
+        let worker = try PreparedSpectralShape(
+            layout: frame.layout,
+            configuration: profile(regression: .shapeWeight, minimumFitBins: 2))
+        let result = try worker.evaluate(frame)
+        try verify(result.slope?.outcome, -4000)
+        #expect(
+            result.fit?.usedBins == 2 && result.fit?.firstFrequencyHz == 32
+                && result.fit?.lastFrequencyHz == 64)
+        #expect(result.fit?.rSquared == 1 && result.fit?.residualRMSDB == 0)
+        powers[8] = 1e-200
+        let third = try worker.evaluate(row(powers))
+        // The two small observations have equal weight. Centered at the dominant bin their
+        // displacements are one and two octaves, and their level changes are both -4000 dB.
+        try verify(third.slope?.outcome, -2400)
+        #expect(third.fit?.usedBins == 3)
+        let observed = try #require(third.fit?.residualRMSDB)
+        #expect(abs(observed / (sqrt(1600.0 * 1600 + 800 * 800) * 1e-200) - 1) < 1e-12)
+        try verify(.available(ScalarEstimate(value: try #require(third.fit?.rSquared))), 0.9)
+    }
+
+    @Test func scalarExportBindsMasksAcrossWorkerReuse() throws {
+        let layout = try source.layout()
+        let geometry = try profile(source: .longTermSpectrum)
+        let aggregate = try PreparedSpectralShape(layout: layout, configuration: geometry)
+        let frames = try PreparedSpectralShape(layout: layout, configuration: profile())
+        var ids: [ProfileIdentity] = []
+        for offset in [0, 64, 0] {
+            let plan = try MaskPlan(
+                source: source.source(0, 128),
+                provenances: [
+                    MaskProvenance(
+                        kind: .externalAnnotation,
+                        identifier: VersionedIdentifier(name: "mask", version: 1))
+                ], policy: MaskSelectionPolicy(rejectedTags: [.nonSpeechDetected]),
+                observations: [
+                    MaskObservation(
+                        source: source.source(offset, 64), provenanceIndex: 0,
+                        tags: [.nonSpeechDetected])
+                ])
+            let (columns, mean) = try source.analyze(
+                tone(4) + tone(12), layout, mask: MaskTimeline(plan))
+            let result = try aggregate.evaluate(mean)
+            let exported = try #require(try result.measurement(.centroid))
+            let selection = try #require(mean.selectionProfile)
+            #expect(
+                exported.profile == result.profile
+                    && exported.profile
+                        == (try geometry.identity(for: layout, selectionProfile: selection))
+            )
+            #expect(exported.timing.includedSampleCount == 64)
+            ids.append(exported.profile)
+            for column in columns {
+                let frame = try frames.evaluate(column)
+                #expect(
+                    frame.profile
+                        == (try frame.configuration.identity(
+                            for: layout, selectionProfile: selection)))
+                #expect(try frame.measurement(.rollOff)?.profile == frame.profile)
+            }
+        }
+        #expect(ids[0] != ids[1] && ids[0] == ids[2] && ids[0] != aggregate.identity)
+    }
+
+    @Test func aggregateCountsAndSampledSnapshotSequence() throws {
+        let layout = try source.layout(weighting: .newlyCoveredSamples)
+        let (frames, mean) = try source.analyze(
+            tone(4) + Array(repeating: Double.greatestFiniteMagnitude, count: 64), layout)
+        #expect(frames.count == 2 && mean.status == .measured && mean.totalWeight == 64)
+        let sink = RecordingSink()
+        let worker = try PreparedSpectralShape(
+            layout: layout, configuration: profile(source: .longTermSpectrum),
+            diagnostics: WorkerDiagnostics(mode: .sampled, sink: sink))
+        for _ in 0..<33 {
+            let result = try worker.evaluate(mean)
+            #expect(result.aggregateSupport?.measuredFrames == 1)
+            #expect(result.aggregateSupport?.unavailableFrames == [.analysisFailure: 1])
+        }
+        let spans = sink.entries.compactMap { entry -> DiagnosticRecord? in
+            if case .begin(let record) = entry, record.stage == .spectralShape { return record }
+            return nil
+        }
+        #expect(spans.map(\.metadata.frameSequence) == [0, 16, 32])
+        #expect(
+            spans.allSatisfy {
+                $0.metadata.elapsedProcessingCount == 1 && $0.metadata.sampleCount == 128
+            })
+        #expect(
+            sink.entries.filter {
+                if case .end(let record) = $0 { record.stage == .spectralShape } else { false }
+            }.count == 3)
+    }
+}

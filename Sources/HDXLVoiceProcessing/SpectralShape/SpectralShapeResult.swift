@@ -49,12 +49,19 @@ public struct SpectralSlopeFit: Sendable, Hashable, Encodable {
     public internal(set) var rSquared: Double?
 }
 
+/// Support counts from the aggregate, including rows with zero accumulation weight.
+public struct SpectralShapeAggregateSupport: Sendable, Hashable, Encodable {
+    public let measuredFrames: UInt64
+    public let unavailableFrames: [UnavailabilityReason: UInt64]
+}
+
 public struct SpectralShapeResult: Sendable, Hashable, Encodable {
     public let configuration: SpectralShapeProfile
     public let profile: ProfileIdentity
     public let layout: SpectrogramLayout
     public let origin: SpectrumPresentationOrigin
     public let timing: AnalysisTiming
+    public let aggregateSupport: SpectralShapeAggregateSupport?
     public let selectionCoverage: SpectralSelectionCoverage?
     public let warnings: [MeasurementWarning]
     public internal(set) var centroid: SpectralShapeScalar?

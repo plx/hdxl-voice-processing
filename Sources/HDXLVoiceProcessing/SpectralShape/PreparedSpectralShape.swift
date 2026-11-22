@@ -5,6 +5,7 @@ import Foundation
 public final class PreparedSpectralShape {
     public let layout: SpectrogramLayout
     public let configuration: SpectralShapeProfile
+    /// Profile for an unmasked source. A selected result binds its upstream selection as well.
     public let identity: ProfileIdentity
     let grid: SpectralShapeGrid
     let analysisBins: Range<Int>?
@@ -16,9 +17,21 @@ public final class PreparedSpectralShape {
     private var widened: [Double]
     let regression: SpectralShapeRegression
 
-    public init(
+    private var lastSelection: (selection: ProfileIdentity, identity: ProfileIdentity)?
+    private var nextAggregateSequence: UInt64 = 0
+
+    public convenience init(
         layout: SpectrogramLayout, configuration: SpectralShapeProfile,
         diagnosticMode: RuntimeDiagnosticMode = .disabled
+    ) throws {
+        try self.init(
+            layout: layout, configuration: configuration,
+            diagnostics: WorkerDiagnostics(mode: diagnosticMode.facadeMode))
+    }
+
+    init(
+        layout: SpectrogramLayout, configuration: SpectralShapeProfile,
+        diagnostics: WorkerDiagnostics
     ) throws {
         self.layout = layout
         self.configuration = configuration
@@ -48,7 +61,15 @@ public final class PreparedSpectralShape {
         widened =
             layout.framing.window.precision == .float32 && configuration.source == .frame
             ? Array(repeating: 0, count: grid.count) : []
-        diagnostics = WorkerDiagnostics(mode: diagnosticMode.facadeMode)
+        self.diagnostics = diagnostics
+    }
+
+    private func sourceIdentity(_ selection: ProfileIdentity?) throws -> ProfileIdentity {
+        guard let selection else { return identity }
+        if let lastSelection, lastSelection.selection == selection { return lastSelection.identity }
+        let bound = try configuration.identity(for: layout, selectionProfile: selection)
+        lastSelection = (selection, bound)
+        return bound
     }
 
     public func evaluate(_ row: SpectrogramFrame, only: SpectralShapeDescriptor? = nil) throws
@@ -66,8 +87,10 @@ public final class PreparedSpectralShape {
             source: row.info.source,
             includedSampleCount: row.info.status.isMeasured ? row.info.source.sampleCount : 0)
         let result = SpectralShapeResult(
-            configuration: configuration, profile: identity, layout: layout,
-            origin: .frame(row.info), timing: timing, selectionCoverage: nil, warnings: [])
+            configuration: configuration, profile: try sourceIdentity(row.info.selectionProfile),
+            layout: layout,
+            origin: .frame(row.info), timing: timing, aggregateSupport: nil, selectionCoverage: nil,
+            warnings: [])
         return row.binPower.withSpectralScalars(
             doubles: {
                 compute(
@@ -93,15 +116,22 @@ public final class PreparedSpectralShape {
         }
         guard layout == spectrum.layout else { throw ContractError.invalidFingerprint }
         let result = SpectralShapeResult(
-            configuration: configuration, profile: identity, layout: layout,
+            configuration: configuration, profile: try sourceIdentity(spectrum.selectionProfile),
+            layout: layout,
             origin: .longTerm(
                 timing: spectrum.timing, selection: spectrum.selectionProfile,
                 status: spectrum.status, totalWeight: spectrum.totalWeight),
-            timing: spectrum.timing, selectionCoverage: spectrum.selectionCoverage,
+            timing: spectrum.timing,
+            aggregateSupport: .init(
+                measuredFrames: spectrum.measuredFrames,
+                unavailableFrames: spectrum.unavailableFrames),
+            selectionCoverage: spectrum.selectionCoverage,
             warnings: spectrum.warnings)
+        let sequence = nextAggregateSequence
+        nextAggregateSequence = saturatingAdd(nextAggregateSequence)
         return spectrum.meanBinPower.withUnsafeBufferPointer {
             compute(
-                $0, result: result, status: spectrum.status, sequence: spectrum.measuredFrames,
+                $0, result: result, status: spectrum.status, sequence: sequence,
                 only: only)
         }
     }
@@ -112,6 +142,7 @@ public final class PreparedSpectralShape {
     ) -> SpectralShapeResult {
         var metadata = DiagnosticMetadata()
         metadata.frameSequence = sequence
+        metadata.elapsedProcessingCount = initial.aggregateSupport?.measuredFrames ?? 0
         metadata.profileToken = 4501
         metadata.sampleCount = UInt32(clamping: initial.timing.source.sampleCount)
         return diagnostics.withFrame(metadata, stage: .spectralShape) {
