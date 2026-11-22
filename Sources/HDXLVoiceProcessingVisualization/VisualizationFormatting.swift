@@ -159,6 +159,7 @@ public enum VisualizationText {
         case .spectralSkewness: "Spectral skewness"
         case .spectralKurtosis: "Spectral kurtosis"
         case .spectralFlatness: "Spectral flatness"
+        case .spectralRollOff: "Spectral roll-off"
         case .spectralSlope: "Spectral slope"
         case .spectralBandEnergyRatio: "Spectral band energy ratio"
         case .formantFrequency: "Formant frequency"
