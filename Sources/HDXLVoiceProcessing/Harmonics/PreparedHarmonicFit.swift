@@ -58,7 +58,7 @@ public final class PreparedHarmonicFit<Sample: BinaryFloatingPoint & Sendable> {
             var window = source
             var fit: HarmonicRegression?
             var failure: HarmonicFailure?
-            var clipped = false
+            let clipped = pcm.contains { abs($0) >= 1 }
             do {
                 guard let pitch else { throw HarmonicFailure.missingPitch }
                 guard pitch.measurement.kind == .fundamentalFrequency,
@@ -88,10 +88,11 @@ public final class PreparedHarmonicFit<Sample: BinaryFloatingPoint & Sendable> {
                     epoch: source.epoch, startSample: source.startSample + Int64(offset),
                     sampleCount: Int64(length), sampleRate: source.sampleRate)
                 let view = UnsafeBufferPointer(rebasing: pcm[offset..<(offset + length)])
-                for sample in pcm {
-                    guard sample.isFinite else { throw HarmonicFailure.nonfinitePCM }
-                    if abs(sample) >= 1 { clipped = true }
-                }
+                guard pcm.allSatisfy(\.isFinite) else { throw HarmonicFailure.nonfinitePCM }
+                // Within one native fit bin of Nyquist the positive and negative H2
+                // images overlap strongly, so a small residual can imply a huge sine coefficient.
+                guard source.sampleRate / 2 - 2 * f0 >= source.sampleRate / Double(length)
+                else { throw HarmonicFailure.insufficientNyquistSeparation }
                 let result = try HarmonicRegression.fit(
                     view, rate: recipe.sourceSampleRate, frequency: f0)
                 fit = result

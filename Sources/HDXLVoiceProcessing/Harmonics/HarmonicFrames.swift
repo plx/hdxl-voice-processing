@@ -4,6 +4,7 @@ import Foundation
 public enum HarmonicFailure: String, Error, Sendable, Hashable, Codable {
     case missingPitch, wrongPitchProfile, wrongPitchMeasurement, pitchSupportMismatch
     case missingPitchEstimate, uncertainPitch, pitchOutOfRange, harmonicOutsideBandwidth
+    case insufficientNyquistSeparation
     case shortWindow, nonfinitePCM, silence, singularFit, firstHarmonicUnresolved
     case secondHarmonicUnresolved, bothHarmonicsUnresolved, unrepresentableAmplitude
     case missingFormants, wrongFormantProfile, formantSupportMismatch, qualifyingPitchMismatch
@@ -13,7 +14,8 @@ public enum HarmonicFailure: String, Error, Sendable, Hashable, Codable {
     var reason: UnavailabilityReason {
         switch self {
         case .missingPitch, .missingPitchEstimate, .missingFormants, .shortWindow: .insufficientData
-        case .uncertainPitch, .firstHarmonicUnresolved, .secondHarmonicUnresolved,
+        case .uncertainPitch, .insufficientNyquistSeparation, .firstHarmonicUnresolved,
+            .secondHarmonicUnresolved,
             .bothHarmonicsUnresolved, .firstFormantUnavailable, .secondFormantUnavailable,
             .highPitch:
             .lowConfidence

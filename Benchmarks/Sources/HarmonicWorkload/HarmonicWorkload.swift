@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 import HDXLVoiceProcessing
 
@@ -29,7 +30,7 @@ public struct HarmonicCase: Encodable {
                 epoch: epoch, startSample: 0, sampleCount: Int64(count), sampleRate: Double(rate))
             for periods in [3, 5] {
                 let fit = try HarmonicFitProfile(
-                    sourceSampleRate: rate, periods: periods, pitchProfile: yin.identity())
+                    sourceSampleRate: rate, periods: periods, pitch: .yin(yin))
                 let config = try HarmonicCorrectionProfile(
                     fit: fit, formants: .init(sourceSampleRate: rate, ceilingHz: 5000))
                 for near in [false, true] {
@@ -87,6 +88,7 @@ private final class Dependencies {
 public final class HarmonicTrial {
     private let item: HarmonicCase
     private let pcm: [Double]
+    private let pcm16LESHA256: String
     private let dependencies: Dependencies
     private let analyzer: PreparedHarmonicDifference<Double>
     private let pitch: MeasurementResult
@@ -100,7 +102,11 @@ public final class HarmonicTrial {
         self.item = item
         analyzer = try .init(item.profile)
         dependencies = try .init(item)
-        pcm = Self.synthesize(item)
+        let samples = Self.synthesize(item)
+        pcm = samples.map { Double($0) / 32768 }
+        pcm16LESHA256 = samples.map(\.littleEndian).withUnsafeBytes {
+            SHA256.hash(data: Data($0)).map { String(format: "%02x", $0) }.joined()
+        }
         (pitch, formants) = try pcm.withUnsafeBufferPointer { [dependencies] in
             try dependencies.analyze($0)
         }
@@ -119,7 +125,7 @@ public final class HarmonicTrial {
     }
 
     /// Deterministic band-limited periodic excitation with a low noise floor, passed through four causal resonances.
-    private static func synthesize(_ item: HarmonicCase) -> [Double] {
+    private static func synthesize(_ item: HarmonicCase) -> [Int16] {
         let n = Int(item.source.sampleCount)
         let rate = item.source.sampleRate
         let warm = 4 * n
@@ -149,7 +155,7 @@ public final class HarmonicTrial {
         }
         let cut = data.suffix(n)
         let scale = 0.5 / cut.reduce(0.0) { max($0, abs($1)) }
-        return cut.map { scale * $0 }
+        return cut.map { Int16((scale * $0 * 32768).rounded(.toNearestOrEven)) }
     }
 
     public func prepare() {
@@ -187,6 +193,7 @@ public final class HarmonicTrial {
     public struct Observation: Encodable {
         public let name: String
         public let configuration: HarmonicCase
+        public let pcm16LESHA256: String
         public let measuredPitchHz: Double
         public let windowSamples: Int64
         public let rawDB, correctedDB: Double
@@ -198,7 +205,7 @@ public final class HarmonicTrial {
             let corrected = expected.measurement.outcome.estimate?.value
         else { throw WorkloadError.unavailable(item.name) }
         return Observation(
-            name: item.name, configuration: item, measuredPitchHz: hz,
+            name: item.name, configuration: item, pcm16LESHA256: pcm16LESHA256, measuredPitchHz: hz,
             windowSamples: expected.raw.measurement.timing.source.sampleCount,
             rawDB: raw, correctedDB: corrected, contributions: expected.contributions)
     }

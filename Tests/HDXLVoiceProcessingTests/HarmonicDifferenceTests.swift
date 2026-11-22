@@ -25,17 +25,28 @@ struct HarmonicDifferenceTests {
     }
     private func config(
         rate: Int = 16000, periods: Int = 3, precision: AnalysisPrecision = .float64,
-        pitch: ProfileIdentity? = nil
+        pitch: HarmonicPitchRecipe? = nil
     ) throws -> HarmonicCorrectionProfile {
-        let id =
+        let algorithm = try VersionedIdentifier(name: "analytic-mixture-pitch", version: 1)
+        let recipe =
             try pitch
-            ?? ProfileIdentity(
-                identifier: VersionedIdentifier(name: "test-f0", version: 1),
-                sha256: String(repeating: "a", count: 64))
+            ?? .frameLocal(
+                .init(
+                    identifier: algorithm,
+                    measurement: .init(
+                        kind: .fundamentalFrequency, unit: .hertz, algorithm: algorithm),
+                    inputFormat: .init(
+                        sampleRate: Double(rate), channelCount: 1, encoding: .float64),
+                    channels: .arithmeticMean, precision: .float64, frameLength: rate / 20,
+                    hopLength: rate / 100,
+                    analysisSampleRate: Double(rate), window: .init(name: "analytic", version: 1),
+                    preprocessing: [:],
+                    algorithmSettings: ["frequency": .text("known-generating-frequency")],
+                    partialWindowPolicy: .emitUnavailable))
         return try .init(
             fit: .init(
                 sourceSampleRate: rate, inputPrecision: precision, periods: periods,
-                pitchProfile: id),
+                pitch: recipe),
             formants: .init(
                 sourceSampleRate: rate, inputPrecision: precision, ceilingHz: min(rate / 2, 5000)))
     }
@@ -45,7 +56,9 @@ struct HarmonicDifferenceTests {
     ) throws -> MeasurementResult {
         let id = configuration.fit.pitchProfile
         return try .init(
-            measurement: .init(kind: .fundamentalFrequency, unit: .hertz, algorithm: id.identifier),
+            measurement: .init(
+                kind: .fundamentalFrequency, unit: .hertz,
+                algorithm: configuration.fit.pitchAlgorithm),
             profile: id,
             timing: .init(
                 source: source, includedSampleCount: source.sampleCount,
@@ -369,7 +382,7 @@ extension HarmonicDifferenceTests {
         let c = try config()
         let fit = try HarmonicFitProfile(
             sourceSampleRate: 16000, declaredBandwidthHz: 1800,
-            pitchProfile: c.fit.pitchProfile)
+            pitch: c.fit.pitchRecipe)
         let worker = try PreparedHarmonicFit<Double>(fit)
         let s = try source()
         let base = try observation(147.31, s, c)
@@ -435,7 +448,7 @@ extension HarmonicDifferenceTests {
         let obs = try #require(result).measurementResult()
         let hz = try #require(obs.outcome.estimate?.value)
         #expect(abs(hz - 105) < 3)
-        let c = try config(pitch: yin.identity)
+        let c = try config(pitch: .yin(yin.configuration))
         let w = try PreparedHarmonicDifference<Double>(c)
         let burg = try PreparedBurgFormants<Double>(configuration: c.formants, source: s)
         let evidence = try FormantPitchEvidence(source: s, profile: obs.profile, frequencyHz: hz)
@@ -514,6 +527,139 @@ extension HarmonicDifferenceTests {
         #expect(clipped.failure == .clippedInput && clipped.raw.first == valid.raw.first)
         pcm[799] = .infinity
         #expect(try read(pcm).raw.failure == .nonfinitePCM)
+    }
+
+    @Test func weakImageSeparationCannotCreateANearNyquistSecondHarmonic() throws {
+        let c = try config(rate: 8000)
+        let w = try PreparedHarmonicFit<Double>(c.fit)
+        let s = try source(400, 8000)
+        let f0 = 1999.9
+        let pcm = (0..<400).map { index in
+            let t = 2 * Double.pi * Double(index) / 8000
+            return 0.2 * cos(f0 * t) + 0.001 * sin(3200 * t + 0.2)
+        }
+        let frame = try pcm.withUnsafeBufferPointer {
+            try w.fit($0, source: s, pitch: observation(f0, s, c))
+        }
+        #expect(frame.failure == .insufficientNyquistSeparation)
+        #expect(frame.second == nil && frame.measurement.outcome == .unavailable(.lowConfidence))
+    }
+
+    @Test func correctionReportsOnlyConsumedSupportAndPropagatesUpstreamBurgStatus() throws {
+        let c = try config()
+        let worker = try PreparedHarmonicDifference<Double>(c)
+        let s = try source(480)
+        let pitch = try observation(200, s, c)
+        let model = try PreparedBurgFormants<Double>(configuration: c.formants, source: s)
+        let pcm = signal(480, f0: 200)
+        let evidence = try FormantPitchEvidence(source: s, profile: pitch.profile, frequencyHz: 200)
+        var failed: BurgFormantFrame?
+        try pcm.withUnsafeBufferPointer { samples in
+            try model.analyze(samples, source: s, pitch: { _ in evidence }) { failed = $0 }
+        }
+        let correction = try pcm.withUnsafeBufferPointer {
+            try worker.analyze($0, source: s, pitch: pitch, formants: failed)
+        }
+        #expect(correction.raw.failure == nil && correction.formantFailure == .shortWindow)
+        #expect(
+            correction.failure == .formantFitFailed
+                && correction.measurement.outcome == .unavailable(.insufficientData))
+
+        let wider = try source(4800, start: 0)
+        let supplied = try poles([[500, 90], [1500, 110]], pitch, c, dependency: wider)
+        let clipped = Array(repeating: -1.0, count: 480)
+        let missing = try clipped.withUnsafeBufferPointer {
+            try worker.analyze($0, source: s, pitch: nil, formants: supplied)
+        }
+        #expect(missing.failure == .missingPitch && missing.raw.clipped)
+        #expect(missing.formantConditioningSupport == wider && missing.dependencySupport == s)
+        #expect(
+            missing.measurement.timing.effectiveDelaySeconds
+                == missing.raw.measurement.timing.effectiveDelaySeconds)
+    }
+
+    @Test func exportedPitchRecipeIsSelfContainedAndRejectsTrackingHistory() throws {
+        let yin = try YINConfiguration(
+            sampleRate: 16000, pitchFloorHz: 80, pitchCeilingHz: 450,
+            integrationLength: 599, hopLength: 160, threshold: 0.125)
+        let tracker = try YINProfile(estimator: yin, tracker: .init(continuityWeight: 0.12))
+        let schedule = try AnalysisScheduleProfile(
+            inputFormat: .init(sampleRate: 16000, channelCount: 1, encoding: .float64),
+            channels: .arithmeticMean, pitch: tracker)
+        let trackedAlgorithm = try tracker.identity().identifier
+        #expect(throws: ContractError.invalidConfiguration) {
+            try HarmonicFitProfile(
+                sourceSampleRate: 16000, pitch: .schedule(schedule),
+                pitchAlgorithm: trackedAlgorithm)
+        }
+        let c = try config(pitch: .schedule(schedule))
+        let history = try source(1120)
+        let measured = try MeasurementResult(
+            measurement: .init(
+                kind: .fundamentalFrequency, unit: .hertz, algorithm: trackedAlgorithm),
+            profile: schedule.identity(),
+            timing: .init(source: history, includedSampleCount: history.sampleCount),
+            outcome: .available(.init(value: 147.31)))
+        let w = try PreparedHarmonicFit<Double>(c.fit)
+        let result = try signal(1120).withUnsafeBufferPointer {
+            try w.fit($0, source: history, pitch: measured)
+        }
+        #expect(result.failure == .wrongPitchMeasurement)
+        let restored = try JSONDecoder().decode(
+            HarmonicFitProfile.self, from: JSONEncoder().encode(c.fit))
+        guard case .schedule(let stored) = restored.pitchRecipe else {
+            Issue.record("Missing pitch schedule")
+            return
+        }
+        #expect(
+            stored.pitch?.estimator.threshold == 0.125
+                && stored.pitch?.estimator.integrationLength == 599)
+        #expect(
+            try stored.identity() == restored.pitchProfile
+                && restored.pitchAlgorithm == yin.identity().identifier)
+        var json = try #require(
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(c.fit)) as? [String: Any])
+        json["pitchProfile"] = try JSONSerialization.jsonObject(
+            with: JSONEncoder().encode(yin.identity()))
+        let forged = try JSONSerialization.data(withJSONObject: json)
+        #expect(throws: ContractError.invalidFingerprint) {
+            try JSONDecoder().decode(HarmonicFitProfile.self, from: forged)
+        }
+    }
+
+    @Test func swipePitchAndMultiEstimatorScheduleSelectTheDeclaredRawAlgorithm() throws {
+        let yin = try YINConfiguration(sampleRate: 16000, hopLength: 160)
+        let swipe = try SWIPEPrimeConfiguration(
+            sampleRate: 16000, pitchFloorHz: 80,
+            pitchCeilingHz: 450, hopLength: 160)
+        let schedule = try AnalysisScheduleProfile(
+            inputFormat: .init(sampleRate: 16000, channelCount: 1, encoding: .float64),
+            channels: .arithmeticMean, pitch: .init(estimator: yin), swipePrime: swipe)
+        #expect(throws: ContractError.invalidConfiguration) {
+            try HarmonicFitProfile(sourceSampleRate: 16000, pitch: .schedule(schedule))
+        }
+        let algorithm = try swipe.identity().identifier
+        let selected = try HarmonicFitProfile(
+            sourceSampleRate: 16000, pitch: .schedule(schedule), pitchAlgorithm: algorithm)
+        #expect(
+            try selected.pitchProfile == schedule.identity() && selected.pitchAlgorithm == algorithm
+        )
+        let fit = try HarmonicFitProfile(sourceSampleRate: 16000, pitch: .swipePrime(swipe))
+        let estimator = try PreparedSWIPEPrime<Double>(swipe)
+        let raw = try PreparedHarmonicFit<Double>(fit)
+        let n = swipe.requiredSampleCount
+        let interval = try source(n)
+        let samples = signal(n, f0: 200, first: 0.4, second: 0.15)
+        let timing = try AnalysisTiming(source: interval, includedSampleCount: Int64(n))
+        var pitch: SWIPEPrimeFrameResult?
+        try samples.withUnsafeBufferPointer { pcm in
+            try estimator.analyze(pcm, timing: timing) { pitch = $0.result }
+        }
+        let observation = try #require(pitch).measurementResult()
+        let parsed = try samples.withUnsafeBufferPointer {
+            try raw.fit($0, source: interval, pitch: observation)
+        }
+        #expect(parsed.failure == nil && parsed.pitch?.profile == fit.pitchProfile)
     }
 
 }

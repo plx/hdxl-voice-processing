@@ -26,6 +26,7 @@ def observations():
         raw = 3.0
         corrected = raw + sum(p['secondGainDB'] - p['firstGainDB'] for p in contributions)
         rows.append(dict(name=case['name'], configuration=case, measuredPitchHz=f0,
+                         pcm16LESHA256=benchmark.PCM16_DIGESTS[rate, case['firstResonanceHz']],
                          windowSamples=round(rate * periods / f0), rawDB=raw, correctedDB=corrected,
                          contributions=contributions))
     return rows
@@ -55,11 +56,13 @@ class HarmonicEvidenceTests(unittest.TestCase):
             benchmark.validate_cases(rows)
 
     def test_rejects_changed_dependency_digest_and_fit_support(self):
-        for key in ('rawIdentity', 'correctedIdentity', 'windowSamples'):
+        for key in ('rawIdentity', 'correctedIdentity', 'windowSamples', 'pcm16LESHA256'):
             with self.subTest(key=key):
                 rows = observations()
                 if key == 'windowSamples':
                     rows[0][key] += 1
+                elif key == 'pcm16LESHA256':
+                    rows[0][key] = '0' * 64
                 else:
                     rows[0]['configuration'][key]['sha256'] = '0' * 64
                 with self.assertRaises(ValueError):

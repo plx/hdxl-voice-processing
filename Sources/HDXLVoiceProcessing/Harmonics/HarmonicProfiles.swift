@@ -8,12 +8,13 @@ public struct HarmonicFitProfile: Codable, Sendable, Hashable {
     public let inputPrecision: AnalysisPrecision
     public let declaredBandwidthHz: Double
     public let periods: Int
+    public let pitchRecipe: HarmonicPitchRecipe
     public let pitchProfile: ProfileIdentity
     public let pitchAlgorithm: VersionedIdentifier
 
     public init(
         sourceSampleRate: Int, inputPrecision: AnalysisPrecision = .float64,
-        declaredBandwidthHz: Double? = nil, periods: Int = 3, pitchProfile: ProfileIdentity,
+        declaredBandwidthHz: Double? = nil, periods: Int = 3, pitch: HarmonicPitchRecipe,
         pitchAlgorithm: VersionedIdentifier? = nil
     ) throws {
         let nyquist = Double(sourceSampleRate) / 2
@@ -25,8 +26,9 @@ public struct HarmonicFitProfile: Codable, Sendable, Hashable {
         self.inputPrecision = inputPrecision
         self.declaredBandwidthHz = bandwidth
         self.periods = periods
-        self.pitchProfile = pitchProfile
-        self.pitchAlgorithm = pitchAlgorithm ?? pitchProfile.identifier
+        self.pitchRecipe = pitch
+        (self.pitchProfile, self.pitchAlgorithm) = try pitch.binding(
+            rate: sourceSampleRate, algorithm: pitchAlgorithm)
     }
 
     public static var descriptor: MeasurementDescriptor {
@@ -43,7 +45,7 @@ public struct HarmonicFitProfile: Codable, Sendable, Hashable {
 
     private enum CodingKeys: String, CodingKey, CaseIterable {
         case schemaVersion, sourceSampleRate, inputPrecision, declaredBandwidthHz, periods,
-            pitchProfile, pitchAlgorithm
+            pitchRecipe, pitchProfile, pitchAlgorithm
     }
 
     public init(from decoder: any Decoder) throws {
@@ -55,8 +57,11 @@ public struct HarmonicFitProfile: Codable, Sendable, Hashable {
             inputPrecision: c.decode(AnalysisPrecision.self, forKey: .inputPrecision),
             declaredBandwidthHz: c.decode(Double.self, forKey: .declaredBandwidthHz),
             periods: c.decode(Int.self, forKey: .periods),
-            pitchProfile: c.decode(ProfileIdentity.self, forKey: .pitchProfile),
+            pitch: c.decode(HarmonicPitchRecipe.self, forKey: .pitchRecipe),
             pitchAlgorithm: c.decode(VersionedIdentifier.self, forKey: .pitchAlgorithm))
+        guard try c.decode(ProfileIdentity.self, forKey: .pitchProfile) == pitchProfile else {
+            throw ContractError.invalidFingerprint
+        }
     }
 }
 

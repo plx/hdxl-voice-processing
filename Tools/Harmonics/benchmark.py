@@ -19,6 +19,18 @@ BOUNDARIES = {
 }
 
 
+# Digests of little-endian PCM16 before exact widening to binary64.
+# The fit-window variants use identical PCM at a given rate and first resonance.
+PCM16_DIGESTS = {
+    (16000, 291): '5d36d4601391f8e33b45094e9de91f14d7865ba754691330fdbcd95c565b9af2',
+    (16000, 640): '86211a99a006f20309b5ad4c39678eb8056175bc02ec63356c13c77034e571da',
+    (44100, 291): 'f2c30b26dc59e4f1dc251dbf8e719f4d64aeae42445633c840bf0f286e81c986',
+    (44100, 640): '32b2ff975add299c26955942a9d5fff7610c26d3d481e5837ae6310affe1d2c0',
+    (48000, 291): 'bde6f6f6f30fb409963f19c7b6ad574570d4879ad5aac94eb53b0c6d781852d3',
+    (48000, 640): 'd749580ebd60fe6764e275e4b775595e678ff3d8da367a5b6dc489272e75788b',
+}
+
+
 def identity(recipe, name):
     encoded = json.dumps(recipe, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
     return dict(identifier=dict(name=name, version=1), sha256=hashlib.sha256(encoded).hexdigest())
@@ -34,7 +46,7 @@ def expected_configuration(rate, cycles, geometry):
                neighboringTimeRefinement='disabled')
     raw = dict(schemaVersion=1, sourceSampleRate=rate, inputPrecision='float64', declaredBandwidthHz=rate // 2,
                periods=cycles, pitchProfile=identity(yin, yin['definition']),
-               pitchAlgorithm=dict(name=yin['definition'], version=1))
+               pitchAlgorithm=dict(name=yin['definition'], version=1), pitchRecipe=dict(kind='yin', recipe=yin))
     formants = dict(schemaVersion=1, sourceSampleRate=rate, inputPrecision='float64', declaredBandwidthHz=rate // 2,
                     order=10, ceilingHz=5000, hopMilliseconds=10, preEmphasisFromHz=50)
     corrected = dict(schemaVersion=1, fit=raw, formants=formants)
@@ -60,6 +72,8 @@ def validate_cases(rows):
         seen.add(name)
         rate = case['source']['sampleRate']
         cycles = case['profile']['fit']['periods']
+        if row['pcm16LESHA256'] != PCM16_DIGESTS[rate, case['firstResonanceHz']]:
+            raise ValueError(f'Unexpected synthetic PCM in {name}')
         f0 = row['measuredPitchHz']
         if not abs(f0 - 137.3) < 3 or row['windowSamples'] != math.floor(cycles * rate / f0 + .5):
             raise ValueError(f'Unexpected observed pitch or fit window in {name}')
@@ -112,7 +126,7 @@ def comparisons(data, records, mode):
 SUITE = SpectralBenchmarkSuite(
     'HarmonicBenchmarks','HarmonicDifference','Capability.HarmonicDifferenceAllocationARC',
     'harmonic-difference','HarmonicWorkloadCheck',BOUNDARIES,validate_cases,throughput,
-    'Deterministic mono binary64 voiced excitation through four causal resonances; F0 is off the 50 ms Fourier grid.',
+    'Deterministic mono binary64 voiced excitation through four causal resonances, quantized to pinned PCM16 before exact widening. F0 is off the 50 ms Fourier grid.',
     'Prepare signals, workers, supplied dependencies and reference results before timing. Clear outputs before, verify exact frames afterward.',
     'One independent 50 ms PCM frame or its precomputed fit and pole dependencies, according to the operation.',
     comparisons=comparisons, minimum_trials=101)

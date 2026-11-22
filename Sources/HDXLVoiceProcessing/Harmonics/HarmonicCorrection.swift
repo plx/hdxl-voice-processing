@@ -40,25 +40,6 @@ extension PreparedHarmonicDifference {
         return try rawAnalyzer.measured(.harmonicCorrection, source: source) {
             var support = source
             var delay = raw.measurement.timing.effectiveDelaySeconds
-            if let formants, formants.timing.source == source {
-                let dependency = formants.conditioningSupport
-                if dependency.epoch == source.epoch, dependency.sampleRate == source.sampleRate,
-                    dependency.startSample <= source.startSample,
-                    dependency.endSample >= source.endSample
-                {
-                    support = dependency
-                    let placement = raw.measurement.timing.source
-                    let centerFromWindowStart =
-                        Double(placement.startSample - source.startSample) / source.sampleRate
-                        + placement.durationSeconds / 2
-                    delay = max(
-                        delay,
-                        Double(dependency.endSample - source.startSample) / source.sampleRate
-                            - centerFromWindowStart,
-                        formants.timing.effectiveDelaySeconds + source.durationSeconds / 2
-                            - centerFromWindowStart)
-                }
-            }
             var contributions: [HarmonicFormantContribution] = []
             var first: Double?
             var second: Double?
@@ -75,8 +56,11 @@ extension PreparedHarmonicDifference {
                 guard formants.configuration == configuration.formants else {
                     throw HarmonicFailure.wrongFormantProfile
                 }
+                let dependency = formants.conditioningSupport
                 guard formants.timing.source == source,
-                    support == formants.conditioningSupport
+                    dependency.epoch == source.epoch, dependency.sampleRate == source.sampleRate,
+                    dependency.startSample <= source.startSample,
+                    dependency.endSample >= source.endSample
                 else { throw HarmonicFailure.formantSupportMismatch }
                 guard let observed = formants.pitch, observed.source == source,
                     observed.profile == configuration.fit.pitchProfile, observed.frequencyHz == f0
@@ -84,6 +68,15 @@ extension PreparedHarmonicDifference {
                 guard formants.profile == boundFormants else {
                     throw HarmonicFailure.wrongFormantProfile
                 }
+                support = dependency
+                let placement = raw.measurement.timing.source
+                let center =
+                    Double(placement.startSample - source.startSample) / source.sampleRate
+                    + placement.durationSeconds / 2
+                delay = max(
+                    delay,
+                    Double(dependency.endSample - source.startSample) / source.sampleRate - center,
+                    formants.timing.effectiveDelaySeconds + source.durationSeconds / 2 - center)
                 guard formants.failure == nil,
                     formants.timing.includedSampleCount == source.sampleCount
                 else { throw HarmonicFailure.formantFitFailed }
@@ -111,6 +104,8 @@ extension PreparedHarmonicDifference {
             let outcome: MeasurementOutcome
             if raw.failure != nil {
                 outcome = raw.measurement.outcome
+            } else if failure == .formantFitFailed, let cause = formants?.failure {
+                outcome = .unavailable(cause.reason)
             } else if let failure {
                 outcome = .unavailable(failure.reason)
             } else if let first, let second {
