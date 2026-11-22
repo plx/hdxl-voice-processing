@@ -2,6 +2,8 @@
 """Measure bounded spectral products and bind the distributions to the shared workload manifest."""
 import argparse
 from bisect import bisect_left
+from dataclasses import dataclass
+from collections.abc import Callable
 import csv
 import gzip
 import json
@@ -130,11 +132,52 @@ def validate_heap_allocations(operation, frame_count, maximum):
         raise ValueError(f"Excessive heap allocations while copying {operation}: {maximum} for {frame_count} frames")
 
 
-def distributions(raw, exported, baseline, records, mode):
-    case_by_op = {f"SpectralProducts.{op}.{item['name']}": (op, item) for item in records for op in BOUNDARIES}
+def product_rate(op, item, wall):
+    frames = item["expectedCepstralFrames" if op.startswith("Cep") else "expectedFrames"]
+    return dict(framesPerTrial=frames, sourceSeconds=item["durationSeconds"],
+                framesPerSecondAtP50Latency=frames * 1e9 / wall["p50"],
+                framesPerSecondAtP99Latency=frames * 1e9 / wall["p99"])
+
+
+def stream_probe(checker, output):
+    memory = json.loads(ci.capture(checker, "--stream-memory"))
+    write(output / "long-stream.json", memory)
+    validate_memory(memory)
+
+
+@dataclass(frozen=True)
+class SpectralBenchmarkSuite:
+    target: str
+    namespace: str
+    control: str
+    artifact: str
+    checker: str
+    boundaries: dict
+    validate_cases: Callable
+    throughput: Callable
+    input_description: str
+    preparation: str
+    duration_statistic: str
+    allocation_check: Callable | None = None
+    extra_timing_probe: Callable | None = None
+    comparisons: Callable | None = None
+
+
+PRODUCTS = SpectralBenchmarkSuite(
+    TARGET, "SpectralProducts", CONTROL, "spectral-products", "SpectralProductWorkloadCheck",
+    BOUNDARIES, validate_cases, product_rate,
+    "One binary64 mono ramp, (index % 257 - 128) / 128. Generated before timing.",
+    "PCM, canonical rows, fresh workers and reference checks are outside each measurement.",
+    "Outer iteration for one declared source interval, including its unavailable cepstral tail.",
+    allocation_check=lambda op, record, maximum: validate_heap_allocations(op, record["expectedFrames"], maximum),
+    extra_timing_probe=stream_probe)
+
+
+def distributions(raw, exported, baseline, records, mode, suite=PRODUCTS):
+    case_by_op = {f"{suite.namespace}.{op}.{item['name']}": (op, item) for item in records for op in suite.boundaries}
     expected = set(case_by_op)
     if mode == "allocation":
-        expected.add(CONTROL)
+        expected.add(suite.control)
     metrics = {"wallClock", "cpuTotal"} if mode == "timing" else set(METRICS) - {"cpuTotal"}
     data, p99, rates = {}, {}, []
     results = raw["results"]
@@ -142,7 +185,7 @@ def distributions(raw, exported, baseline, records, mode):
         raise ValueError("Inconsistent baseline identity or result count")
     for identity, measurements in zip(results[::2], results[1::2], strict=True):
         name = identity["name"]
-        if name not in expected or name in data or identity["target"] != TARGET:
+        if name not in expected or name in data or identity["target"] != suite.target:
             raise ValueError(f"Unexpected benchmark {name}")
         row = data[name] = {}
         for measurement in measurements:
@@ -152,14 +195,14 @@ def distributions(raw, exported, baseline, records, mode):
             if (metric not in metrics or metric in row or measurement["scalingFactor"] != 1
                     or measurement["timeUnits"] != "nanoseconds" or type(count) is not int or count < 10
                     or sum(histogram["counts"]) != count or type(maximum) is not int or maximum < 0
-                    or (metric == "wallClock" or name == CONTROL) and maximum == 0):
+                    or (metric == "wallClock" or name == suite.control) and maximum == 0):
                 raise ValueError(f"Invalid distribution for {name}/{metric}")
-            if name == CONTROL:
+            if name == suite.control:
                 validate_control(histogram)
-            if metric == "mallocCountTotal" and name != CONTROL:
+            if metric == "mallocCountTotal" and name != suite.control and suite.allocation_check:
                 operation, record = case_by_op[name]
-                validate_heap_allocations(operation, record["expectedFrames"], maximum)
-            path = exported / f"{baseline}.{TARGET}.{name}.{metric}.histogram.percentiles.tsv"
+                suite.allocation_check(operation, record, maximum)
+            path = exported / f"{baseline}.{suite.target}.{name}.{metric}.histogram.percentiles.tsv"
             lines = path.read_text().splitlines()
             points = [tuple(map(int, line.split("\t"))) for line in lines[1:]]
             unit = " (ns) *" if metric in ("wallClock", "cpuTotal") else " *"
@@ -174,14 +217,11 @@ def distributions(raw, exported, baseline, records, mode):
             raise ValueError(f"Missing metrics for {name}")
         if mode == "timing":
             op, item = case_by_op[name]
-            frames = item["expectedCepstralFrames" if op.startswith("Cep") else "expectedFrames"]
-            rates.append(dict(operation=name, framesPerTrial=frames, sourceSeconds=item["durationSeconds"],
-                              framesPerSecondAtP50Latency=frames * 1e9 / row["wallClock"]["p50"],
-                              framesPerSecondAtP99Latency=frames * 1e9 / row["wallClock"]["p99"]))
+            rates.append(dict(operation=name, **suite.throughput(op, item, row["wallClock"])))
     return data, p99, rates
 
 
-def main():
+def main(suite=PRODUCTS):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("timing", "allocation"))
     parser.add_argument("--development-toolchain", action="store_true")
@@ -193,8 +233,8 @@ def main():
         raise ValueError("Allocator override present")
     package = framework.PACKAGE
     baseline_name = "spectral-" + uuid.uuid4().hex
-    baseline = package / ".benchmarkBaselines" / TARGET / baseline_name
-    output = package / ".build/artifacts" / f"spectral-products-{mode}" / baseline_name
+    baseline = package / ".benchmarkBaselines" / suite.target / baseline_name
+    output = package / ".build/artifacts" / f"{suite.artifact}-{mode}" / baseline_name
     output.mkdir(parents=True)
     print(output, flush=True)
     lock = package / "Package.resolved"
@@ -204,42 +244,42 @@ def main():
         environment = framework.measurement_environment(mode)
         if not args.development_toolchain:
             ci.validate_environment(environment, json.loads((ROOT / "Configuration/build.json").read_bytes()))
-        environment.update(operations=BOUNDARIES, frameworkScalingFactor=1,
+        environment.update(operations=suite.boundaries, frameworkScalingFactor=1,
                            toolchainPolicy="development" if args.development_toolchain else "pinned",
-                           input="One binary64 mono ramp, (index % 257 - 128) / 128. Generated before timing.",
-                           preparation="PCM, canonical rows, fresh workers and reference checks are outside each measurement.",
-                           durationStatistic="Outer iteration for one declared source interval, including its unavailable cepstral tail.",
+                           input=suite.input_description,
+                           preparation=suite.preparation,
+                           durationStatistic=suite.duration_statistic,
                            packageResolvedSHA256=framework.sha(lock))
         (output / "environment.json").write_text(ci.redact(json.dumps(environment, indent=2)) + "\n")
         (output / "resolution.json").write_bytes(resolution)
         flags = framework.swift_arguments(mode)
-        plugin = ["swift", "package", *flags, "--allow-writing-to-package-directory", "benchmark", "--target", TARGET,
+        plugin = ["swift", "package", *flags, "--allow-writing-to-package-directory", "benchmark", "--target", suite.target,
                   "--time-units", "nanoseconds", "--no-progress"]
         with (output / "commands.log").open("w") as log:
             def run(args):
                 ci.run_command(args, log, result["commands"])
-            run(["swift", "build", *flags, "--product", "SpectralProductWorkloadCheck"])
+            run(["swift", "build", *flags, "--product", suite.checker])
             binaries = Path(ci.capture("swift", "build", *flags, "--show-bin-path"))
-            checker = str(binaries / "SpectralProductWorkloadCheck")
+            checker = str(binaries / suite.checker)
             records = json.loads(ci.capture(checker))
-            validate_cases(records)
+            suite.validate_cases(records)
             write(output / "workloads.json", records)
-            if mode == "timing":
-                memory = json.loads(ci.capture(checker, "--stream-memory"))
-                write(output / "long-stream.json", memory)
-                validate_memory(memory)
+            if mode == "timing" and suite.extra_timing_probe:
+                suite.extra_timing_probe(checker, output)
             run([*plugin, "baseline", "update", baseline_name])
             raw = json.loads((baseline / "results.json").read_bytes())
             raw["machine"]["hostname"] = "<host>"
             with gzip.open(output / "raw-baseline.json.gz", "wt") as stream:
                 json.dump(raw, stream, separators=(",", ":"), allow_nan=False)
-            result["binary"] = framework.inspect_binary(binaries / TARGET, mode)
-            result["binary"]["sha256"] = framework.sha(binaries / TARGET)
+            result["binary"] = framework.inspect_binary(binaries / suite.target, mode)
+            result["binary"]["sha256"] = framework.sha(binaries / suite.target)
             with tempfile.TemporaryDirectory(dir=output) as temp:
                 run([*plugin, "baseline", "read", baseline_name, "--format", "histogramPercentiles", "--path", temp])
-                data, p99, rates = distributions(raw, Path(temp), baseline_name, records, mode)
+                data, p99, rates = distributions(raw, Path(temp), baseline_name, records, mode, suite)
             write(output / "distributions.json", data)
             write(output / "p99.json", p99)
+            if suite.comparisons:
+                write(output / "comparisons.json", suite.comparisons(data, records, mode))
             if rates:
                 with (output / "throughput.csv").open("w", newline="") as stream:
                     writer = csv.DictWriter(stream, fieldnames=list(rates[0]))

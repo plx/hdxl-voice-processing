@@ -61,6 +61,7 @@ before computing rates. Reports from before the contract are marked `legacy-unbo
 | Isolated DSP kernels, buffer reuse and calibrated loop controls | [Kernel workload and reporting guide](../Tools/Kernels/README.md) |
 | Windowing, ordinary and whole-interval Fourier, conditioning, levels | [Framing](../Tools/Framing/README.md), [Fourier](../Tools/Fourier/README.md), [conditioning](../Tools/Conditioning/README.md), [levels](../Tools/Levels/README.md) |
 | Bounded spectrograms, canonical cepstrograms, and LTAS | [Spectral product workloads and export costs](../Tools/SpectralProducts/README.md) |
+| Spectral shape on frames and sliding LTAS windows | [Descriptor workloads and incremental FFT cost](../Tools/SpectralShape/README.md) |
 | Cepstrum, CPP and CPPS | [Cepstrum](../Tools/Cepstrum/README.md), [CPP](../Tools/CPP/README.md), [CPPS](../Tools/CPPS/README.md) |
 | Selection, F0 and harmonicity | [Masks](../Tools/Masks/README.md), [YIN](../Tools/YIN/README.md), [SWIPE-prime](../Tools/SWIPE/README.md), [HNR](../Tools/HNR/README.md) |
 | Pulses and perturbation statistics | [Pulses](../Tools/Pulses/README.md), [jitter](../Tools/Jitter/README.md), [shimmer](../Tools/Shimmer/README.md) |

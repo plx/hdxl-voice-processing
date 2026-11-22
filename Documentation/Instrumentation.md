@@ -367,3 +367,7 @@ consumer exclusion and rejected query/reset reentry.
 ## Bounded spectral products
 
 Pass a `RuntimeDiagnosticMode` when preparing the spectrogram, LTAS accumulator, or rolling collection. `Spectrogram` surrounds the full-window selection check, window multiplication, FFT, and normalized power calculation. Emission follows that scope. `LongTermSpectrum` surrounds the update of the linear-power vector for an eligible row. `SpectralRetention` brackets owned-column insertion and eviction, including copying when a borrowed row enters a ring. `SpectralExport` brackets materialization of a chronological ring snapshot. Canonical cepstrogram generation also retains its existing cepstral worker scopes. The shared facade uses the frame ordinal for sampling. The payload contains bounded numeric metadata.
+
+## Spectral shape
+
+A prepared descriptor worker emits one `SpectralShape` interval around conversion of live Float32 bin powers to Double, the requested reductions, and result assembly. Its token is 4501. Frame sampling uses the source frame index. LTAS sampling uses a monotonically increasing evaluation ordinal on each prepared worker, starting at zero. Aggregate metadata puts the measured-frame support in the processed count. The sample count is the observed source interval, clamped to UInt32. Frame and LTAS evaluations share the same sampling policy. The metadata contains no bin values or user-defined band names.

@@ -29,14 +29,15 @@ public enum MeasurementKind: String, Sendable, Hashable, Codable, CaseIterable {
     case jitterLocal, jitterAbsolute, jitterRAP, jitterPPQ5, jitterDDP
     case shimmerLocal, shimmerDB, shimmerAPQ3, shimmerAPQ5, shimmerAPQ11, shimmerDDA
     case spectralCentroid, spectralSpread, spectralSkewness, spectralKurtosis, spectralFlatness
-    case spectralSlope, spectralBandEnergyRatio, formantFrequency, formantBandwidth
+    case spectralRollOff, spectralSlope, spectralBandEnergyRatio, formantFrequency, formantBandwidth
     case h1MinusH2, correctedH1MinusH2
 
     public func accepts(_ unit: MeasurementUnit) -> Bool {
         switch self {
         case .cpp, .cpps, .harmonicToNoiseRatio, .shimmerDB, .h1MinusH2, .correctedH1MinusH2:
             unit == .decibelsRatio
-        case .fundamentalFrequency, .spectralCentroid, .spectralSpread, .formantFrequency,
+        case .fundamentalFrequency, .spectralCentroid, .spectralSpread, .spectralRollOff,
+            .formantFrequency,
             .formantBandwidth:
             unit == .hertz
         case .rms, .peakAmplitude: unit == .normalizedAmplitude
