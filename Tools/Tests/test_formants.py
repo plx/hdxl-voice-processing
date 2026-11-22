@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from Formants.benchmark import BOUNDARIES, throughput, validate_cases
-from Formants.reference import OUTPUT, parse, read_cases
+from Formants.reference import DIRECTORY, ROOT, parse, read_cases
 
 
 class FormantEvidenceTests(unittest.TestCase):
@@ -27,10 +27,18 @@ class FormantEvidenceTests(unittest.TestCase):
                 parse(text, 5000, 10)
 
     def test_synthetic_inputs_and_corpus_excerpts_match_registered_pcm(self):
-        fixture = json.loads(OUTPUT.read_bytes())
+        fixtures = [case for file in sorted(DIRECTORY.glob('*.json'))
+                    for case in json.loads(file.read_bytes())['cases']]
+        licenses = {row['path']: row for row in json.loads((ROOT / 'Configuration/provenance.json').read_bytes())['fixtures']}
+        for file in DIRECTORY.glob('*.json'):
+            ledger = licenses[str(file.relative_to(ROOT))]
+            human = file.stem.startswith('corpus-')
+            self.assertEqual(ledger['containsHumanVoice'], human)
+            self.assertEqual(ledger['redistribution']['license'], 'CC-BY-4.0' if human else 'project')
+            self.assertEqual(ledger['consent']['status'], 'documented' if human else 'not-applicable')
         cases = list(read_cases())
         self.assertEqual(len(cases), 10)
-        for (metadata, samples), saved in zip(cases, fixture['cases'], strict=True):
+        for (metadata, samples), saved in zip(cases, fixtures, strict=True):
             self.assertEqual(metadata['name'], saved['name'])
             raw = struct.pack(f'<{len(samples)}h', *samples)
             self.assertEqual(hashlib.sha256(raw).hexdigest(), saved['pcm16LESHA256'])

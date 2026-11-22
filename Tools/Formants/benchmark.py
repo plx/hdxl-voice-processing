@@ -15,7 +15,7 @@ BOUNDARIES = {
     'Burg': 'Normalize, apply the Burg Gaussian and fit one conditioned 50 ms frame. Consume prediction gain.',
     'Roots': 'Solve one known stable polynomial of the configured order and consume convergence diagnostics.',
     'CloseRoots': 'Solve a known stable polynomial with its two lowest resonances 12 Hz apart.',
-    'BoundedExit': 'Constrain the production solver to one sweep per start on the close-resonance polynomial. Consume the verified failure.',
+    'BoundedExit': 'Solve (z - 7/8)^order with production settings. Verify both starts exhausted all 128 sweeps and return explicit nonconvergence.',
     'Analyze': 'Analyze one independent 100 ms PCM interval, including conditioning, all frame estimates and one scalar per emitted frame.',
 }
 

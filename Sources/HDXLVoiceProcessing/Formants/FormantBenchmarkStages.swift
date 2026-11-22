@@ -13,11 +13,10 @@
         public func predictionGain(_ samples: UnsafeBufferPointer<Double>) throws -> Double {
             try burg.fit(samples).get().predictionGainDB
         }
-        public func solve(_ coefficients: [Double], exerciseLimit: Bool = false) -> (
+        public func solve(_ coefficients: [Double]) -> (
             converged: Bool, sweeps: Int, secondStart: Bool, residual: Double?
         ) {
-            let result = FormantPolynomial(coefficients: coefficients).solve(
-                sweepLimit: exerciseLimit ? 1 : FormantPolynomial.sweepLimit)
+            let result = FormantPolynomial(coefficients: coefficients).solve()
             return (
                 result.converged, result.sweeps, result.triedSecondStart,
                 result.maximumRelativeResidual

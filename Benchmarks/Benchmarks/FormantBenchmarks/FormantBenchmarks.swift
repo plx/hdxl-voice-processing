@@ -39,7 +39,7 @@ import FormantWorkload
                         maxIterations: 101)
                 ) { benchmark in
                     let trial = trial!
-                    trial.prepare(operation)
+                    trial.prepare()
                     benchmark.startMeasurement()
                     try! trial.run(operation)
                     benchmark.stopMeasurement()

@@ -52,7 +52,7 @@
 
     public final class FormantTrial {
         let item: FormantCase
-        private let pcm, window, normalPolynomial, closePolynomial: [Double]
+        private let pcm, window, normalPolynomial, closePolynomial, repeatedPolynomial: [Double]
         private let analyzer: PreparedBurgFormants<Double>
         private let stages: FormantBenchmarkStages
         private let resampler: KernelBenchmarkConditioner<Double>
@@ -102,9 +102,17 @@
             }
             normalPolynomial = polynomial(close: false)
             closePolynomial = polynomial(close: true)
+            // (z - 7/8)^order is stable, with an exactly representable repeated real pole.
+            var repeated = [1.0]
+            for _ in 0..<profile.order {
+                var next = repeated + [0]
+                for k in repeated.indices { next[k + 1] -= 0.875 * repeated[k] }
+                repeated = next
+            }
+            repeatedPolynomial = repeated
             pcm.withUnsafeBufferPointer { resampler.loadInput($0) }
         }
-        public func prepare(_ op: FormantOperation) {
+        public func prepare() {
             sum = 0
             count = 0
             succeeded = false
@@ -120,16 +128,16 @@
                 sum = try window.withUnsafeBufferPointer { try stages.predictionGain($0) }
                 count = 1
                 succeeded = sum >= 0
-            case .roots, .closeRoots, .boundedExit:
-                let result = stages.solve(
-                    op == .roots ? normalPolynomial : closePolynomial,
-                    exerciseLimit: op == .boundedExit)
+            case .roots, .closeRoots:
+                let result = stages.solve(op == .roots ? normalPolynomial : closePolynomial)
                 sum = Double(result.sweeps)
                 count = 1
-                succeeded =
-                    op == .boundedExit
-                    ? !result.converged && result.secondStart && result.sweeps == 2
-                    : result.converged && (result.residual ?? .infinity) <= 1e-10
+                succeeded = result.converged && (result.residual ?? .infinity) <= 1e-10
+            case .boundedExit:
+                let result = stages.solve(repeatedPolynomial)
+                sum = Double(result.sweeps)
+                count = 1
+                succeeded = !result.converged && result.secondStart && result.sweeps == 128
             case .analyze:
                 try pcm.withUnsafeBufferPointer { input in
                     try analyzer.analyze(input, source: item.source) { frame in

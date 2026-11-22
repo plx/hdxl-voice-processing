@@ -41,7 +41,7 @@ public struct FramingCase: Codable, Sendable {
         preparedBufferBytes = 3 * length * (precision == .float32 ? 4 : 8)
     }
 
-    /// Common Gaussian supports, maximum supported support, and all other window shapes.
+    /// Common Gaussian supports, maximum support and the five original general-purpose windows.
     public static func matrix() throws -> [Self] {
         var result: [Self] = []
         for precision in [AnalysisPrecision.float32, .float64] {
@@ -54,7 +54,10 @@ public struct FramingCase: Codable, Sendable {
                 }
                 result.append(try Self(rate: rate, seconds: nil, hop: 0.002, precision: precision))
             }
-            for shape in WindowDefinition.allCases where shape != .praatGaussian2 {
+            let shapes: [WindowDefinition] = [
+                .rectangular, .hannPeriodic, .hannSymmetric, .hammingPeriodic, .hammingSymmetric,
+            ]
+            for shape in shapes {
                 result.append(
                     try Self(
                         rate: 48_000, seconds: 0.05, hop: 0.005, precision: precision, shape: shape)

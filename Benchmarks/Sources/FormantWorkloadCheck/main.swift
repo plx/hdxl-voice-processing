@@ -6,7 +6,7 @@ import Foundation
     for item in cases {
         let trial = try FormantTrial(item)
         for operation in FormantOperation.allCases {
-            trial.prepare(operation)
+            trial.prepare()
             try trial.run(operation)
             trial.verify()
         }

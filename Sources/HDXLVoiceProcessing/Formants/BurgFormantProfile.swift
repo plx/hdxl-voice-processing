@@ -55,6 +55,17 @@ public struct BurgFormantProfile: Sendable, Hashable, Codable {
         }
     }
 
+    func descriptor(number: Int, kind: MeasurementKind) throws -> MeasurementDescriptor {
+        guard (1...maximumFormants).contains(number),
+            kind == .formantFrequency || kind == .formantBandwidth
+        else {
+            throw ContractError.invalidConfiguration
+        }
+        return try MeasurementDescriptor(
+            kind: kind, unit: .hertz,
+            algorithm: VersionedIdentifier(name: "untracked-burg-f" + String(number), version: 1))
+    }
+
     public func identity() throws -> ProfileIdentity {
         try ProfileIdentity(
             identifier: VersionedIdentifier(name: "burg-formants-untracked", version: 1),
@@ -85,6 +96,7 @@ public struct BurgFormantProfile: Sendable, Hashable, Codable {
     }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
+        guard c.contains(.preEmphasisFromHz) else { throw ContractError.invalidConfiguration }
         try self.init(
             sourceSampleRate: c.decode(Int.self, forKey: .sourceSampleRate),
             inputPrecision: c.decode(AnalysisPrecision.self, forKey: .inputPrecision),
@@ -93,5 +105,16 @@ public struct BurgFormantProfile: Sendable, Hashable, Codable {
             hopMilliseconds: c.decode(Int.self, forKey: .hopMilliseconds),
             preEmphasisFromHz: c.decodeIfPresent(Double.self, forKey: .preEmphasisFromHz),
             declaredBandwidthHz: c.decode(Double.self, forKey: .declaredBandwidthHz))
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(sourceSampleRate, forKey: .sourceSampleRate)
+        try c.encode(inputPrecision, forKey: .inputPrecision)
+        try c.encode(declaredBandwidthHz, forKey: .declaredBandwidthHz)
+        try c.encode(ceilingHz, forKey: .ceilingHz)
+        try c.encode(order, forKey: .order)
+        try c.encode(hopMilliseconds, forKey: .hopMilliseconds)
+        try c.encode(preEmphasisFromHz, forKey: .preEmphasisFromHz)
     }
 }

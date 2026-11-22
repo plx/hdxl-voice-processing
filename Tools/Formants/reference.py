@@ -14,7 +14,8 @@ import wave
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 FIXTURES = ROOT / 'Tests/HDXLVoiceProcessingTests/Fixtures'
-OUTPUT = FIXTURES / 'Formants/burg.json'
+DIRECTORY = FIXTURES / 'Formants'
+SYNTHETIC = DIRECTORY / 'burg.json'
 CORPUS = FIXTURES / 'Corpus'
 POLES = [(550, 70), (1480, 110), (2550, 170), (3450, 210), (4250, 255)]
 
@@ -159,28 +160,51 @@ def generate(executable):
                 preEmphasisFromHz=50, implementationSHA256=sha(Path(__file__).read_bytes()), cases=cases)
 
 
-def register():
+def artifacts(generated):
+    header = {k: v for k, v in generated.items() if k != 'cases'}
+    synthetic = [c for c in generated['cases'] if 'syntheticPCM16' in c]
+    yield SYNTHETIC, dict(**header, cases=synthetic)
+    for row in generated['cases']:
+        if 'corpusPath' in row:
+            yield DIRECTORY / (row['name'] + '.json'), dict(**header, cases=[row])
+
+
+def register(outputs):
     path = ROOT / 'Configuration/provenance.json'
     inventory = json.loads(path.read_bytes())
-    relative = str(OUTPUT.relative_to(ROOT))
+    parents = {entry['path']: entry for entry in inventory['fixtures']}
     code = sha(Path(__file__).read_bytes())
-    digest = sha(OUTPUT.read_bytes())
-    entry = dict(
-        id='burg-formant-reference-v1', path=relative, sha256=digest,
-        source=dict(kind='original-generated', url='https://github.com/plx/hdxl-voice-processing/issues/46',
-                    versionOrHash=code),
-        generator=dict(path='Tools/Formants/reference.py', version='1', sha256=code),
-        redistribution=dict(license='project', permission='inherits-project-license',
-                            evidence='https://github.com/plx/hdxl-voice-processing/issues/78'),
-        containsHumanVoice=False,
-        consent=dict(status='not-applicable', evidence='Contains synthetic integers and numerical measurements only. '
-                     'Measured corpus sources retain their existing PVQD attribution and consent records.'),
-        transformations=['Independent all-pole synthesis and quantization to mono PCM16.',
-                         'Pinned Praat 7.0.02 keep-all and Burg formants on identical PCM, including bounded '
-                         'PVQD slices with source hashes in the corpus manifest.'],
-        expectedProfile='Untracked Burg formants. Per-case order, ceiling, hop, conditioning and source coordinates are serialized.',
-        referenceOutputIdentity='sha256:' + digest)
-    inventory['fixtures'] = [item for item in inventory['fixtures'] if item['path'] != relative] + [entry]
+    entries = {}
+    for file, group in outputs:
+        relative = str(file.relative_to(ROOT))
+        digest = sha(file.read_bytes())
+        row = group['cases'][0]
+        generated = file == SYNTHETIC
+        if generated:
+            source = dict(kind='original-generated', url='https://github.com/plx/hdxl-voice-processing/issues/46',
+                          versionOrHash=code)
+            terms = dict(license='project', permission='inherits-project-license',
+                         evidence='https://github.com/plx/hdxl-voice-processing/issues/78')
+            consent = dict(status='not-applicable', evidence='Contains only independently synthesized signals.')
+            changes = ['Independent all-pole synthesis and quantization to mono PCM16.']
+        else:
+            parent_path = str((CORPUS / row['corpusPath']).relative_to(ROOT))
+            parent = parents[parent_path]
+            if row['corpusSHA256'] != parent['sha256'] or not parent['containsHumanVoice']:
+                raise ValueError(f'Unregistered PVQD input for {relative}')
+            source, terms, consent = (parent[k] for k in ('source', 'redistribution', 'consent'))
+            excerpt = dict(operation='explicit-source-excerpt-without-resampling', sourcePath=parent_path,
+                           sourceSHA256=parent['sha256'], startSample=row['sourceOffset'],
+                           sampleCount=row['sampleCount'], pcm16LESHA256=row['pcm16LESHA256'])
+            changes = [*parent['transformations'], json.dumps(excerpt, sort_keys=True)]
+        entries[relative] = dict(
+            id='burg-formant-' + file.stem, path=relative, sha256=digest,
+            source=source, generator=dict(path='Tools/Formants/reference.py', version='1', sha256=code),
+            redistribution=terms, containsHumanVoice=not generated, consent=consent,
+            transformations=[*changes, 'Pinned Praat 7.0.02 keep-all and Burg formant queries on the same PCM and settings.'],
+            expectedProfile='Untracked Burg formants. Per-case order, ceiling, hop, conditioning and source coordinates are serialized.',
+            referenceOutputIdentity='sha256:' + digest)
+    inventory['fixtures'] = [item for item in inventory['fixtures'] if item['path'] not in entries] + list(entries.values())
     path.write_text(json.dumps(inventory, indent=2, ensure_ascii=False) + '\n')
 
 
@@ -190,12 +214,15 @@ if __name__ == '__main__':
     parser.add_argument('--write', action='store_true')
     args = parser.parse_args()
     generated = generate(args.executable.resolve())
-    encoded = json.dumps(generated, sort_keys=True, separators=(',', ':'), allow_nan=False) + '\n'
+    outputs = list(artifacts(generated))
+    for file, group in outputs:
+        encoded = json.dumps(group, sort_keys=True, separators=(',', ':'), allow_nan=False) + '\n'
+        if args.write:
+            file.parent.mkdir(exist_ok=True)
+            file.write_text(encoded)
+        elif file.read_text() != encoded:
+            raise SystemExit(f'Formant observations differ for {file.name}')
     if args.write:
-        OUTPUT.parent.mkdir(exist_ok=True)
-        OUTPUT.write_text(encoded)
-        register()
-    elif OUTPUT.read_text() != encoded:
-        raise SystemExit('Formant observations differ from the registered fixture')
+        register(outputs)
     frames = sum(len(row['frames']) for row in generated['cases'])
     print(f"Verified {len(generated['cases'])} cases and {frames} paired frame observations")

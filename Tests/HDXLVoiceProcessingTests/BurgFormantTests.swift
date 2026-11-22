@@ -9,6 +9,28 @@ private struct FormantReference: Decodable {
         let centerSeconds: Double
         let candidatesHz: [[Double]]
         let selectedHz: [[Double]]
+
+        func referencePolynomial(ceiling: Double) -> [Double] {
+            var coefficients = [1.0]
+            for pair in candidatesHz {
+                let frequency = pair[0]
+                let radius = exp(-Double.pi * pair[1] / (2 * ceiling))
+                let factor: [Double]
+                if frequency < 1e-8 {
+                    factor = [1, -radius]
+                } else if ceiling - frequency < 1e-8 {
+                    factor = [1, radius]
+                } else {
+                    factor = [1, -2 * radius * cos(.pi * frequency / ceiling), radius * radius]
+                }
+                var product = Array(repeating: 0.0, count: coefficients.count + factor.count - 1)
+                for i in coefficients.indices {
+                    for j in factor.indices { product[i + j] += coefficients[i] * factor[j] }
+                }
+                coefficients = product
+            }
+            return coefficients
+        }
     }
     struct Case: Decodable {
         let name: String
@@ -43,8 +65,14 @@ private struct FormantReference: Decodable {
     let cases: [Case]
     static func load() throws -> Self {
         let root = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
-        return try JSONDecoder().decode(
-            Self.self, from: Data(contentsOf: root.appending(path: "Formants/burg.json")))
+        let names = [
+            "burg", "corpus-bl01-vowel-a", "corpus-bl02-vowel-i", "corpus-bl03-consonant-rich",
+        ]
+        let cases = try names.flatMap { name in
+            let bytes = try Data(contentsOf: root.appending(path: "Formants/" + name + ".json"))
+            return try JSONDecoder().decode(Self.self, from: bytes).cases
+        }
+        return Self(cases: cases)
     }
 }
 
@@ -130,8 +158,17 @@ struct BurgFormantTests {
             var mismatches = 0
             var failures = 0
             var retained = 0
+            var maximumRelativeCoefficientError = 0.0
             for (frame, oracle) in zip(frames, row.frames) {
                 if frame.failure != nil { failures += 1 }
+                let coefficients = try #require(frame.diagnostics.coefficients)
+                let reference = oracle.referencePolynomial(ceiling: Double(row.ceilingHz))
+                #expect(reference.count == row.order + 1 && coefficients.count == reference.count)
+                let scale = reference.map(abs).max() ?? 1
+                for (actual, expected) in zip(coefficients, reference) {
+                    maximumRelativeCoefficientError = max(
+                        maximumRelativeCoefficientError, abs(actual - expected) / scale)
+                }
                 time = max(time, abs(frame.centerSecondsFromOrigin - oracle.centerSeconds))
                 let ranked = frame.candidates.filter { $0.number != nil }
                 if frame.candidates.count != oracle.candidatesHz.count
@@ -182,7 +219,9 @@ struct BurgFormantTests {
             print(
                 "BURG_PARITY", row.name, frames.count, row.frames.count, "grid", time, "counts",
                 mismatches, "failures", failures, "candidate Hz", rawF, rawB, "selected Hz", finalF,
-                finalB, "credible", retained)
+                finalB, "credible", retained, "relative coefficient error",
+                maximumRelativeCoefficientError)
+            #expect(maximumRelativeCoefficientError < 1e-7)
             #expect(frames.count == row.frames.count && time < 1e-12, "\(row.name) frame grid")
             #expect(failures == 0 && mismatches == 0, "\(row.name) candidate counts")
             #expect(
@@ -464,5 +503,154 @@ extension BurgFormantTests {
         #expect(
             !malformed.converged && malformed.roots.isEmpty
                 && malformed.maximumRelativeResidual == nil)
+    }
+}
+
+extension BurgFormantTests {
+    @Test func pitchSupportUsesExactInputCellBoundaries() throws {
+        for rate in [10000, 11000, 12000] {
+            let n = rate / 5
+            let source = try support(n, rate, offset: Int64.max - Int64(n))
+            let profile = try BurgFormantProfile(
+                sourceSampleRate: rate, ceilingHz: rate / 2, hopMilliseconds: 5)
+            let worker = try PreparedBurgFormants<Double>(configuration: profile, source: source)
+            let identity = try profile.identity()
+            let zero = [Double](repeating: 0, count: n)
+            try zero.withUnsafeBufferPointer { samples in
+                try worker.analyze(
+                    samples, source: source,
+                    pitch: { window in
+                        // At equal rates the exact source footprint is the number of physical window cells.
+                        try? FormantPitchEvidence(
+                            source: SourceInterval(
+                                epoch: source.epoch, startSample: window.startSample,
+                                sampleCount: Int64(profile.windowSamples), sampleRate: Double(rate)),
+                            profile: identity, frequencyHz: 110)
+                    }
+                ) { frame in
+                    #expect(frame.timing.source.sampleCount == Int64(profile.windowSamples))
+                    #expect(!frame.cautions.contains(.pitchSupportMismatch))
+                }
+            }
+        }
+    }
+}
+
+extension BurgFormantTests {
+    @Test func originalSilentAndConstantWindowsRejectConditionerRinging() throws {
+        let profile = try BurgFormantProfile(sourceSampleRate: 16000)
+        let source = try support(3200, 16000, offset: 121)
+        let worker = try PreparedBurgFormants<Double>(configuration: profile, source: source)
+        for (trailing, failure) in [(0.0, FormantFitFailure.silent), (0.125, .constant)] {
+            let tone = (0..<1600).map { sin(2 * Double.pi * 135 * Double($0) / 16000) }
+            let signal = tone + [Double](repeating: trailing, count: 1600)
+            var windows = 0
+            try signal.withUnsafeBufferPointer { pcm in
+                try worker.analyze(pcm, source: source) { frame in
+                    if frame.timing.source.startSample >= source.startSample + 1600 {
+                        windows += 1
+                        #expect(
+                            frame.failure == failure && frame.f1 == nil && frame.candidates.isEmpty)
+                        #expect(
+                            try frame.measurement(number: 1, kind: .formantBandwidth).outcome
+                                == .unavailable(failure.reason))
+                    }
+                }
+            }
+            #expect(windows >= 5)
+        }
+    }
+
+    @Test func exactPhysicalWindowAndExplicitDisabledPreEmphasis() throws {
+        let off = try BurgFormantProfile(sourceSampleRate: 16000, preEmphasisFromHz: nil)
+        let bytes = try JSONEncoder().encode(off)
+        var json = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+        #expect(json["preEmphasisFromHz"] is NSNull)
+        #expect(try JSONDecoder().decode(BurgFormantProfile.self, from: bytes) == off)
+        json.removeValue(forKey: "preEmphasisFromHz")
+        let missing = try JSONSerialization.data(withJSONObject: json)
+        #expect(throws: ContractError.self) {
+            try JSONDecoder().decode(BurgFormantProfile.self, from: missing)
+        }
+        for (count, expected) in [(798, 0), (800, 1), (802, 1)] {
+            let source = try support(count, 16000)
+            let worker = try PreparedBurgFormants<Double>(configuration: off, source: source)
+            #expect(worker.frameCount == expected)
+            let pcm = (0..<count).map { sin(Double($0) * 0.04) + cos(Double($0) * 0.37) }
+            var frames: [BurgFormantFrame] = []
+            try pcm.withUnsafeBufferPointer { input in
+                try worker.analyze(input, source: source) { frames.append($0) }
+            }
+            #expect(frames.count == 1)
+            #expect((frames[0].failure == .shortWindow) == (expected == 0))
+            if expected > 0 { #expect(frames[0].diagnostics.coefficients != nil) }
+        }
+    }
+
+    @Test func frequencyAndBandwidthRoundTripThroughSessionWriterAndReader() throws {
+        let row = try #require(FormantReference.load().cases.first { $0.name == "low-f0" })
+        let pcm = try row.samples()
+        let source = try sessionTestSource(start: 100, rate: 16000)
+        let input = try SourceInterval(
+            epoch: source.origin.source.epoch, startSample: 100, sampleCount: Int64(pcm.count),
+            sampleRate: 16000)
+        let config = try BurgFormantProfile(sourceSampleRate: 16000, hopMilliseconds: 5)
+        let worker = try PreparedBurgFormants<Double>(configuration: config, source: input)
+        let pitchProfile = try YINConfiguration(
+            sampleRate: 16000, pitchFloorHz: 80, pitchCeilingHz: 400, hopLength: 160
+        ).identity()
+        for mode in [0, 1, 2] {
+            var first: BurgFormantFrame?
+            try pcm.withUnsafeBufferPointer { x in
+                try worker.analyze(
+                    x, source: input,
+                    pitch: { support in
+                        mode == 0
+                            ? nil
+                            : try? FormantPitchEvidence(
+                                source: mode == 1 ? support : input, profile: pitchProfile,
+                                frequencyHz: 105)
+                    }
+                ) { if first == nil { first = $0 } }
+            }
+            let frame = try #require(first)
+            let recipe = frame.archiveProfile
+            #expect(try recipe.identity() == frame.profile)
+            #expect(
+                try JSONDecoder().decode(
+                    SessionArchiveProfile.self, from: JSONEncoder().encode(recipe)) == recipe)
+            var bytes = Data()
+            let writer = try SessionArchiveWriter(
+                header: sessionTestHeader(), limits: SessionArchiveLimits()
+            ) { bytes.append($0) }
+            let profileIndex = try writer.addProfile(recipe)
+            let sourceIndex = try writer.addSource(source)
+            var expected: [MeasurementResult] = []
+            for kind in [MeasurementKind.formantFrequency, .formantBandwidth] {
+                let value = try frame.measurement(number: 2, kind: kind)
+                expected.append(value)
+                let series = try writer.addSeries(
+                    SessionArchiveSeries(
+                        profileIndex: profileIndex, sourceIndex: sourceIndex,
+                        measurement: value.measurement, clock: .sourceSamples))
+                try writer.append(
+                    SessionArchiveMeasurement(
+                        timestamp: SessionArchiveTimestamp(
+                            sourceSample: frame.timing.source.startSample), result: value),
+                    to: series)
+            }
+            try writer.finish(.completed)
+            var offset = 0
+            let reader = try SessionArchiveReader(limits: SessionArchiveLimits()) { requested in
+                let count = min(requested, bytes.count - offset)
+                defer { offset += count }
+                return Data(bytes[offset..<(offset + count)])
+            }
+            var actual: [MeasurementResult] = []
+            while let event = try reader.next() {
+                if case .measurement(_, let record) = event { actual.append(record.result) }
+            }
+            #expect(actual == expected && reader.seal?.measurementCount == 2)
+        }
     }
 }

@@ -44,7 +44,8 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
         let width = BurgFormantProfile.physicalWindowSeconds
         let duration = Double(layout.outputSampleCount) * step
         let count =
-            duration < width ? 0 : Int(floor((duration - width) / configuration.hopSeconds)) + 1
+            layout.outputSampleCount < configuration.windowSamples
+            ? 0 : max(1, Int(floor((duration - width) / configuration.hopSeconds)) + 1)
         frameCount = count
         // Center the sequence on the analysis sample centers. A fused subtraction preserves
         // the side of a half-sample boundary on the pinned Praat frame grid.
@@ -82,9 +83,6 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
             try conditioner.append(x, interval: interval)
             return x.count
         }
-        let constant = samples.allSatisfy { $0 == samples[0] }
-        let inputFailure: FormantFitFailure? =
-            constant ? (samples[0] == 0 ? .silent : .constant) : nil
         var reported: (any Error)?
         try conditioner.finish { conditioned, _ in
             do {
@@ -98,7 +96,7 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
                     let frame = try diagnostics.withFrame(metadata, stage: .burgFormants) {
                         try makeFrame(
                             index: i, input: conditioned, source: source,
-                            inputFailure: inputFailure, pitch: pitch)
+                            original: samples, pitch: pitch)
                     }
                     try emit(frame)
                 }
@@ -109,7 +107,7 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
 
     private func makeFrame(
         index: Int, input: UnsafeBufferPointer<Double>, source: SourceInterval,
-        inputFailure: FormantFitFailure?, pitch: (SourceInterval) -> FormantPitchEvidence?
+        original: UnsafeBufferPointer<Sample>, pitch: (SourceInterval) -> FormantPitchEvidence?
     ) throws -> BurgFormantFrame {
         let rate = Double(configuration.analysisSampleRate)
         let step = 1 / rate
@@ -121,13 +119,21 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
         let start = max(0, min(left, input.count))
         let end = max(start, min(left + length, input.count))
         let support =
-            frameCount == 0 ? source : try sourceWindow(start..<end, in: source, step: step)
+            frameCount == 0 ? source : try sourceWindow(start..<end, in: source)
         let timing = try AnalysisTiming(
             source: support, includedSampleCount: support.sampleCount,
             effectiveDelaySeconds: max(0, source.durationSeconds - center))
         let observation = pitch(support)
         var failure: FormantFitFailure? =
-            frameCount == 0 || end - start != length ? .shortWindow : inputFailure
+            frameCount == 0 || end - start != length ? .shortWindow : nil
+        if failure == nil {
+            let lo = Int(support.startSample - source.startSample)
+            let hi = Int(support.endSample - source.startSample)
+            let observed = original[lo..<hi]
+            if let first = observed.first, observed.allSatisfy({ $0 == first }) {
+                failure = first == 0 ? .silent : .constant
+            }
+        }
         var fit: FormantBurgFit?
         var solution: FormantRootSolution?
         if failure == nil {
@@ -158,15 +164,22 @@ public final class PreparedBurgFormants<Sample: BinaryFloatingPoint & Sendable> 
             failure: failure, cautions: selection.cautions, candidates: selection.candidates)
     }
 
-    private func sourceWindow(_ samples: Range<Int>, in source: SourceInterval, step: Double) throws
+    private func sourceWindow(_ samples: Range<Int>, in source: SourceInterval) throws
         -> SourceInterval
     {
-        // Convert cell edges relative to the interval origin before adding the full-width integer offset.
-        func edge(_ index: Int) -> Double {
-            (layout.firstOutputCenterSeconds + (Double(index) - 0.5) * step) * source.sampleRate
+        let analysisRate = Int64(configuration.analysisSampleRate)
+        let inputRate = Int64(configuration.sourceSampleRate)
+        let denominator = 2 * analysisRate
+        // Center M analysis cells on N source cells. Edge j in source samples is
+        // [N * analysisRate + (2j - M) * inputRate] / (2 * analysisRate).
+        // Clamp before division so an exact cell boundary never acquires a neighbor by rounding.
+        func edgeNumerator(_ index: Int) -> Int64 {
+            let offset = (2 * Int64(index) - Int64(layout.outputSampleCount)) * inputRate
+            let numerator = source.sampleCount * analysisRate + offset
+            return min(source.sampleCount * denominator, max(0, numerator))
         }
-        let first = min(source.sampleCount, max(0, Int64(floor(edge(samples.lowerBound)))))
-        let end = min(source.sampleCount, max(first, Int64(ceil(edge(samples.upperBound)))))
+        let first = edgeNumerator(samples.lowerBound) / denominator
+        let end = (edgeNumerator(samples.upperBound) + denominator - 1) / denominator
         return try SourceInterval(
             epoch: source.epoch, startSample: source.startSample + first,
             sampleCount: end - first, sampleRate: source.sampleRate)

@@ -94,11 +94,17 @@ public struct BurgFormantFrame: Sendable, Hashable, Encodable {
     public var f2: BurgFormantCandidate? { formant(2) }
     public var f3: BurgFormantCandidate? { formant(3) }
 
+    /// A session recipe that reproduces this frame's exact profile digest.
+    public var archiveProfile: SessionArchiveProfile {
+        guard let pitch else { return .burgFormants(configuration) }
+        return .pitchBoundBurgFormants(
+            configuration, pitchProfile: pitch.profile,
+            supportMatched: pitch.source == timing.source)
+    }
+
     /// Keep an unavailable or low-confidence rank distinct from a measured zero in exported contracts.
     public func measurement(number: Int, kind: MeasurementKind) throws -> MeasurementResult {
-        guard (1...configuration.maximumFormants).contains(number),
-            kind == .formantFrequency || kind == .formantBandwidth
-        else { throw ContractError.invalidConfiguration }
+        let descriptor = try configuration.descriptor(number: number, kind: kind)
         let outcome: MeasurementOutcome
         if let failure {
             outcome = .unavailable(failure.reason)
@@ -118,9 +124,6 @@ public struct BurgFormantFrame: Sendable, Hashable, Encodable {
         } else {
             outcome = .unavailable(.insufficientData)
         }
-        let descriptor = try MeasurementDescriptor(
-            kind: kind, unit: .hertz,
-            algorithm: VersionedIdentifier(name: "untracked-burg-f" + String(number), version: 1))
         return try MeasurementResult(
             measurement: descriptor, profile: profile, timing: timing, outcome: outcome)
     }
