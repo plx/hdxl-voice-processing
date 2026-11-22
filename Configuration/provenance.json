@@ -96304,6 +96304,133 @@
       },
       "expectedProfile": "hdxl-swipe-prime-centered-2008 version 1; separately identified fixed-time YIN comparison; SWIPE settings SHA256 f764744b9b18c1c18d04fdda2a76129e7e5bc2c9243099561b0a307d83f3c0ec",
       "referenceOutputIdentity": "sha256:5d853589183f8e4b4a89201233f8ef1759c105bf453b92d57cee3a005aeb1f1b"
+    },
+    {
+      "id": "burg-formant-burg",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Formants/burg.json",
+      "sha256": "6d4eb4cacfbc294ad3528d2cfd94a9184330f2cd47f3eb80b87385ba5981485d",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/46",
+        "versionOrHash": "b482e2377354fcd2d693607f9984893e0382d342bc0c49d5bc624ed5fbd8ed9e"
+      },
+      "generator": {
+        "path": "Tools/Formants/reference.py",
+        "version": "1",
+        "sha256": "b482e2377354fcd2d693607f9984893e0382d342bc0c49d5bc624ed5fbd8ed9e"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Contains only independently synthesized signals."
+      },
+      "transformations": [
+        "Independent all-pole synthesis and quantization to mono PCM16.",
+        "Pinned Praat 7.0.02 keep-all and Burg formant queries on the same PCM and settings."
+      ],
+      "expectedProfile": "Untracked Burg formants. Per-case order, ceiling, hop, conditioning and source coordinates are serialized.",
+      "referenceOutputIdentity": "sha256:6d4eb4cacfbc294ad3528d2cfd94a9184330f2cd47f3eb80b87385ba5981485d"
+    },
+    {
+      "id": "burg-formant-corpus-bl01-vowel-a",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Formants/corpus-bl01-vowel-a.json",
+      "sha256": "45c8fa5a41e3244617b0ae74aa077dd6eeb0c61ceab8e9983872a8ae9290deb7",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62"
+      },
+      "generator": {
+        "path": "Tools/Formants/reference.py",
+        "version": "1",
+        "sha256": "b482e2377354fcd2d693607f9984893e0382d342bc0c49d5bc624ed5fbd8ed9e"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"c98e50f90453ec26cfe2e61acaf7a166848bfbbb2f4788c6e2f49281cee37e62\",\"outputSHA256\":\"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":837900}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"pcm16LESHA256\": \"7b0cefd0d7a4527f9ce3a910bcbdd36c36b05bcd73ec7c4db83695c753a535b1\", \"sampleCount\": 8820, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl01-vowel-a.wav\", \"sourceSHA256\": \"e0324936bb31890aeb8f2a4daff189d2ea0ea275f1f5d8b33ef0666da5502437\", \"startSample\": 22050}",
+        "Pinned Praat 7.0.02 keep-all and Burg formant queries on the same PCM and settings."
+      ],
+      "expectedProfile": "Untracked Burg formants. Per-case order, ceiling, hop, conditioning and source coordinates are serialized.",
+      "referenceOutputIdentity": "sha256:45c8fa5a41e3244617b0ae74aa077dd6eeb0c61ceab8e9983872a8ae9290deb7"
+    },
+    {
+      "id": "burg-formant-corpus-bl02-vowel-i",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Formants/corpus-bl02-vowel-i.json",
+      "sha256": "38c847fbbeeb9eb2c560dc78e9ada7011f334b933ba799691f39074064842902",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b"
+      },
+      "generator": {
+        "path": "Tools/Formants/reference.py",
+        "version": "1",
+        "sha256": "b482e2377354fcd2d693607f9984893e0382d342bc0c49d5bc624ed5fbd8ed9e"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"a1603f9d04b9c004b4f886c6eee8397d530c8f6a79eea2962f7b096f533b2b3b\",\"outputSHA256\":\"140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":88200,\"startSample\":1234800}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"pcm16LESHA256\": \"2f59937bb8e8cbe4edbe59d14491f5db11870d82a56259c7927f0d39157cd46e\", \"sampleCount\": 8820, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl02-vowel-i.wav\", \"sourceSHA256\": \"140f62b5fe94288177b978cf8b6743c0ad6b9e7f6edaf57f1a60c8bb6eef3759\", \"startSample\": 22050}",
+        "Pinned Praat 7.0.02 keep-all and Burg formant queries on the same PCM and settings."
+      ],
+      "expectedProfile": "Untracked Burg formants. Per-case order, ceiling, hop, conditioning and source coordinates are serialized.",
+      "referenceOutputIdentity": "sha256:38c847fbbeeb9eb2c560dc78e9ada7011f334b933ba799691f39074064842902"
+    },
+    {
+      "id": "burg-formant-corpus-bl03-consonant-rich",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Formants/corpus-bl03-consonant-rich.json",
+      "sha256": "0b6cb5a3b1b7bd339d0ff4ca684e2d1b9475f41bde6a0729645a83af977a563a",
+      "source": {
+        "kind": "third-party",
+        "url": "https://data.mendeley.com/datasets/9dz247gnyb/3",
+        "versionOrHash": "PVQD v3; original SHA256 989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c"
+      },
+      "generator": {
+        "path": "Tools/Formants/reference.py",
+        "version": "1",
+        "sha256": "b482e2377354fcd2d693607f9984893e0382d342bc0c49d5bc624ed5fbd8ed9e"
+      },
+      "redistribution": {
+        "license": "CC-BY-4.0",
+        "permission": "granted",
+        "evidence": "https://data.mendeley.com/datasets/9dz247gnyb/3; modified recording; attribution and changes in THIRD_PARTY_NOTICES.md and Corpus/manifest.json"
+      },
+      "containsHumanVoice": true,
+      "consent": {
+        "status": "documented",
+        "evidence": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11193840/ Study Design and Participants; derived from licensed and publicly consented PVQD recording"
+      },
+      "transformations": [
+        "{\"details\":{},\"inputSHA256\":\"989a72597e06da51d6da550812ebcd9f757bb5c1df98e5551015c5cd1ea9206c\",\"outputSHA256\":\"096266c3dfbabc4a4f3a8b5d77c5ae2d9410b61941982dc5b254ea88f8af19d0\",\"parameters\":{\"kind\":\"excerpt\",\"sampleCount\":105840,\"startSample\":732060}}",
+        "{\"operation\": \"explicit-source-excerpt-without-resampling\", \"pcm16LESHA256\": \"c89a66406cfa503dd9521d97d24f175fcc277b984b29fa251862c21c33d05ffb\", \"sampleCount\": 8820, \"sourcePath\": \"Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/samples/corpus-bl03-consonant-rich.wav\", \"sourceSHA256\": \"096266c3dfbabc4a4f3a8b5d77c5ae2d9410b61941982dc5b254ea88f8af19d0\", \"startSample\": 22050}",
+        "Pinned Praat 7.0.02 keep-all and Burg formant queries on the same PCM and settings."
+      ],
+      "expectedProfile": "Untracked Burg formants. Per-case order, ceiling, hop, conditioning and source coordinates are serialized.",
+      "referenceOutputIdentity": "sha256:0b6cb5a3b1b7bd339d0ff4ca684e2d1b9475f41bde6a0729645a83af977a563a"
     }
   ],
   "optionalModels": []

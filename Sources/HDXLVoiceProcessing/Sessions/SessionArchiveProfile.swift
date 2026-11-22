@@ -14,9 +14,22 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     case hnr(HNRConfiguration)
     case hnrStatistic(HNRStatisticProfile)
     case swipePrime(SWIPEPrimeConfiguration)
+    case burgFormants(BurgFormantProfile)
+    case pitchBoundBurgFormants(
+        BurgFormantProfile, pitchProfile: ProfileIdentity, supportMatched: Bool)
+
+    var requiresConditioningSupport: Bool {
+        switch self {
+        case .burgFormants, .pitchBoundBurgFormants: true
+        default: false
+        }
+    }
 
     public func identity() throws -> ProfileIdentity {
         switch self {
+        case .burgFormants(let value): try value.identity()
+        case .pitchBoundBurgFormants(let value, let pitch, let matched):
+            try BurgFormantProfile.bind(value.identity(), to: pitch, matched: matched)
         case .analysis(let value): try value.identity()
         case .schedule(let value): try value.identity()
         case .levels(let value): try value.identity()
@@ -35,6 +48,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     /// only a recipe with an upstream cepstrogram can cross-check it here.
     public var sourceSampleRate: Double? {
         switch self {
+        case .burgFormants(let value), .pitchBoundBurgFormants(let value, _, _):
+            Double(value.sourceSampleRate)
         case .analysis(let value): value.inputFormat.sampleRate
         case .schedule(let value): value.inputFormat.sampleRate
         case .levels(let value): Double(value.sampleRate)
@@ -52,6 +67,13 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     /// is the native kernel identity and its profile identity is the full schedule.
     func descriptors() throws -> Set<MeasurementDescriptor> {
         switch self {
+        case .burgFormants(let value), .pitchBoundBurgFormants(let value, _, _):
+            var result: Set<MeasurementDescriptor> = []
+            for number in 1...value.maximumFormants {
+                result.insert(try value.descriptor(number: number, kind: .formantFrequency))
+                result.insert(try value.descriptor(number: number, kind: .formantBandwidth))
+            }
+            return result
         case .analysis(let value): return [value.measurement]
         case .schedule(let value):
             var result: Set<MeasurementDescriptor> = []
@@ -126,7 +148,29 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
         }
     }
 
+    private struct PitchBoundRecipe: Codable {
+        let formants: BurgFormantProfile
+        let pitchProfile: ProfileIdentity
+        let supportMatched: Bool
+
+        private enum CodingKeys: String, CodingKey, CaseIterable {
+            case formants, pitchProfile, supportMatched
+        }
+        init(formants: BurgFormantProfile, pitchProfile: ProfileIdentity, supportMatched: Bool) {
+            self.formants = formants
+            self.pitchProfile = pitchProfile
+            self.supportMatched = supportMatched
+        }
+        init(from decoder: any Decoder) throws {
+            let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
+            formants = try c.decode(BurgFormantProfile.self, forKey: .formants)
+            pitchProfile = try c.decode(ProfileIdentity.self, forKey: .pitchProfile)
+            supportMatched = try c.decode(Bool.self, forKey: .supportMatched)
+        }
+    }
+
     private enum Kind: String, Codable {
+        case burgFormants, pitchBoundBurgFormants
         case analysis, schedule, levels, yin, trackedYIN, cpp, cpps, hnr, hnrStatistic, swipePrime
     }
     private enum CodingKeys: String, CodingKey, CaseIterable { case kind, recipe }
@@ -134,6 +178,13 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     public init(from decoder: any Decoder) throws {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
         switch try c.decode(Kind.self, forKey: .kind) {
+        case .burgFormants:
+            self = .burgFormants(try c.decode(BurgFormantProfile.self, forKey: .recipe))
+        case .pitchBoundBurgFormants:
+            let value = try c.decode(PitchBoundRecipe.self, forKey: .recipe)
+            self = .pitchBoundBurgFormants(
+                value.formants, pitchProfile: value.pitchProfile,
+                supportMatched: value.supportMatched)
         case .analysis: self = .analysis(try c.decode(AnalysisProfile.self, forKey: .recipe))
         case .schedule:
             self = .schedule(try c.decode(AnalysisScheduleProfile.self, forKey: .recipe))
@@ -157,6 +208,11 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
             try c.encode(recipe, forKey: .recipe)
         }
         switch self {
+        case .burgFormants(let value): try encode(.burgFormants, value)
+        case .pitchBoundBurgFormants(let value, let pitch, let matched):
+            try encode(
+                .pitchBoundBurgFormants,
+                PitchBoundRecipe(formants: value, pitchProfile: pitch, supportMatched: matched))
         case .analysis(let value): try encode(.analysis, value)
         case .schedule(let value): try encode(.schedule, value)
         case .levels(let value): try encode(.levels, value)

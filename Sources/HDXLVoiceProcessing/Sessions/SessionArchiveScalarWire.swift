@@ -36,6 +36,10 @@ enum SessionArchiveScalarWire {
             try encoder.real(value.timestamp.secondsFromOrigin!)
         }
         try encode(value.result.timing, to: &encoder)
+        if let dependency = value.conditioningSupport {
+            try encoder.integer(UInt64(dependency.startSample))
+            try encoder.integer(UInt64(dependency.sampleCount))
+        }
         switch value.result.outcome {
         case .available(let estimate):
             try encoder.integer(UInt8(0))
@@ -114,6 +118,9 @@ enum SessionArchiveScalarWire {
             timestamp = try SessionArchiveTimestamp(secondsFromOrigin: decoder.real())
         }
         let timing = try decodeTiming(from: &decoder, source: source)
+        let conditioningSupport =
+            profile.recipe.requiresConditioningSupport
+            ? try decodeInterval(from: &decoder, source: source) : nil
         let outcome: MeasurementOutcome
         switch try decoder.unsigned(UInt8.self) {
         case 0:
@@ -195,7 +202,8 @@ enum SessionArchiveScalarWire {
             intermediatePolicy: IntermediateOutputPolicy(maximumScalarCount: budget),
             intermediates: snapshots)
         let value = try SessionArchiveMeasurement(
-            timestamp: timestamp, result: result, scheduled: scheduled)
+            timestamp: timestamp, result: result, scheduled: scheduled,
+            conditioningSupport: conditioningSupport)
         try catalog.validate(value, seriesIndex: index)
         return (index, value)
     }

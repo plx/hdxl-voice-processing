@@ -72,8 +72,9 @@ def swift_arguments(mode):
     return args
 
 
-def measurement_environment(mode):
+def measurement_environment(mode, *, swift_pm_arguments=None):
     environment = ci.environment("release")
+    flags = swift_arguments(mode) if swift_pm_arguments is None else swift_pm_arguments
     state = system_state()
     quality = {"state": "unscreened", "reason": "Operator and sustained conditions have not been assessed"}
     if state["thermalState"] in ("serious", "critical"):
@@ -82,7 +83,7 @@ def measurement_environment(mode):
                        measurementMode=mode, preflightState=state,
                        externalProfiler="unobserved",
                        allocatorBackend="malloc-interposer" if mode == "allocation" else "disabled",
-                       swiftPMArguments=[ci.redact(a) for a in swift_arguments(mode)])
+                       swiftPMArguments=[ci.redact(a) for a in flags])
     return environment
 
 

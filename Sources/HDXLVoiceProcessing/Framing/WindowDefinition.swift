@@ -11,7 +11,12 @@ public enum WindowDefinition: String, Sendable, Hashable, Codable, CaseIterable 
     case hammingSymmetric = "hamming-symmetric"
     case praatGaussian2 = "praat-gaussian-2-physical"
 
-    public var effectiveDurationFraction: Double { self == .praatGaussian2 ? 0.5 : 1 }
+    /// Gaussian used by the Burg formant command, with the outer zeros one sample farther apart.
+    case praatBurgGaussian = "praat-burg-gaussian-physical"
+
+    public var effectiveDurationFraction: Double {
+        self == .praatGaussian2 || self == .praatBurgGaussian ? 0.5 : 1
+    }
 
     /// Original implementation of the declared mathematical definitions, not reference code.
     fileprivate func coefficient(at index: Int, count: Int) -> Double {
@@ -23,8 +28,9 @@ public enum WindowDefinition: String, Sendable, Hashable, Codable, CaseIterable 
             let phase = Double(index) / Double(symmetric ? count - 1 : count)
             let isHann = self == .hannPeriodic || self == .hannSymmetric
             return (isHann ? 0.5 : 0.54) - (isHann ? 0.5 : 0.46) * cos(2 * .pi * phase)
-        case .praatGaussian2:
-            let distance = Double(2 * index + 1 - count) / Double(count)
+        case .praatGaussian2, .praatBurgGaussian:
+            let denominator = self == .praatBurgGaussian ? count + 1 : count
+            let distance = Double(2 * index + 1 - count) / Double(denominator)
             let edge = exp(-12.0)
             return (exp(-12 * distance * distance) - edge) / (1 - edge)
         }

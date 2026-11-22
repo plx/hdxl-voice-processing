@@ -96,6 +96,14 @@ retain the same CC BY 4.0 attribution and consent evidence. The provenance inven
 preserves parent recording/excerpt hashes and the explicit prefix transformation;
 there is no additional resampling, private recording, or bundled reference code.
 
+`Tests/HDXLVoiceProcessingTests/Fixtures/Formants/corpus-*.json` contains modified
+numerical representations of BL01, BL02 and BL03 PVQD excerpts. Each file records
+the original-rate 200 ms slice starting at 500 ms in its excerpt, the PCM hash,
+the Burg analysis settings, and paired keep-all and edge-filtered formant
+queries. The three files retain the PVQD CC BY 4.0 attribution and documented
+public-use consent. The inventory preserves each parent recording and excerpt
+transformation. The separate `Formants/burg.json` contains synthetic signals.
+
 The speech-derived files in `Fixtures/YIN/`, `Fixtures/Pulses/`, and
 `Fixtures/PulseYIN/` under `Tests/HDXLVoiceProcessingTests/` retain the same CC BY
 4.0 attribution and consent evidence. They contain **modified** representations:
