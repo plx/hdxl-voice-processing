@@ -68,6 +68,8 @@ public struct RawHarmonicFrame: Sendable, Hashable, Encodable {
     public let clipped: Bool
     /// Weighted RMS of the fit residual divided by the input peak.
     public let relativeResidualRMS: Double?
+    /// Half the RMS cycle-to-cycle change projected onto the more variable harmonic, relative to the fitted peak.
+    public let relativeCycleVariation: Double?
     /// Minimum resolved sinusoidal amplitude divided by the peak of the fitted PCM.
     public let relativeDetectionFloor: Double?
 }

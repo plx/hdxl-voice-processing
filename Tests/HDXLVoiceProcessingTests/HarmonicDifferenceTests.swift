@@ -67,11 +67,13 @@ struct HarmonicDifferenceTests {
     }
     private func poles(
         _ pairs: [[Double]], _ pitch: MeasurementResult, _ config: HarmonicCorrectionProfile,
-        dependency: SourceInterval? = nil, rejections: [Int: [FormantRejection]] = [:]
+        dependency: SourceInterval? = nil, rejections: [Int: [FormantRejection]] = [:],
+        qualifyingAlgorithm: VersionedIdentifier? = nil
     ) throws -> BurgFormantFrame {
         let f0 = try #require(pitch.outcome.estimate?.value)
         let evidence = try FormantPitchEvidence(
-            source: pitch.timing.source, profile: pitch.profile, frequencyHz: f0)
+            source: pitch.timing.source, profile: pitch.profile, frequencyHz: f0,
+            algorithm: qualifyingAlgorithm ?? pitch.measurement.algorithm)
         let id = try BurgFormantProfile.bind(
             config.formants.identity(), to: pitch.profile, matched: true)
         let candidates = pairs.enumerated().map { index, pair in
@@ -221,7 +223,7 @@ struct HarmonicDifferenceTests {
         let absent = try w.correct(raw, formants: poles([pairs[0]], obs, c))
         #expect(
             absent.failure == .secondFormantUnavailable
-                && absent.measurement.outcome.estimate == nil)
+                && absent.measurement.outcome == .unavailable(.excluded))
         let shifted = try w.correct(
             raw, formants: poles(pairs, observation(147.31, source(start: 1201), c), c))
         #expect(shifted.failure == .formantSupportMismatch)
@@ -451,7 +453,7 @@ extension HarmonicDifferenceTests {
         let c = try config(pitch: .yin(yin.configuration))
         let w = try PreparedHarmonicDifference<Double>(c)
         let burg = try PreparedBurgFormants<Double>(configuration: c.formants, source: s)
-        let evidence = try FormantPitchEvidence(source: s, profile: obs.profile, frequencyHz: hz)
+        let evidence = try FormantPitchEvidence(measurement: obs)
         var model: BurgFormantFrame?
         try pcm.withUnsafeBufferPointer { ptr in
             try burg.analyze(ptr, source: s, pitch: { _ in evidence }) { model = $0 }
@@ -498,7 +500,9 @@ extension HarmonicDifferenceTests {
             [[500, 80], [2000, 1200]], obs, c, rejections: [2: [.broadBandwidth]])
         let rejected = try w.correct(raw, formants: broad)
         #expect(rejected.failure == .secondFormantUnavailable && rejected.raw == raw)
-        #expect(rejected.unusableFormant?.rejections == [.broadBandwidth])
+        #expect(
+            rejected.unusableFormant?.rejections == [.broadBandwidth]
+                && rejected.measurement.outcome == .unavailable(.lowConfidence))
         #expect(rejected.unusableFormant?.bandwidthHz == 1200 && rejected.contributions.count == 1)
         let narrow = try w.correct(
             raw, formants: poles([[2 * 147.31, 0.01], [1440, 90]], obs, c))
@@ -552,7 +556,7 @@ extension HarmonicDifferenceTests {
         let pitch = try observation(200, s, c)
         let model = try PreparedBurgFormants<Double>(configuration: c.formants, source: s)
         let pcm = signal(480, f0: 200)
-        let evidence = try FormantPitchEvidence(source: s, profile: pitch.profile, frequencyHz: 200)
+        let evidence = try FormantPitchEvidence(measurement: pitch)
         var failed: BurgFormantFrame?
         try pcm.withUnsafeBufferPointer { samples in
             try model.analyze(samples, source: s, pitch: { _ in evidence }) { failed = $0 }
@@ -660,6 +664,125 @@ extension HarmonicDifferenceTests {
             try raw.fit($0, source: interval, pitch: observation)
         }
         #expect(parsed.failure == nil && parsed.pitch?.profile == fit.pitchProfile)
+    }
+
+    @Test func gainTransitionsDoNotQualifyAnAbsentSecondHarmonicAtHigherSamplingRates() throws {
+        for rate in [8000, 16000, 44100, 48000, 96000] {
+            let c = try config(rate: rate)
+            let w = try PreparedHarmonicFit<Double>(c.fit)
+            let s = try source(rate / 20, rate)
+            let obs = try observation(200, s, c)
+            let pcm = (0..<Int(s.sampleCount)).map { index in
+                let gain = index < rate / 40 ? 0.2 : 0.4
+                return gain * sin(2 * Double.pi * 200 * Double(index) / Double(rate))
+            }
+            let frame = try pcm.withUnsafeBufferPointer { try w.fit($0, source: s, pitch: obs) }
+            #expect(
+                frame.failure == .secondHarmonicUnresolved && frame.first != nil
+                    && frame.second == nil)
+            #expect(try #require(frame.relativeCycleVariation) > 0.1)
+        }
+    }
+
+    @Test func nativePitchCapacityFrequencyRangeAndSupportAreCheckedAgainstTheRecipe() throws {
+        let rate = 16000
+        let yin = try YINConfiguration(sampleRate: rate, hopLength: 160)
+        let swipe = try SWIPEPrimeConfiguration(sampleRate: rate, hopLength: 160)
+        let schedule = try AnalysisScheduleProfile(
+            inputFormat: .init(sampleRate: 16000, channelCount: 1, encoding: .float64),
+            channels: .arithmeticMean,
+            pitch: .init(estimator: yin), swipePrime: swipe)
+        #expect(throws: ContractError.invalidConfiguration) {
+            try HarmonicFitProfile(sourceSampleRate: rate, pitch: .swipePrime(swipe))
+        }
+        #expect(throws: ContractError.invalidConfiguration) {
+            try HarmonicFitProfile(
+                sourceSampleRate: rate, pitch: .schedule(schedule),
+                pitchAlgorithm: swipe.identity().identifier)
+        }
+        let rawOnly = try HarmonicFitProfile(
+            sourceSampleRate: rate, pitch: .schedule(schedule),
+            pitchAlgorithm: yin.identity().identifier)
+        #expect(throws: ContractError.invalidConfiguration) {
+            try HarmonicCorrectionProfile(
+                fit: rawOnly, formants: .init(sourceSampleRate: rate, ceilingHz: 5000))
+        }
+        let restricted = try YINConfiguration(
+            sampleRate: rate, pitchFloorHz: 80, pitchCeilingHz: 180, integrationLength: 599,
+            hopLength: 160)
+        let c = try config(pitch: .yin(restricted))
+        let w = try PreparedHarmonicFit<Double>(c.fit)
+        func measure(_ n: Int, outcome: MeasurementOutcome) throws -> RawHarmonicFrame {
+            let s = try source(n)
+            let p = try MeasurementResult(
+                measurement: .init(
+                    kind: .fundamentalFrequency, unit: .hertz, algorithm: c.fit.pitchAlgorithm),
+                profile: c.fit.pitchProfile,
+                timing: .init(source: s, includedSampleCount: s.sampleCount), outcome: outcome)
+            return try signal(n).withUnsafeBufferPointer { try w.fit($0, source: s, pitch: p) }
+        }
+        let outside = try measure(800, outcome: .available(.init(value: 250)))
+        let partial = try measure(799, outcome: .available(.init(value: 150)))
+        let unavailable = try measure(799, outcome: .unavailable(.discontinuity))
+        #expect(outside.failure == .pitchOutOfRange && partial.failure == .pitchSupportMismatch)
+        #expect(
+            unavailable.failure == .missingPitchEstimate
+                && unavailable.measurement.outcome == .unavailable(.discontinuity))
+    }
+
+    @Test func rejectedPitchClocksAndAlternativeBurgQualifiersRemainSeparate() throws {
+        let yin = try YINConfiguration(
+            sampleRate: 16000, pitchFloorHz: 80, pitchCeilingHz: 450, integrationLength: 599,
+            hopLength: 160)
+        let tracked = try YINProfile(estimator: yin, tracker: .init())
+        let schedule = try AnalysisScheduleProfile(
+            inputFormat: .init(sampleRate: 16000, channelCount: 1, encoding: .float64),
+            channels: .arithmeticMean, pitch: tracked)
+        let c = try config(pitch: .schedule(schedule))
+        let w = try PreparedHarmonicDifference<Double>(c)
+        let s = try source()
+        let correct = try observation(147.31, s, c)
+        let trackerID = try tracked.identity().identifier
+        let other = try MeasurementResult(
+            measurement: .init(kind: .fundamentalFrequency, unit: .hertz, algorithm: trackerID),
+            profile: correct.profile,
+            timing: .init(
+                source: s, includedSampleCount: s.sampleCount,
+                sourceStartSeconds: 14, hostStartNanoseconds: 100000, effectiveDelaySeconds: 2),
+            outcome: correct.outcome)
+        let pcm = signal(800)
+        let rejected = try pcm.withUnsafeBufferPointer { try w.fit($0, source: s, pitch: other) }
+        #expect(
+            rejected.failure == .wrongPitchMeasurement
+                && rejected.pitch?.timing.effectiveDelaySeconds == 2)
+        #expect(
+            rejected.measurement.timing.sourceStartSeconds == nil
+                && rejected.measurement.timing.hostStartNanoseconds == nil)
+        #expect(rejected.measurement.timing.effectiveDelaySeconds == s.durationSeconds / 2)
+        let raw = try pcm.withUnsafeBufferPointer { try w.fit($0, source: s, pitch: correct) }
+        let pairs = [[620.0, 90.0], [1500.0, 110.0]]
+        let wrong = try w.correct(
+            raw, formants: poles(pairs, correct, c, qualifyingAlgorithm: trackerID))
+        let accepted = try w.correct(raw, formants: poles(pairs, correct, c))
+        #expect(wrong.failure == .qualifyingPitchMismatch && accepted.failure == nil)
+        #expect(accepted.formantPitch?.algorithm == c.fit.pitchAlgorithm)
+    }
+
+    @Test func subnormalPeaksAndDecibelsDescribeTheSameRepresentableAmplitudes() throws {
+        let c = try config()
+        let w = try PreparedHarmonicFit<Double>(c.fit)
+        let s = try source(240)
+        let pcm = (0..<240).map { i in
+            let phase = 2 * Double.pi * Double(i) / 80
+            return (cos(phase) + 1.4 * sin(2 * phase)).rounded() * Double.leastNonzeroMagnitude
+        }
+        let fitted = try pcm.withUnsafeBufferPointer {
+            try w.fit($0, source: s, pitch: observation(200, s, c))
+        }
+        let first = try #require(fitted.first)
+        let second = try #require(fitted.second)
+        #expect(first.peakFS == second.peakFS && first.peakDBFS == second.peakDBFS)
+        #expect(fitted.measurement.outcome.estimate?.value == 0)
     }
 
 }

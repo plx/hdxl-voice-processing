@@ -9,6 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from Harmonics.reference import gain_db, pole
+from Harmonics.workload_reference import raw_difference, stimulus
 from SpectralProducts.benchmark import SpectralBenchmarkSuite, main
 
 BOUNDARIES = {
@@ -72,11 +73,15 @@ def validate_cases(rows):
         seen.add(name)
         rate = case['source']['sampleRate']
         cycles = case['profile']['fit']['periods']
-        if row['pcm16LESHA256'] != PCM16_DIGESTS[rate, case['firstResonanceHz']]:
+        samples, generated_digest = stimulus(rate, case['firstResonanceHz'])
+        if not row['pcm16LESHA256'] == generated_digest == PCM16_DIGESTS[rate, case['firstResonanceHz']]:
             raise ValueError(f'Unexpected synthetic PCM in {name}')
         f0 = row['measuredPitchHz']
         if not abs(f0 - 137.3) < 3 or row['windowSamples'] != math.floor(cycles * rate / f0 + .5):
             raise ValueError(f'Unexpected observed pitch or fit window in {name}')
+        reference = raw_difference(samples, rate, f0, cycles)
+        if not math.isclose(row['rawDB'], reference, rel_tol=0, abs_tol=1e-8):
+            raise ValueError(f'Raw harmonic difference disagrees with the independent fit in {name}')
         gains = row['contributions']
         if [p['number'] for p in gains] != [1, 2] or gains[0]['nearResonance'] != (case['firstResonanceHz'] == 291):
             raise ValueError(f'Missing qualified pole pair or near-resonance coverage in {name}')

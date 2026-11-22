@@ -55,6 +55,7 @@ public final class PreparedHarmonicFit<Sample: BinaryFloatingPoint & Sendable> {
         }
         return try measured(.harmonicFit, source: source) {
             let evidence = pitch.map(HarmonicPitchObservation.init)
+            var matched: AnalysisTiming?
             var window = source
             var fit: HarmonicRegression?
             var failure: HarmonicFailure?
@@ -71,13 +72,21 @@ public final class PreparedHarmonicFit<Sample: BinaryFloatingPoint & Sendable> {
                 guard pitch.timing.source == source else {
                     throw HarmonicFailure.pitchSupportMismatch
                 }
+                if pitch.outcome.estimate != nil, let bounds = recipe.nativePitch,
+                    source.sampleCount != Int64(bounds.requiredSampleCount)
+                {
+                    throw HarmonicFailure.pitchSupportMismatch
+                }
+                matched = pitch.timing
                 guard let obs = pitch.outcome.estimate else {
                     throw HarmonicFailure.missingPitchEstimate
                 }
                 guard pitch.timing.includedSampleCount == source.sampleCount, obs.warnings.isEmpty
                 else { throw HarmonicFailure.uncertainPitch }
                 let f0 = obs.value
-                guard (50...5000).contains(f0) else { throw HarmonicFailure.pitchOutOfRange }
+                guard (50...5000).contains(f0),
+                    recipe.nativePitch?.frequencyRange.contains(f0) != false
+                else { throw HarmonicFailure.pitchOutOfRange }
                 guard 2 * f0 < recipe.declaredBandwidthHz else {
                     throw HarmonicFailure.harmonicOutsideBandwidth
                 }
@@ -105,7 +114,6 @@ public final class PreparedHarmonicFit<Sample: BinaryFloatingPoint & Sendable> {
             } catch let issue as HarmonicFailure {
                 failure = issue
             }
-            let matched = pitch?.timing.source == source ? pitch?.timing : nil
             let offset = Double(window.startSample - source.startSample) / source.sampleRate
             let center = offset + window.durationSeconds / 2
             let delay = max(
@@ -141,7 +149,8 @@ public final class PreparedHarmonicFit<Sample: BinaryFloatingPoint & Sendable> {
                     measurement: rawDescriptor, profile: identity, timing: timing,
                     outcome: outcome), first: fit?.first, second: fit?.second,
                 failure: failure, clipped: clipped,
-                relativeResidualRMS: fit?.residual, relativeDetectionFloor: fit?.detectionFloor
+                relativeResidualRMS: fit?.residual, relativeCycleVariation: fit?.cycleVariation,
+                relativeDetectionFloor: fit?.detectionFloor
             )
         }
     }

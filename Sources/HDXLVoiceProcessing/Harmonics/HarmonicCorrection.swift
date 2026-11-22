@@ -63,7 +63,9 @@ extension PreparedHarmonicDifference {
                     dependency.endSample >= source.endSample
                 else { throw HarmonicFailure.formantSupportMismatch }
                 guard let observed = formants.pitch, observed.source == source,
-                    observed.profile == configuration.fit.pitchProfile, observed.frequencyHz == f0
+                    observed.profile == configuration.fit.pitchProfile,
+                    observed.algorithm == configuration.fit.pitchAlgorithm,
+                    observed.frequencyHz == f0
                 else { throw HarmonicFailure.qualifyingPitchMismatch }
                 guard formants.profile == boundFormants else {
                     throw HarmonicFailure.wrongFormantProfile
@@ -106,6 +108,10 @@ extension PreparedHarmonicDifference {
                 outcome = raw.measurement.outcome
             } else if failure == .formantFitFailed, let cause = formants?.failure {
                 outcome = .unavailable(cause.reason)
+            } else if failure == .firstFormantUnavailable || failure == .secondFormantUnavailable,
+                unusable == nil
+            {
+                outcome = .unavailable(.excluded)
             } else if let failure {
                 outcome = .unavailable(failure.reason)
             } else if let first, let second {

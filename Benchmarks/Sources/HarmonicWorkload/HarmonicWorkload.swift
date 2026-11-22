@@ -69,14 +69,12 @@ private final class Dependencies {
     {
         var observation: YINFrameResult?
         try yin.analyze(pcm, timing: timing) { observation = $0.result }
-        guard let observation, observation.status == .voiced,
-            let hz = observation.observation?.frequencyHz
+        guard let observation, observation.status == .voiced
         else {
             throw WorkloadError.unavailable("YIN did not return a voiced estimate for " + item.name)
         }
         let pitch = try observation.measurementResult()
-        let evidence = try FormantPitchEvidence(
-            source: item.source, profile: pitch.profile, frequencyHz: hz)
+        let evidence = try FormantPitchEvidence(measurement: pitch)
         var formants: BurgFormantFrame?
         try burg.analyze(pcm, source: item.source, pitch: { _ in evidence }) { formants = $0 }
         guard let formants, burg.frameCount == 1, formants.timing.source == item.source

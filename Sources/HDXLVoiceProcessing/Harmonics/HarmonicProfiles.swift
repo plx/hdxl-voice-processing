@@ -10,6 +10,7 @@ public struct HarmonicFitProfile: Codable, Sendable, Hashable {
     public let periods: Int
     public let pitchRecipe: HarmonicPitchRecipe
     public let pitchProfile: ProfileIdentity
+    let nativePitch: HarmonicPitchRecipe.NativeWindow?
     public let pitchAlgorithm: VersionedIdentifier
 
     public init(
@@ -29,6 +30,10 @@ public struct HarmonicFitProfile: Codable, Sendable, Hashable {
         self.pitchRecipe = pitch
         (self.pitchProfile, self.pitchAlgorithm) = try pitch.binding(
             rate: sourceSampleRate, algorithm: pitchAlgorithm)
+        nativePitch = pitch.nativeWindow(for: self.pitchAlgorithm)
+        if let nativePitch, nativePitch.requiredSampleCount > sourceSampleRate / 4 {
+            throw ContractError.invalidConfiguration
+        }
     }
 
     public static var descriptor: MeasurementDescriptor {
@@ -76,6 +81,19 @@ public struct HarmonicCorrectionProfile: Codable, Sendable, Hashable {
             fit.inputPrecision == formants.inputPrecision,
             Double(formants.ceilingHz) <= fit.declaredBandwidthHz
         else { throw ContractError.invalidConfiguration }
+        if let window = fit.nativePitch {
+            // A full Burg window spans Fs/20 source cells. Rounding the length of a
+            // resampled interval can clip at most half an analysis cell across its
+            // two edges. Mapping fractional edges to covering source cells can add one.
+            let rate = formants.sourceSampleRate
+            let analysis = formants.analysisSampleRate
+            let minimum =
+                ((2 * formants.windowSamples - 1) * rate + 2 * analysis - 1) / (2 * analysis)
+            let maximum = rate == analysis ? formants.windowSamples : (rate + 19) / 20 + 1
+            guard (minimum...maximum).contains(window.requiredSampleCount) else {
+                throw ContractError.invalidConfiguration
+            }
+        }
         self.fit = fit
         self.formants = formants
     }

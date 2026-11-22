@@ -9,6 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from Harmonics import benchmark, reference
+from Harmonics.workload_reference import raw_difference, stimulus
 
 
 def observations():
@@ -23,7 +24,8 @@ def observations():
                                       firstGainDB=reference.gain_db(coefficients, rate, f0),
                                       secondGainDB=reference.gain_db(coefficients, rate, 2 * f0),
                                       nearResonance=rank == 1 and geometry == 'near'))
-        raw = 3.0
+        samples, _ = stimulus(rate, case['firstResonanceHz'])
+        raw = raw_difference(samples, rate, f0, periods)
         corrected = raw + sum(p['secondGainDB'] - p['firstGainDB'] for p in contributions)
         rows.append(dict(name=case['name'], configuration=case, measuredPitchHz=f0,
                          pcm16LESHA256=benchmark.PCM16_DIGESTS[rate, case['firstResonanceHz']],
@@ -74,6 +76,17 @@ class HarmonicEvidenceTests(unittest.TestCase):
             rows[0]['contributions'][0][field] += 1
         with self.assertRaises(ValueError):
             benchmark.validate_cases(rows)
+
+    def test_common_scalar_offset_fails_independent_qr_oracle(self):
+        rows = observations()
+        for field in ('rawDB', 'correctedDB'):
+            rows[0][field] += 20
+        with self.assertRaises(ValueError):
+            benchmark.validate_cases(rows)
+        rate, f0 = 16000, 181.2
+        mixture = [.1 + .02 * math.cos(2 * math.pi * f0 * i / rate + .52)
+                   + .05 * math.sin(4 * math.pi * f0 * i / rate - .14) for i in range(800)]
+        self.assertAlmostEqual(raw_difference(mixture, rate, f0, 3), 20 * math.log10(.02 / .05), places=11)
 
     def test_geometry_and_finite_readouts_are_verified(self):
         for field, invalid in (('nearResonance', False), ('bandwidthHz', -1), ('frequencyHz', 10000)):

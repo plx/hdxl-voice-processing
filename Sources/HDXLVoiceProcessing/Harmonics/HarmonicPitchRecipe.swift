@@ -18,6 +18,36 @@ public enum HarmonicPitchRecipe: Sendable, Hashable, Codable {
         }
     }
 
+    struct NativeWindow: Hashable, Sendable {
+        let requiredSampleCount: Int
+        let frequencyRange: ClosedRange<Double>
+
+        init(_ yin: YINConfiguration) {
+            requiredSampleCount = yin.requiredSampleCount
+            frequencyRange = yin.pitchFloorHz...yin.pitchCeilingHz
+        }
+        init(_ swipe: SWIPEPrimeConfiguration) {
+            requiredSampleCount = swipe.requiredSampleCount
+            frequencyRange = swipe.pitchFloorHz...swipe.pitchCeilingHz
+        }
+    }
+
+    func nativeWindow(for algorithm: VersionedIdentifier) -> NativeWindow? {
+        switch self {
+        case .yin(let yin): return .init(yin)
+        case .swipePrime(let swipe): return .init(swipe)
+        case .schedule(let schedule):
+            if let yin = schedule.pitch?.estimator, yin.definition == algorithm.name {
+                return .init(yin)
+            }
+            if let swipe = schedule.swipePrime, swipe.definition == algorithm.name {
+                return .init(swipe)
+            }
+            return nil
+        case .frameLocal: return nil
+        }
+    }
+
     func binding(rate: Int, algorithm: VersionedIdentifier?) throws -> (
         ProfileIdentity, VersionedIdentifier
     ) {

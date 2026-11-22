@@ -27,14 +27,33 @@ public enum FormantRejection: String, Sendable, Hashable, Encodable {
 public struct FormantPitchEvidence: Sendable, Hashable, Encodable {
     public let source: SourceInterval
     public let profile: ProfileIdentity
+    /// Identifies the scalar in a profile that can publish more than one pitch estimate.
+    public let algorithm: VersionedIdentifier?
     public let frequencyHz: Double
-    public init(source: SourceInterval, profile: ProfileIdentity, frequencyHz: Double) throws {
+    public init(
+        source: SourceInterval, profile: ProfileIdentity, frequencyHz: Double,
+        algorithm: VersionedIdentifier? = nil
+    ) throws {
         guard frequencyHz.isFinite, frequencyHz > 0, frequencyHz < source.sampleRate / 2 else {
             throw ContractError.invalidValue
         }
         self.source = source
         self.profile = profile
+        self.algorithm = algorithm
         self.frequencyHz = frequencyHz
+    }
+
+    /// Extract an available, complete, warning-free F0 with its original scalar identity.
+    public init(measurement: MeasurementResult) throws {
+        guard measurement.measurement.kind == .fundamentalFrequency,
+            measurement.measurement.unit == .hertz,
+            let estimate = measurement.outcome.estimate, estimate.warnings.isEmpty,
+            measurement.timing.source.sampleCount > 0,
+            measurement.timing.includedSampleCount == measurement.timing.source.sampleCount
+        else { throw ContractError.invalidValue }
+        try self.init(
+            source: measurement.timing.source, profile: measurement.profile,
+            frequencyHz: estimate.value, algorithm: measurement.measurement.algorithm)
     }
 }
 
