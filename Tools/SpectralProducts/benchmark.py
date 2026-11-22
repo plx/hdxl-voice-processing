@@ -121,7 +121,10 @@ def validate_control(histogram):
         raise ValueError("Allocation capability control missed known work in a measured trial")
 
 
-def validate_copy_allocations(operation, frame_count, maximum):
+def validate_heap_allocations(operation, frame_count, maximum):
+    # A prepared generator reuses its buffers. Allow a fixed instrumentation margin per trial.
+    if operation == "Generate" and maximum > 2:
+        raise ValueError(f"Prepared spectral generation allocated {maximum} times in one trial")
     # The owned destination allocates per frame. Widening a scalar must not allocate per bin.
     if operation in {"Retain8", "Retain64", "Export"} and maximum > 2 * frame_count:
         raise ValueError(f"Excessive heap allocations while copying {operation}: {maximum} for {frame_count} frames")
@@ -155,7 +158,7 @@ def distributions(raw, exported, baseline, records, mode):
                 validate_control(histogram)
             if metric == "mallocCountTotal" and name != CONTROL:
                 operation, record = case_by_op[name]
-                validate_copy_allocations(operation, record["expectedFrames"], maximum)
+                validate_heap_allocations(operation, record["expectedFrames"], maximum)
             path = exported / f"{baseline}.{TARGET}.{name}.{metric}.histogram.percentiles.tsv"
             lines = path.read_text().splitlines()
             points = [tuple(map(int, line.split("\t"))) for line in lines[1:]]

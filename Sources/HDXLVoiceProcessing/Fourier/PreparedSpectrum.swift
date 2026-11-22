@@ -138,8 +138,10 @@ public final class PreparedSpectrum<Sample: BinaryFloatingPoint & Sendable> {
         else {
             throw FourierError.invalidBufferSize
         }
-        for z in bins.prefix(output.count) where !z.real.isFinite || !z.imaginary.isFinite {
-            throw FourierError.nonfiniteInput
+        for k in output.indices {
+            guard bins[k].real.isFinite, bins[k].imaginary.isFinite else {
+                throw FourierError.nonfiniteInput
+            }
         }
         guard bins[0].imaginary == 0, output.count < count || bins[count - 1].imaginary == 0 else {
             throw FourierError.nonrealEndpoint

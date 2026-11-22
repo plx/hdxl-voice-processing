@@ -31,11 +31,14 @@ class SpectralProductEvidenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             products.validate_memory(rows[:-1])
 
-    def test_owned_copy_rejects_per_bin_heap_allocations(self):
+    def test_generation_and_owned_copy_reject_per_bin_heap_allocations(self):
+        products.validate_heap_allocations("Generate", 99, 0)
+        with self.assertRaises(ValueError):
+            products.validate_heap_allocations("Generate", 99, 99 * 257)
         for operation in ("Retain8", "Retain64", "Export"):
-            products.validate_copy_allocations(operation, 99, 99)
+            products.validate_heap_allocations(operation, 99, 99)
             with self.assertRaises(ValueError):
-                products.validate_copy_allocations(operation, 99, 25_542)
+                products.validate_heap_allocations(operation, 99, 25_542)
 
     def test_histogram_bucket_rounding_and_control_reliability(self):
         counts = [0] * 4097
