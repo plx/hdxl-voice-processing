@@ -43,14 +43,8 @@ extension PreparedSpectralShape {
         let location = only == nil || only == .spread || only == .centroid
         let flatness = only == nil || only == .flatness
         let rollOff = (only == nil || only == .rollOff) && configuration.rollOffFraction < 1
-        // Scaling by a power of two preserves binary weights at exact cumulative boundaries.
-        let scale = Double(
-            sign: .plus, exponent: (weights.magnitude ? weights.rootPeak : peak).exponent,
-            significand: 1)
-        func rollWeight(_ power: Double) -> Double {
-            (weights.magnitude ? sqrt(power) : power) / scale
-        }
-        var rollTotal = LevelCompensatedSum()
+        func rollWeight(_ power: Double) -> Double { weights.magnitude ? sqrt(power) : power }
+        var rollTotal = SpectralRollOffMass()
         let floor = configuration.relativeLogFloorDB.map { $0 * log(10) / 10 }
         let logPeak = log(peak)
         var sum = LevelCompensatedSum()
@@ -134,13 +128,11 @@ extension PreparedSpectralShape {
         if only == .rollOff || only == nil {
             var chosen = lastPositive
             if rollOff {
-                var cumulative = LevelCompensatedSum()
+                let threshold = rollTotal.threshold(fraction: configuration.rollOffFraction)
+                var cumulative = SpectralRollOffMass()
                 for k in bins {
                     cumulative.add(rollWeight(powers[k]))
-                    if powers[k] > 0
-                        && cumulative.value.addingProduct(
-                            -configuration.rollOffFraction, rollTotal.value) >= 0
-                    {
+                    if powers[k] > 0 && cumulative.reaches(threshold) {
                         chosen = k
                         break
                     }
@@ -159,6 +151,12 @@ struct SpectralComponentPower {
     func ratio(to denominator: Self) -> MeasurementOutcome {
         // Even when the linear FS² sum overflows, its finite logarithm determines a valid ratio.
         if let a = logPower, let b = denominator.logPower {
+            if let linear = outcome.estimate?.value,
+                let reference = denominator.outcome.estimate?.value,
+                let nearby = spectralNearbyLogRatio(linear, reference)
+            {
+                return spectralShapeEstimate(nearby * (10 / log(10)))
+            }
             return spectralShapeEstimate((a - b) * (10 / log(10)))
         }
         for component in [self, denominator] where component.logPower == nil {
@@ -215,4 +213,13 @@ private struct SpectralLogSum {
 private func spectralPositiveEstimate(logValue: Double) -> MeasurementOutcome {
     let value = exp(logValue)
     return value > 0 ? spectralShapeEstimate(value) : .unavailable(.analysisFailure)
+}
+
+/// Subtraction is exact for nearby positive binary values (Sterbenz's lemma).
+/// log1p preserves the sign and size of a ratio too close to one to divide accurately.
+func spectralNearbyLogRatio(_ value: Double, _ reference: Double) -> Double? {
+    guard value > 0, reference > 0, value >= reference * 0.5, reference >= value * 0.5 else {
+        return nil
+    }
+    return log1p((value - reference) / reference)
 }

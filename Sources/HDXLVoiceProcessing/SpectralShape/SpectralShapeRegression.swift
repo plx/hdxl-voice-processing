@@ -53,7 +53,14 @@ final class SpectralShapeRegression {
             if p == 0 && (floor == nil || configuration.regressionWeighting == .shapeWeight) {
                 continue
             }
-            let relativeDB = p == 0 ? -Double.infinity : 10 * log10(p) - peakDB
+            let relativeDB: Double
+            if p == 0 {
+                relativeDB = -.infinity
+            } else if let nearby = spectralNearbyLogRatio(p, peak) {
+                relativeDB = nearby * (10 / log(10))
+            } else {
+                relativeDB = 10 * log10(p) - peakDB
+            }
             let level = max(relativeDB, floor ?? -.infinity)
             let x = coordinate[k - bins.lowerBound] - reference
             let root = rootWeight(p)
@@ -104,13 +111,19 @@ final class SpectralShapeRegression {
         }
         let scaledSlope = xy.value / xx.value
         let slope = scaledSlope * (yScale / xScale)
-        var error = LevelCompensatedSum()
+        var error = LevelScaledSum()
         for i in 0..<fit.usedBins {
             let residual = (points[i].y / yScale).addingProduct(-scaledSlope, points[i].x / xScale)
-            error.add(residual * residual)
+            error.append(residual)
         }
-        fit.residualRMSDB = (yScale / rootPeak) * sqrt(error.value / total.value)
-        fit.rSquared = max(0, min(1, 1 - error.value / yy.value))
+        guard let residual = try? error.energy(sampleCount: fit.usedBins) else {
+            return (.unavailable(.analysisFailure), fit)
+        }
+        let residualNorm =
+            residual.scale * sqrt(residual.normalizedMeanSquare * Double(fit.usedBins))
+        fit.residualRMSDB = (yScale / rootPeak) * (residualNorm / sqrt(total.value))
+        let relativeError = residualNorm / sqrt(yy.value)
+        fit.rSquared = max(0, min(1, 1 - relativeError * relativeError))
         return (
             spectralShapeEstimate(configuration.fitCoordinate == .hertz ? slope / step : slope), fit
         )

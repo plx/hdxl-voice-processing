@@ -91,21 +91,23 @@ public final class PreparedSpectralShape {
             layout: layout,
             origin: .frame(row.info), timing: timing, aggregateSupport: nil, selectionCoverage: nil,
             warnings: [])
-        return row.binPower.withSpectralScalars(
-            doubles: {
-                compute(
-                    $0, result: result, status: row.info.status, sequence: row.info.frameIndex,
-                    only: only)
-            },
-            floats: { values in
-                // Empty unavailable frames still carry their source timing and exclusion reason.
-                for i in values.indices { widened[i] = Double(values[i]) }
-                return widened.withUnsafeBufferPointer {
+        return withDiagnosticInterval(result, sequence: row.info.frameIndex) {
+            row.binPower.withSpectralScalars(
+                doubles: {
                     compute(
-                        $0, result: result, status: row.info.status, sequence: row.info.frameIndex,
+                        $0, result: result, status: row.info.status,
                         only: only)
-                }
-            })
+                },
+                floats: { values in
+                    // Empty unavailable frames still carry their source timing and exclusion reason.
+                    for i in values.indices { widened[i] = Double(values[i]) }
+                    return widened.withUnsafeBufferPointer {
+                        compute(
+                            $0, result: result, status: row.info.status,
+                            only: only)
+                    }
+                })
+        }
     }
 
     public func evaluate(_ spectrum: LongTermSpectrum, only: SpectralShapeDescriptor? = nil) throws
@@ -129,62 +131,69 @@ public final class PreparedSpectralShape {
             warnings: spectrum.warnings)
         let sequence = nextAggregateSequence
         nextAggregateSequence = saturatingAdd(nextAggregateSequence)
-        return spectrum.meanBinPower.withUnsafeBufferPointer {
-            compute(
-                $0, result: result, status: spectrum.status, sequence: sequence,
-                only: only)
+        return withDiagnosticInterval(result, sequence: sequence) {
+            spectrum.meanBinPower.withUnsafeBufferPointer {
+                compute(
+                    $0, result: result, status: spectrum.status,
+                    only: only)
+            }
         }
+    }
+
+    private func withDiagnosticInterval(
+        _ result: SpectralShapeResult, sequence: UInt64,
+        _ body: () -> SpectralShapeResult
+    ) -> SpectralShapeResult {
+        var metadata = DiagnosticMetadata()
+        metadata.frameSequence = sequence
+        metadata.elapsedProcessingCount = result.aggregateSupport?.measuredFrames ?? 0
+        metadata.profileToken = 4501
+        metadata.sampleCount = UInt32(clamping: result.timing.source.sampleCount)
+        return diagnostics.withFrame(metadata, stage: .spectralShape, body)
     }
 
     private func compute(
         _ powers: UnsafeBufferPointer<Double>, result initial: SpectralShapeResult,
-        status: SpectralFrameStatus, sequence: UInt64, only: SpectralShapeDescriptor?
+        status: SpectralFrameStatus, only: SpectralShapeDescriptor?
     ) -> SpectralShapeResult {
-        var metadata = DiagnosticMetadata()
-        metadata.frameSequence = sequence
-        metadata.elapsedProcessingCount = initial.aggregateSupport?.measuredFrames ?? 0
-        metadata.profileToken = 4501
-        metadata.sampleCount = UInt32(clamping: initial.timing.source.sampleCount)
-        return diagnostics.withFrame(metadata, stage: .spectralShape) {
-            var result = initial
-            func wants(_ descriptor: SpectralShapeDescriptor) -> Bool {
-                only == nil || only == descriptor
-            }
-            func scalar(_ descriptor: SpectralShapeDescriptor, _ value: MeasurementOutcome)
-                -> SpectralShapeScalar
-            {
-                SpectralShapeScalar(measurement: descriptors[descriptor]!, outcome: value)
-            }
-            let unavailable: UnavailabilityReason?
-            if case .unavailable(let reason) = status {
-                unavailable = reason
-            } else {
-                unavailable = nil
-            }
-            if wants(.centroid) || wants(.spread) || wants(.flatness) || wants(.rollOff) {
-                let moments = shapeMoments(powers, unavailable: unavailable, only: only)
-                if wants(.centroid) { result.centroid = scalar(.centroid, moments.centroid) }
-                if wants(.spread) { result.spread = scalar(.spread, moments.spread) }
-                if wants(.flatness) { result.flatness = scalar(.flatness, moments.flatness) }
-                if wants(.rollOff) { result.rollOff = scalar(.rollOff, moments.rollOff) }
-            }
-            if wants(.bandEnergyRatio) {
-                let numerator = spectralBandEnergy(
-                    powers, cells: numeratorCells, unavailable: unavailable)
-                let denominator = spectralBandEnergy(
-                    powers, cells: denominatorCells, unavailable: unavailable)
-                result.bandEnergies = SpectralBandEnergies(
-                    unit: .normalizedSquaredAmplitude, numerator: numerator.outcome,
-                    denominator: denominator.outcome)
-                result.bandEnergyRatio = scalar(.bandEnergyRatio, numerator.ratio(to: denominator))
-            }
-            if wants(.slope) {
-                let (slope, fit) = regression.fit(
-                    powers, unavailable: unavailable ?? (fitBins == nil ? .unsupportedRange : nil))
-                result.fit = fit
-                result.slope = scalar(.slope, slope)
-            }
-            return result
+        var result = initial
+        func wants(_ descriptor: SpectralShapeDescriptor) -> Bool {
+            only == nil || only == descriptor
         }
+        func scalar(_ descriptor: SpectralShapeDescriptor, _ value: MeasurementOutcome)
+            -> SpectralShapeScalar
+        {
+            SpectralShapeScalar(measurement: descriptors[descriptor]!, outcome: value)
+        }
+        let unavailable: UnavailabilityReason?
+        if case .unavailable(let reason) = status {
+            unavailable = reason
+        } else {
+            unavailable = nil
+        }
+        if wants(.centroid) || wants(.spread) || wants(.flatness) || wants(.rollOff) {
+            let moments = shapeMoments(powers, unavailable: unavailable, only: only)
+            if wants(.centroid) { result.centroid = scalar(.centroid, moments.centroid) }
+            if wants(.spread) { result.spread = scalar(.spread, moments.spread) }
+            if wants(.flatness) { result.flatness = scalar(.flatness, moments.flatness) }
+            if wants(.rollOff) { result.rollOff = scalar(.rollOff, moments.rollOff) }
+        }
+        if wants(.bandEnergyRatio) {
+            let numerator = spectralBandEnergy(
+                powers, cells: numeratorCells, unavailable: unavailable)
+            let denominator = spectralBandEnergy(
+                powers, cells: denominatorCells, unavailable: unavailable)
+            result.bandEnergies = SpectralBandEnergies(
+                unit: .normalizedSquaredAmplitude, numerator: numerator.outcome,
+                denominator: denominator.outcome)
+            result.bandEnergyRatio = scalar(.bandEnergyRatio, numerator.ratio(to: denominator))
+        }
+        if wants(.slope) {
+            let (slope, fit) = regression.fit(
+                powers, unavailable: unavailable ?? (fitBins == nil ? .unsupportedRange : nil))
+            result.fit = fit
+            result.slope = scalar(.slope, slope)
+        }
+        return result
     }
 }

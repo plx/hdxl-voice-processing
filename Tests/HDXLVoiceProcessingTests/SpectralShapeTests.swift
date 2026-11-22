@@ -394,6 +394,28 @@ extension SpectralShapeTests {
         }
     }
 
+    @Test func rollOffSeesSubULPTailsAndThresholds() throws {
+        var powers = [Double](repeating: 0, count: 33)
+        powers[1] = 1
+        powers[8] = 1
+        powers[10] = Double(sign: .plus, exponent: -60, significand: 1)
+        let input = try row(powers)
+        let worker = try PreparedSpectralShape(
+            layout: input.layout, configuration: profile(fraction: 0.5))
+        try verify(worker.evaluate(input).rollOff?.outcome, 128)
+        // Even an individually unrepresentable half-unit threshold must reach its first positive bin.
+        powers = [Double](repeating: 0, count: 33)
+        powers[7] = Double.leastNonzeroMagnitude
+        try verify(worker.evaluate(row(powers)).rollOff?.outcome, 112)
+        // A tiny fraction of a huge total can itself have an ordinary, representable cutoff.
+        powers[7] = 1e-30
+        powers[11] = 1
+        powers[30] = Double.greatestFiniteMagnitude
+        let smallest = try PreparedSpectralShape(
+            layout: input.layout, configuration: profile(fraction: Double.leastNonzeroMagnitude))
+        try verify(smallest.evaluate(row(powers)).rollOff?.outcome, 176)
+    }
+
     @Test func weightedFitAcrossHundredsOfDecades() throws {
         var powers = [Double](repeating: 0, count: 33)
         powers[2] = 1e200
@@ -443,11 +465,8 @@ extension SpectralShapeTests {
             let result = try aggregate.evaluate(mean)
             let exported = try #require(try result.measurement(.centroid))
             let selection = try #require(mean.selectionProfile)
-            #expect(
-                exported.profile == result.profile
-                    && exported.profile
-                        == (try geometry.identity(for: layout, selectionProfile: selection))
-            )
+            let expected = try geometry.identity(for: layout, selectionProfile: selection)
+            #expect(exported.profile == result.profile && exported.profile == expected)
             #expect(exported.timing.includedSampleCount == 64)
             ids.append(exported.profile)
             for column in columns {
@@ -489,5 +508,79 @@ extension SpectralShapeTests {
             sink.entries.filter {
                 if case .end(let record) = $0 { record.stage == .spectralShape } else { false }
             }.count == 3)
+    }
+}
+
+extension SpectralShapeTests {
+    @Test func literalFourFifthsUsesTheStoredBinaryFraction() throws {
+        var powers = [Double](repeating: 0, count: 33)
+        powers[4] = 4
+        powers[12] = 1
+        let frame = try row(powers)
+        for (f, hz) in [(0.75, 64.0), (0.8.nextDown, 64), (0.8, 192), (0.85, 192)] {
+            let worker = try PreparedSpectralShape(
+                layout: frame.layout, configuration: profile(fraction: f))
+            try verify(worker.evaluate(frame).rollOff?.outcome, hz)
+        }
+    }
+
+    @Test func neighboringLevelsKeepTheSignOfSlopeAndRatio() throws {
+        for (a, b) in [(0.01, 0.01.nextUp), (0.01.nextUp, 0.01)] {
+            var powers = [Double](repeating: 0, count: 33)
+            powers[1] = a
+            powers[2] = b
+            let frame = try row(powers)
+            let worker = try PreparedSpectralShape(
+                layout: frame.layout,
+                configuration: profile(numerator: 8...24, denominator: 24...40, minimumFitBins: 2))
+            let answer = try worker.evaluate(frame)
+            let expected = 10 * log1p((b - a) / a) / log(10.0)
+            let slope = try #require(answer.slope?.outcome.estimate?.value)
+            let ratio = try #require(answer.bandEnergyRatio?.outcome.estimate?.value)
+            #expect(abs(slope / expected - 1) < 1e-14 && abs(ratio / expected + 1) < 1e-14)
+            #expect(answer.fit?.rSquared == 1)
+        }
+    }
+
+    @Test func weakOutlierStillHasARepresentableFitResidual() throws {
+        var powers = [Double](repeating: 0, count: 33)
+        powers[1] = Double(sign: .plus, exponent: 200, significand: 1)
+        powers[2] = Double(sign: .plus, exponent: 100, significand: 1)
+        powers[4] = Double(sign: .plus, exponent: -1000, significand: 1)
+        let frame = try row(powers)
+        let worker = try PreparedSpectralShape(
+            layout: frame.layout, configuration: profile(regression: .shapeWeight))
+        let result = try worker.evaluate(frame)
+        let residual = try #require(result.fit?.residualRMSDB)
+        let expected = 10000 * log10(2.0) * Double(sign: .plus, exponent: -600, significand: 1)
+        #expect(abs(residual / expected - 1) < 1e-12)
+    }
+
+    @Test func liveFloatDiagnosticScopeEndsBeforeFrameDeliveryReturns() throws {
+        let layout = try source.layout(precision: .float32)
+        let sink = RecordingSink()
+        let worker = try PreparedSpectralShape(
+            layout: layout, configuration: profile(),
+            diagnostics: WorkerDiagnostics(mode: .detailed, sink: sink))
+        let fft = try PreparedSpectrogram<Float>(layout: layout, epoch: source.epoch)
+        _ = try tone(4).map(Float.init).withUnsafeBufferPointer {
+            try fft.process($0, interval: source.source(0, 64)) { frame in
+                do {
+                    let value = try worker.evaluate(frame)
+                    try verify(value.centroid?.outcome, 64, tolerance: 1e-4)
+                    let entries = sink.entries
+                    guard case .begin(let begin) = entries[entries.count - 2],
+                        case .end(let end) = entries.last
+                    else {
+                        Issue.record("Expected paired descriptor signposts")
+                        return
+                    }
+                    #expect(
+                        begin == end && end.stage == .spectralShape
+                            && end.metadata.frameSequence == 0)
+                    #expect(end.metadata.sampleCount == 64)
+                } catch { Issue.record(error) }
+            }
+        }
     }
 }
