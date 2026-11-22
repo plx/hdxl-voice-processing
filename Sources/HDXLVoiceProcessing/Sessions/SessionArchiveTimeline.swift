@@ -221,7 +221,7 @@ public struct SessionArchiveMeasurement: Sendable, Hashable {
     public let timestamp: SessionArchiveTimestamp
     public let result: MeasurementResult
     public let scheduled: SessionArchiveScheduledMetadata?
-    /// Original PCM dependency of a standalone whole-interval formant measurement.
+    /// Original PCM interval required by a standalone formant or harmonic measurement.
     public let conditioningSupport: SourceInterval?
 
     public init(timestamp: SessionArchiveTimestamp, result: MeasurementResult) {
@@ -229,6 +229,20 @@ public struct SessionArchiveMeasurement: Sendable, Hashable {
         self.result = result
         scheduled = nil
         conditioningSupport = nil
+    }
+
+    public init(timestamp: SessionArchiveTimestamp, rawHarmonics: RawHarmonicFrame) {
+        self.timestamp = timestamp
+        result = rawHarmonics.measurement
+        conditioningSupport = rawHarmonics.dependencySupport
+        scheduled = nil
+    }
+
+    public init(timestamp: SessionArchiveTimestamp, correctedHarmonics: CorrectedHarmonicFrame) {
+        self.timestamp = timestamp
+        result = correctedHarmonics.measurement
+        conditioningSupport = correctedHarmonics.dependencySupport
+        scheduled = nil
     }
 
     public init(timestamp: SessionArchiveTimestamp, formant: BurgFormantMeasurement) {

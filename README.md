@@ -75,6 +75,7 @@ The [digital-level guide](Documentation/DigitalLevels.md) defines peak/RMS/dBFS,
 diagnostics, continuous K-weighting, warm-up, numeric limits, and source timing.
 The [spectral product guide](Documentation/SpectralProducts.md) covers bounded spectrograms, canonical cepstrogram slices, linear LTAS, selection coverage, and owned exports. The [spectral shape guide](Documentation/SpectralShape.md) gives six frame and LTAS descriptors with equations, units and PCM examples.
 The [Burg formant guide](Documentation/BurgFormants.md) shows how to estimate untracked resonance frequencies and bandwidths from PCM, interpret rejected ranks, and verify the Praat comparison.
+The [harmonic difference guide](Documentation/HarmonicDifference.md) covers raw H1–H2, measured-formant correction, dependency failures and full-scale references.
 
 The [cepstral guide](Documentation/Cepstrum.md) defines the pinned power/log/transform recipe,
 Double arithmetic for both PCM precisions, whole-interval/preview profiles, finite-stage

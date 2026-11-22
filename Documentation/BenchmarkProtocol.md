@@ -63,6 +63,7 @@ before computing rates. Reports from before the contract are marked `legacy-unbo
 | Bounded spectrograms, canonical cepstrograms, and LTAS | [Spectral product workloads and export costs](../Tools/SpectralProducts/README.md) |
 | Spectral shape on frames and sliding LTAS windows | [Descriptor workloads and incremental FFT cost](../Tools/SpectralShape/README.md) |
 | Burg LPC, formant roots, bounded fallback and complete PCM analysis | [Formant workloads and throughput units](../Tools/Formants/README.md) |
+| Raw H1–H2, supplied correction and complete YIN/Burg/harmonic path | [Harmonic workloads and reference checks](../Tools/Harmonics/README.md) |
 | Cepstrum, CPP and CPPS | [Cepstrum](../Tools/Cepstrum/README.md), [CPP](../Tools/CPP/README.md), [CPPS](../Tools/CPPS/README.md) |
 | Selection, F0 and harmonicity | [Masks](../Tools/Masks/README.md), [YIN](../Tools/YIN/README.md), [SWIPE-prime](../Tools/SWIPE/README.md), [HNR](../Tools/HNR/README.md) |
 | Pulses and perturbation statistics | [Pulses](../Tools/Pulses/README.md), [jitter](../Tools/Jitter/README.md), [shimmer](../Tools/Shimmer/README.md) |

@@ -14,19 +14,23 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     case hnr(HNRConfiguration)
     case hnrStatistic(HNRStatisticProfile)
     case swipePrime(SWIPEPrimeConfiguration)
+    case harmonicFit(HarmonicFitProfile)
+    case harmonicCorrection(HarmonicCorrectionProfile)
     case burgFormants(BurgFormantProfile)
     case pitchBoundBurgFormants(
         BurgFormantProfile, pitchProfile: ProfileIdentity, supportMatched: Bool)
 
     var requiresConditioningSupport: Bool {
         switch self {
-        case .burgFormants, .pitchBoundBurgFormants: true
+        case .burgFormants, .pitchBoundBurgFormants, .harmonicFit, .harmonicCorrection: true
         default: false
         }
     }
 
     public func identity() throws -> ProfileIdentity {
         switch self {
+        case .harmonicFit(let value): try value.identity()
+        case .harmonicCorrection(let value): try value.identity()
         case .burgFormants(let value): try value.identity()
         case .pitchBoundBurgFormants(let value, let pitch, let matched):
             try BurgFormantProfile.bind(value.identity(), to: pitch, matched: matched)
@@ -48,6 +52,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     /// only a recipe with an upstream cepstrogram can cross-check it here.
     public var sourceSampleRate: Double? {
         switch self {
+        case .harmonicFit(let value): Double(value.sourceSampleRate)
+        case .harmonicCorrection(let value): Double(value.fit.sourceSampleRate)
         case .burgFormants(let value), .pitchBoundBurgFormants(let value, _, _):
             Double(value.sourceSampleRate)
         case .analysis(let value): value.inputFormat.sampleRate
@@ -67,6 +73,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     /// is the native kernel identity and its profile identity is the full schedule.
     func descriptors() throws -> Set<MeasurementDescriptor> {
         switch self {
+        case .harmonicFit: return [try HarmonicFitProfile.descriptor]
+        case .harmonicCorrection: return [try HarmonicCorrectionProfile.descriptor]
         case .burgFormants(let value), .pitchBoundBurgFormants(let value, _, _):
             var result: Set<MeasurementDescriptor> = []
             for number in 1...value.maximumFormants {
@@ -170,7 +178,7 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     }
 
     private enum Kind: String, Codable {
-        case burgFormants, pitchBoundBurgFormants
+        case burgFormants, pitchBoundBurgFormants, harmonicFit, harmonicCorrection
         case analysis, schedule, levels, yin, trackedYIN, cpp, cpps, hnr, hnrStatistic, swipePrime
     }
     private enum CodingKeys: String, CodingKey, CaseIterable { case kind, recipe }
@@ -178,6 +186,11 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
     public init(from decoder: any Decoder) throws {
         let c = try decoder.contractContainer(keyedBy: CodingKeys.self)
         switch try c.decode(Kind.self, forKey: .kind) {
+        case .harmonicFit:
+            self = .harmonicFit(try c.decode(HarmonicFitProfile.self, forKey: .recipe))
+        case .harmonicCorrection:
+            self = .harmonicCorrection(
+                try c.decode(HarmonicCorrectionProfile.self, forKey: .recipe))
         case .burgFormants:
             self = .burgFormants(try c.decode(BurgFormantProfile.self, forKey: .recipe))
         case .pitchBoundBurgFormants:
@@ -208,6 +221,8 @@ public enum SessionArchiveProfile: Sendable, Hashable, Codable {
             try c.encode(recipe, forKey: .recipe)
         }
         switch self {
+        case .harmonicFit(let value): try encode(.harmonicFit, value)
+        case .harmonicCorrection(let value): try encode(.harmonicCorrection, value)
         case .burgFormants(let value): try encode(.burgFormants, value)
         case .pitchBoundBurgFormants(let value, let pitch, let matched):
             try encode(

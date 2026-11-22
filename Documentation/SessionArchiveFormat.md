@@ -70,7 +70,7 @@ replay-plan mask and gap missingSource. Schema changes require a deliberate vers
 `explicitlyInclude`), and `notes`. The native Codable schemas of the named types
 define their complete JSON fields. Profile records use `kind` and `recipe`; kinds
 are `analysis`, `schedule`, `levels`, `yin`, `trackedYIN`, `cpp`, `cpps`, `hnr`,
-`hnrStatistic`, `swipePrime`, `burgFormants` and `pitchBoundBurgFormants`. Every recipe
+`hnrStatistic`, `swipePrime`, `burgFormants`, `pitchBoundBurgFormants`, `harmonicFit` and `harmonicCorrection`. Every recipe
 retains its full parameter and reference semantics, not just a display identifier.
 
 Sources retain `AnalysisScheduleOrigin` and explicit `SessionAcquisitionMetadata`.
@@ -98,9 +98,9 @@ Fields appear in exactly this order:
 1. UInt32 series index.
 2. Placement: UInt64 source sample or Double seconds from origin, according to the
    series clock. Scheduled placement is the original frame center.
-3. Native timing block (below). For either Burg formant recipe, two additional UInt64
+3. Native timing block (below). For Burg formant and harmonic recipes, two additional UInt64
    fields immediately follow this block. They contain the start and count of the full
-   conditioning interval on the series source clock. It must enclose the native frame.
+   dependency interval on the series source clock. It must enclose the native frame. Raw harmonic fits use pitch support. Corrected harmonics also include the matched Burg conditioning interval. The full harmonic-frame JSON retains individual pole gains.
 4. Outcome (below).
 5. For a scheduled series only: dependency timing block, coverage block and Double
    worker batching upper-bound seconds.

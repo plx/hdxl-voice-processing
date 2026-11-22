@@ -6,6 +6,8 @@ let package = Package(
     name: "VoiceBenchmarks",
     platforms: [.macOS("27.0")],
     products: [
+        .executable(name: "HarmonicBenchmarks", targets: ["HarmonicBenchmarks"]),
+        .executable(name: "HarmonicWorkloadCheck", targets: ["HarmonicWorkloadCheck"]),
         .executable(name: "FormantBenchmarks", targets: ["FormantBenchmarks"]),
         .executable(name: "FormantWorkloadCheck", targets: ["FormantWorkloadCheck"]),
         .executable(name: "SpectralShapeBenchmarks", targets: ["SpectralShapeBenchmarks"]),
@@ -74,6 +76,15 @@ let package = Package(
             ]),
     ],
     targets: [
+        .target(
+            name: "HarmonicWorkload",
+            dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
+        .executableTarget(name: "HarmonicWorkloadCheck", dependencies: ["HarmonicWorkload"]),
+        .executableTarget(
+            name: "HarmonicBenchmarks",
+            dependencies: ["HarmonicWorkload", .product(name: "Benchmark", package: "benchmark")],
+            path: "Benchmarks/HarmonicBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .target(
             name: "FormantWorkload",
             dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),

@@ -375,3 +375,7 @@ A prepared descriptor worker emits one `SpectralShape` interval around conversio
 ## Burg formants
 
 Pass a `RuntimeDiagnosticMode` when preparing the formant analyzer. The whole-interval conditioner records its existing resampling and pre-emphasis stages. The worker then emits one `BurgFormants` scope per admitted frame, with nested `BurgLPC`, `FormantRoots` and `FormantSelection` scopes for work actually performed. Selection finalizes the empty candidate list after a failed fit. User callbacks that consume the result run after the frame scope. Sampled mode admits every sixteenth frame, starting at zero, across calls on the same worker. Token 4601, a sequence number and a bounded sample count identify the work. PCM, pitch and pole values stay out of diagnostic records. [Formant workloads](../Tools/Formants/README.md)
+
+## Harmonic differences
+
+Pass a `RuntimeDiagnosticMode` when preparing the raw fitter or the combined harmonic worker. `HarmonicFit` covers a pitch-aligned fit and raw result. `HarmonicCorrection` covers dependency checks, pole gains and the corrected export. Each stage tracks its own invocation count so sampled mode captures both stages of a combined analysis. Both emit numeric sample counts and sequence information. PCM, F0, formant values and measured levels stay outside the signposts.
