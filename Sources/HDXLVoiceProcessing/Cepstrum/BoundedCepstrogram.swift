@@ -19,7 +19,7 @@ public struct PowerCepstrumFrame: Sendable, Hashable, Codable {
             configuration: configuration, profile: configuration.identity(),
             context: context, values: values, unavailability: unavailability)
     }
-    // Only the collector in this file may reuse its prepared identity. Public
+    // Collectors in this file may reuse their prepared identity. Public
     // construction and decoding always recompute it from validated configuration.
     fileprivate init(
         configuration: CepstrogramConfiguration, profile: ProfileIdentity,
@@ -113,5 +113,75 @@ public final class BoundedCepstrogram {
             values: Array(stage.values), unavailability: stage.unavailability)
         frames.append(row)
         scalarCount += row.values.count
+    }
+}
+
+/// Borrowed view of the canonical power stage. Values expire when the enclosing callback returns.
+public struct BorrowedCepstrogramColumn {
+    public let configuration: PowerCepstrumConfiguration
+    public let profile: ProfileIdentity
+    public let context: CepstralFrameContext
+    public let values: UnsafeBufferPointer<Double>
+    public let unavailability: UnavailabilityReason?
+}
+
+extension PowerCepstrumFrame {
+    /// Stream retained or decoded canonical columns through the same exporter as live output.
+    public func withBorrowedColumn<Result>(_ body: (BorrowedCepstrogramColumn) throws -> Result)
+        rethrows -> Result
+    {
+        try values.withUnsafeBufferPointer {
+            try body(
+                BorrowedCepstrogramColumn(
+                    configuration: configuration.frame, profile: profile,
+                    context: context, values: $0, unavailability: unavailability))
+        }
+    }
+}
+
+/// Copies canonical #33 output one row at a time. Preparing once avoids hashing a configuration per row.
+public struct PowerCepstrogramExporter: Sendable {
+    public let configuration: CepstrogramConfiguration
+    public let profile: ProfileIdentity
+    public let quefrency: SpectralProductAxis
+    public let unit: MeasurementUnit = .inverseSecondsSquared
+
+    public init(configuration: CepstrogramConfiguration) throws {
+        self.configuration = configuration
+        profile = try configuration.identity()
+        quefrency = try SpectralProductAxis(
+            count: configuration.frame.binCount,
+            step: configuration.frame.quefrencyStepSeconds, unit: .seconds)
+    }
+
+    public func owned(_ output: BorrowedPowerCepstrum<Double>) throws -> PowerCepstrumFrame {
+        let stage = output.stage(.powerCepstrum)
+        return try owned(
+            BorrowedCepstrogramColumn(
+                configuration: output.configuration, profile: output.profile,
+                context: output.context, values: stage.values, unavailability: stage.unavailability)
+        )
+    }
+
+    public func owned(_ column: BorrowedCepstrogramColumn) throws -> PowerCepstrumFrame {
+        guard column.configuration == configuration.frame, column.profile == profile else {
+            throw ContractError.invalidFingerprint
+        }
+        return try PowerCepstrumFrame(
+            configuration: configuration, profile: profile, context: column.context,
+            values: Array(column.values), unavailability: column.unavailability)
+    }
+}
+
+/// Self-describing offline export of one canonical column and its quefrency grid.
+public struct CepstrogramSlice: Sendable, Hashable, Encodable {
+    public let frame: PowerCepstrumFrame
+    public let quefrency: SpectralProductAxis
+    public let powerUnit: MeasurementUnit
+}
+
+extension PowerCepstrogramExporter {
+    public func slice(_ output: BorrowedPowerCepstrum<Double>) throws -> CepstrogramSlice {
+        try CepstrogramSlice(frame: owned(output), quefrency: quefrency, powerUnit: unit)
     }
 }

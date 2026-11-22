@@ -6,6 +6,9 @@ let package = Package(
     name: "VoiceBenchmarks",
     platforms: [.macOS("27.0")],
     products: [
+        .executable(name: "SpectralProductBenchmarks", targets: ["SpectralProductBenchmarks"]),
+        .executable(
+            name: "SpectralProductWorkloadCheck", targets: ["SpectralProductWorkloadCheck"]),
         .executable(name: "DSPKernelBenchmarks", targets: ["DSPKernelBenchmarks"]),
         .executable(name: "KernelWorkloadCheck", targets: ["KernelWorkloadCheck"]),
         .executable(name: "SWIPEPrimeBenchmarks", targets: ["SWIPEPrimeBenchmarks"]),
@@ -67,6 +70,19 @@ let package = Package(
             ]),
     ],
     targets: [
+        .target(
+            name: "SpectralProductWorkload",
+            dependencies: [
+                .product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")
+            ]),
+        .executableTarget(
+            name: "SpectralProductWorkloadCheck", dependencies: ["SpectralProductWorkload"]),
+        .executableTarget(
+            name: "SpectralProductBenchmarks",
+            dependencies: [
+                "SpectralProductWorkload", .product(name: "Benchmark", package: "benchmark"),
+            ], path: "Benchmarks/SpectralProductBenchmarks",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]),
         .target(
             name: "KernelWorkload",
             dependencies: [

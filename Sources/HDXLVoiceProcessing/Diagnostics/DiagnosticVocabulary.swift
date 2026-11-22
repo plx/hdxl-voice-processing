@@ -24,6 +24,7 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
     case resample, preEmphasis, frameAssembly, fft, cepstrum, cpp, cppsSmoothing, cppsFitting,
         cppsAggregation
     case pitch, pitchTracking, hnr, pulses, perturbation, resultPublication, levelEnergy, kWeighting
+    case spectrogram, longTermSpectrum, spectralRetention, spectralExport
     case hnrNormalization, hnrWindow, hnrCorrelation, hnrPeriodSearch
     case pulseMatching, pulseInterpolation, pulseSequences
     case fixtureLoad, fixtureDecode
@@ -55,6 +56,10 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
         case .preEmphasis: "PreEmphasis"
         case .frameAssembly: "FrameAssembly"
         case .fft: "FFT"
+        case .spectrogram: "Spectrogram"
+        case .longTermSpectrum: "LongTermSpectrum"
+        case .spectralRetention: "SpectralRetention"
+        case .spectralExport: "SpectralExport"
         case .cepstrum: "Cepstrum"
         case .cpp: "CPP"
         case .cppsSmoothing: "CPPSSmoothing"

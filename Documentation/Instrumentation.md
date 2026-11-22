@@ -363,3 +363,7 @@ events. Execution statistics expose evaluated amplitude count outside signposts.
 No PCM, amplitudes, pulse coordinates, F0 arrays or user-provided strings enter
 metadata. `ShimmerDiagnosticsTests` checks all modes, sampling, balanced scopes,
 consumer exclusion and rejected query/reset reentry.
+
+## Bounded spectral products
+
+Pass a `RuntimeDiagnosticMode` when preparing the spectrogram, LTAS accumulator, or rolling collection. `Spectrogram` surrounds the full-window selection check, window multiplication, FFT, and normalized power calculation. Emission follows that scope. `LongTermSpectrum` surrounds the update of the linear-power vector for an eligible row. `SpectralRetention` brackets owned-column insertion and eviction, including copying when a borrowed row enters a ring. `SpectralExport` brackets materialization of a chronological ring snapshot. Canonical cepstrogram generation also retains its existing cepstral worker scopes. The shared facade uses the frame ordinal for sampling. The payload contains bounded numeric metadata.

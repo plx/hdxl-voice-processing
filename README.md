@@ -73,6 +73,8 @@ The [conditioning guide](Documentation/Conditioning.md) defines raw pre-emphasis
 Praat compatibility, streaming preview, bandwidth checks, boundary support, and recorded delay.
 The [digital-level guide](Documentation/DigitalLevels.md) defines peak/RMS/dBFS, clipping
 diagnostics, continuous K-weighting, warm-up, numeric limits, and source timing.
+The [spectral product guide](Documentation/SpectralProducts.md) covers bounded spectrograms, canonical cepstrogram slices, linear LTAS, selection coverage, and owned exports.
+
 The [cepstral guide](Documentation/Cepstrum.md) defines the pinned power/log/transform recipe,
 Double arithmetic for both PCM precisions, whole-interval/preview profiles, finite-stage
 availability, borrowed data and bounded exports. The [CPP guide](Documentation/CPP.md)

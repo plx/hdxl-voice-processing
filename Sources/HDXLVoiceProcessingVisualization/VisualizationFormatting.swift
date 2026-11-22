@@ -18,6 +18,8 @@ public struct VisualizationUnitLabel: Sendable, Hashable {
             Self(symbol: "FS", spoken: "normalized amplitude, full scale one")
         case .normalizedSquaredAmplitude:
             Self(symbol: "FS²", spoken: "normalized squared amplitude")
+        case .normalizedSquaredAmplitudePerHertz:
+            Self(symbol: "FS²/Hz", spoken: "normalized squared amplitude per hertz")
         case .normalizedAmplitudeSeconds:
             Self(symbol: "FS·s", spoken: "normalized amplitude seconds")
         case .normalizedSquaredAmplitudeSecondsSquared:

@@ -108,6 +108,15 @@ public final class PreparedSpectrum<Sample: BinaryFloatingPoint & Sendable> {
         try convert(bins, into: output, factors: powerRoot, squared: true)
     }
 
+    /// Convert only supported bins starting at DC. Endpoint scaling still uses the full FFT length.
+    func writePowerPrefix(
+        _ bins: UnsafeBufferPointer<FourierBin<Sample>>,
+        into output: UnsafeMutableBufferPointer<Sample>
+    ) throws {
+        guard let powerRoot else { throw FourierError.invalidNormalization }
+        try convert(bins, into: output, factors: powerRoot, squared: true, allowPrefix: true)
+    }
+
     /// c|X[k]|² / (fs * M * energyGain): periodogram density, input amplitude² per Hz.
     /// Sum(density) * fs/N equals sum(writePower(...)).
     public func writePowerDensity(
@@ -121,19 +130,23 @@ public final class PreparedSpectrum<Sample: BinaryFloatingPoint & Sendable> {
     private func convert(
         _ bins: UnsafeBufferPointer<FourierBin<Sample>>,
         into output: UnsafeMutableBufferPointer<Sample>,
-        factors: (Sample, Sample), squared: Bool
+        factors: (Sample, Sample), squared: Bool, allowPrefix: Bool = false
     ) throws {
         let count = configuration.transform.realBinCount
-        guard bins.count == count, output.count == count else {
+        guard bins.count == count,
+            output.count == count || (allowPrefix && (1...count).contains(output.count))
+        else {
             throw FourierError.invalidBufferSize
         }
-        for z in bins where !z.real.isFinite || !z.imaginary.isFinite {
-            throw FourierError.nonfiniteInput
+        for k in output.indices {
+            guard bins[k].real.isFinite, bins[k].imaginary.isFinite else {
+                throw FourierError.nonfiniteInput
+            }
         }
-        guard bins[0].imaginary == 0, bins[count - 1].imaginary == 0 else {
+        guard bins[0].imaginary == 0, output.count < count || bins[count - 1].imaginary == 0 else {
             throw FourierError.nonrealEndpoint
         }
-        for k in 0..<count {
+        for k in output.indices {
             let factor = k == 0 || k == count - 1 ? factors.0 : factors.1
             let a = abs(bins[k].real) * factor
             let b = abs(bins[k].imaginary) * factor
@@ -145,6 +158,6 @@ public final class PreparedSpectrum<Sample: BinaryFloatingPoint & Sendable> {
             guard result.isFinite else { throw FourierError.nonfiniteResult }
             scratch[k] = result
         }
-        for k in 0..<count { output[k] = scratch[k] }
+        for k in output.indices { output[k] = scratch[k] }
     }
 }
