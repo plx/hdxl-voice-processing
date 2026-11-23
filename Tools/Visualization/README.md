@@ -36,8 +36,15 @@ median/minimum/maximum of the five process medians. No shared-runner wall-time
 threshold is imposed; timings provide evidence for the later plotting budget.
 
 The `Visualization evidence` workflow also runs the adapter/Observation tests and
-retains 36 synthetic macOS SwiftUI PNGs: nine states, two widths and two requested
-Dynamic Type settings. These renders are not iOS or physical-device evidence.
+retains 36 synthetic macOS SwiftUI state-panel PNGs and 34 acoustic plot PNGs.
+The gallery covers 17 fixed-history plots at 350 and 800 points with a selected
+observation. The phone-sized layout requests accessibility Dynamic Type.
+A separate iOS 27.0 Simulator job executes the same gallery using native iOS
+SwiftUI. Its artifact contains the 34 PNG attachments, the test summary and the
+attachment manifest. Run `python3 Tools/Visualization/ios_plots.py` from the
+package root with the pinned Xcode version and a fresh
+`.build/visualization-ios-evidence` destination. The runner creates and
+removes its own simulator. Physical-device qualification is tracked in #74.
 Full correctness and sanitizer lanes run the same tests with the complete suite;
 generic iOS device/simulator builds check all three products and both independent
 Core/Audio consumers. Artifact output contains synthetic fixtures and tool/source

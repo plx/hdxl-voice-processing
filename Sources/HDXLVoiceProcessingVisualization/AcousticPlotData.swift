@@ -98,6 +98,7 @@ public struct AcousticPlotData: Sendable {
     public let kind: AcousticPlotKind
     public let timeAxis: VisualizationTimeAxis
     public let profile: ProfileIdentity
+    public let calibration: ProfileIdentity?
     public let settings: String
     public let valueLabel: String
     public let unit: MeasurementUnit
@@ -117,7 +118,7 @@ public struct AcousticPlotData: Sendable {
         settings: String, valueLabel: String, unit: MeasurementUnit, rawUnit: MeasurementUnit,
         columns: [AcousticPlotPayload], bins: Int, step: Double, hop: Double? = nil,
         boundaries: [SourceDiscontinuity] = [], markers: [AcousticPlotMarker] = [],
-        limits: VisualizationLimits
+        calibration: ProfileIdentity? = nil, limits: VisualizationLimits
     ) throws {
         guard columns.count <= limits.maximumMeasurements, bins > 0,
             bins <= limits.maximumFrameScalars,
@@ -131,6 +132,7 @@ public struct AcousticPlotData: Sendable {
         var metadata = VisualizationMetadataBudget(limits)
         try metadata.charge(profile)
         try metadata.charge(settings)
+        if let calibration { try metadata.charge(calibration) }
         var positions: [Double] = []
         var minimum: Double?
         var maximum: Double?
@@ -142,7 +144,7 @@ public struct AcousticPlotData: Sendable {
             }
             let center = try column.center(on: axis)
             guard center.isFinite else { throw VisualizationError.nonfiniteDisplayValue }
-            if let prior = positions.last, center <= prior {
+            if let prior = positions.last, kind.isImage, center <= prior {
                 throw VisualizationError.unorderedMeasurements
             }
             positions.append(center)
@@ -195,12 +197,21 @@ public struct AcousticPlotData: Sendable {
         self.kind = kind
         timeAxis = axis
         self.profile = profile
+        self.calibration = calibration
         self.settings = settings
         self.valueLabel = valueLabel
         self.unit = unit
         self.rawUnit = rawUnit
-        self.columns = columns
-        centers = positions
+        if case .metric = kind {
+            // Nested supports may have coincident or reversed centers. Keep every original
+            // observation, with input order breaking exact ties.
+            let order = positions.indices.sorted { positions[$0] < positions[$1] }
+            self.columns = order.map { columns[$0] }
+            centers = order.map { positions[$0] }
+        } else {
+            self.columns = columns
+            centers = positions
+        }
         binCount = bins
         binStep = step
         hopSeconds = hop
@@ -216,7 +227,8 @@ public struct AcousticPlotData: Sendable {
     public init(
         metric series: VisualizationSeriesKey, observations: [AcousticMetricObservation],
         axis: VisualizationTimeAxis, recipe: VisualizationProfileSnapshot? = nil,
-        boundaries: [SourceDiscontinuity] = [], limits: VisualizationLimits = .standard
+        calibration: ProfileIdentity? = nil, boundaries: [SourceDiscontinuity] = [],
+        limits: VisualizationLimits = .standard
     ) throws {
         guard series.source == axis.source else { throw VisualizationError.incompatibleSource }
         guard observations.count <= limits.maximumMeasurements else {
@@ -225,6 +237,9 @@ public struct AcousticPlotData: Sendable {
         guard observations.allSatisfy({ $0.measurement.id.series == series }),
             recipe == nil || recipe?.identity == series.profile
         else { throw VisualizationError.incompatibleSeries }
+        guard (series.measurement.kind == .calibratedSPL) == (calibration != nil) else {
+            throw VisualizationError.invalidConfiguration
+        }
         let settings =
             recipe?.canonicalRecipe
             ?? "Profile \(series.profile.identifier.name) · v\(series.profile.identifier.version)"
@@ -234,17 +249,18 @@ public struct AcousticPlotData: Sendable {
             valueLabel: VisualizationText.measurement(series.measurement.kind),
             unit: series.measurement.unit,
             rawUnit: series.measurement.unit, columns: observations.map(AcousticPlotPayload.metric),
-            bins: 1, step: 1, boundaries: boundaries, limits: limits)
+            bins: 1, step: 1, boundaries: boundaries, calibration: calibration, limits: limits)
     }
 
     public init(
         metric snapshot: VisualizationMetricSnapshot, axis: VisualizationTimeAxis,
-        recipe: VisualizationProfileSnapshot? = nil
+        recipe: VisualizationProfileSnapshot? = nil, calibration: ProfileIdentity? = nil
     ) throws {
         try self.init(
             metric: snapshot.series,
             observations: snapshot.measurements.map(AcousticMetricObservation.init),
-            axis: axis, recipe: recipe, boundaries: snapshot.boundaries, limits: snapshot.limits)
+            axis: axis, recipe: recipe, calibration: calibration, boundaries: snapshot.boundaries,
+            limits: snapshot.limits)
     }
 
     public init(

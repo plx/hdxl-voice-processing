@@ -116,7 +116,8 @@ public struct AcousticPersonalTargetOverlay: Sendable, Hashable {
     public init?(_ snapshot: PersonalTargetFeedbackSnapshot) {
         guard let interval = snapshot.evidence, !interval.isGap,
             interval.profile == snapshot.profile,
-            interval.statistic == .selectedIntervalLowerMedianV1,
+            snapshot.statistic == .selectedIntervalLowerMedianV1,
+            interval.statistic == snapshot.statistic,
             snapshot.inputDisposition == .accepted
         else { return nil }
         source = interval.source

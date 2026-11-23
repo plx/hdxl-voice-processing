@@ -1,18 +1,38 @@
 import HDXLVoiceProcessing
 
+/// Original perturbation eligibility and exact relative query. Rolling analysis can also
+/// supply a half-open, sample-aligned interval on the acquisition clock.
+public enum AcousticPerturbationContext: Sendable, Hashable {
+    case jitter(JitterQueryRange, JitterCoverage, JitterApplicability)
+    case shimmer(ShimmerQueryRange, ShimmerCoverage, ShimmerApplicability)
+
+    var bounds: ClosedRange<Double> {
+        switch self {
+        case .jitter(let query, _, _): query.startSeconds...query.endSeconds
+        case .shimmer(let query, _, _): query.startSeconds...query.endSeconds
+        }
+    }
+}
+
 /// A scalar's nominal plot position may differ from the source that contributed to it.
 /// Offsets are relative to an integer sample anchor, including for fractional query centers.
 public struct AcousticMetricObservation: Sendable, Hashable {
     public let measurement: VisualizationMeasurement
     public let dependency: SourceInterval
+    let midpointSupport: SourceInterval?
     public let anchorSample: Int64
     public let secondsFromAnchor: Double
     public let context: [String]
+    public let perturbation: AcousticPerturbationContext?
+    public let sampleAlignedQuery: SourceInterval?
 
     public init(_ measurement: VisualizationMeasurement) {
         let support = measurement.result.timing.source
         self.measurement = measurement
+        perturbation = nil
+        sampleAlignedQuery = nil
         dependency = measurement.scheduled?.dependencyTiming.source ?? support
+        midpointSupport = measurement.scheduled == nil ? support : nil
         if let export = measurement.scheduled {
             anchorSample = export.origin.source.startSample
             secondsFromAnchor = export.frameCenterSecondsFromOrigin
@@ -35,27 +55,29 @@ public struct AcousticMetricObservation: Sendable, Hashable {
     public init(_ result: MeasurementResult) { self.init(VisualizationMeasurement(result)) }
 
     private init(
-        _ result: MeasurementResult, anchor: SourceInterval, offset: Double,
-        dependency: SourceInterval? = nil, context: [String] = []
+        _ result: MeasurementResult, anchor: SourceInterval, offset: Double? = nil,
+        dependency: SourceInterval? = nil, perturbation: AcousticPerturbationContext? = nil,
+        sampleAlignedQuery: SourceInterval? = nil, context: [String] = []
     ) {
         measurement = VisualizationMeasurement(result)
         self.dependency = dependency ?? result.timing.source
         anchorSample = anchor.startSample
-        secondsFromAnchor = offset
+        midpointSupport = offset == nil ? anchor : nil
+        secondsFromAnchor = offset ?? anchor.durationSeconds / 2
+        self.perturbation = perturbation
+        self.sampleAlignedQuery = sampleAlignedQuery
         self.context = context
     }
 
     public init(_ frame: YINFrameResult) throws {
         self.init(
             try frame.measurementResult(), anchor: frame.timing.source,
-            offset: frame.timing.source.durationSeconds / 2,
             context: ["Pitch status · \(frame.status.rawValue)"])
     }
 
     public init(_ frame: LevelWindowResult, kind: MeasurementKind, unit: MeasurementUnit) throws {
         self.init(
             try frame.measurementResult(kind: kind, unit: unit), anchor: frame.source,
-            offset: frame.source.durationSeconds / 2,
             context: [
                 "Window \(frame.configuration.windowLength) samples · hop \(frame.configuration.hopLength) samples"
             ])
@@ -92,7 +114,9 @@ public struct AcousticMetricObservation: Sendable, Hashable {
         self.init(
             try result.measurementResult(variant),
             anchor: aligned ?? result.dependencyTiming.source,
-            offset: aligned.map { $0.durationSeconds / 2 } ?? query.centerSeconds,
+            offset: aligned == nil ? query.centerSeconds : nil,
+            perturbation: .jitter(query, coverage, result.applicability),
+            sampleAlignedQuery: aligned,
             context: [
                 result.applicability == .sustainedPhonation
                     ? "Sustained phonation" : "Exploratory rolling estimate",
@@ -110,7 +134,9 @@ public struct AcousticMetricObservation: Sendable, Hashable {
         self.init(
             try result.measurementResult(variant),
             anchor: aligned ?? result.dependencyTiming.source,
-            offset: aligned.map { $0.durationSeconds / 2 } ?? query.centerSeconds,
+            offset: aligned == nil ? query.centerSeconds : nil,
+            perturbation: .shimmer(query, coverage, result.applicability),
+            sampleAlignedQuery: aligned,
             context: [
                 result.applicability == .sustainedPhonation
                     ? "Sustained phonation" : "Exploratory rolling estimate",
@@ -137,15 +163,29 @@ public struct AcousticMetricObservation: Sendable, Hashable {
     public init(_ frame: RawHarmonicFrame) {
         let window = frame.measurement.timing.source
         self.init(
-            frame.measurement, anchor: window, offset: window.durationSeconds / 2,
+            frame.measurement, anchor: window,
             dependency: frame.dependencySupport, context: frame.failure.map { [$0.rawValue] } ?? [])
     }
 
     public init(_ frame: CorrectedHarmonicFrame) {
         let window = frame.raw.measurement.timing.source
         self.init(
-            frame.measurement, anchor: window, offset: window.durationSeconds / 2,
+            frame.measurement, anchor: window,
             dependency: frame.dependencySupport, context: frame.failure.map { [$0.rawValue] } ?? [])
+    }
+
+    func intersects(_ selection: VisualizationSelection) -> Bool {
+        guard let perturbation else {
+            return selection.intersects(measurement.result.timing.source)
+        }
+        if let sampleAlignedQuery { return selection.intersects(sampleAlignedQuery) }
+        let source = selection.source
+        guard VisualizationSource(dependency).contains(source) else { return false }
+        let bounds = perturbation.bounds
+        let start = Double(source.startSample - dependency.startSample) / source.sampleRate
+        if source.sampleCount == 0 { return bounds.contains(start) }
+        let end = Double(source.endSample - dependency.startSample) / source.sampleRate
+        return start <= bounds.upperBound && end > bounds.lowerBound
     }
 
     func seconds(on axis: VisualizationTimeAxis) throws -> Double {
@@ -154,6 +194,7 @@ public struct AcousticMetricObservation: Sendable, Hashable {
         else {
             throw VisualizationError.incompatibleSource
         }
+        if let midpointSupport { return try axis.placement(of: midpointSupport).centerSeconds }
         let seconds =
             Double(anchorSample - axis.originSample) / axis.source.sampleRate + secondsFromAnchor
         guard seconds.isFinite else { throw VisualizationError.nonfiniteDisplayValue }

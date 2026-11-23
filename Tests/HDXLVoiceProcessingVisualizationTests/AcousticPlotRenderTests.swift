@@ -1,14 +1,22 @@
+import SwiftUI
+import Testing
+
+@testable import HDXLVoiceProcessingVisualization
+
 #if os(macOS)
     import AppKit
-    import SwiftUI
-    import Testing
+#elseif os(iOS)
+    import UIKit
+#endif
 
-    @testable import HDXLVoiceProcessingVisualization
-
+@Suite struct AcousticPlotRenderTests {
     @Test @MainActor func acousticPlotsRenderWithSelectionAtNarrowAndWideWidths() throws {
-        _ = NSApplication.shared
+        #if os(macOS)
+            _ = NSApplication.shared
+        #endif
         let fixture = try AcousticPlotPrimaryTests.fixture.get()
-        let plots = try fixture.primaryPlots()
+        let plots =
+            try fixture.primaryPlots() + AcousticPlotFamilyTests.extended.get().plots(fixture)
         let output = ProcessInfo.processInfo.environment["HDXL_VISUALIZATION_PREVIEW_OUTPUT"].map {
             URL(fileURLWithPath: $0, isDirectory: true)
         }
@@ -31,13 +39,17 @@
                 renderer.scale = 1
                 let image = try #require(renderer.cgImage)
                 #expect(image.width == width && image.height > 200 && image.height < 4096)
-                if let output {
-                    let bitmap = NSBitmapImageRep(cgImage: image)
-                    let png = try #require(bitmap.representation(using: .png, properties: [:]))
-                    try png.write(
-                        to: output.appending(path: "acoustic-\(i)-\(width).png"), options: .atomic)
-                }
+                let name = "acoustic-\(i)-\(width).png"
+                #if os(iOS)
+                    Attachment.record(UIImage(cgImage: image), named: name, as: .png)
+                #elseif os(macOS)
+                    if let output {
+                        let bitmap = NSBitmapImageRep(cgImage: image)
+                        let png = try #require(bitmap.representation(using: .png, properties: [:]))
+                        try png.write(to: output.appending(path: name), options: .atomic)
+                    }
+                #endif
             }
         }
     }
-#endif
+}

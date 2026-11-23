@@ -47,7 +47,7 @@ struct AcousticPlotDrawing: View {
             guard size.width > 0 && size.height > 0 else { return }
             let top = 4.0
             let height = max(1, size.height - 18)
-            func x(_ v: Double) -> Double { horizontal.fraction(v) * size.width }
+            func x(_ v: Double) -> Double { 4 + horizontal.fraction(v) * max(1, size.width - 8) }
             func y(_ v: Double) -> Double { top + (1 - vertical.fraction(v)) * height }
             func line(
                 _ a: CGPoint, _ b: CGPoint, _ color: Color, _ width: CGFloat = 1,
@@ -77,7 +77,8 @@ struct AcousticPlotDrawing: View {
             for tick in [0.0, 0.5, 1.0] {
                 let yy = top + tick * height
                 line(
-                    CGPoint(x: 0, y: yy), CGPoint(x: size.width, y: yy), .secondary.opacity(0.35),
+                    CGPoint(x: x(horizontal.bounds.lowerBound), y: yy),
+                    CGPoint(x: x(horizontal.bounds.upperBound), y: yy), .secondary.opacity(0.35),
                     0.6)
             }
             if data.kind != .spectrum {
@@ -110,10 +111,16 @@ struct AcousticPlotDrawing: View {
                     guard right >= horizontal.bounds.lowerBound,
                         left <= horizontal.bounds.upperBound
                     else { continue }
-                    let rect = CGRect(
-                        x: x(left), y: top, width: max(0.5, x(right) - x(left)), height: height)
                     if let image = data.intensities[i].image {
-                        ctx.draw(Image(decorative: image, scale: 1).interpolation(.none), in: rect)
+                        let halfBin =
+                            data.binCount > 1 ? height / Double(2 * (data.binCount - 1)) : 0
+                        let cell = CGRect(
+                            x: x(left), y: top, width: max(0.5, x(right) - x(left)), height: height)
+                        var raster = ctx
+                        raster.clip(to: Path(cell))
+                        raster.draw(
+                            Image(decorative: image, scale: 1).interpolation(.none),
+                            in: cell.insetBy(dx: 0, dy: -halfBin))
                     } else {
                         missing(center)
                     }
@@ -124,7 +131,9 @@ struct AcousticPlotDrawing: View {
                     let b = data.nearestIndex(x: horizontal.bounds.upperBound, ordinate: 0)
                 {
                     let bins = min(a.bin, b.bin)..<(max(a.bin, b.bin) + 1)
-                    if data.kind == .waveform && envelope,
+                    if column.unavailability != nil {
+                        missing(horizontal.value(0.5))
+                    } else if data.kind == .waveform && envelope,
                         let buckets = try? data.envelope(
                             bins: bins, maximumBuckets: max(1, Int(min(4096, size.width))))
                     {

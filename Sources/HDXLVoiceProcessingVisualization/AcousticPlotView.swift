@@ -48,7 +48,7 @@ public struct AcousticPlotView: View {
         if data.kind.isImage {
             return AcousticPlotScale(bounds: 0...(Double(data.binCount - 1) * data.binStep))
         }
-        let bounds = data.range ?? 0...1
+        let bounds = AcousticPlotScale.displayBounds(for: data.range ?? 0...1)
         return AcousticPlotScale(
             bounds: includeZero ? min(0, bounds.lowerBound)...max(0, bounds.upperBound) : bounds)
     }
@@ -90,6 +90,9 @@ public struct AcousticPlotView: View {
                     Label("Missing or unavailable observations", systemImage: "xmark").font(
                         .caption)
                 }
+                if data.boundaries.contains(where: { $0.missingSource == nil }) {
+                    Text("A source discontinuity has no reported extent.").font(.caption)
+                }
                 if let target {
                     Toggle(
                         "Personal target · calibrated selected-interval CPPS median",
@@ -99,6 +102,8 @@ public struct AcousticPlotView: View {
                         Text(
                             "Target support \(target.source.startSample)..<\(target.source.endSample) samples"
                         )
+                        Text("Personal calibration \(target.target.sha256)").font(
+                            .caption.monospaced())
                         if let median = target.selectedMedianDB {
                             Text("Selected median \(String(median)) dB")
                         }
@@ -135,6 +140,12 @@ public struct AcousticPlotView: View {
             DisclosureGroup("Analysis profile and window") {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(data.settings)
+                    if let calibration = data.calibration {
+                        Text(
+                            "SPL calibration \(calibration.identifier.name) · v\(calibration.identifier.version)"
+                        )
+                        Text(calibration.sha256).font(.caption.monospaced())
+                    }
                     Text(
                         "Profile \(data.profile.identifier.name) · v\(data.profile.identifier.version)"
                     )
@@ -147,15 +158,15 @@ public struct AcousticPlotView: View {
 
     private var plotArea: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .top, spacing: 6) {
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text(tick(vertical.bounds.upperBound))
-                    Spacer()
-                    Text(tick(vertical.bounds.lowerBound))
-                }
-                .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
-                .padding(.bottom, 14)
-                VStack(spacing: 4) {
+            Grid(alignment: .leading, horizontalSpacing: 6, verticalSpacing: 4) {
+                GridRow {
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text(tick(vertical.bounds.upperBound))
+                        Spacer()
+                        Text(tick(vertical.bounds.lowerBound))
+                    }
+                    .padding(.bottom, 10)
+                    .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
                     GeometryReader { proxy in
                         AcousticPlotDrawing(
                             data: data, horizontal: horizontal, vertical: vertical,
@@ -170,13 +181,17 @@ public struct AcousticPlotView: View {
                         )
                         .clipped()
                     }
+                }.frame(height: 154)
+                GridRow {
+                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
                     HStack {
                         Text(tick(horizontal.bounds.lowerBound))
                         Spacer()
                         Text(tick(horizontal.bounds.upperBound))
-                    }.font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+                    }.padding(.horizontal, 4).font(.caption2.monospacedDigit()).foregroundStyle(
+                        .secondary)
                 }
-            }.frame(height: 170)
+            }
             Text(xLabel).font(.caption).frame(maxWidth: .infinity)
         }
     }
@@ -269,8 +284,8 @@ public struct AcousticPlotView: View {
 
     private func select(_ gesture: DragGesture.Value, size: CGSize) {
         guard size.width > 0 else { return }
-        let from = horizontal.value(gesture.startLocation.x / size.width)
-        let x = horizontal.value(gesture.location.x / size.width)
+        let from = horizontal.value((gesture.startLocation.x - 4) / max(1, size.width - 8))
+        let x = horizontal.value((gesture.location.x - 4) / max(1, size.width - 8))
         let ordinate = vertical.value(1 - (gesture.location.y - 4) / max(1, size.height - 18))
         if data.kind != .spectrum, abs(gesture.translation.width) >= 8,
             let a = data.cursor(atSeconds: min(from, x)),
@@ -284,10 +299,14 @@ public struct AcousticPlotView: View {
             lastInspected = nil
         } else if let index = data.nearestIndex(x: x, ordinate: ordinate) {
             if data.kind != .waveform && data.kind != .spectrum,
-                let cursor = data.cursor(atSeconds: x), data.inspect(cursor, bin: index.bin) == nil
+                let cursor = data.cursor(atSeconds: x)
             {
-                selection = cursor
-                lastInspected = nil
+                if let match = data.inspect(cursor, bin: index.bin) {
+                    inspect(match)
+                } else {
+                    selection = cursor
+                    lastInspected = nil
+                }
             } else {
                 inspect(index)
             }

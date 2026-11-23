@@ -151,3 +151,8 @@ private struct AcousticPlotGallery: View {
 #Preview("Acoustic plots · desktop") {
     AcousticPlotGallery(plots: try! AcousticPlotFixtures().primaryPlots()).frame(width: 800)
 }
+
+#Preview("Harmonics, pulses and perturbation") {
+    let fixture = try! AcousticPlotFixtures()
+    AcousticPlotGallery(plots: try! AcousticPlotFamilyFixtures(fixture).plots(fixture))
+}

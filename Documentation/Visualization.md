@@ -1,6 +1,5 @@
-# Optional visualization contracts
+# Acoustic plots and visualization contracts
 
-Roadmap: [#21](https://github.com/plx/hdxl-voice-processing/issues/21).
 `HDXLVoiceProcessingVisualization` is an optional SwiftUI library for macOS 27.0
 and iOS 27.0, using Xcode 27.0 / Swift 6.4 in Swift 6 mode. It depends only on
 Core. Import Core and Visualization in a host that needs both scientific values
@@ -8,13 +7,85 @@ and presentation. Core and Audio do not import or link SwiftUI/Charts when consu
 independently. `Examples/CoreConsumer`, `Examples/AudioConsumer` and
 `Tools/verify-package-graph.py` check that boundary.
 
-The current rendered components are a metric inspection panel, a measurement
-readout, explicit status views and synthetic preview hosts. Array, segmentation,
-profile and diagnostics contracts are ready for later renderers. Dense plots,
-downsampling and their frame-rate gates belong to #48; synchronized algorithm
-inspection and comparison belong to #49. No Charts API is needed for this first
-contract. SwiftUI Observation, `ImageRenderer`, `ViewThatFits` and named `#Preview`
-are available at the declared minimums; there is no older-system fallback.
+The library provides a metric inspector, explicit status views and fixed-history
+acoustic plots. Each view takes owned analysis output. A host can display a
+single plot or bind a shared source selection across several plots.
+[Visualization contracts](https://github.com/plx/hdxl-voice-processing/issues/21) ·
+[Acoustic plots](https://github.com/plx/hdxl-voice-processing/issues/48)
+
+## Plot a bounded history
+
+Build `AcousticPlotData` on the analysis worker or another control path. Give
+each plot a nearby source sample as its time origin. Publish the completed
+value to SwiftUI. This example uses the same host-owned selection for two
+views of the same recording.
+
+```swift
+import HDXLVoiceProcessing
+import HDXLVoiceProcessingVisualization
+import SwiftUI
+
+struct VoiceHistory: View {
+    let pitch: AcousticPlotData
+    let waveform: AcousticPlotData
+    @State private var selection: VisualizationSelection?
+
+    var body: some View {
+        ScrollView {
+            VStack {
+                AcousticPlotView(pitch, selection: $selection)
+                AcousticPlotView(waveform, selection: $selection)
+            }
+        }
+    }
+}
+
+func pitchPlot(_ frames: [ScheduledFrame], axis: VisualizationTimeAxis,
+               schedule: AnalysisScheduleProfile) throws -> AcousticPlotData? {
+    let rows = try frames.filter { $0.algorithm == .yin }.map {
+        try VisualizationMeasurement($0, metric: .fundamentalFrequency)
+    }
+    guard let series = rows.first?.id.series else { return nil }
+    let history = try VisualizationMetricSnapshot(series: series, measurements: rows)
+    return try AcousticPlotData(metric: history, axis: axis,
+                                recipe: VisualizationProfileSnapshot(schedule))
+}
+```
+
+| Plot | Inputs and readouts |
+| --- | --- |
+| Waveform | One mono PCM value per source sample in normalized amplitude. The min/max envelope groups consecutive visible samples for display. Inspection returns the original sample and index. A `PulseSnapshot` adds eligible and rejected acoustic landmarks inside the visible interval. |
+| Frequency spectrum | One owned `SpectrogramFrame` with `SpectrumPresentation` for bin power (FS²), bin RMS amplitude (FS), density (FS²/Hz) or log power (dB relative to the specified positive power). Inspection retains original bin power. Zero power has no finite log value. |
+| Spectrum overlays | Supply a `RawHarmonicFrame`, `BurgFormantFrame` or `SpectralShapeResult` independently. Guides mark measured harmonic frequencies, credible formants, centroid and roll-off in Hz. Open **Overlays** for fitted peak amplitude, formant bandwidth, support and profile. |
+| Spectrogram / power cepstrogram | Pass ordered owned frames and their matching layout or recipe. Frequency is in Hz and quefrency in seconds. Color encodes the labeled intensity. Empty or partial columns retain their status and any original stored bins. |
+| Scalar history | Use a `VisualizationMetricSnapshot` or supply a series and `[AcousticMetricObservation]`. Direct adapters accept YIN, level, CPP, CPPS, HNR, spectral-shape descriptors, numbered formant frequencies/bandwidths and raw or corrected H1–H2. Generic measurement results use their support midpoint. Scheduled exports preserve nominal estimator time, coverage and dependency support. |
+| Jitter / shimmer | Pass the typed analysis result and its variant. Each point retains its query, applicability and coverage. Readouts distinguish local ratios, absolute jitter in seconds, shimmer in dB, and neighborhood eligibility for RAP, PPQ and APQ. Fractional queries retain their original bounds relative to the dependency start. |
+
+Tap a mark or bin to inspect it, use the arrows to step through original
+observations, or drag across a time plot to select an interval. **Select support**
+shares the contributing source interval. **Zoom in 4×**, **Include zero** and the
+waveform envelope affect presentation only. Scalar marks are individual estimates.
+An unavailable estimate has a cross and a reason. A cursor in a source gap has no
+available observation. Equal-center scalar observations remain individually
+accessible with the navigation buttons.
+
+The profile disclosure shows the identity and supplied recipe or frame settings.
+Digital levels retain their dBFS reference. For externally calibrated sound
+pressure levels, the host supplies both a calibrated SPL result and the
+`calibration:` identity of the record used to obtain it. The view exposes this
+identity and its fingerprint. Optional personal targets have a different meaning.
+Create `AcousticPersonalTargetOverlay` from an accepted `PersonalTargetFeedbackSnapshot`
+and pass it as `personalTarget:` to a CPPS plot on the same source clock and profile.
+The annotated time span refers to the selected interval’s CPPS lower median. Its
+label includes the policy state and personal calibration identity.
+
+The named **Acoustic plots · phone width**, **Acoustic plots · desktop** and
+**Harmonics, pulses and perturbation** previews use finite synthetic signals
+and typed analysis output. Tests compare raw and displayed values with each
+estimator and render 17 plots at both widths. Integrated long-history rendering
+and performance qualification are tracked in [#67](https://github.com/plx/hdxl-voice-processing/issues/67).
+Physical measurement and accessibility journeys are tracked in
+[#74](https://github.com/plx/hdxl-voice-processing/issues/74).
 
 ## Adapt scientific values without changing them
 
@@ -150,8 +221,8 @@ The Previous/Next controls inspect original records in the snapshot's source ord
 with scheduled frame centers displayed separately from dependency intervals.
 
 Presentation preferences (`VisualizationPresentation`) are separate from algorithm
-configuration. Scale and maximum visible history are renderer preferences for
-later plots; the current text inspector retains the full bounded history. Changing
+configuration. The text inspector retains the full bounded history.
+The acoustic views expose their own axis and envelope controls. Changing
 them cannot change the profile, smooth a result or rewrite raw samples.
 
 ## States, fixtures and extensions
@@ -179,15 +250,14 @@ declares accepted measurement/frame inputs; it does not say every algorithm is
 implemented or install a renderer. Hosts can register their own versioned `.custom`
 descriptor and SwiftUI view without adding UI types to Core. For example, harmonic
 inspection can accept `.h1MinusH2`, `.correctedH1MinusH2` and spectrum/diagnostic frames
-when those algorithms become available. No initializer enables optional metrics.
+using the implemented harmonic estimator. No initializer enables optional metrics.
 
 Tests cover scheduled provenance, units/conversions, missing values, large time
 offsets, selection, mixed-profile refusal, copy-on-write task transfer, frame bounds,
 segmentation, diagnostics, Observation scope and preview construction. The
 [performance evidence guide](../Tools/Visualization/README.md) specifies dense-fixture
 construction/publication measurements before plotting. Physical evidence remains
-deferred under [#74](https://github.com/plx/hdxl-voice-processing/issues/74); #48/#49
-retain their software performance/accessibility requirements.
+deferred under [#74](https://github.com/plx/hdxl-voice-processing/issues/74).
 
 Primary API references: Apple's [Observation guidance](https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app),
 [named previews](https://developer.apple.com/documentation/swiftui/preview(_:body:)),

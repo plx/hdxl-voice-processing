@@ -14,6 +14,17 @@ public struct AcousticPlotIndex: Sendable, Hashable {
 struct AcousticPlotScale {
     let bounds: ClosedRange<Double>
 
+    /// Keep a constant or numerically near-constant series legible at the displayed precision.
+    static func displayBounds(for range: ClosedRange<Double>) -> ClosedRange<Double> {
+        let magnitude = max(abs(range.lowerBound), abs(range.upperBound))
+        let width = range.upperBound - range.lowerBound
+        guard width <= magnitude * 1e-4 else { return range }
+        let radius = magnitude == 0 ? 1 : max(magnitude * 0.001, magnitude.ulp)
+        let low = max(-Double.greatestFiniteMagnitude, range.lowerBound - radius)
+        let high = min(Double.greatestFiniteMagnitude, range.upperBound + radius)
+        return low...high
+    }
+
     func fraction(_ value: Double) -> Double {
         let low = bounds.lowerBound
         let high = bounds.upperBound
@@ -94,13 +105,18 @@ extension AcousticPlotData {
                 anchor: frame.context.origin.startSample,
                 offset: frame.context.centerSecondsFromOrigin)
         case .metric(let point):
-            sample = samplePosition(anchor: point.anchorSample, offset: point.secondsFromAnchor)
+            if let support = point.midpointSupport {
+                sample = support.startSample + support.sampleCount / 2
+            } else {
+                sample = samplePosition(anchor: point.anchorSample, offset: point.secondsFromAnchor)
+            }
         }
         return sample.flatMap(cursor(atSample:))
     }
 
     private func samplePosition(anchor: Int64, offset: Double) -> Int64? {
-        guard let delta = Int64(exactly: (offset * timeAxis.source.sampleRate).rounded()) else {
+        guard let delta = Int64(exactly: (offset * timeAxis.source.sampleRate).rounded(.down))
+        else {
             return nil
         }
         let sum = anchor.addingReportingOverflow(delta)
@@ -165,22 +181,33 @@ extension AcousticPlotData {
                 ? AcousticPlotIndex(column: 0, bin: bin) : nil
         }
         let x = span.centerSeconds
-        guard let near = nearestIndex(x: x, ordinate: Double(bin) * binStep) else { return nil }
-        let i = near.column
-        if let hopSeconds {
-            guard centers[i] + hopSeconds / 2 >= span.lowerSeconds,
-                centers[i] - hopSeconds / 2 <= span.upperSeconds
-            else { return nil }
-        } else if !selection.intersects(columns[i].support) {
-            guard cursor(for: near).map({ selection.intersects($0.source) }) == true else {
-                return nil
+        let inGap =
+            selection.source.sampleCount == 0
+            && boundaries.contains { $0.missingSource.map(selection.intersects) == true }
+        if case .metric = kind {
+            var closest: Int?
+            var distance = Double.infinity
+            for (i, column) in columns.enumerated() {
+                guard case .metric(let point) = column,
+                    !inGap || column.unavailability != nil
+                else { continue }
+                let d = abs(centers[i] - x)
+                guard closest == nil || d < distance else { continue }
+                let index = AcousticPlotIndex(column: i, bin: 0)
+                guard
+                    point.intersects(selection)
+                        || (point.perturbation == nil
+                            && cursor(for: index).map({ selection.intersects($0.source) }) == true)
+                else { continue }
+                closest = i
+                distance = d
             }
+            return closest.map { AcousticPlotIndex(column: $0, bin: 0) }
         }
-        if selection.source.sampleCount == 0, columns[i].unavailability == nil,
-            boundaries.contains(where: { $0.missingSource.map(selection.intersects) == true })
-        {
-            return nil
-        }
+        guard let near = nearestIndex(x: x, ordinate: Double(bin) * binStep), let hopSeconds,
+            centers[near.column] + hopSeconds / 2 >= span.lowerSeconds,
+            centers[near.column] - hopSeconds / 2 <= span.upperSeconds
+        else { return nil }
         return near
     }
 
