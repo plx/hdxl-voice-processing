@@ -276,3 +276,7 @@ deferred under [#74](https://github.com/plx/hdxl-voice-processing/issues/74).
 Primary API references: Apple's [Observation guidance](https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app),
 [named previews](https://developer.apple.com/documentation/swiftui/preview(_:body:)),
 and [Swift Charts](https://developer.apple.com/documentation/charts).
+
+## Algorithm inspector
+
+The inspector connects acoustic plot selections to production intermediates, candidate decisions and frozen parameter experiments. [Inspector guide](AlgorithmInspector.md)

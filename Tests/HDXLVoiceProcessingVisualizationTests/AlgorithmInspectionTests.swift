@@ -157,12 +157,11 @@ import Testing
         #expect(throws: VisualizationError.unorderedMeasurements) {
             try live.capture(frame: 10, make: make)
         }
-        let next = InspectionContext(origin: .synthesizedDemonstration, configurationEpoch: 4)
-        var newEpoch = try InspectionHistory(
-            sampling: .selected(frame: 0), context: next,
-            source: VisualizationSource(t), profile: snap.profile)
+        var newEpoch = try selected.nextConfiguration(profile: snap.profile)
+        #expect(newEpoch.context.configurationEpoch == Self.context.configurationEpoch + 1)
+        #expect(newEpoch.snapshots.isEmpty)
         #expect(throws: VisualizationError.incompatibleSource) {
-            try newEpoch.capture(frame: 0, make: make)
+            try newEpoch.capture(frame: 7, make: make)
         }
         #expect(newEpoch.snapshots.isEmpty)
     }

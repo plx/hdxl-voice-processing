@@ -45,6 +45,7 @@ public struct AlgorithmInspection: Sendable {
     public let reference: URL
     public let context: InspectionContext
     public let window: SourceInterval
+    public let querySeconds: ClosedRange<Double>?
     public let dependency: SourceInterval
     public let profile: ProfileIdentity
     public let parameters: String
@@ -61,12 +62,18 @@ public struct AlgorithmInspection: Sendable {
         window: SourceInterval, dependency: SourceInterval, profile: ProfileIdentity,
         parameters: String, status: String, measurements: [MeasurementResult] = [],
         fields: [InspectionField] = [], curves: [InspectionCurve] = [],
+        querySeconds: ClosedRange<Double>? = nil,
         limits: VisualizationLimits = .standard
     ) throws {
         func contains(_ child: SourceInterval) -> Bool {
             VisualizationSource(dependency).contains(child)
                 && dependency.startSample <= child.startSample
                 && child.endSample <= dependency.endSample
+        }
+        if let querySeconds {
+            guard querySeconds.lowerBound.isFinite, querySeconds.upperBound.isFinite else {
+                throw VisualizationError.invalidSelection
+            }
         }
         guard contains(window) else { throw VisualizationError.incompatibleSource }
         guard reference.scheme == "https", reference.host != nil,
@@ -112,6 +119,7 @@ public struct AlgorithmInspection: Sendable {
         self.reference = reference
         self.context = context
         self.window = window
+        self.querySeconds = querySeconds
         self.dependency = dependency
         self.profile = profile
         self.parameters = parameters
@@ -121,6 +129,11 @@ public struct AlgorithmInspection: Sendable {
         self.curves = curves
         scalarCount = scalars
         metadataBytes = limits.maximumMetadataBytes - budget.remaining
+    }
+
+    public func intersects(_ selection: VisualizationSelection) -> Bool {
+        if let querySeconds { return selection.intersects(querySeconds, relativeTo: dependency) }
+        return selection.intersects(window)
     }
 
     static func parameters(_ recipe: some Encodable) throws -> String {
@@ -179,6 +192,17 @@ public struct InspectionHistory: Sendable {
         self.source = source
         self.profile = profile
         self.limits = limits
+    }
+
+    /// Use at a committed configuration boundary after the host resets the live
+    /// analyzer. Previously published snapshots retain their original epoch.
+    public func nextConfiguration(profile: ProfileIdentity) throws -> Self {
+        let next = context.configurationEpoch.addingReportingOverflow(1)
+        guard !next.overflow else { throw ContractError.arithmeticOverflow }
+        return try Self(
+            sampling: sampling,
+            context: .init(origin: context.origin, configurationEpoch: next.partialValue),
+            source: source, profile: profile, limits: limits)
     }
 
     /// Call on the analysis worker inside the synchronous production callback.

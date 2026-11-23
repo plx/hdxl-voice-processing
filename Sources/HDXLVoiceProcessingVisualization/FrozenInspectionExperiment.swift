@@ -32,7 +32,7 @@ public enum FrozenInspectionRecipe: Sendable, Hashable {
     case cpp(cepstrogram: CepstrogramConfiguration, prominence: CPPConfiguration, frame: UInt64)
     case cpps(CPPSProfile, frame: UInt64)
 
-    fileprivate func runsSameStage(as other: Self) -> Bool {
+    func runsSameStage(as other: Self) -> Bool {
         switch (self, other) {
         case (.pitch, .pitch): true
         case (.cpp(_, _, let a), .cpp(_, _, let b)), (.cpps(_, let a), .cpps(_, let b)): a == b
@@ -104,6 +104,7 @@ public struct FrozenInspectionComparison: Sendable {
 /// The immutable original and each alternative are evaluated by the production
 /// processor on the same frozen input. Repeated experiments always compare to the original.
 public struct FrozenInspectionExperiment: Sendable {
+    public let id = UUID()
     public let input: FrozenInspectionInput
     public let recipe: FrozenInspectionRecipe
     public let original: AlgorithmInspection

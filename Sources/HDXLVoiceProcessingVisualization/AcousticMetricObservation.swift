@@ -258,13 +258,7 @@ public struct AcousticMetricObservation: Sendable, Hashable {
             return selection.intersects(observationWindow)
         }
         if let sampleAlignedQuery { return selection.intersects(sampleAlignedQuery) }
-        let source = selection.source
-        guard VisualizationSource(dependency).contains(source) else { return false }
-        let bounds = perturbation.bounds
-        let start = Double(source.startSample - dependency.startSample) / source.sampleRate
-        if source.sampleCount == 0 { return bounds.contains(start) }
-        let end = Double(source.endSample - dependency.startSample) / source.sampleRate
-        return start <= bounds.upperBound && end > bounds.lowerBound
+        return selection.intersects(perturbation.bounds, relativeTo: dependency)
     }
 
     func seconds(on axis: VisualizationTimeAxis) throws -> Double {

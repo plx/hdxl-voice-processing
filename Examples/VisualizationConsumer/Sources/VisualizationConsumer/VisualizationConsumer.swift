@@ -4,7 +4,7 @@ import HDXLVoiceProcessingVisualization
 import Observation
 import Synchronization
 
-/// Synthetic adapter/publication evidence only. No rendering, DSP, session or audio import.
+/// Public package consumer for visualization and inspector evidence on synthetic inputs.
 @main struct VisualizationConsumer {
     struct Sample: Encodable {
         let phase: String
@@ -164,6 +164,14 @@ import Synchronization
     }
 
     @MainActor static func main() throws {
+        if CommandLine.arguments.count == 4, CommandLine.arguments[1] == "--inspect",
+            let mode = InspectorBenchmark.Mode(rawValue: CommandLine.arguments[2])
+        {
+            let report = try InspectorBenchmark.run(mode: mode)
+            try JSONEncoder().encode(report).write(
+                to: URL(fileURLWithPath: CommandLine.arguments[3]), options: .atomic)
+            return
+        }
         guard CommandLine.arguments.count == 3, CommandLine.arguments[1] == "--output" else {
             throw CocoaError(.coderInvalidValue)
         }

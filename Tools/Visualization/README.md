@@ -49,3 +49,9 @@ Full correctness and sanitizer lanes run the same tests with the complete suite;
 generic iOS device/simulator builds check all three products and both independent
 Core/Audio consumers. Artifact output contains synthetic fixtures and tool/source
 metadata only, with account paths redacted in captured logs.
+
+## Inspector capture costs
+
+Run `python3 Tools/Visualization/inspector.py --output .build/inspector-evidence`. The public Release consumer runs one process per mode in each of three rotated trials. All modes process the same 16 warmup and 240 measured synthetic YIN frames and verify the same frequency checksum. The reference mode calls the processor alone. Disabled sampling skips projection, selected sampling captures frame 120, and live sampling captures every fourth frame and retains the most recent eight.
+
+The raw reports retain all frame durations and each captured projection’s duration. The summary reports paired trial differences in mean frame latency, exact retained curve payload and UTF-8 metadata, and change in the process peak resident size measured by Darwin getrusage. Allocator rounding, scheduler variation and an earlier high-water mark affect RSS. An eight-frame history also retains fixed-size records and array storage. The tests verify record and byte budgets independently. The visualization CI artifact contains these reports alongside the macOS renders. The iOS 27 Simulator gallery exercises pitch, CPP, unavailable perturbation and frozen comparisons at both widths.

@@ -1,12 +1,7 @@
 # Visualization consumer
 
-An independent package depending only on the optional visualization product. Core
-result types are its transitive dependency. It creates deterministic synthetic
-histories and owned waveform buffers, then measures validation and main-actor
-publication with one Observation subscriber. It never initializes capture, runs DSP,
-requests permissions or renders a plot.
+This independent Swift package depends on the optional visualization product and uses its transitive Core types.
 
-Run `python3 Tools/Visualization/benchmark.py --output .build/visualization-evidence`
-from the repository root for five fresh release processes, environment/source
-provenance, distributions and evidence validation. See
-[the evidence guide](../../Tools/Visualization/README.md) for the timed boundaries.
+The adapter benchmark creates deterministic synthetic histories and owned waveform buffers and measures validation and main-actor publication with one Observation subscriber. Run `python3 Tools/Visualization/benchmark.py --output .build/visualization-evidence` for five fresh Release processes and source and environment records.
+
+The inspector benchmark runs the real YIN processor on identical synthetic PCM windows with processor-only, disabled, selected and bounded sampled capture. Run `python3 Tools/Visualization/inspector.py --output .build/inspector-evidence` for three trials in fresh Release processes. Each trial records raw timings, retained payloads, peak memory growth and changes relative to its processor-only run. [Evidence guide](../../Tools/Visualization/README.md) · [Inspector guide](../../Documentation/AlgorithmInspector.md)
