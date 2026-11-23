@@ -59,7 +59,7 @@ func pitchPlot(_ frames: [ScheduledFrame], axis: VisualizationTimeAxis,
 | Spectrum overlays | Supply a `RawHarmonicFrame`, `BurgFormantFrame` or `SpectralShapeResult` independently. Guides mark measured harmonic frequencies, credible formants, centroid and roll-off in Hz. Open **Overlays** for fitted peak amplitude, formant bandwidth, support and profile. |
 | Spectrogram / power cepstrogram | Pass ordered owned frames and their matching layout or recipe. Frequency is in Hz and quefrency in seconds. Color encodes the labeled intensity. Empty or partial columns retain their status and any original stored bins. Spectrogram cells stop at the acquired window when its hop exceeds its duration. |
 | Scalar history | Use a `VisualizationMetricSnapshot` or supply a series and `[AcousticMetricObservation]`. Direct adapters accept YIN, level, CPP, CPPS, HNR, spectral-shape descriptors, numbered formant frequencies/bandwidths and raw or corrected H1–H2. Generic measurement results use their support midpoint. Scheduled exports preserve nominal estimator time, coverage and dependency support. |
-| Jitter / shimmer | Pass the typed analysis result and its variant. Each point retains its query, applicability and coverage. Readouts distinguish local ratios, absolute jitter in seconds, shimmer in dB, and neighborhood eligibility for RAP, PPQ and APQ. Fractional queries retain their original bounds relative to the dependency start. |
+| Jitter / shimmer | Pass the typed analysis result and its variant. Each point retains its query, applicability, coverage and input provenance. The readout names supplied periods, supplied amplitudes or an acoustic pulse track and includes its available upstream profile identities. Readouts distinguish local ratios, absolute jitter in seconds, shimmer in dB, and neighborhood eligibility for RAP, PPQ and APQ. Fractional queries retain their original bounds relative to the dependency start. |
 
 Tap a mark or bin to inspect it, use the arrows to step through original
 observations, or drag across a time plot to select an interval. **Select support**
@@ -69,7 +69,15 @@ views inspect the shared interval. **Zoom in 4×**, **Include zero** and the
 waveform envelope affect presentation only. Scalar marks are individual estimates.
 An unavailable estimate has a cross and a reason. A cursor in a source gap has no
 available observation. Equal-center scalar observations remain individually
-accessible with the navigation buttons.
+accessible with the navigation buttons. Drag selections include the samples touched
+between their endpoints in either direction.
+
+For CPP and CPPS, hit-testing uses the nominal frame window on the acquired source
+clock. **Select support** can therefore share a longer interval that includes
+conditioning and temporal smoothing. An unweighted RMS point selects its own
+window even when the same schedule also computes K-weighted energy. The latter
+includes its causal filter history. Spectral-shape readouts expose the bands,
+weighting, roll-off fraction or fit settings used for the selected descriptor.
 
 The profile disclosure shows the identity and supplied recipe or frame settings.
 Digital levels retain their dBFS reference. For externally calibrated sound
@@ -80,7 +88,8 @@ Create `AcousticPersonalTargetOverlay` from an accepted `PersonalTargetFeedbackS
 and pass it as `personalTarget:` to a CPPS plot on the same source clock and profile.
 The annotated time span refers to the selected interval’s CPPS lower median. Its
 time-only strip sits beneath the value axis. The readout names the current
-interval’s proximity, the policy state, its reasons and the calibration identity.
+interval’s proximity, the policy state, its reasons and the personal target identity.
+Zooming outside the evaluated feedback interval hides its strip and readout.
 A sustained policy state can span an interval outside the target during exit
 persistence.
 

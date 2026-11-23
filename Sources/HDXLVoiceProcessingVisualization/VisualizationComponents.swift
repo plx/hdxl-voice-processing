@@ -88,12 +88,12 @@ public struct VisualizationMeasurementReadout: View {
                     "Frame center from origin",
                     value: "\(scheduled.frameCenterSecondsFromOrigin) s")
                 LabeledContent(
-                    "Dependency samples",
+                    "Schedule dependency samples",
                     value:
                         "\(scheduled.dependencyTiming.source.startSample)..<\(scheduled.dependencyTiming.source.endSample)"
                 )
                 LabeledContent(
-                    "Selected dependency samples",
+                    "Selected schedule dependency samples",
                     value:
                         "\(scheduled.dependencyCoverage.selected) / \(scheduled.dependencyCoverage.source)"
                 )

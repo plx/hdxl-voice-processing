@@ -25,7 +25,10 @@ import Testing
             metric: input[0].measurement.id.series, observations: input, axis: axis)
         #expect(plot.columns.compactMap { $0.value(at: 0) } == [2, 3, 4, 1])
         let tie = try VisualizationSelection(source: visualizationSource(start + 10, 0))
-        #expect(plot.scalarIndex(for: tie, center: plot.centers[0], ordinate: 3)?.column == 1)
+        let geometry = AcousticPlotVerticalGeometry(scale: .init(bounds: 1...4), viewHeight: 154)
+        #expect(
+            plot.scalarIndex(for: tie, center: plot.centers[0], tap: (geometry.y(3), geometry))?
+                .column == 1)
         #expect(plot.inspect(tie)?.column == 0)
         let gap = try SourceDiscontinuity(
             previousEpoch: visualizationEpoch, nextEpoch: visualizationEpoch.successor(),
@@ -36,6 +39,9 @@ import Testing
         #expect(interrupted.inspect(.init(source: try visualizationSource(start + 20, 12))) == nil)
         #expect(
             interrupted.inspect(.init(source: try visualizationSource(start + 30, 4)))?.column == 3)
+        let only = try AcousticPlotData(
+            metric: input[0].measurement.id.series, observations: [input[0]], axis: axis)
+        #expect(only.horizontalRange == 0...(100.0 / 16000))
         let longWindowOnly = try VisualizationSelection(source: visualizationSource(start + 14, 0))
         #expect(plot.inspect(longWindowOnly)?.column == 3)
         let cursor = try #require(plot.cursor(for: .init(column: 2, bin: 0)))
@@ -216,6 +222,9 @@ import Testing
         let mark = try #require(overlay(counts, cpps.profile, source))
         #expect(mark.target == identity && mark.profile == cpps.profile && mark.source == source)
         #expect(mark.state == .onTarget && mark.selectedMedianDB == 13.5 && mark.applies(to: cpps))
+        let end = try cpps.timeAxis.placement(of: source).upperSeconds
+        #expect(mark.visibleSpan(on: cpps.timeAxis, in: end...(end + 1)) == nil)
+        #expect(mark.visibleSpan(on: cpps.timeAxis, in: 0...end) == 0...end)
         let held = try #require(
             overlay(
                 counts, cpps.profile, source, proximity: .outsideTarget, reasons: [.exitPersistence]
@@ -236,4 +245,131 @@ import Testing
         let foreign = try #require(overlay(counts, cpps.profile, try visualizationSource()))
         #expect(!foreign.applies(to: cpps))
     }
+
+    @Test func cepstralPointHasLocalCursorWindowAndFullConditioningSupport() throws {
+        let f = try AcousticPlotPrimaryTests.fixture.get()
+        let scheduled = try #require(f.frames.first { $0.algorithm == .cpps })
+        guard case .cpps(let frame) = scheduled.value else {
+            Issue.record("Missing CPPS output")
+            return
+        }
+        let direct = try [
+            AcousticMetricObservation(frame.rawCPP), AcousticMetricObservation(frame),
+        ]
+        let exports = try [ScheduledMetric.cpp, .cpps].map {
+            try AcousticMetricObservation(VisualizationMeasurement(scheduled, metric: $0))
+        }
+        for point in direct + exports {
+            let source = point.dependency
+            let axis = try VisualizationTimeAxis(
+                origin: .init(
+                    epoch: source.epoch,
+                    startSample: source.startSample, sampleCount: 0, sampleRate: source.sampleRate))
+            let plot = try AcousticPlotData(
+                metric: point.measurement.id.series, observations: [point], axis: axis)
+            let index = AcousticPlotIndex(column: 0, bin: 0)
+            #expect(point.observationWindow.sampleCount < source.sampleCount)
+            let cursor = try #require(plot.cursor(for: index))
+            #expect(plot.inspect(cursor) == index)
+            #expect(plot.contributingSelection(for: index)?.source == source)
+            let end = try SourceInterval(
+                epoch: source.epoch, startSample: source.endSample - 1,
+                sampleCount: 0, sampleRate: source.sampleRate)
+            #expect(plot.inspect(.init(source: end)) == nil)
+        }
+    }
+
+    @Test func scheduledRMSAndFilteredEnergyShareTheirOwnSourceDependencies() throws {
+        let start: Int64 = (1 << 54) + 11
+        let origin = try visualizationSource(start, 0)
+        let source = try visualizationSource(start, 129_040)
+        let config = try AnalysisScheduleProfile(
+            inputFormat: .init(sampleRate: 16000, channelCount: 1, encoding: .float64),
+            channels: .init(channelIndex: 0),
+            levels: .init(
+                sampleRate: 16000, inputPrecision: .float64,
+                windowLength: 400, hopLength: 160, accumulation: .direct,
+                weighting: .bs1770Revision5(warmupSampleCount: 128)))
+        let schedule = try PreparedAnalysisSchedule<Double>(
+            profile: config,
+            origin: .init(source: origin, continuityEpoch: origin.epoch.successor()), mode: .finite,
+            expectedSampleCount: source.sampleCount)
+        var output: ScheduledFrame?
+        func capture(_ frame: ScheduledFrame) {
+            if case .levels(let level) = frame.value, level.source.startSample == 128_640 {
+                output = frame
+            }
+        }
+        _ = try Array(repeating: 0.2, count: Int(source.sampleCount)).withUnsafeBufferPointer {
+            try schedule.processInterleaved($0, interval: source, emit: capture)
+        }
+        _ = try schedule.finish(emit: capture)
+        let frame = try #require(output)
+        let rms = try AcousticMetricObservation(VisualizationMeasurement(frame, metric: .rms))
+        let energy = try AcousticMetricObservation(
+            VisualizationMeasurement(frame, metric: .kWeightedEnergy))
+        #expect(
+            rms.dependency == rms.observationWindow && rms.dependency.startSample == start + 128_640
+        )
+        #expect(
+            energy.dependency.startSample == start
+                && energy.observationWindow == rms.observationWindow)
+        #expect(
+            rms.measurement.scheduled?.dependencyTiming
+                == energy.measurement.scheduled?.dependencyTiming)
+        let plot = try AcousticPlotData(
+            metric: rms.measurement.id.series, observations: [rms],
+            axis: .init(origin: origin))
+        #expect(plot.cursor(for: .init(column: 0, bin: 0))?.source.startSample == start + 128_840)
+    }
+
+    @MainActor @Test func consecutiveImageCellsShareBoundaryAndHonorInitialInspection() throws {
+        let f = try AcousticPlotPrimaryTests.fixture.get()
+        let plot = try AcousticPlotData(
+            spectrogram: f.spectralFrames, layout: f.spectralLayout, axis: f.axis)
+        let boundary = 816.0 / 16000
+        #expect(
+            plot.imageCell(at: 3)?.upperBound == boundary
+                && plot.imageCell(at: 4)?.lowerBound == boundary)
+        let cursor = try #require(plot.cursor(atSeconds: boundary))
+        #expect(plot.inspect(cursor)?.column == 4)
+        let first = AcousticPlotIndex(column: 0, bin: 4)
+        #expect(
+            AcousticPlotView(plot, selection: .constant(nil), initialInspection: first).active
+                == first)
+        #expect(
+            AcousticPlotView(plot, selection: .constant(nil)).active?.column == plot.columns.count
+                - 1)
+    }
+
+    @Test func directTapSelectsMissingLaneAndDragRoundsOuterEndpoints() throws {
+        let f = try AcousticPlotPrimaryTests.fixture.get()
+        let wave = try f.waveform()
+        let rate = f.source.sampleRate
+        for (a, b) in [(2.9, 3.9), (3.9, 2.9), (2.0, 4.0)] {
+            let selected = try #require(wave.selection(fromSeconds: a / rate, toSeconds: b / rate))
+            #expect(
+                selected.source.startSample == f.source.startSample + 2
+                    && selected.source.sampleCount == 2)
+        }
+        let exact = try #require(wave.selection(fromSeconds: 3 / rate, toSeconds: 2 / rate))
+        #expect(exact.source.sampleCount == 1)
+        let values = try [
+            visualizationResult(start: 100, outcome: .available(.init(value: 0))),
+            visualizationResult(start: 100, outcome: .unavailable(.missingAcquisition)),
+        ].map(AcousticMetricObservation.init)
+        let plot = try AcousticPlotData(
+            metric: values[0].measurement.id.series, observations: values,
+            axis: .init(origin: visualizationSource(100, 0)))
+        let cursor = try #require(plot.cursor(for: .init(column: 0, bin: 0)))
+        let geometry = AcousticPlotVerticalGeometry(scale: .init(bounds: -1...1), viewHeight: 154)
+        for value: Double? in [0, nil] {
+            let match = try #require(
+                plot.scalarIndex(
+                    for: cursor, center: plot.centers[0],
+                    tap: (geometry.y(value), geometry)))
+            #expect(plot.columns[match.column].value(at: 0) == value)
+        }
+    }
+
 }

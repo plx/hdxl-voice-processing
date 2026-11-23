@@ -140,6 +140,32 @@ public struct AcousticPersonalTargetOverlay: Sendable, Hashable {
         }
     }
 
+    var reasonText: String {
+        reasons.map { reason in
+            switch reason {
+            case .entryPersistence: "Waiting for sustained entry"
+            case .exitPersistence: "Waiting for sustained departure"
+            case .cooldown: "Cooldown"
+            case .hysteresisHeld: "Previous state retained within the exit margin"
+            case .targetMatch: "Target match"
+            case .targetDrift: "Target drift"
+            default:
+                reason.rawValue.replacingOccurrences(
+                    of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression)
+            }
+        }.joined(separator: ", ")
+    }
+
+    func visibleSpan(on axis: VisualizationTimeAxis, in viewport: ClosedRange<Double>)
+        -> ClosedRange<Double>?
+    {
+        guard let span = try? axis.placement(of: source),
+            span.lowerSeconds <= viewport.upperBound, span.upperSeconds > viewport.lowerBound
+        else { return nil }
+        return max(
+            span.lowerSeconds, viewport.lowerBound)...min(span.upperSeconds, viewport.upperBound)
+    }
+
     public func applies(to plot: AcousticPlotData) -> Bool {
         guard case .metric(let descriptor) = plot.kind,
             let span = try? plot.timeAxis.placement(of: source)

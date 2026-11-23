@@ -44,10 +44,11 @@ struct AcousticPlotDrawing: View {
     var body: some View {
         Canvas { ctx, size in
             guard size.width > 0 && size.height > 0 else { return }
-            let top = 4.0
-            let height = max(1, size.height - 18)
+            let geometry = AcousticPlotVerticalGeometry(scale: vertical, viewHeight: size.height)
+            let top = geometry.top
+            let height = geometry.height
             func x(_ v: Double) -> Double { 4 + horizontal.fraction(v) * max(1, size.width - 8) }
-            func y(_ v: Double) -> Double { top + (1 - vertical.fraction(v)) * height }
+            func y(_ v: Double) -> Double { geometry.y(v) }
             func line(
                 _ a: CGPoint, _ b: CGPoint, _ color: Color, _ width: CGFloat = 1,
                 dash: [CGFloat] = []
@@ -68,7 +69,7 @@ struct AcousticPlotDrawing: View {
             func missing(_ at: Double) {
                 guard horizontal.bounds.contains(at) else { return }
                 let xx = x(at)
-                let yy = top + height + 6
+                let yy = geometry.missingY
                 line(CGPoint(x: xx - 3, y: yy - 3), CGPoint(x: xx + 3, y: yy + 3), .secondary, 1.5)
                 line(CGPoint(x: xx + 3, y: yy - 3), CGPoint(x: xx - 3, y: yy + 3), .secondary, 1.5)
             }

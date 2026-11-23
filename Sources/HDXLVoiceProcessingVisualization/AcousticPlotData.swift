@@ -153,6 +153,9 @@ public struct AcousticPlotData: Sendable {
             case .metric(let point):
                 try metadata.charge(point.measurement.result)
                 if let mask = point.measurement.scheduled?.mask { try metadata.charge(mask) }
+                if let input = point.perturbation {
+                    for (_, profile) in input.upstreamProfiles { try metadata.charge(profile) }
+                }
                 for detail in point.context { try metadata.charge(detail) }
                 for frame in point.measurement.result.intermediates {
                     guard frame.values.count <= limits.maximumFrameScalars - retainedScalars else {

@@ -47,6 +47,19 @@ struct AcousticPlotScale {
     }
 }
 
+/// Screen positions shared by Canvas and scalar hit-testing, including the missing-data lane.
+struct AcousticPlotVerticalGeometry {
+    let scale: AcousticPlotScale
+    let viewHeight: Double
+    let top = 4.0
+    var height: Double { max(1, viewHeight - 18) }
+    var missingY: Double { top + height + 6 }
+    func y(_ value: Double?) -> Double {
+        value.map { top + (1 - scale.fraction($0)) * height } ?? missingY
+    }
+    func value(at y: Double) -> Double { scale.value(1 - (y - top) / height) }
+}
+
 extension AcousticPlotData {
     /// Time coordinates are elapsed source seconds relative to the supplied sample origin.
     /// A spectrum uses Hz horizontally, a cepstrogram uses seconds vertically.
@@ -68,6 +81,22 @@ extension AcousticPlotData {
             let half = (hopSeconds ?? 0) / 2
             var low = left - half
             var high = right + half
+            if left == right {
+                for column in columns {
+                    guard case .metric(let point) = column else { continue }
+                    if let query = point.perturbation, point.sampleAlignedQuery == nil,
+                        let anchor = try? timeAxis.placement(of: point.dependency).lowerSeconds
+                    {
+                        low = min(low, anchor + query.bounds.lowerBound)
+                        high = max(high, anchor + query.bounds.upperBound)
+                    } else if let span = try? timeAxis.placement(
+                        of: point.sampleAlignedQuery ?? point.observationWindow)
+                    {
+                        low = min(low, span.lowerSeconds)
+                        high = max(high, span.upperSeconds)
+                    }
+                }
+            }
             for boundary in boundaries {
                 if let source = boundary.missingSource,
                     let span = try? timeAxis.placement(of: source)
@@ -140,9 +169,37 @@ extension AcousticPlotData {
         let center = centers[index]
         var low = center - hopSeconds / 2
         var high = center + hopSeconds / 2
-        if index > 0 { low = max(low, centers[index - 1] + (center - centers[index - 1]) / 2) }
+        func boundary(_ i: Int) -> (time: Double, consecutive: Bool) {
+            let left: UInt64
+            let right: UInt64
+            let time: Double
+            switch (columns[i], columns[i + 1]) {
+            case (.spectral(let first, _), .spectral(let next, _)):
+                left = first.info.frameIndex
+                right = next.info.frameIndex
+                let a = columns[i].support
+                let b = columns[i + 1].support
+                // Average the two window centers on the sample grid before converting to seconds.
+                let offset =
+                    Double(a.startSample - timeAxis.originSample)
+                    + Double(b.startSample - a.startSample) / 2
+                    + (Double(a.sampleCount) + Double(b.sampleCount)) / 4
+                time = offset / timeAxis.source.sampleRate
+            case (.cepstral(let a), .cepstral(let b)):
+                left = a.context.frameIndex
+                right = b.context.frameIndex
+                time = centers[i] + (centers[i + 1] - centers[i]) / 2
+            default: preconditionFailure("Image cells require spectral or cepstral columns")
+            }
+            return (time, right > left && right - left == 1)
+        }
+        if index > 0 {
+            let edge = boundary(index - 1)
+            low = edge.consecutive ? edge.time : max(low, edge.time)
+        }
         if index + 1 < centers.count {
-            high = min(high, center + (centers[index + 1] - center) / 2)
+            let edge = boundary(index)
+            high = edge.consecutive ? edge.time : min(high, edge.time)
         }
         if kind == .spectrogram, let support = try? timeAxis.placement(of: columns[index].support) {
             low = max(low, support.lowerSeconds)
@@ -151,11 +208,13 @@ extension AcousticPlotData {
         return low < high ? low..<high : nil
     }
 
-    private func samplePosition(anchor: Int64, offset: Double) -> Int64? {
+    private func samplePosition(
+        anchor: Int64, offset: Double, rounding: FloatingPointRoundingRule = .down
+    ) -> Int64? {
         let product = offset * timeAxis.source.sampleRate
         let integer = product.rounded()
         let sample =
-            abs(product - integer) <= min(product.ulp, 1e-8) ? integer : product.rounded(.down)
+            offset == integer / timeAxis.source.sampleRate ? integer : product.rounded(rounding)
         guard let delta = Int64(exactly: sample)
         else {
             return nil
@@ -175,6 +234,19 @@ extension AcousticPlotData {
 
     func cursor(atSeconds seconds: Double) -> VisualizationSelection? {
         samplePosition(anchor: timeAxis.originSample, offset: seconds).flatMap(cursor(atSample:))
+    }
+
+    /// Publish every sample touched by a drag, with an exclusive upper endpoint.
+    func selection(fromSeconds first: Double, toSeconds last: Double) -> VisualizationSelection? {
+        guard let start = samplePosition(anchor: timeAxis.originSample, offset: min(first, last)),
+            let end = samplePosition(
+                anchor: timeAxis.originSample, offset: max(first, last), rounding: .up),
+            start >= 0, end >= start,
+            let source = try? SourceInterval(
+                epoch: timeAxis.source.epoch, startSample: start,
+                sampleCount: end - start, sampleRate: timeAxis.source.sampleRate)
+        else { return nil }
+        return VisualizationSelection(source: source)
     }
 
     func nearestIndex(x: Double, ordinate: Double) -> AcousticPlotIndex? {
@@ -223,7 +295,7 @@ extension AcousticPlotData {
         }
         let x = span.centerSeconds
         if case .metric = kind {
-            return scalarIndex(for: selection, center: x, ordinate: nil)
+            return scalarIndex(for: selection, center: x)
         }
         var closest: Int?
         var distance = Double.infinity
@@ -243,11 +315,13 @@ extension AcousticPlotData {
     }
 
     /// A direct tap can disambiguate equal-center marks by their displayed ordinate.
-    func scalarIndex(for selection: VisualizationSelection, center: Double, ordinate: Double?)
+    func scalarIndex(
+        for selection: VisualizationSelection, center: Double,
+        tap: (y: Double, geometry: AcousticPlotVerticalGeometry)? = nil
+    )
         -> AcousticPlotIndex?
     {
         let acquired = acquiredPortions(of: selection)
-        let scale = AcousticPlotScale(bounds: range ?? 0...1)
         var closest: Int?
         var distance = Double.infinity
         var verticalDistance = Double.infinity
@@ -255,10 +329,7 @@ extension AcousticPlotData {
             guard case .metric(let point) = column else { continue }
             let portions = column.unavailability == nil ? acquired : [selection]
             let d = abs(centers[i] - center)
-            let vertical =
-                ordinate.flatMap { y in
-                    column.value(at: 0).map { abs(scale.fraction(y) - scale.fraction($0)) }
-                } ?? Double.infinity
+            let vertical = tap.map { abs($0.y - $0.geometry.y(column.value(at: 0))) } ?? 0
             guard closest == nil || d < distance || (d == distance && vertical < verticalDistance)
             else { continue }
             let index = AcousticPlotIndex(column: i, bin: 0)

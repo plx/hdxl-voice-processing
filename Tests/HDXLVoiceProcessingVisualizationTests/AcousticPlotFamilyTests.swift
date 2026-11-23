@@ -86,6 +86,16 @@ import Testing
             let observation = try AcousticMetricObservation(extra.shape, descriptor: descriptor)
             let point = try #require(observation)
             #expect(point.measurement.result == (try extra.shape.measurement(descriptor)))
+            #expect(point.context.contains("Analysis band · 0.0–8000.0 Hz · DC included"))
+            switch descriptor {
+            case .rollOff: #expect(point.context.contains("Cumulative weight fraction · 0.85"))
+            case .bandEnergyRatio:
+                #expect(point.context.contains("Band ratio · low-over-high v1"))
+                #expect(point.context.contains("Numerator · 0.0–1000.0 Hz"))
+                #expect(point.context.contains("Denominator · 1000.0–8000.0 Hz"))
+            case .slope: #expect(point.context.contains("Fit coordinate · Octaves from 1 Hz"))
+            default: break
+            }
         }
         #expect(throws: VisualizationError.incompatibleSource) {
             try AcousticPlotData(
@@ -107,6 +117,13 @@ import Testing
             #expect(mark.kind == (landmark.isEligible ? .eligiblePulse : .rejectedPulse))
             #expect(mark.profile == extra.pulses.result.profile)
         }
+        let tracked = AcousticPerturbationContext.jitter(
+            extra.jitter[0].query, extra.jitter[0].coverage,
+            extra.jitter[0].applicability, .init(pulseResult: extra.pulses.result))
+        #expect(tracked.provenanceText.contains("Input · Acoustic pulse track"))
+        for identity in [extra.pulses.result.profile, extra.pulses.result.f0ContourIdentity] {
+            #expect(tracked.provenanceText.contains { $0.contains(identity.sha256) })
+        }
         for variant in JitterVariant.allCases {
             let points = try extra.jitter.map {
                 try AcousticMetricObservation($0, variant: variant)
@@ -118,9 +135,12 @@ import Testing
                 #expect(plot.columns[i].value(at: 0) == result.estimate(variant).value)
                 #expect(
                     points[i].perturbation
-                        == .jitter(result.query, result.coverage, result.applicability))
+                        == .jitter(
+                            result.query, result.coverage, result.applicability,
+                            result.inputProvenance))
                 #expect(plot.unit == variant.unit && plot.centers[i] == result.query.centerSeconds)
                 #expect(points[i].context.contains { $0.contains("Eligible period pairs") })
+                #expect(points[i].context.contains("Input · Supplied periods"))
             }
             for seconds in [0.22, 0.29] {
                 let hole = try #require(plot.cursor(atSeconds: seconds))
@@ -139,9 +159,12 @@ import Testing
                 #expect(plot.columns[i].value(at: 0) == result.estimate(variant).value)
                 #expect(
                     points[i].perturbation
-                        == .shimmer(result.query, result.coverage, result.applicability))
+                        == .shimmer(
+                            result.query, result.coverage, result.applicability,
+                            result.inputProvenance))
                 #expect(plot.unit == variant.unit && plot.centers[i] == result.query.centerSeconds)
                 #expect(points[i].context.contains { $0.contains("Eligible amplitude pairs") })
+                #expect(points[i].context.contains("Input · Supplied amplitudes"))
             }
             for seconds in [0.22, 0.29] {
                 let hole = try #require(plot.cursor(atSeconds: seconds))

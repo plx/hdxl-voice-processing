@@ -39,6 +39,7 @@ public struct AcousticPlotView: View {
     @State private var includeZero = false
     @State private var envelope = true
     @State private var bin = 0
+    @State private var initialLocalFocus: AcousticPlotInspection?
     @State private var lastInspected: AcousticPlotInspection?
     @State private var showTarget = true
     @State private var zoomCenter: Double?
@@ -50,6 +51,7 @@ public struct AcousticPlotView: View {
     ) {
         self.data = data
         let initial = initialInspection.flatMap { AcousticPlotInspection($0, in: data) }
+        _initialLocalFocus = State(initialValue: selection.wrappedValue == nil ? initial : nil)
         _lastInspected = State(initialValue: initial)
         _bin = State(initialValue: initial?.index.bin ?? 0)
         _selection = selection
@@ -64,6 +66,9 @@ public struct AcousticPlotView: View {
                 return lastInspected.index
             }
             return data.inspect(selection, bin: validBin)
+        }
+        if let initialLocalFocus, initialLocalFocus.matches(initialLocalFocus.shared, in: data) {
+            return initialLocalFocus.index
         }
         return AcousticPlotIndex(column: data.columns.count - 1, bin: validBin)
     }
@@ -126,20 +131,20 @@ public struct AcousticPlotView: View {
                     Text("A source discontinuity has no reported extent.").font(.caption)
                 }
                 if let target {
-                    Toggle(
+                    plotToggle(
                         "Personal target · calibrated selected-interval CPPS median",
                         isOn: $showTarget)
-                    if showTarget {
+                    if showTarget, visibleTargetSpan != nil {
                         Label(target.intervalDescription, systemImage: "line.diagonal")
                         Text("Policy state · \(target.state.text)")
                         Text(
                             "Policy reasons · "
-                                + target.reasons.map(\.rawValue).joined(separator: ", ")
+                                + target.reasonText
                         ).font(.caption)
                         Text(
                             "Target support \(target.source.startSample)..<\(target.source.endSample) samples"
                         )
-                        Text("Personal calibration \(target.target.sha256)").font(
+                        Text("Personal target identity \(target.target.sha256)").font(
                             .caption.monospaced())
                         if let median = target.selectedMedianDB {
                             Text("Selected median \(String(median)) dB")
@@ -191,6 +196,11 @@ public struct AcousticPlotView: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
+        .onChange(of: selection) { initialLocalFocus = nil }
+    }
+
+    private var visibleTargetSpan: ClosedRange<Double>? {
+        target?.visibleSpan(on: data.timeAxis, in: horizontal.bounds)
     }
 
     private var plotArea: some View {
@@ -226,19 +236,15 @@ public struct AcousticPlotView: View {
                         )
                         .clipped()
                     }.frame(height: 154)
-                    if showTarget, let target,
-                        let span = try? data.timeAxis.placement(of: target.source),
-                        span.lowerSeconds <= horizontal.bounds.upperBound,
-                        span.upperSeconds >= horizontal.bounds.lowerBound
-                    {
+                    if showTarget, let span = visibleTargetSpan {
                         GeometryReader { proxy in
                             let width = max(1, proxy.size.width - 8)
-                            let low = horizontal.fraction(span.lowerSeconds) * width
-                            let high = horizontal.fraction(span.upperSeconds) * width
+                            let low = horizontal.fraction(span.lowerBound) * width
+                            let high = horizontal.fraction(span.upperBound) * width
                             Capsule().fill(.purple).frame(width: max(2, high - low), height: 3)
                                 .offset(x: 4 + low, y: 2)
                         }.frame(height: 7)
-                        Text("Personal calibration interval").font(.caption2)
+                        Text("Evaluated feedback interval").font(.caption2)
                     }
                     HStack {
                         Text(tick(horizontal.bounds.lowerBound))
@@ -269,9 +275,16 @@ public struct AcousticPlotView: View {
             zoom.toggle()
         }
         if !data.kind.isImage {
-            Toggle("Include zero", isOn: $includeZero)
+            plotToggle("Include zero", isOn: $includeZero)
         }
-        if data.kind == .waveform { Toggle("Min/max envelope", isOn: $envelope) }
+        if data.kind == .waveform { plotToggle("Min/max envelope", isOn: $envelope) }
+    }
+
+    private func plotToggle(_ title: String, isOn: Binding<Bool>) -> some View {
+        Toggle(isOn: isOn) {
+            Label(title, systemImage: isOn.wrappedValue ? "checkmark.square" : "square")
+        }
+        .toggleStyle(.button)
     }
 
     private var navigation: some View {
@@ -324,9 +337,10 @@ public struct AcousticPlotView: View {
             }
         }.disabled(active == nil)
         Button("Clear selection", systemImage: "xmark.circle") {
+            initialLocalFocus = nil
             selection = nil
             lastInspected = nil
-        }.disabled(selection == nil)
+        }.disabled(selection == nil && initialLocalFocus == nil)
     }
 
     private func nextColumn(_ delta: Int) -> (() -> Void)? {
@@ -345,20 +359,16 @@ public struct AcousticPlotView: View {
         guard size.width > 0, data.kind != .spectrum else { return }
         let from = horizontal.value((start.x - 4) / max(1, size.width - 8))
         let to = horizontal.value((end.x - 4) / max(1, size.width - 8))
-        guard let a = data.cursor(atSeconds: min(from, to)),
-            let b = data.cursor(atSeconds: max(from, to)),
-            let source = try? SourceInterval(
-                epoch: a.source.epoch, startSample: a.source.startSample,
-                sampleCount: b.source.startSample - a.source.startSample,
-                sampleRate: a.source.sampleRate)
-        else { return }
-        selection = VisualizationSelection(source: source)
+        guard let interval = data.selection(fromSeconds: from, toSeconds: to) else { return }
+        selection = interval
+        initialLocalFocus = nil
         lastInspected = nil
     }
 
     private func selectPoint(_ location: CGPoint, size: CGSize) {
         let x = horizontal.value((location.x - 4) / max(1, size.width - 8))
-        let ordinate = vertical.value(1 - (location.y - 4) / max(1, size.height - 18))
+        let geometry = AcousticPlotVerticalGeometry(scale: vertical, viewHeight: size.height)
+        let ordinate = geometry.value(at: location.y)
         guard let index = data.nearestIndex(x: x, ordinate: ordinate) else { return }
         if data.kind == .waveform || data.kind == .spectrum {
             inspect(index)
@@ -367,7 +377,7 @@ public struct AcousticPlotView: View {
         guard let cursor = data.cursor(atSeconds: x) else { return }
         let match: AcousticPlotIndex?
         if case .metric = data.kind {
-            match = data.scalarIndex(for: cursor, center: x, ordinate: ordinate)
+            match = data.scalarIndex(for: cursor, center: x, tap: (location.y, geometry))
         } else {
             match = data.inspect(cursor, bin: index.bin)
         }
@@ -381,6 +391,7 @@ public struct AcousticPlotView: View {
 
     private func inspect(_ index: AcousticPlotIndex) {
         guard let focus = AcousticPlotInspection(index, in: data) else { return }
+        initialLocalFocus = nil
         bin = index.bin
         lastInspected = focus
         selection = focus.shared
@@ -394,6 +405,7 @@ public struct AcousticPlotView: View {
         VStack(alignment: .leading, spacing: 6) {
             if case .metric(let point) = column {
                 VisualizationMeasurementReadout(point.measurement)
+                    .labeledContentStyle(AcousticReadoutFieldStyle())
                 ForEach(point.context.indices, id: \.self) { i in
                     Text(point.context[i]).font(.caption)
                 }
@@ -453,5 +465,20 @@ public struct AcousticPlotView: View {
         value.formatted(
             .number.precision(.significantDigits(1...4)).notation(
                 abs(value) >= 1e6 || (value != 0 && abs(value) < 0.001) ? .scientific : .automatic))
+    }
+}
+
+private struct AcousticReadoutFieldStyle: LabeledContentStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                configuration.label.fixedSize()
+                configuration.content.fixedSize()
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                configuration.label.font(.caption).foregroundStyle(.secondary)
+                configuration.content.fixedSize(horizontal: false, vertical: true)
+            }
+        }
     }
 }

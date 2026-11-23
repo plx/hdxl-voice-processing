@@ -18,7 +18,9 @@ public struct ScheduledMeasurementExport: Sendable, Hashable {
     public let result: MeasurementResult
     public let origin: AnalysisScheduleOrigin
     /// Acquired local estimator window when the kernel identifies one separately.
-    public let observationWindow: SourceInterval?
+    public let observationWindow: SourceInterval
+    /// True for estimators placed at the midpoint of the original integer sample window.
+    public let centerIsWindowMidpoint: Bool
     public let dependencyTiming: AnalysisTiming
     public let dependencyCoverage: AnalysisCoverageCounts
     public let mask: AnalysisMaskProvenance?
@@ -54,18 +56,19 @@ public struct ScheduledFrame: Sendable, Hashable {
     }
 
     public func export(_ metric: ScheduledMetric) throws -> ScheduledMeasurementExport {
-        let window: SourceInterval?
+        let window: SourceInterval
+        let midpoint: Bool
         switch value {
-        case .levels(let frame): window = frame.source
-        case .pitch(let raw, _): window = raw.timing.source
-        case .swipePrime(let frame): window = frame.timing.source
-        case .hnr(.frame(let frame)): window = frame.frameTiming.source
-        case .hnr(.unavailable(let frame)): window = frame.timing.source
-        case .cpps: window = nil
+        case .levels(let frame): (window, midpoint) = (frame.source, true)
+        case .pitch(let raw, _): (window, midpoint) = (raw.timing.source, true)
+        case .swipePrime(let frame): (window, midpoint) = (frame.timing.source, true)
+        case .hnr(.frame(let frame)): (window, midpoint) = (frame.frameTiming.source, false)
+        case .hnr(.unavailable(let frame)): (window, midpoint) = (frame.timing.source, false)
+        case .cpps(let frame): (window, midpoint) = (try frame.rawCPP.observationWindow, false)
         }
         return try ScheduledMeasurementExport(
             result: measurementResult(metric), origin: origin,
-            observationWindow: window.map(origin.sourceInterval(for:)),
+            observationWindow: origin.sourceInterval(for: window), centerIsWindowMidpoint: midpoint,
             dependencyTiming: timing, dependencyCoverage: coverage, mask: mask,
             frameCenterSecondsFromOrigin: frameCenterSecondsFromOrigin,
             workerBatchingUpperBoundSeconds: workerBatchingUpperBoundSeconds)
