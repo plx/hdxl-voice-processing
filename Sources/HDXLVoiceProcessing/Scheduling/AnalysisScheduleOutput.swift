@@ -17,6 +17,10 @@ public enum ScheduledMetric: String, Sendable, Hashable, Codable {
 public struct ScheduledMeasurementExport: Sendable, Hashable {
     public let result: MeasurementResult
     public let origin: AnalysisScheduleOrigin
+    /// Acquired local estimator window when the kernel identifies one separately.
+    public let observationWindow: SourceInterval
+    /// True for estimators placed at the midpoint of the original integer sample window.
+    public let centerIsWindowMidpoint: Bool
     public let dependencyTiming: AnalysisTiming
     public let dependencyCoverage: AnalysisCoverageCounts
     public let mask: AnalysisMaskProvenance?
@@ -52,8 +56,19 @@ public struct ScheduledFrame: Sendable, Hashable {
     }
 
     public func export(_ metric: ScheduledMetric) throws -> ScheduledMeasurementExport {
-        try ScheduledMeasurementExport(
+        let window: SourceInterval
+        let midpoint: Bool
+        switch value {
+        case .levels(let frame): (window, midpoint) = (frame.source, true)
+        case .pitch(let raw, _): (window, midpoint) = (raw.timing.source, true)
+        case .swipePrime(let frame): (window, midpoint) = (frame.timing.source, true)
+        case .hnr(.frame(let frame)): (window, midpoint) = (frame.frameTiming.source, false)
+        case .hnr(.unavailable(let frame)): (window, midpoint) = (frame.timing.source, false)
+        case .cpps(let frame): (window, midpoint) = (try frame.rawCPP.observationWindow, false)
+        }
+        return try ScheduledMeasurementExport(
             result: measurementResult(metric), origin: origin,
+            observationWindow: origin.sourceInterval(for: window), centerIsWindowMidpoint: midpoint,
             dependencyTiming: timing, dependencyCoverage: coverage, mask: mask,
             frameCenterSecondsFromOrigin: frameCenterSecondsFromOrigin,
             workerBatchingUpperBoundSeconds: workerBatchingUpperBoundSeconds)

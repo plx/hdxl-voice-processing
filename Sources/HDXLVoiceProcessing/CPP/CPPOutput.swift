@@ -26,6 +26,35 @@ public struct CPPFrameResult: Sendable, Hashable {
     public let sourceProfile: ProfileIdentity
     public let context: CepstralFrameContext
     public let layout: CPPLayout
+
+    /// Nominal frame extent on the acquisition clock, clipped to the acquired input.
+    /// Conditioning and smoothing can depend on source outside this interval.
+    public var observationWindow: SourceInterval {
+        get throws {
+            let source = context.timing.source
+            let first = source.startSample - context.origin.startSample
+            let end = source.endSample - context.origin.startSample
+            let radius =
+                Double(context.suppliedAnalysisSampleCount) * layout.quefrencyStepSeconds / 2
+            func boundary(_ seconds: Double, rounding: FloatingPointRoundingRule) throws -> Int64 {
+                let offset = (seconds * source.sampleRate).rounded(rounding)
+                if offset <= Double(first) { return source.startSample }
+                if offset >= Double(end) { return source.endSample }
+                guard let samples = Int64(exactly: offset) else {
+                    throw ContractError.invalidInterval
+                }
+                return context.origin.startSample + samples
+            }
+            let start = try boundary(context.centerSecondsFromOrigin - radius, rounding: .down)
+            let stop =
+                context.suppliedAnalysisSampleCount == 0
+                ? start
+                : try boundary(context.centerSecondsFromOrigin + radius, rounding: .up)
+            return try SourceInterval(
+                epoch: source.epoch, startSample: start,
+                sampleCount: stop - start, sampleRate: source.sampleRate)
+        }
+    }
     public let observation: CPPObservation?
     public let unavailability: UnavailabilityReason?
 
