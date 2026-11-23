@@ -26,6 +26,7 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
     case pitch, pitchTracking, hnr, pulses, perturbation, resultPublication, levelEnergy, kWeighting
     case spectrogram, longTermSpectrum, spectralRetention, spectralExport, spectralShape
     case burgFormants, burgLPC, formantRoots, formantSelection
+    case harmonicFit, harmonicCorrection
     case hnrNormalization, hnrWindow, hnrCorrelation, hnrPeriodSearch
     case pulseMatching, pulseInterpolation, pulseSequences
     case fixtureLoad, fixtureDecode
@@ -62,6 +63,8 @@ package enum DiagnosticStage: String, CaseIterable, Sendable {
         case .spectralRetention: "SpectralRetention"
         case .spectralExport: "SpectralExport"
         case .spectralShape: "SpectralShape"
+        case .harmonicFit: "HarmonicFit"
+        case .harmonicCorrection: "HarmonicCorrection"
         case .burgFormants: "BurgFormants"
         case .burgLPC: "BurgLPC"
         case .formantRoots: "FormantRoots"

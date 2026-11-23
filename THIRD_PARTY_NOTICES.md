@@ -165,3 +165,10 @@ K design independently reconstructs the ITU-R BS.1770-5 tables by inverse biline
 transformation and stage-specific prewarping; no external implementation is copied
 into the Swift package. The author reference is associated with Brecht De Man,
 “Evaluation of Implementations of the EBU R128 Loudness Measurement,” AES 145, 2018.
+
+The H1–H2 fixture contains original synthetic two-harmonic signals filtered
+through two causal pole pairs. The stored peak amplitudes are numerical
+measurements from the pinned Praat 7.0.02 Fourier transform. The reference
+pole gains come from an original evaluation of the discrete transfer function
+in Iseli and Alwan (2004). The generator, PCM and output hashes are recorded in
+the provenance inventory. [Reference procedure](Tools/Harmonics/README.md)

@@ -96431,6 +96431,36 @@
       ],
       "expectedProfile": "Untracked Burg formants. Per-case order, ceiling, hop, conditioning and source coordinates are serialized.",
       "referenceOutputIdentity": "sha256:0b6cb5a3b1b7bd339d0ff4ca684e2d1b9475f41bde6a0729645a83af977a563a"
+    },
+    {
+      "id": "harmonics-filtered-h1-h2",
+      "path": "Tests/HDXLVoiceProcessingTests/Fixtures/Harmonics/h1-h2.json",
+      "sha256": "fff6aa9f2ec2e34fca9ff4ed59e3978f4f8845e3d8a7dc6ca55ba9278e6bd0a1",
+      "source": {
+        "kind": "original-generated",
+        "url": "https://github.com/plx/hdxl-voice-processing/issues/52",
+        "versionOrHash": "13db32e5fcca40b7b4bce675678935e0ed53eb2b4415bb6b730eb7b048bb2230"
+      },
+      "generator": {
+        "path": "Tools/Harmonics/reference.py",
+        "version": "1",
+        "sha256": "13db32e5fcca40b7b4bce675678935e0ed53eb2b4415bb6b730eb7b048bb2230"
+      },
+      "redistribution": {
+        "license": "project",
+        "permission": "inherits-project-license",
+        "evidence": "https://github.com/plx/hdxl-voice-processing/issues/78"
+      },
+      "containsHumanVoice": false,
+      "consent": {
+        "status": "not-applicable",
+        "evidence": "Original synthesized two-harmonic mixtures."
+      },
+      "transformations": [
+        "Causal pole-pair filtering, mono PCM16 quantization, pinned Praat Fourier bins and independent complex transfer gains."
+      ],
+      "expectedProfile": "Peak full-scale F0 and 2F0 amplitudes; digital DC-normalized F1/F2 gains and corrected differences.",
+      "referenceOutputIdentity": "sha256:fff6aa9f2ec2e34fca9ff4ed59e3978f4f8845e3d8a7dc6ca55ba9278e6bd0a1"
     }
   ],
   "optionalModels": []
