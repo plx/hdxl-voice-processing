@@ -53,6 +53,8 @@ public struct AlgorithmInspection: Sendable, Identifiable {
     public let parameters: String
     public let status: String
     public let measurements: [MeasurementResult]
+    /// Optional projection-specific names, in measurement order.
+    public let measurementLabels: [String]?
     public let fields: [InspectionField]
     public let curves: [InspectionCurve]
     public let scalarCount: Int
@@ -63,7 +65,8 @@ public struct AlgorithmInspection: Sendable, Identifiable {
         title: String, explanation: String, reference: URL, context: InspectionContext,
         window: SourceInterval, dependency: SourceInterval, profile: ProfileIdentity,
         parameters: String, status: String, measurements: [MeasurementResult] = [],
-        fields: [InspectionField] = [], curves: [InspectionCurve] = [],
+        measurementLabels: [String]? = nil, fields: [InspectionField] = [],
+        curves: [InspectionCurve] = [],
         querySeconds: ClosedRange<Double>? = nil, unavailability: UnavailabilityReason? = nil,
         limits: VisualizationLimits = .standard
     ) throws {
@@ -94,6 +97,15 @@ public struct AlgorithmInspection: Sendable, Identifiable {
         var budget = VisualizationMetadataBudget(limits)
         for text in [title, explanation, reference.absoluteString, parameters, status] {
             try budget.charge(text)
+        }
+        if let measurementLabels {
+            guard measurementLabels.count == measurements.count else {
+                throw VisualizationError.invalidConfiguration
+            }
+            for label in measurementLabels {
+                guard !label.isEmpty else { throw VisualizationError.invalidConfiguration }
+                try budget.charge(label)
+            }
         }
         try budget.charge(profile)
         for field in fields {
@@ -141,6 +153,7 @@ public struct AlgorithmInspection: Sendable, Identifiable {
         self.parameters = parameters
         self.status = status
         self.measurements = measurements
+        self.measurementLabels = measurementLabels
         self.fields = fields
         self.curves = curves
         scalarCount = scalars
@@ -150,6 +163,12 @@ public struct AlgorithmInspection: Sendable, Identifiable {
     public func intersects(_ selection: VisualizationSelection) -> Bool {
         if let querySeconds { return selection.intersects(querySeconds, relativeTo: dependency) }
         return selection.intersects(window)
+    }
+
+    static func exportWithinBudget<T>(_ export: () throws -> T) throws -> T {
+        do { return try export() } catch ContractError.intermediateBudgetExceeded {
+            throw VisualizationError.capacityExceeded
+        }
     }
 
     static func parameters(_ recipe: some Encodable) throws -> String {

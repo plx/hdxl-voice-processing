@@ -68,3 +68,33 @@ private struct InspectionPlotPreview: View {
             .padding()
     }.frame(width: 800)
 }
+
+/// Preview the same scheduled CPPS calculation that supplied the plotted point.
+private struct ScheduledInspectionPreview: View {
+    let plot: AcousticPlotData
+    let snapshot: AlgorithmInspection
+    @State private var selection: VisualizationSelection?
+
+    init() throws {
+        var captured: Result<AlgorithmInspection, any Error>?
+        let fixture = try AcousticPlotFixtures { borrowed in
+            guard borrowed.frame.algorithm == .cpps, borrowed.frameIndex == 3 else { return }
+            captured = Result { try .scheduled(borrowed, context: InspectorPreviewFixture.context) }
+        }
+        guard let captured else { throw VisualizationError.invalidSelection }
+        snapshot = try captured.get()
+        plot = try fixture.metric(.cpps, algorithm: .cpps)
+        _selection = State(initialValue: .init(source: snapshot.window))
+    }
+
+    var body: some View {
+        ScrollView {
+            try! AcousticPlotInspectorView(plot: plot, snapshots: [snapshot], selection: $selection)
+                .padding()
+        }
+    }
+}
+
+#Preview("Scheduled CPPS and its source") {
+    try! ScheduledInspectionPreview().frame(width: 800)
+}

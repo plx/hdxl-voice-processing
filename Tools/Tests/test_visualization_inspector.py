@@ -32,3 +32,12 @@ class InspectorEvidenceTests(unittest.TestCase):
                 rows[-1].update(change)
                 with self.assertRaises(ValueError):
                     summarize(rows)
+
+
+    def test_nested_timers_must_match_the_selected_frame(self):
+        for mode, index in (("selected", 120), ("sampled", 8)):
+            rows = copy.deepcopy(self.rows)
+            row = next(r for r in rows if r["mode"] == mode)
+            row["frameNanoseconds"][index] = 7
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                summarize(rows)

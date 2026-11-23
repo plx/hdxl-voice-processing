@@ -69,7 +69,10 @@ extension AlgorithmInspection {
         case .frame(let info): selected = info.selectionProfile
         case .longTerm(_, let selection, _, let weight):
             selected = selection
-            fields.append(.init("Accumulation weight", String(weight)))
+            let unit =
+                r.layout.weighting == .equalFrames ? "frames" : "newly covered source samples"
+            fields.append(
+                .init("Accumulation weight", "\(weight) \(unit) · \(r.layout.weighting.rawValue)"))
         }
         if let selected {
             fields.append(
@@ -140,7 +143,9 @@ extension AlgorithmInspection {
         if let pitch = r.pitch {
             fields.append(
                 .init(
-                    "Pitch used for credibility",
+                    pitch.source == r.timing.source
+                        ? "Pitch used for credibility"
+                        : "Supplied pitch ignored for mismatched support",
                     "\(pitch.frequencyHz) Hz · " + pitch.profile.sha256))
             fields.append(
                 .init(
@@ -173,7 +178,8 @@ extension AlgorithmInspection {
             }
             let data = try IntermediateSnapshot(
                 stage: .init(name: "burg-lpc-coefficients", version: 1),
-                source: r.timing.source, xUnit: .dimensionless, yUnit: .dimensionless, xOrigin: 0,
+                source: r.conditioningSupport, xUnit: .dimensionless, yUnit: .dimensionless,
+                xOrigin: 0,
                 xStep: 1, values: coefficients)
             curves.append(
                 .init(
@@ -192,7 +198,9 @@ extension AlgorithmInspection {
             window: r.timing.source, dependency: r.conditioningSupport, profile: r.profile,
             parameters: parameters(r.archiveProfile),
             status: r.failure?.rawValue ?? "Fit completed",
-            measurements: measurements, fields: fields, curves: curves, limits: limits)
+            measurements: measurements,
+            measurementLabels: (1...r.configuration.maximumFormants).map { "F\($0) frequency" },
+            fields: fields, curves: curves, limits: limits)
     }
 
     public static func harmonics(
@@ -245,8 +253,13 @@ extension AlgorithmInspection {
             fields.append(.init("Corrected H2", "\(level) dBFS"))
         }
         if let pole = r.unusableFormant {
-            fields.append(
-                .init("Unusable formant", pole.rejections.map(\.rawValue).joined(separator: ", ")))
+            var description = [pole.number.map { "F\($0)" } ?? "Unranked pole"]
+            if let hz = pole.frequencyHz { description.append("\(hz) Hz") }
+            if let width = pole.bandwidthHz { description.append("bandwidth \(width) Hz") }
+            description +=
+                pole.rejections.isEmpty
+                ? ["Harmonic gain calculation unavailable"] : pole.rejections.map(\.rawValue)
+            fields.append(.init("Unusable formant", description.joined(separator: " · ")))
         }
         return try Self(
             title: "Formant-corrected H1–H2",

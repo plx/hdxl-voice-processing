@@ -108,7 +108,8 @@ public struct IOSCaptureSession: Sendable {
     public let transfer: PCMTransfer
 
     public func makeSchedule<Sample: BinaryFloatingPoint & Sendable>(
-        profile: AnalysisScheduleProfile, sourceTileCapacity: Int = 256
+        profile: AnalysisScheduleProfile, sourceTileCapacity: Int = 256,
+        inspect: ((BorrowedScheduledInspection) -> Void)? = nil
     ) throws -> PreparedPCMTransferSchedule<Sample> {
         let capture = observation.capture
         guard profile.channels == capture.channelSelection else {
@@ -121,7 +122,7 @@ public struct IOSCaptureSession: Sendable {
             continuityEpoch: capture.epoch)
         return try PreparedPCMTransferSchedule(
             transfer: transfer, profile: profile,
-            origin: origin, sourceTileCapacity: sourceTileCapacity)
+            origin: origin, sourceTileCapacity: sourceTileCapacity, inspect: inspect)
     }
 }
 

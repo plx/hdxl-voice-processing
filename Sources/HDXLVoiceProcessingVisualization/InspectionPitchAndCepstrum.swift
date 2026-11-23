@@ -13,9 +13,11 @@ extension AlgorithmInspection {
         guard output.candidates.count <= limits.maximumSegments else {
             throw VisualizationError.capacityExceeded
         }
-        let snapshots = try output.export(
-            stages: Set(YINIntermediate.allCases),
-            policy: .init(maximumScalarCount: limits.maximumFrameScalars))
+        let snapshots = try exportWithinBudget {
+            try output.export(
+                stages: Set(YINIntermediate.allCases),
+                policy: .init(maximumScalarCount: limits.maximumFrameScalars))
+        }
         let curves = snapshots.map {
             InspectionCurve(
                 $0,
@@ -61,7 +63,12 @@ extension AlgorithmInspection {
         let raw = try pitch(output.raw, recipe: recipe.estimator, context: context, limits: limits)
         guard let tracked = output.tracked else {
             guard recipe.tracker == nil else { throw VisualizationError.incompatibleSeries }
-            return raw
+            return try Self(
+                title: raw.title, explanation: raw.explanation, reference: raw.reference,
+                context: context, window: raw.window, dependency: raw.dependency,
+                profile: recipe.identity(), parameters: parameters(recipe), status: raw.status,
+                measurements: raw.measurements, fields: raw.fields, curves: raw.curves,
+                limits: limits)
         }
         try requireProfile(recipe.identity(), tracked.profile)
         var fields = raw.fields
@@ -82,7 +89,9 @@ extension AlgorithmInspection {
             reference: raw.reference, context: context, window: raw.window,
             dependency: tracked.dependencyTiming.source,
             profile: tracked.profile, parameters: parameters(recipe), status: raw.status,
-            measurements: raw.measurements + [tracked.measurementResult()], fields: fields,
+            measurements: raw.measurements + [tracked.measurementResult()],
+            measurementLabels: ["Raw fundamental frequency", "Tracked fundamental frequency"],
+            fields: fields,
             curves: raw.curves, limits: limits)
     }
 
@@ -103,9 +112,11 @@ extension AlgorithmInspection {
             guard upstream.context == result.context else {
                 throw VisualizationError.incompatibleSource
             }
-            let stages = try upstream.export(
-                stages: [.windowed, .powerSpectrum, .logPowerSpectrum, .powerCepstrum],
-                policy: .init(maximumScalarCount: remaining))
+            let stages = try exportWithinBudget {
+                try upstream.export(
+                    stages: [.windowed, .powerSpectrum, .logPowerSpectrum, .powerCepstrum],
+                    policy: .init(maximumScalarCount: remaining))
+            }
             for stage in stages {
                 if let samples = stage.snapshot {
                     curves.append(.init(samples, explanation: stage.stage.scaling))
@@ -120,8 +131,10 @@ extension AlgorithmInspection {
                 }
             }
         }
-        let fit = try output.export(
-            stages: Set(CPPIntermediate.allCases), policy: .init(maximumScalarCount: remaining))
+        let fit = try exportWithinBudget {
+            try output.export(
+                stages: Set(CPPIntermediate.allCases), policy: .init(maximumScalarCount: remaining))
+        }
         curves += fit.map { .init($0, explanation: fitExplanation($0.stage.name)) }
         return try Self(
             title: "Cepstral peak prominence",
@@ -143,9 +156,11 @@ extension AlgorithmInspection {
     ) throws -> Self {
         let result = output.result
         try requireProfile(recipe.identity(), result.profile)
-        let snapshots = try output.export(
-            stages: Set(CPPSIntermediate.allCases),
-            policy: .init(maximumScalarCount: limits.maximumFrameScalars))
+        let snapshots = try exportWithinBudget {
+            try output.export(
+                stages: Set(CPPSIntermediate.allCases),
+                policy: .init(maximumScalarCount: limits.maximumFrameScalars))
+        }
         let curves = snapshots.map { frame in
             let explanation: String
             switch frame.stage.name {

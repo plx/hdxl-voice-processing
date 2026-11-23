@@ -35,6 +35,10 @@ def summarize(records):
                 or any((r[key] <= 0 if retained else r[key] != 0)
                        for key in ("retainedCurveBytes", "retainedMetadataBytes"))):
             raise ValueError(f"Invalid capture workload for {mode}")
+        indices = [120] if mode == "selected" else range(0, 240, 4) if mode == "sampled" else ()
+        if any(elapsed > r["frameNanoseconds"][index]
+               for index, elapsed in zip(indices, r["captureNanoseconds"], strict=True)):
+            raise ValueError(f"Capture duration exceeds the enclosing frame for {mode}")
         output[mode] = {"medianFrameNs": statistics.median(times), "p95FrameNs": times[math.ceil(.95 * len(times)) - 1],
                         "maximumFrameNs": max(times), "meanFrameNs": statistics.mean(times),
                         "medianCaptureNs": statistics.median(copies) if copies else None,

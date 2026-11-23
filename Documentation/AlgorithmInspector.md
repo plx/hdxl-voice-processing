@@ -31,6 +31,25 @@ The default policy is disabled. Selected and sampled policies check the frame in
 
 On a live profile change, finish or discard the old partial window, reconfigure the production processor, and call `history.nextConfiguration(source:profile:)` with the reconfigured processor’s source clock to begin an empty history with the next configuration epoch. Source discontinuities use a new source epoch. Views can still display the previous immutable snapshots with their original timing and recipe.
 
+## Inspect a scheduled measurement
+
+Pass an `inspect` closure when preparing a plain, masked, audio-file or PCM-transfer schedule. This synchronous worker callback receives the pitch, CPPS or HNR output that supplies the associated plotted frame. Filter by algorithm and kernel-local frame index before copying a snapshot. For example, a history for a scheduled CPPS plot uses the schedule identity.
+
+```swift
+let worker = try PreparedAnalysisSchedule<Double>(
+    profile: schedule, origin: origin, mode: .continuous,
+    inspect: { borrowed in
+        guard borrowed.frame.algorithm == .cpps else { return }
+        do {
+            try history.capture(frame: borrowed.frameIndex) { limits in
+                try AlgorithmInspection.scheduled(borrowed, context: context, limits: limits)
+            }
+        } catch { captureError = error }
+    })
+```
+
+The scheduled snapshot maps the observation window, stage supports and measurement timing onto the original acquisition clock. It retains the kernel fingerprint and the analysis continuity epoch. Start a fresh history when a discontinuity restarts the kernel’s frame indices. The callback runs during processing and during a tail flush. Its borrowed buffers are valid for the duration of the call.
+
 ## Follow the stages
 
 | Inspector | What to inspect |
@@ -53,6 +72,6 @@ let alternative = InspectionAlternative("Higher dip threshold", recipe: .pitch(c
 let workbench = try FrozenInspectionExperimentView(experiment, alternatives: [alternative])
 ```
 
-The workbench evaluates an alternative after the user requests it. The typed recipe selects a fresh production YIN, CPP or CPPS processor. Both results refer to the same frozen samples and local observation window. For CPP and CPPS, supply the recording from the conditioning origin and choose a frame index. Replay uses the original Float32 or Float64 input precision and the recipe’s finite-FIR preview or whole-interval processor. The processor stops after the requested fit and its required lookahead. An absent frame or changed observation support produces a selection error. The comparison shows each changed setting with its original and new values. Repeated comparisons always use the original baseline.
+The workbench evaluates an alternative after the user requests it. The typed recipe selects a fresh production YIN, CPP or CPPS processor. Both results refer to the same frozen samples and local observation window. For CPP and CPPS, supply the recording from the conditioning origin and choose a frame index. Replay uses the original Float32 or Float64 input precision and the recipe’s finite-FIR preview or whole-interval processor. The processor stops after the requested fit and its required lookahead. Changing temporal smoothing can widen the dependency around the same observation window. Both results retain their own support. The baseline and alternative are recalculated from the frozen PCM. A preview’s delivery delay describes replay with the complete input supplied in one call. The live schedule’s snapshot retains the original delivery timing. An absent frame or changed observation support produces a selection error. The comparison shows each changed setting with its original and new values. Repeated comparisons always use the original baseline.
 
 The public consumer benchmarks 240 consecutive synthetic YIN frames in four modes. The evidence records individual frame durations, projection time on captured frames, retained curve and metadata bytes, and process peak resident memory growth. Physical capture and thermal measurements are tracked separately. [Evidence guide](../Tools/Visualization/README.md) · [Physical measurements](https://github.com/plx/hdxl-voice-processing/issues/74)

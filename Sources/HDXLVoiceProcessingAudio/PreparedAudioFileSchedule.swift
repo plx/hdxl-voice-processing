@@ -43,7 +43,8 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
         url: URL, profile: AnalysisScheduleProfile, origin: AnalysisScheduleOrigin,
         fileStartSample: Int64? = nil,
         sampleCount: Int64? = nil, chunkCapacity: Int = 2048, sourceTileCapacity: Int = 256,
-        mask: PreparedAnalysisMask? = nil, maskRouting: AudioFileMaskRouting = .splitAtRegions
+        mask: PreparedAnalysisMask? = nil, maskRouting: AudioFileMaskRouting = .splitAtRegions,
+        inspect: ((BorrowedScheduledInspection) -> Void)? = nil
     ) throws {
         guard (1...65536).contains(chunkCapacity) else {
             throw AudioFileScheduleError.invalidCapacity
@@ -103,13 +104,13 @@ public final class PreparedAudioFileSchedule<Sample: BinaryFloatingPoint & Senda
             plain = nil
             masked = try PreparedMaskedAnalysisSchedule(
                 profile: profile, origin: origin,
-                mode: .finite, mask: mask, sourceTileCapacity: sourceTileCapacity)
+                mode: .finite, mask: mask, sourceTileCapacity: sourceTileCapacity, inspect: inspect)
         } else {
             masked = nil
             plain = try PreparedAnalysisSchedule(
                 profile: profile, origin: origin,
                 mode: .finite, expectedSampleCount: count, sourceTileCapacity: sourceTileCapacity,
-                mask: mask)
+                mask: mask, inspect: inspect)
         }
         planes = .allocate(capacity: profile.inputFormat.channelCount)
         planes.initialize(repeating: UnsafeBufferPointer(start: nil, count: 0))

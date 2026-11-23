@@ -8,13 +8,13 @@ extension AlgorithmInspection {
     ) throws -> Self {
         let r = output.result
         let recipe = r.layout.configuration
-        guard output.correlation.count <= limits.maximumFrameScalars,
-            output.candidates.count <= limits.maximumSegments
+        guard output.candidates.count <= limits.maximumSegments
         else { throw VisualizationError.capacityExceeded }
         let isAC = recipe.method == .autocorrelation
         var curves: [InspectionCurve] = []
         var i = 0
         var undefined = 0
+        var remainingScalars = limits.maximumFrameScalars
         while i < output.correlation.count {
             guard output.correlationValidity[i] else {
                 undefined += 1
@@ -27,9 +27,10 @@ extension AlgorithmInspection {
                 i += 1
             } while i < output.correlation.count && output.correlationValidity[i]
                 && (isAC || padding == (i > r.layout.computedMaximumLag))
-            guard curves.count < limits.maximumSegments else {
+            guard curves.count < limits.maximumSegments, i - start <= remainingScalars else {
                 throw VisualizationError.capacityExceeded
             }
+            remainingScalars -= i - start
             let curve = try IntermediateSnapshot(
                 stage: .init(
                     name: padding ? "hnr-interpolation-padding" : "hnr-valid-correlation",

@@ -169,7 +169,8 @@ public struct FrozenInspectionComparison: Sendable {
 }
 
 /// The immutable original and each alternative are evaluated by the production
-/// processor on the same frozen input. Repeated experiments always compare to the original.
+/// processor on the same frozen input. Preview delivery timing reflects this replay’s input chunks.
+/// Repeated experiments always compare to the original. Each result retains its own dependency.
 public struct FrozenInspectionExperiment: Sendable {
     public let id = UUID()
     public let input: FrozenInspectionInput
@@ -188,7 +189,7 @@ public struct FrozenInspectionExperiment: Sendable {
             throw VisualizationError.incompatibleSeries
         }
         let changed = try alternative.evaluate(input)
-        guard original.window == changed.window, original.dependency == changed.dependency else {
+        guard original.window == changed.window else {
             throw VisualizationError.incompatibleSource
         }
         let before = try Self.leaves(original.parameters)

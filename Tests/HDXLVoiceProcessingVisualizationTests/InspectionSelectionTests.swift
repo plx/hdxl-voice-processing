@@ -10,7 +10,7 @@ import Testing
     {
         let original = try InspectorPreviewFixture().experiment.original
         let m = try #require(original.measurements.first)
-        let observed = try AcousticMetricObservation(m)
+        let observed = AcousticMetricObservation(m)
         let source = original.window
         func interval(_ offset: Int64, _ length: Int64) throws -> SourceInterval {
             try .init(
@@ -30,6 +30,24 @@ import Testing
             profile: original.profile, parameters: original.parameters,
             status: "Missing acquisition",
             unavailability: .missingAcquisition)
+        let missingResult = try MeasurementResult(
+            measurement: m.measurement, profile: m.profile, timing: m.timing,
+            outcome: .unavailable(.missingAcquisition))
+        let otherResult = try MeasurementResult(
+            measurement: .init(
+                kind: .rms, unit: .normalizedAmplitude, algorithm: m.measurement.algorithm),
+            profile: m.profile, timing: m.timing, outcome: m.outcome)
+        let mixed = try AlgorithmInspection(
+            title: "Mixed results", explanation: "Independent results on this window.",
+            reference: original.reference,
+            context: original.context, window: unavailable.window, dependency: source,
+            profile: m.profile,
+            parameters: original.parameters, status: "Partial",
+            measurements: [otherResult, missingResult])
+        let mixedView = try AcousticPlotInspectorView(
+            plot: plot, snapshots: [mixed], selection: .constant(nil))
+        #expect(mixed.unavailability == nil)
+        #expect(mixedView.matching(.init(source: try interval(23, 0))).first?.id == mixed.id)
         let view = try AcousticPlotInspectorView(
             plot: plot, snapshots: [original, unavailable], selection: .constant(nil))
         #expect(view.matching(.init(source: try interval(23, 0))).map(\.id) == [unavailable.id])

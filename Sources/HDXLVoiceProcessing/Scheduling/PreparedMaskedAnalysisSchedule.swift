@@ -53,7 +53,7 @@ public final class PreparedMaskedAnalysisSchedule<Sample: BinaryFloatingPoint & 
     public init(
         profile: AnalysisScheduleProfile, origin: AnalysisScheduleOrigin,
         mode: AnalysisScheduleMode, mask: PreparedAnalysisMask,
-        sourceTileCapacity: Int = 256
+        sourceTileCapacity: Int = 256, inspect: ((BorrowedScheduledInspection) -> Void)? = nil
     ) throws {
         let source = mask.timeline.plan.source
         guard origin.source.epoch == source.epoch,
@@ -85,7 +85,7 @@ public final class PreparedMaskedAnalysisSchedule<Sample: BinaryFloatingPoint & 
         self.worker = try PreparedAnalysisSchedule(
             profile: profile, origin: preparedOrigin, mode: mode,
             expectedSampleCount: first?.sampleCount ?? 0,
-            sourceTileCapacity: sourceTileCapacity, mask: mask)
+            sourceTileCapacity: sourceTileCapacity, mask: mask, inspect: inspect)
         self.planarSlices = .allocate(capacity: profile.inputFormat.channelCount)
         planarSlices.initialize(repeating: UnsafeBufferPointer(start: nil, count: 0))
     }

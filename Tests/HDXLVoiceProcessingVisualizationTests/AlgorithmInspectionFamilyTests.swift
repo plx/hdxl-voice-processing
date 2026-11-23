@@ -31,6 +31,14 @@ import Testing
             #expect(
                 shimmer.measurements
                     == (try ShimmerVariant.allCases.map { try other.measurementResult($0) }))
+            #expect(
+                snap.fields.contains(
+                    .init("Normalization period count", String(r.coverage.meanPeriodCount))))
+            #expect(
+                shimmer.fields.contains(
+                    .init(
+                        "Normalization amplitude count",
+                        String(other.coverage.normalizationAmplitudeCount))))
             #expect(snap.querySeconds == r.query.startSeconds...r.query.endSeconds)
             let before = try SourceInterval(
                 epoch: snap.window.epoch, startSample: snap.window.startSample - 1,
@@ -62,6 +70,8 @@ import Testing
         #expect(shape.fields.contains { $0.name == "Numerator band energy" })
         let formants = try AlgorithmInspection.formants(f.formants, context: context)
         #expect(formants.curves.first?.samples.values == f.formants.diagnostics.coefficients)
+        #expect(formants.curves.first?.samples.source == f.formants.conditioningSupport)
+        #expect(formants.measurementLabels?.first == "F1 frequency")
         #expect(
             formants.fields.filter { $0.name.hasPrefix("Pole ") }.count
                 == f.formants.candidates.count)

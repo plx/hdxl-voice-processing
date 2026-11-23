@@ -15,7 +15,7 @@ struct AcousticPlotFixtures {
     let cepstralFrames: [PowerCepstrumFrame]
     let cepstralRecipe: CepstrogramConfiguration
 
-    init() throws {
+    init(inspect: ((BorrowedScheduledInspection) -> Void)? = nil) throws {
         let epoch = StreamEpoch(streamID: UUID(uuidString: "00000000-0000-0000-0000-000000000048")!)
         let start: Int64 = (1 << 54) + 11
         let n = 4_800
@@ -51,7 +51,7 @@ struct AcousticPlotFixtures {
             hnr: HNRConfiguration(method: .forwardCrossCorrelation, sampleRate: 16_000))
         let analysis = try PreparedAnalysisSchedule<Double>(
             profile: schedule, origin: .init(source: origin, continuityEpoch: epoch.successor()),
-            mode: .finite, expectedSampleCount: Int64(n))
+            mode: .finite, expectedSampleCount: Int64(n), inspect: inspect)
         var frames: [ScheduledFrame] = []
         try pcm.withUnsafeBufferPointer {
             _ = try analysis.processInterleaved($0, interval: source) { frames.append($0) }

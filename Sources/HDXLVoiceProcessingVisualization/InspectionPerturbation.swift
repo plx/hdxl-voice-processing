@@ -16,6 +16,10 @@ extension AlgorithmInspection {
             .init(
                 "Eligible periods",
                 "\(coverage.acceptedPeriodCount) of \(coverage.selectedPeriodCount) selected"),
+            .init("Normalization period count", String(coverage.meanPeriodCount)),
+            .init(
+                "Mean normalization period",
+                coverage.meanPeriodSeconds.map { "\($0) s" } ?? "Unavailable"),
             .init(
                 "Adjacent period pairs",
                 "\(coverage.acceptedPairCount) of \(coverage.candidatePairCount)"),
@@ -62,6 +66,10 @@ extension AlgorithmInspection {
             .init(
                 "Eligible cycle amplitudes",
                 "\(coverage.acceptedAmplitudeCount) of \(coverage.selectedAmplitudeCount) selected"),
+            .init("Normalization amplitude count", String(coverage.normalizationAmplitudeCount)),
+            .init(
+                "Mean normalization amplitude",
+                coverage.meanAmplitude.map { "\($0) FS" } ?? "Unavailable"),
             .init(
                 "Neighboring amplitude pairs",
                 "\(coverage.acceptedPairCount) of \(coverage.candidatePairCount)"),

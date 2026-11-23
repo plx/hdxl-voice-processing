@@ -66,17 +66,11 @@ private struct InspectionMeasurements: View {
         ForEach(inspection.measurements.indices, id: \.self) { i in
             let result = inspection.measurements[i]
             VStack(alignment: .leading) {
-                let pairedPitch =
-                    inspection.measurements.count == 2
-                    && inspection.measurements.allSatisfy {
-                        $0.measurement.kind == .fundamentalFrequency
-                    }
                 Text(
-                    pairedPitch
-                        ? (i == 0 ? "Raw fundamental frequency" : "Tracked fundamental frequency")
-                        : VisualizationText.measurement(result.measurement.kind)
-                ).font(
-                    .subheadline.bold())
+                    inspection.measurementLabels?[i]
+                        ?? VisualizationText.measurement(result.measurement.kind)
+                )
+                .font(.subheadline.bold())
                 switch result.outcome {
                 case .available(let estimate):
                     Text(
@@ -228,6 +222,9 @@ private struct InspectionCurveView: View {
                 }
                 .accessibilityHidden(true)
             Text(
+                "Stage support · samples \(String(data.source.startSample))..<\(String(data.source.endSample))"
+            )
+            Text(
                 "Horizontal · \(String(data.xOrigin))…\(String(data.xOrigin + Double(data.values.count - 1) * data.xStep)) \(x)"
             )
             Text(
@@ -288,7 +285,16 @@ public struct AcousticPlotInspectorView: View {
         guard let selection else { return [] }
         let acquired = plot.acquiredPortions(of: selection)
         return snapshots.filter { snapshot in
-            let portions = snapshot.unavailability == nil ? acquired : [selection]
+            let explainsMissing: Bool
+            if case .metric(let descriptor) = plot.kind, !snapshot.measurements.isEmpty {
+                explainsMissing = snapshot.measurements.contains {
+                    $0.measurement == descriptor && $0.profile == plot.profile
+                        && $0.outcome.estimate == nil
+                }
+            } else {
+                explainsMissing = snapshot.unavailability != nil
+            }
+            let portions = explainsMissing ? [selection] : acquired
             return portions.contains(where: snapshot.intersects)
         }
     }
@@ -327,6 +333,9 @@ public struct FrozenInspectionComparisonView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Frozen-window comparison").font(.headline)
+            Text(
+                "Both calculations replay the frozen samples. Preview delivery delays reflect the replay’s input chunks."
+            )
             Text(
                 comparison.original.context.origin == .recording
                     ? "Recorded samples" : "Synthesized demonstration")

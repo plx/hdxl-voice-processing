@@ -7,6 +7,30 @@ public enum ScheduledFrameValue: Sendable, Hashable {
     case swipePrime(SWIPEPrimeFrameResult)
 }
 
+/// Borrowed kernel scratch for the scheduled pitch, CPPS and harmonicity inspectors.
+/// Consume synchronously during the callback and copy only selected frames.
+public struct BorrowedScheduledInspection {
+    public enum Output {
+        case pitch(BorrowedYINAnalysisOutput)
+        case cpps(BorrowedCPPSOutput)
+        case harmonicity(BorrowedHNRAnalysisOutput)
+    }
+
+    public let frame: ScheduledFrame
+    public let profile: AnalysisScheduleProfile
+    public let output: Output
+
+    /// Kernel-local frame index. A reset starts a new sequence on its continuity epoch.
+    public var frameIndex: UInt64 {
+        switch output {
+        case .pitch(let value): value.raw.result.frameIndex
+        case .cpps(let value): value.result.context.frameIndex
+        case .harmonicity(.frame(let value)): value.result.frameIndex
+        case .harmonicity(.unavailable(let value)): value.frameIndex
+        }
+    }
+}
+
 public enum ScheduledMetric: String, Sendable, Hashable, Codable {
     case meanSquare, rms, peakAmplitude, crestFactor, levelDBFS, clippingFraction, kWeightedEnergy
     case fundamentalFrequency, trackedFundamentalFrequency, cpp, cpps, harmonicToNoiseRatio
