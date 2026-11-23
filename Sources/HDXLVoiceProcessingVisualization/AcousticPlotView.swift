@@ -131,10 +131,10 @@ public struct AcousticPlotView: View {
                     Text("A source discontinuity has no reported extent.").font(.caption)
                 }
                 if let target {
-                    plotToggle(
-                        "Personal target · calibrated selected-interval CPPS median",
-                        isOn: $showTarget)
+                    plotToggle("Personal target", isOn: $showTarget)
                     if showTarget, visibleTargetSpan != nil {
+                        Text("Calibrated target for the selected-interval CPPS median").font(
+                            .caption)
                         Label(target.intervalDescription, systemImage: "line.diagonal")
                         Text("Policy state · \(target.state.text)")
                         Text(
