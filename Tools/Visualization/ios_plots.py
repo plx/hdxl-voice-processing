@@ -27,7 +27,7 @@ def main():
             scratch = Path(temporary)
             bundle = str(scratch / "plots.xcresult")
             with (output / "build.log").open("w") as log:
-                ci.run_command(["xcodebuild", "-scheme", "HDXLVoiceProcessingVisualization", "-destination",
+                ci.run_command(["xcodebuild", "-scheme", "HDXLVoiceProcessing-Package", "-destination",
                                 f"platform=iOS Simulator,id={device}", "-derivedDataPath", str(scratch / "build"),
                                 "-parallel-testing-enabled", "NO", "-resultBundlePath", bundle,
                                 "-only-testing:HDXLVoiceProcessingVisualizationTests/AcousticPlotRenderTests",

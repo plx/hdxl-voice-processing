@@ -158,15 +158,16 @@ public struct AcousticPlotView: View {
 
     private var plotArea: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Grid(alignment: .leading, horizontalSpacing: 6, verticalSpacing: 4) {
-                GridRow {
-                    VStack(alignment: .trailing, spacing: 0) {
-                        Text(tick(vertical.bounds.upperBound))
-                        Spacer()
-                        Text(tick(vertical.bounds.lowerBound))
-                    }
-                    .padding(.bottom, 10)
-                    .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 6) {
+                VStack(alignment: .trailing, spacing: 0) {
+                    Text(tick(vertical.bounds.upperBound))
+                    Spacer()
+                    Text(tick(vertical.bounds.lowerBound))
+                }
+                .padding(.bottom, 10)
+                .frame(height: 154)
+                .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+                VStack(spacing: 4) {
                     GeometryReader { proxy in
                         AcousticPlotDrawing(
                             data: data, horizontal: horizontal, vertical: vertical,
@@ -180,16 +181,14 @@ public struct AcousticPlotView: View {
                             }
                         )
                         .clipped()
-                    }
-                }.frame(height: 154)
-                GridRow {
-                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
+                    }.frame(height: 154)
                     HStack {
                         Text(tick(horizontal.bounds.lowerBound))
                         Spacer()
                         Text(tick(horizontal.bounds.upperBound))
-                    }.padding(.horizontal, 4).font(.caption2.monospacedDigit()).foregroundStyle(
-                        .secondary)
+                    }
+                    .padding(.horizontal, 4).font(.caption2.monospacedDigit())
+                    .foregroundStyle(.secondary)
                 }
             }
             Text(xLabel).font(.caption).frame(maxWidth: .infinity)
