@@ -76,7 +76,8 @@ private final class Dependencies {
         let pitch = try observation.measurementResult()
         let evidence = try FormantPitchEvidence(measurement: pitch)
         var formants: BurgFormantFrame?
-        try burg.analyze(pcm, source: item.source, pitch: { _ in evidence }) { formants = $0 }
+        try burg.analyze(
+            pcm, source: item.source, pitch: { _ in evidence }, emit: { formants = $0 })
         guard let formants, burg.frameCount == 1, formants.timing.source == item.source
         else { throw WorkloadError.unavailable("Unexpected Burg frame geometry for " + item.name) }
         return (pitch, formants)

@@ -456,7 +456,7 @@ extension HarmonicDifferenceTests {
         let evidence = try FormantPitchEvidence(measurement: obs)
         var model: BurgFormantFrame?
         try pcm.withUnsafeBufferPointer { ptr in
-            try burg.analyze(ptr, source: s, pitch: { _ in evidence }) { model = $0 }
+            try burg.analyze(ptr, source: s, pitch: { _ in evidence }, emit: { model = $0 })
         }
         let frame = try pcm.withUnsafeBufferPointer {
             try w.analyze($0, source: s, pitch: obs, formants: model)
@@ -559,7 +559,7 @@ extension HarmonicDifferenceTests {
         let evidence = try FormantPitchEvidence(measurement: pitch)
         var failed: BurgFormantFrame?
         try pcm.withUnsafeBufferPointer { samples in
-            try model.analyze(samples, source: s, pitch: { _ in evidence }) { failed = $0 }
+            try model.analyze(samples, source: s, pitch: { _ in evidence }, emit: { failed = $0 })
         }
         let correction = try pcm.withUnsafeBufferPointer {
             try worker.analyze($0, source: s, pitch: pitch, formants: failed)
