@@ -22,19 +22,27 @@ extension AlgorithmInspection {
                 continue
             }
             let start = i
-            repeat { i += 1 } while i < output.correlation.count && output.correlationValidity[i]
+            let padding = !isAC && start > r.layout.computedMaximumLag
+            repeat {
+                i += 1
+            } while i < output.correlation.count && output.correlationValidity[i]
+                && (isAC || padding == (i > r.layout.computedMaximumLag))
             guard curves.count < limits.maximumSegments else {
                 throw VisualizationError.capacityExceeded
             }
             let curve = try IntermediateSnapshot(
-                stage: .init(name: "hnr-valid-correlation", version: 1),
+                stage: .init(
+                    name: padding ? "hnr-interpolation-padding" : "hnr-valid-correlation",
+                    version: 1),
                 source: r.frameTiming.source, xUnit: .samples, yUnit: .dimensionless,
                 xOrigin: Double(start), xStep: 1, values: Array(output.correlation[start..<i]))
             curves.append(
                 .init(
                     curve,
                     explanation:
-                        "Normalized correlation for consecutive defined lags. Peaks indicate repeating periods."
+                        padding
+                        ? "Zero extension used by the interpolator beyond the last computed lag."
+                        : "Normalized correlation for consecutive measured lags. Peaks indicate repeating periods."
                 ))
         }
         var fields: [InspectionField] = [
@@ -69,6 +77,33 @@ extension AlgorithmInspection {
             profile: r.profile, parameters: parameters(recipe),
             status: availability(measurement.outcome),
             measurements: [measurement], fields: fields, curves: curves, limits: limits)
+    }
+
+    public static func harmonicity(
+        _ output: BorrowedHNRAnalysisOutput, recipe: HNRConfiguration, context: InspectionContext,
+        limits: VisualizationLimits = .standard
+    ) throws -> Self {
+        switch output {
+        case .frame(let frame):
+            guard frame.result.layout.configuration == recipe else {
+                throw VisualizationError.incompatibleSeries
+            }
+            return try harmonicity(frame, context: context, limits: limits)
+        case .unavailable(let frame):
+            try requireProfile(recipe.identity(), frame.profile)
+            let ac = recipe.method == .autocorrelation
+            return try Self(
+                title: ac ? "Autocorrelation and harmonicity" : "Cross-correlation and harmonicity",
+                explanation: "This source interval could not supply an eligible harmonicity frame.",
+                reference: URL(
+                    string: ac
+                        ? "https://praat.org/manual/Sound__To_Harmonicity__ac____.html"
+                        : "https://praat.org/manual/Sound__To_Harmonicity__cc____.html")!,
+                context: context, window: frame.timing.source, dependency: frame.timing.source,
+                profile: frame.profile,
+                parameters: parameters(recipe), status: status(frame.reason),
+                measurements: [frame.measurementResult()], limits: limits)
+        }
     }
 
     public static func pulses(
@@ -134,7 +169,7 @@ extension AlgorithmInspection {
             context: context, window: r.timing.source, dependency: r.timing.source,
             profile: r.profile,
             parameters: parameters(recipe), status: status(r.unavailability), fields: fields,
-            limits: limits)
+            unavailability: r.unavailability, limits: limits)
     }
 
     private static func pulseStatus(_ eligible: Bool, _ flags: PulseRejections) -> String {

@@ -66,7 +66,16 @@ private struct InspectionMeasurements: View {
         ForEach(inspection.measurements.indices, id: \.self) { i in
             let result = inspection.measurements[i]
             VStack(alignment: .leading) {
-                Text(VisualizationText.measurement(result.measurement.kind)).font(
+                let pairedPitch =
+                    inspection.measurements.count == 2
+                    && inspection.measurements.allSatisfy {
+                        $0.measurement.kind == .fundamentalFrequency
+                    }
+                Text(
+                    pairedPitch
+                        ? (i == 0 ? "Raw fundamental frequency" : "Tracked fundamental frequency")
+                        : VisualizationText.measurement(result.measurement.kind)
+                ).font(
                     .subheadline.bold())
                 switch result.outcome {
                 case .available(let estimate):
@@ -101,7 +110,9 @@ private struct InspectionFieldsView: View {
                 }.accessibilityElement(children: .combine)
             }
             if lastPage > 0 {
-                InspectionNavigation(label: "Details page", position: page, count: lastPage + 1) {
+                InspectionNavigation(
+                    label: "Details page", position: min(page, lastPage), count: lastPage + 1
+                ) {
                     page = $0
                 }
             }
@@ -125,6 +136,7 @@ extension InspectionCurve {
         case "cpps-timeSmoothedPower": "Time-smoothed power"
         case "cpps-smoothedPower": "Smoothed power"
         case "cpps-smoothedDB": "Smoothed cepstrum in decibels"
+        case "hnr-interpolation-padding": "Interpolation padding"
         case "hnr-valid-correlation": "Correlation from lag \(String(samples.xOrigin))"
         case "burg-lpc-coefficients": "Prediction coefficients"
         case "spectrum-bin-power": "Power per frequency bin"
@@ -239,7 +251,8 @@ public struct AcousticPlotInspectorView: View {
     public let plot: AcousticPlotData
     public let snapshots: [AlgorithmInspection]
     @Binding private var selection: VisualizationSelection?
-    @State private var chosen: Int?
+    @State private var chosen: UUID?
+    @State private var focusedCursor: VisualizationSelection?
 
     public init(
         plot: AcousticPlotData, snapshots: [AlgorithmInspection],
@@ -253,12 +266,15 @@ public struct AcousticPlotInspectorView: View {
             throw VisualizationError.incompatibleSource
         }
         var scalars = limits.maximumFrameScalars
+        var measurements = limits.maximumMeasurements
         var records = limits.maximumSegments
         var metadata = limits.maximumMetadataBytes
         for snapshot in snapshots {
-            guard snapshot.scalarCount <= scalars, snapshot.recordCount <= records,
+            guard snapshot.measurements.count <= measurements, snapshot.scalarCount <= scalars,
+                snapshot.recordCount <= records,
                 snapshot.metadataBytes <= metadata
             else { throw VisualizationError.capacityExceeded }
+            measurements -= snapshot.measurements.count
             scalars -= snapshot.scalarCount
             records -= snapshot.recordCount
             metadata -= snapshot.metadataBytes
@@ -268,32 +284,36 @@ public struct AcousticPlotInspectorView: View {
         _selection = selection
     }
 
+    func matching(_ selection: VisualizationSelection?) -> [AlgorithmInspection] {
+        guard let selection else { return [] }
+        let acquired = plot.acquiredPortions(of: selection)
+        return snapshots.filter { snapshot in
+            let portions = snapshot.unavailability == nil ? acquired : [selection]
+            return portions.contains(where: snapshot.intersects)
+        }
+    }
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            AcousticPlotView(plot, selection: $selection)
-            let lastCursor = plot.columns.indices.last.flatMap {
-                plot.cursor(for: .init(column: $0, bin: 0))
-            }
-            let active = selection ?? lastCursor
-            let visible = snapshots.indices.filter { i in
-                active.map(snapshots[i].intersects) == true
-            }
-            if visible.isEmpty { Text("No captured calculation for this selection.") }
+            AcousticPlotView(plot, selection: $selection).reportingCursor { focusedCursor = $0 }
+            let visible = matching(selection ?? focusedCursor)
             if let first = visible.first {
-                let current = chosen.flatMap { visible.contains($0) ? $0 : nil } ?? first
+                let current = visible.first { $0.id == chosen } ?? first
                 if visible.count > 1 {
                     Picker(
                         "Matching calculation",
-                        selection: Binding(get: { current }, set: { chosen = $0 })
+                        selection: Binding(get: { current.id }, set: { chosen = $0 })
                     ) {
-                        ForEach(visible, id: \.self) { i in
+                        ForEach(visible) { snapshot in
                             Text(
-                                "\(snapshots[i].title) · sample \(String(snapshots[i].window.startSample))"
-                            ).tag(i)
+                                "\(snapshot.title) · sample \(String(snapshot.window.startSample))"
+                            ).tag(snapshot.id)
                         }
                     }
                 }
-                AlgorithmInspectorView(snapshots[current]).id(current)
+                AlgorithmInspectorView(current).id(current.id)
+            } else {
+                Text("No captured calculation for this selection.")
             }
         }
     }

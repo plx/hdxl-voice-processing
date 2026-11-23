@@ -20,18 +20,21 @@ extension AlgorithmInspection {
             InspectionCurve(
                 $0,
                 explanation: $0.stage.name == "yin-scaledSquaredDifference"
-                    ? "Compare the waveform with a delayed copy. Smaller squared differences indicate a closer match."
+                    ? "Scale by the observed peak and compare with a delayed copy. Smaller dimensionless squared differences indicate a closer match."
                     : "Divide each difference by the mean through that lag. Dips mark possible periods."
             )
         }
         var fields = [InspectionField("Observation", result.status.rawValue)]
         for (index, candidate) in output.candidates.enumerated() {
             var flags: [String] = []
-            if index == result.selectedCandidateIndex { flags.append("selected") }
+            if index == result.selectedCandidateIndex { flags.append("selected by raw estimator") }
             if candidate.isLocalMinimum { flags.append("local minimum") }
             if candidate.isGlobalMinimum { flags.append("global minimum") }
             flags.append(candidate.isInRange ? "in range" : "outside range")
-            flags.append(candidate.isThresholdQualified ? "meets threshold" : "above threshold")
+            flags.append(
+                candidate.normalizedError < recipe.threshold
+                    ? "below error threshold" : "at or above error threshold")
+            flags.append(candidate.isThresholdQualified ? "eligible dip" : "ineligible dip")
             fields.append(
                 .init(
                     "Candidate \(index) · lag \(candidate.integerLag) samples",
@@ -47,6 +50,40 @@ extension AlgorithmInspection {
             parameters: parameters(recipe), status: status(result.unavailability),
             measurements: [result.measurementResult()], fields: fields, curves: curves,
             limits: limits)
+    }
+
+    /// The tracker can choose another qualified dip using earlier frames. Keep
+    /// both choices and their separate measurements on the current local window.
+    public static func pitch(
+        _ output: BorrowedYINAnalysisOutput, recipe: YINProfile, context: InspectionContext,
+        limits: VisualizationLimits = .standard
+    ) throws -> Self {
+        let raw = try pitch(output.raw, recipe: recipe.estimator, context: context, limits: limits)
+        guard let tracked = output.tracked else {
+            guard recipe.tracker == nil else { throw VisualizationError.incompatibleSeries }
+            return raw
+        }
+        try requireProfile(recipe.identity(), tracked.profile)
+        var fields = raw.fields
+        fields.append(.init("Raw estimator profile", raw.profile.sha256))
+        fields.append(.init("Tracker profile", tracked.trackerProfile.sha256))
+        fields.append(
+            .init(
+                "Raw candidate index", tracked.raw.selectedCandidateIndex.map(String.init) ?? "None"
+            ))
+        fields.append(
+            .init(
+                "Tracked candidate index", tracked.selectedCandidateIndex.map(String.init) ?? "None"
+            ))
+        return try Self(
+            title: "Raw and tracked pitch",
+            explanation:
+                "YIN proposes pitch candidates. The causal tracker uses earlier choices to select among eligible dips at the current window.",
+            reference: raw.reference, context: context, window: raw.window,
+            dependency: tracked.dependencyTiming.source,
+            profile: tracked.profile, parameters: parameters(recipe), status: raw.status,
+            measurements: raw.measurements + [tracked.measurementResult()], fields: fields,
+            curves: raw.curves, limits: limits)
     }
 
     /// Pass the upstream view from the same nested callback to inspect the exact

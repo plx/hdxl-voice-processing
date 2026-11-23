@@ -35,6 +35,7 @@ public struct AcousticPlotView: View {
     public let data: AcousticPlotData
     @Binding private var selection: VisualizationSelection?
     private let target: AcousticPersonalTargetOverlay?
+    private var cursorChanged: ((VisualizationSelection?) -> Void)?
     @State private var zoom = false
     @State private var includeZero = false
     @State private var envelope = true
@@ -56,6 +57,12 @@ public struct AcousticPlotView: View {
         _bin = State(initialValue: initial?.index.bin ?? 0)
         _selection = selection
         target = personalTarget.flatMap { $0.applies(to: data) ? $0 : nil }
+    }
+
+    func reportingCursor(_ changed: @escaping (VisualizationSelection?) -> Void) -> Self {
+        var copy = self
+        copy.cursorChanged = changed
+        return copy
     }
 
     var active: AcousticPlotIndex? {
@@ -196,6 +203,10 @@ public struct AcousticPlotView: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
+        .onChange(of: cursorChanged == nil ? nil : active.flatMap(data.cursor(for:)), initial: true)
+        {
+            _, cursor in cursorChanged?(cursor)
+        }
         .onChange(of: selection) { initialLocalFocus = nil }
     }
 

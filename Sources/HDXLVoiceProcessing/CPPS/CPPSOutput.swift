@@ -100,7 +100,9 @@ public struct BorrowedCPPSOutput {
                 output.append(
                     try IntermediateSnapshot(
                         stage: VersionedIdentifier(name: "cpps-" + stage.rawValue, version: 1),
-                        source: result.context.timing.source, xUnit: .seconds, yUnit: unit,
+                        source: stage == .rawPower || stage == .preparedPower
+                            ? result.rawCPP.context.timing.source : result.context.timing.source,
+                        xUnit: .seconds, yUnit: unit,
                         xOrigin: 0, xStep: quefrencyStepSeconds, values: Array(data)))
             }
         }

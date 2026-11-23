@@ -17,7 +17,8 @@ def summarize(records):
         raise ValueError("Missing or duplicate capture mode")
     if len({r["profileSHA256"] for r in records}) != 1 or not re.fullmatch(r"[0-9a-f]{64}", records[0]["profileSHA256"]):
         raise ValueError("Profile mismatch")
-    if len({r["pitchChecksumHz"] for r in records}) != 1 or not 0 < records[0]["pitchChecksumHz"] < math.inf:
+    if (any(type(r["pitchChecksumHz"]) not in (int, float) or not math.isfinite(r["pitchChecksumHz"])
+            or r["pitchChecksumHz"] <= 0 for r in records) or len({r["pitchChecksumHz"] for r in records}) != 1):
         raise ValueError("Different or missing YIN observations")
     output = {}
     for r in records:
@@ -25,7 +26,10 @@ def summarize(records):
         n, retained = MODES[mode]
         times = sorted(r["frameNanoseconds"])
         copies = sorted(r["captureNanoseconds"])
-        if (r["frames"] != 240 or len(times) != 240 or len(copies) != n or r["captured"] != n
+        counts = ("frames", "captured", "retainedFrames", "retainedCurveBytes", "retainedMetadataBytes",
+                  "peakRSSBeforeBytes", "peakRSSAfterBytes")
+        if (any(type(r[key]) is not int for key in counts) or r["retainedCurveBytes"] != retained * 2 * 269 * 8
+                or r["frames"] != 240 or len(times) != 240 or len(copies) != n or r["captured"] != n
                 or r["retainedFrames"] != retained or any(type(t) is not int or t < 1 for t in times + copies)
                 or not 0 < r["peakRSSBeforeBytes"] <= r["peakRSSAfterBytes"]
                 or any((r[key] <= 0 if retained else r[key] != 0)
@@ -65,7 +69,7 @@ def main():
     environment = {"operatingSystem": platform.mac_ver()[0], "architecture": platform.machine(),
                    "hardware": subprocess.check_output(["sysctl", "-n", "hw.model"], text=True).strip(),
                    "swift": subprocess.check_output(["swift", "--version"], text=True).strip()}
-    (args.output / "summary.json").write_text(json.dumps({"trials": summary, "environment": environment}, indent=2) + "\n")
+    (args.output / "summary.json").write_text(json.dumps({"trials": summary, "environment": environment}, indent=2, allow_nan=False) + "\n")
 
 
 if __name__ == "__main__":

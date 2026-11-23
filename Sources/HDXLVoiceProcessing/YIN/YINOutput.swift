@@ -101,8 +101,7 @@ public struct BorrowedYINOutput {
                     try IntermediateSnapshot(
                         stage: VersionedIdentifier(name: "yin-" + stage.rawValue, version: 1),
                         source: result.timing.source, xUnit: .samples,
-                        yUnit: stage == .scaledSquaredDifference
-                            ? .normalizedSquaredAmplitude : .dimensionless,
+                        yUnit: .dimensionless,
                         xOrigin: 0, xStep: 1, values: Array(data)))
             }
         }

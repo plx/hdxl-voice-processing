@@ -157,7 +157,8 @@ import Testing
         #expect(throws: VisualizationError.unorderedMeasurements) {
             try live.capture(frame: 10, make: make)
         }
-        var newEpoch = try selected.nextConfiguration(profile: snap.profile)
+        var newEpoch = try selected.nextConfiguration(
+            source: VisualizationSource(t), profile: snap.profile)
         #expect(newEpoch.context.configurationEpoch == Self.context.configurationEpoch + 1)
         #expect(newEpoch.snapshots.isEmpty)
         #expect(throws: VisualizationError.incompatibleSource) {

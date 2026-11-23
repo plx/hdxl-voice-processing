@@ -40,7 +40,7 @@ retains 36 synthetic macOS SwiftUI state-panel PNGs and 34 acoustic plot PNGs.
 The gallery covers 17 fixed-history plots at 350 and 800 points with a selected
 observation. The phone-sized layout requests accessibility Dynamic Type.
 A separate iOS 27.0 Simulator job executes the same gallery using native iOS
-SwiftUI. Its artifact contains the 34 PNG attachments, the test summary and the
+SwiftUI. Its artifact contains the 34 acoustic plot PNGs and eight inspector PNGs, the test summary and the
 attachment manifest. Run `python3 Tools/Visualization/ios_plots.py` from the
 package root with the pinned Xcode version and a fresh
 `.build/visualization-ios-evidence` destination. The runner creates and

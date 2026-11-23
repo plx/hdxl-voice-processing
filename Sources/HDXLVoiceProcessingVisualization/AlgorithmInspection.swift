@@ -39,7 +39,9 @@ public struct InspectionCurve: Sendable, Hashable {
 
 /// An immutable worker-side projection of one calculation. A new algorithm can
 /// supply its own rows and uniformly spaced curves without extending an enum.
-public struct AlgorithmInspection: Sendable {
+public struct AlgorithmInspection: Sendable, Identifiable {
+    public let id = UUID()
+    public let unavailability: UnavailabilityReason?
     public let title: String
     public let explanation: String
     public let reference: URL
@@ -62,7 +64,7 @@ public struct AlgorithmInspection: Sendable {
         window: SourceInterval, dependency: SourceInterval, profile: ProfileIdentity,
         parameters: String, status: String, measurements: [MeasurementResult] = [],
         fields: [InspectionField] = [], curves: [InspectionCurve] = [],
-        querySeconds: ClosedRange<Double>? = nil,
+        querySeconds: ClosedRange<Double>? = nil, unavailability: UnavailabilityReason? = nil,
         limits: VisualizationLimits = .standard
     ) throws {
         func contains(_ child: SourceInterval) -> Bool {
@@ -71,7 +73,9 @@ public struct AlgorithmInspection: Sendable {
                 && child.endSample <= dependency.endSample
         }
         if let querySeconds {
-            guard querySeconds.lowerBound.isFinite, querySeconds.upperBound.isFinite else {
+            guard querySeconds.lowerBound >= 0,
+                querySeconds.upperBound <= dependency.durationSeconds
+            else {
                 throw VisualizationError.invalidSelection
             }
         }
@@ -79,6 +83,9 @@ public struct AlgorithmInspection: Sendable {
         guard reference.scheme == "https", reference.host != nil,
             !title.isEmpty, !explanation.isEmpty, !parameters.isEmpty, !status.isEmpty
         else { throw VisualizationError.invalidConfiguration }
+        guard measurements.count <= limits.maximumMeasurements else {
+            throw VisualizationError.capacityExceeded
+        }
         var records = limits.maximumSegments - 1
         for count in [measurements.count, fields.count, curves.count] {
             guard count <= records else { throw VisualizationError.capacityExceeded }
@@ -119,6 +126,15 @@ public struct AlgorithmInspection: Sendable {
         self.reference = reference
         self.context = context
         self.window = window
+        if let unavailability {
+            self.unavailability = unavailability
+        } else if let first = measurements.first, case .unavailable(let reason) = first.outcome,
+            measurements.allSatisfy({ $0.outcome.estimate == nil })
+        {
+            self.unavailability = reason
+        } else {
+            self.unavailability = nil
+        }
         self.querySeconds = querySeconds
         self.dependency = dependency
         self.profile = profile
@@ -175,6 +191,7 @@ public struct InspectionHistory: Sendable {
     public private(set) var scalarCount = 0
     public private(set) var metadataBytes = 0
     private var records = 0
+    private var measurements = 0
     private var lastFrame: UInt64?
 
     public init(
@@ -196,7 +213,9 @@ public struct InspectionHistory: Sendable {
 
     /// Use at a committed configuration boundary after the host resets the live
     /// analyzer. Previously published snapshots retain their original epoch.
-    public func nextConfiguration(profile: ProfileIdentity) throws -> Self {
+    public func nextConfiguration(source: VisualizationSource, profile: ProfileIdentity) throws
+        -> Self
+    {
         let next = context.configurationEpoch.addingReportingOverflow(1)
         guard !next.overflow else { throw ContractError.arithmeticOverflow }
         return try Self(
@@ -228,7 +247,8 @@ public struct InspectionHistory: Sendable {
             throw VisualizationError.incompatibleSource
         }
         try AlgorithmInspection.requireProfile(profile, next.profile)
-        guard next.scalarCount <= limits.maximumFrameScalars,
+        guard next.measurements.count <= limits.maximumMeasurements,
+            next.scalarCount <= limits.maximumFrameScalars,
             next.metadataBytes <= limits.maximumMetadataBytes,
             next.recordCount <= limits.maximumSegments
         else { throw VisualizationError.capacityExceeded }
@@ -236,11 +256,13 @@ public struct InspectionHistory: Sendable {
         while snapshots.count - dropped >= capacity
             || scalarCount > limits.maximumFrameScalars - next.scalarCount
             || metadataBytes > limits.maximumMetadataBytes - next.metadataBytes
+            || measurements > limits.maximumMeasurements - next.measurements.count
             || records > limits.maximumSegments - next.recordCount
         {
             let oldest = snapshots[dropped]
             scalarCount -= oldest.scalarCount
             metadataBytes -= oldest.metadataBytes
+            measurements -= oldest.measurements.count
             records -= oldest.recordCount
             dropped += 1
         }
@@ -248,6 +270,7 @@ public struct InspectionHistory: Sendable {
         snapshots.append(next)
         scalarCount += next.scalarCount
         metadataBytes += next.metadataBytes
+        measurements += next.measurements.count
         records += next.recordCount
         lastFrame = frame
         return true

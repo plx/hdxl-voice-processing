@@ -217,6 +217,20 @@ public final class PreparedCPPS {
         source: SourceInterval, expectedFrameCount: Int,
         emit: (BorrowedCPPSOutput) -> Void
     ) throws -> CPPSCompletion {
+        guard
+            let report = try finish(
+                source: source, expectedFrameCount: expectedFrameCount,
+                whileEmitting: { true }, emit: emit)
+        else { throw CPPSError.invalidState }
+        return report
+    }
+
+    /// A frozen selection may need only a prefix of the final lookahead tail.
+    /// Stop between emissions. Full finalization can resume from that position.
+    @discardableResult package func finish(
+        source: SourceInterval, expectedFrameCount: Int, whileEmitting: () -> Bool,
+        emit: (BorrowedCPPSOutput) -> Void
+    ) throws -> CPPSCompletion? {
         guard !busy else { throw CPPSError.reentrantCall }
         guard !failed else { throw CPPSError.invalidState }
         if let completion {
@@ -235,6 +249,7 @@ public final class PreparedCPPS {
         defer { busy = false }
         do {
             while emittedFrameCount < receivedFrameCount {
+                guard whileEmitting() else { return nil }
                 try produce(finalSource: source, emit: emit)
             }
         } catch {
@@ -242,6 +257,7 @@ public final class PreparedCPPS {
             throw error
         }
         if let tail = terminalFrame {
+            guard whileEmitting() else { return nil }
             let empty = UnsafeBufferPointer<Double>(start: nil, count: 0)
             emit(
                 BorrowedCPPSOutput(

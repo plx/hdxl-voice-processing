@@ -65,6 +65,10 @@ import Testing
         #expect(
             formants.fields.filter { $0.name.hasPrefix("Pole ") }.count
                 == f.formants.candidates.count)
+        let binding = try JSONDecoder().decode(
+            SessionArchiveProfile.self, from: Data(formants.parameters.utf8))
+        #expect(binding == f.formants.archiveProfile)
+        #expect(try binding.identity() == formants.profile)
         let raw = try AlgorithmInspection.harmonics(f.harmonics.raw, context: context)
         let corrected = try AlgorithmInspection.correctedHarmonics(f.harmonics, context: context)
         #expect(corrected.measurements == [f.harmonics.raw.measurement, f.harmonics.measurement])
@@ -96,6 +100,11 @@ import Testing
                         for curve in snap.curves {
                             let data = curve.samples
                             let offset = Int(data.xOrigin)
+                            let padding =
+                                method == .forwardCrossCorrelation
+                                && offset > frame.computedMaximumLag
+                            #expect((data.stage.name == "hnr-interpolation-padding") == padding)
+                            if padding { #expect(data.values.allSatisfy { $0 == 0 }) }
                             for i in data.values.indices {
                                 #expect(output.correlationValidity[offset + i])
                                 #expect(data.values[i] == output.correlation[offset + i])

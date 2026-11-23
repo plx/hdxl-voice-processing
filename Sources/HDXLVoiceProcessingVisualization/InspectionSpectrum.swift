@@ -25,10 +25,13 @@ extension AlgorithmInspection {
                 ))
         }
         let state: String
+        var failure: UnavailabilityReason?
         switch frame.info.status {
         case .measured: state = "Measured"
         case .noEnergy: state = "No energy in window"
-        case .unavailable(let reason): state = status(reason)
+        case .unavailable(let reason):
+            state = status(reason)
+            failure = reason
         }
         var fields: [InspectionField] = [
             .init("Frequency spacing", "\(layout.frequency.step) Hz"),
@@ -45,6 +48,7 @@ extension AlgorithmInspection {
             context: context,
             window: frame.info.source, dependency: frame.info.source, profile: layout.profile,
             parameters: parameters(layout), status: state, fields: fields, curves: curves,
+            unavailability: failure,
             limits: limits)
     }
 
@@ -60,6 +64,36 @@ extension AlgorithmInspection {
                 "Analysis band", "\(config.analysisBand.lowerHz)…\(config.analysisBand.upperHz) Hz"),
             .init("Weighting", config.weighting.rawValue),
         ]
+        let selected: ProfileIdentity?
+        switch r.origin {
+        case .frame(let info): selected = info.selectionProfile
+        case .longTerm(_, let selection, _, let weight):
+            selected = selection
+            fields.append(.init("Accumulation weight", String(weight)))
+        }
+        if let selected {
+            fields.append(
+                .init("Selection profile", selected.identifier.name + " · " + selected.sha256))
+        }
+        if let support = r.aggregateSupport {
+            fields.append(.init("Measured frames", String(support.measuredFrames)))
+            for (reason, count) in support.unavailableFrames.sorted(by: {
+                $0.key.rawValue < $1.key.rawValue
+            }) {
+                fields.append(.init("Unavailable frames · " + status(reason), String(count)))
+            }
+        }
+        if let coverage = r.selectionCoverage {
+            fields.append(
+                .init(
+                    "Measured selected samples",
+                    "\(coverage.measuredSelectedSamples) of \(coverage.selectedSamples)"))
+            fields.append(
+                .init(
+                    "Coverage exclusions",
+                    "\(coverage.excludedSamples) excluded · \(coverage.missingSamples) missing · \(coverage.outsidePlanSamples) outside plan"
+                ))
+        }
         func energy(_ name: String, _ outcome: MeasurementOutcome, unit: MeasurementUnit) {
             let value =
                 outcome.estimate.map { "\($0.value) \(VisualizationUnitLabel.native(unit).symbol)" }
@@ -103,6 +137,20 @@ extension AlgorithmInspection {
             throw VisualizationError.capacityExceeded
         }
         var fields: [InspectionField] = [.init("LPC order", String(r.configuration.order))]
+        if let pitch = r.pitch {
+            fields.append(
+                .init(
+                    "Pitch used for credibility",
+                    "\(pitch.frequencyHz) Hz · " + pitch.profile.sha256))
+            fields.append(
+                .init(
+                    "Pitch support",
+                    "Samples \(pitch.source.startSample)..<\(pitch.source.endSample) · "
+                        + (pitch.source == r.timing.source ? "matched" : "mismatched")))
+            if let algorithm = pitch.algorithm {
+                fields.append(.init("Pitch algorithm", "\(algorithm.name) v\(algorithm.version)"))
+            }
+        }
         if let gain = r.diagnostics.predictionGainDB {
             fields.append(.init("Prediction gain", "\(gain) dB"))
         }
@@ -138,11 +186,12 @@ extension AlgorithmInspection {
         return try Self(
             title: "Burg LPC and formants",
             explanation:
-                "Fit a linear predictor to the conditioned waveform. Complex poles supply candidate frequencies and bandwidths. Only credible poles receive a formant number.",
+                "Fit a linear predictor to the conditioned waveform. Complex poles supply candidate frequencies and bandwidths. Ranked poles undergo a further credibility check before a formant estimate is available.",
             reference: URL(string: "https://praat.org/manual/Sound__To_Formant__burg____.html")!,
             context: context,
             window: r.timing.source, dependency: r.conditioningSupport, profile: r.profile,
-            parameters: parameters(r.configuration), status: r.failure?.rawValue ?? "Fit completed",
+            parameters: parameters(r.archiveProfile),
+            status: r.failure?.rawValue ?? "Fit completed",
             measurements: measurements, fields: fields, curves: curves, limits: limits)
     }
 

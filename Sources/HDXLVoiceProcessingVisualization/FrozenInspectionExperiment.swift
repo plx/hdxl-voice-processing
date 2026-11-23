@@ -41,51 +41,118 @@ public enum FrozenInspectionRecipe: Sendable, Hashable {
     }
 
     fileprivate func evaluate(_ input: FrozenInspectionInput) throws -> AlgorithmInspection {
+        let precision: AnalysisPrecision
+        switch self {
+        case .pitch(let recipe): precision = recipe.inputPrecision
+        case .cpp(let cepstrogram, _, _): precision = cepstrogram.inputPrecision
+        case .cpps(let recipe, _): precision = recipe.cepstrogram.inputPrecision
+        }
+        try Task.checkCancellation()
+        switch precision {
+        case .float64:
+            return try input.samples.withUnsafeBufferPointer { try evaluate(input, samples: $0) }
+        case .float32:
+            let converted = input.samples.map(Float.init)
+            guard converted.allSatisfy(\.isFinite) else {
+                throw VisualizationError.nonfiniteDisplayValue
+            }
+            return try converted.withUnsafeBufferPointer { try evaluate(input, samples: $0) }
+        }
+    }
+
+    private func evaluate<Sample: BinaryFloatingPoint & Sendable>(
+        _ input: FrozenInspectionInput,
+        samples: UnsafeBufferPointer<Sample>
+    ) throws -> AlgorithmInspection {
         let source = input.source
         var captured: Result<AlgorithmInspection, any Error>?
         switch self {
         case .pitch(let recipe):
-            let analyzer = try PreparedYIN<Double>(recipe)
-            try input.samples.withUnsafeBufferPointer {
-                try analyzer.analyze(
-                    $0, timing: .init(source: source, includedSampleCount: source.sampleCount)
-                ) { out in
-                    captured = Result {
-                        try .pitch(
-                            out, recipe: recipe, context: input.context, limits: input.limits)
-                    }
+            let analyzer = try PreparedYIN<Sample>(recipe)
+            try analyzer.analyze(
+                samples, timing: .init(source: source, includedSampleCount: source.sampleCount)
+            ) { out in
+                captured = Result {
+                    try .pitch(out, recipe: recipe, context: input.context, limits: input.limits)
                 }
             }
         case .cpp(let upstream, let settings, let index):
             let recipe = CPPProfile(cepstrogram: upstream, settings: settings)
-            let transform = try PreparedIntervalCepstrogram<Double>(
-                configuration: upstream, source: source)
             let analyzer = try PreparedCPP(recipe)
-            try input.samples.withUnsafeBufferPointer { try transform.append($0, interval: source) }
-            _ = try transform.finish { column in
-                guard column.context.frameIndex == index else { return }
-                do {
-                    try analyzer.analyze(column) { fit in
-                        captured = Result {
-                            try .cpp(
-                                fit, recipe: recipe, upstream: column,
-                                context: input.context, limits: input.limits)
-                        }
+            _ = try replayCepstrogram(upstream, samples: samples, source: source) { column in
+                guard column.context.frameIndex == index else { return false }
+                try analyzer.analyze(column) { fit in
+                    captured = Result {
+                        try .cpp(
+                            fit, recipe: recipe, upstream: column, context: input.context,
+                            limits: input.limits)
                     }
-                } catch { captured = .failure(error) }
+                }
+                return true
             }
         case .cpps(let recipe, let index):
-            let analyzer = try PreparedIntervalCPPS<Double>(profile: recipe, source: source)
-            try input.samples.withUnsafeBufferPointer { try analyzer.append($0, interval: source) }
-            _ = try analyzer.finish { out in
-                guard out.result.context.frameIndex == index else { return }
-                captured = Result {
-                    try .cpps(out, recipe: recipe, context: input.context, limits: input.limits)
+            let origin = try SourceInterval(
+                epoch: source.epoch, startSample: source.startSample,
+                sampleCount: 0, sampleRate: source.sampleRate)
+            let smoother = try PreparedCPPS(profile: recipe, origin: origin)
+            func receive(_ out: BorrowedCPPSOutput) {
+                if out.result.context.frameIndex == index {
+                    captured = Result {
+                        try .cpps(out, recipe: recipe, context: input.context, limits: input.limits)
+                    }
                 }
             }
+            let completion = try replayCepstrogram(
+                recipe.cepstrogram, samples: samples, source: source
+            ) { column in
+                try smoother.append(column, emit: receive)
+                return captured != nil
+            }
+            if captured == nil, let completion {
+                _ = try smoother.finish(
+                    source: completion.source,
+                    expectedFrameCount: Int(completion.emittedFrameCount),
+                    whileEmitting: { captured == nil && !Task.isCancelled }, emit: receive)
+            }
         }
+        try Task.checkCancellation()
         guard let captured else { throw VisualizationError.invalidSelection }
         return try captured.get()
+    }
+
+    private func replayCepstrogram<Sample: BinaryFloatingPoint & Sendable>(
+        _ recipe: CepstrogramConfiguration, samples: UnsafeBufferPointer<Sample>,
+        source: SourceInterval,
+        receive: (BorrowedPowerCepstrum<Double>) throws -> Bool
+    ) throws -> CepstrogramCompletion? {
+        var failure: (any Error)?
+        func deliver(_ column: BorrowedPowerCepstrum<Double>, cancel: () -> Void) {
+            do {
+                try Task.checkCancellation()
+                if try receive(column) { cancel() }
+            } catch {
+                failure = error
+                cancel()
+            }
+        }
+        let completion: CepstrogramCompletion?
+        if recipe.previewHopLength != nil {
+            let transform = try PreparedPreviewCepstrogram<Sample>(
+                configuration: recipe, epoch: source.epoch, startSample: source.startSample)
+            _ = try transform.process(samples, interval: source) {
+                deliver($0, cancel: transform.cancel)
+            }
+            completion =
+                transform.isCancelled
+                ? nil : try transform.finish { deliver($0, cancel: transform.cancel) }
+        } else {
+            let transform = try PreparedIntervalCepstrogram<Sample>(
+                configuration: recipe, source: source)
+            try transform.append(samples, interval: source)
+            completion = try transform.finish { deliver($0, cancel: transform.cancel) }
+        }
+        if let failure { throw failure }
+        return completion
     }
 }
 
@@ -136,30 +203,47 @@ public struct FrozenInspectionExperiment: Sendable {
 
     /// JSON Pointer paths preserve nested settings, escaped keys, and array indices.
     private static func leaves(_ parameters: String) throws -> [String: String] {
-        var result: [String: String] = [:]
-        func visit(_ value: Any, path: String) throws {
-            if let object = value as? [String: Any], !object.isEmpty {
-                for (key, child) in object {
-                    let escaped = key.replacingOccurrences(of: "~", with: "~0")
-                        .replacingOccurrences(of: "/", with: "~1")
-                    try visit(child, path: path + "/" + escaped)
-                }
-            } else if let array = value as? [Any], !array.isEmpty {
-                for (i, child) in array.enumerated() { try visit(child, path: path + "/\(i)") }
-            } else if let number = value as? NSNumber,
-                ["d", "f"].contains(String(cString: number.objCType))
-            {
-                // Use the same binary64 shortest round-trip spelling as the typed recipe encoder.
-                result[path] = String(
-                    decoding: try JSONEncoder().encode(number.doubleValue), as: UTF8.self)
-            } else {
-                let data = try JSONSerialization.data(
-                    withJSONObject: value,
-                    options: [.fragmentsAllowed, .sortedKeys, .withoutEscapingSlashes])
-                result[path] = String(decoding: data, as: UTF8.self)
+        try JSONDecoder().decode(RecipeNode.self, from: Data(parameters.utf8)).leaves
+    }
+}
+
+/// Recipe values come from typed production encoders. Decode their numbers
+/// directly with Foundation's Swift JSON decoder to preserve binary64 precision.
+private struct RecipeNode: Decodable {
+    let leaves: [String: String]
+
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.singleValueContainer()
+        if let object = try? c.decode([String: RecipeNode].self) {
+            var fields: [String: String] = [:]
+            for (key, value) in object {
+                let escaped = key.replacingOccurrences(of: "~", with: "~0").replacingOccurrences(
+                    of: "/", with: "~1")
+                for (path, leaf) in value.leaves { fields["/" + escaped + path] = leaf }
             }
+            leaves = fields.isEmpty ? ["": "{}"] : fields
+        } else if let array = try? c.decode([RecipeNode].self) {
+            var fields: [String: String] = [:]
+            for (i, value) in array.enumerated() {
+                for (path, leaf) in value.leaves { fields["/\(i)" + path] = leaf }
+            }
+            leaves = fields.isEmpty ? ["": "[]"] : fields
+        } else {
+            let data: Data
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes]
+            if c.decodeNil() {
+                data = Data("null".utf8)
+            } else if let value = try? c.decode(Bool.self) {
+                data = try encoder.encode(value)
+            } else if let value = try? c.decode(String.self) {
+                data = try encoder.encode(value)
+            } else if let value = try? c.decode(Int64.self) {
+                data = try encoder.encode(value)
+            } else {
+                data = try encoder.encode(c.decode(Double.self))
+            }
+            leaves = ["": String(decoding: data, as: UTF8.self)]
         }
-        try visit(JSONSerialization.jsonObject(with: Data(parameters.utf8)), path: "")
-        return result
     }
 }
