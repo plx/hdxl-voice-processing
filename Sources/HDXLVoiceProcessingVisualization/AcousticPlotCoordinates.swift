@@ -59,6 +59,11 @@ extension AcousticPlotData {
         case .waveform:
             guard let span = try? timeAxis.placement(of: first.support) else { return nil }
             return span.lowerSeconds...span.upperSeconds
+        case .spectrogram, .cepstrogram:
+            guard let first = imageCell(at: 0), let last = imageCell(at: columns.count - 1) else {
+                return nil
+            }
+            return first.lowerBound...last.upperBound
         default:
             let half = (hopSeconds ?? 0) / 2
             var low = left - half
@@ -114,8 +119,44 @@ extension AcousticPlotData {
         return sample.flatMap(cursor(atSample:))
     }
 
+    /// The waveform readout is an individual acquired sample. Spectral bins and
+    /// scalar estimates retain the complete contributing analysis interval.
+    public func contributingSelection(for index: AcousticPlotIndex) -> VisualizationSelection? {
+        guard columns.indices.contains(index.column), (0..<binCount).contains(index.bin) else {
+            return nil
+        }
+        let source = columns[index.column].dependency
+        guard kind == .waveform else { return .init(source: source) }
+        return
+            (try? SourceInterval(
+                epoch: source.epoch, startSample: source.startSample + Int64(index.bin),
+                sampleCount: 1, sampleRate: source.sampleRate)).map(VisualizationSelection.init)
+    }
+
+    /// Display cells use the smaller of the hop and the acquired spectral support.
+    /// Adjacent partial or overlapping cells meet halfway between their centers.
+    func imageCell(at index: Int) -> Range<Double>? {
+        guard kind.isImage, centers.indices.contains(index), let hopSeconds else { return nil }
+        let center = centers[index]
+        var low = center - hopSeconds / 2
+        var high = center + hopSeconds / 2
+        if index > 0 { low = max(low, centers[index - 1] + (center - centers[index - 1]) / 2) }
+        if index + 1 < centers.count {
+            high = min(high, center + (centers[index + 1] - center) / 2)
+        }
+        if kind == .spectrogram, let support = try? timeAxis.placement(of: columns[index].support) {
+            low = max(low, support.lowerSeconds)
+            high = min(high, support.upperSeconds)
+        }
+        return low < high ? low..<high : nil
+    }
+
     private func samplePosition(anchor: Int64, offset: Double) -> Int64? {
-        guard let delta = Int64(exactly: (offset * timeAxis.source.sampleRate).rounded(.down))
+        let product = offset * timeAxis.source.sampleRate
+        let integer = product.rounded()
+        let sample =
+            abs(product - integer) <= min(product.ulp, 1e-8) ? integer : product.rounded(.down)
+        guard let delta = Int64(exactly: sample)
         else {
             return nil
         }
@@ -181,34 +222,87 @@ extension AcousticPlotData {
                 ? AcousticPlotIndex(column: 0, bin: bin) : nil
         }
         let x = span.centerSeconds
-        let inGap =
-            selection.source.sampleCount == 0
-            && boundaries.contains { $0.missingSource.map(selection.intersects) == true }
         if case .metric = kind {
-            var closest: Int?
-            var distance = Double.infinity
-            for (i, column) in columns.enumerated() {
-                guard case .metric(let point) = column,
-                    !inGap || column.unavailability != nil
-                else { continue }
-                let d = abs(centers[i] - x)
-                guard closest == nil || d < distance else { continue }
-                let index = AcousticPlotIndex(column: i, bin: 0)
-                guard
-                    point.intersects(selection)
-                        || (point.perturbation == nil
-                            && cursor(for: index).map({ selection.intersects($0.source) }) == true)
-                else { continue }
-                closest = i
-                distance = d
-            }
-            return closest.map { AcousticPlotIndex(column: $0, bin: 0) }
+            return scalarIndex(for: selection, center: x, ordinate: nil)
         }
-        guard let near = nearestIndex(x: x, ordinate: Double(bin) * binStep), let hopSeconds,
-            centers[near.column] + hopSeconds / 2 >= span.lowerSeconds,
-            centers[near.column] - hopSeconds / 2 <= span.upperSeconds
-        else { return nil }
-        return near
+        var closest: Int?
+        var distance = Double.infinity
+        for i in centers.indices {
+            guard let bounds = imageCell(at: i) else { continue }
+            let overlaps =
+                selection.source.sampleCount == 0
+                ? bounds.contains(x)
+                : span.lowerSeconds < bounds.upperBound && span.upperSeconds > bounds.lowerBound
+            let candidate = abs(centers[i] - x)
+            if overlaps && (closest == nil || candidate < distance) {
+                closest = i
+                distance = candidate
+            }
+        }
+        return closest.map { .init(column: $0, bin: bin) }
+    }
+
+    /// A direct tap can disambiguate equal-center marks by their displayed ordinate.
+    func scalarIndex(for selection: VisualizationSelection, center: Double, ordinate: Double?)
+        -> AcousticPlotIndex?
+    {
+        let acquired = acquiredPortions(of: selection)
+        let scale = AcousticPlotScale(bounds: range ?? 0...1)
+        var closest: Int?
+        var distance = Double.infinity
+        var verticalDistance = Double.infinity
+        for (i, column) in columns.enumerated() {
+            guard case .metric(let point) = column else { continue }
+            let portions = column.unavailability == nil ? acquired : [selection]
+            let d = abs(centers[i] - center)
+            let vertical =
+                ordinate.flatMap { y in
+                    column.value(at: 0).map { abs(scale.fraction(y) - scale.fraction($0)) }
+                } ?? Double.infinity
+            guard closest == nil || d < distance || (d == distance && vertical < verticalDistance)
+            else { continue }
+            let index = AcousticPlotIndex(column: i, bin: 0)
+            guard
+                portions.contains(where: { portion in
+                    if point.intersects(portion) { return true }
+                    // An explicitly unavailable padded estimator may have a nominal center outside its input.
+                    return column.unavailability != nil && point.perturbation == nil
+                        && cursor(for: index).map { portion.intersects($0.source) } == true
+                })
+            else { continue }
+            closest = i
+            distance = d
+            verticalDistance = vertical
+        }
+        return closest.map { .init(column: $0, bin: 0) }
+    }
+
+    private func acquiredPortions(of selection: VisualizationSelection) -> [VisualizationSelection]
+    {
+        let gaps = boundaries.compactMap(\.missingSource).filter {
+            $0.sampleCount > 0 && selection.intersects($0)
+        }
+        .sorted { $0.startSample < $1.startSample }
+        guard !gaps.isEmpty else { return [selection] }
+        let source = selection.source
+        guard source.sampleCount > 0 else { return [] }
+        var start = source.startSample
+        var result: [VisualizationSelection] = []
+        func append(until end: Int64) {
+            if end > start,
+                let piece = try? SourceInterval(
+                    epoch: source.epoch, startSample: start, sampleCount: end - start,
+                    sampleRate: source.sampleRate)
+            {
+                result.append(.init(source: piece))
+            }
+        }
+        for gap in gaps where gap.sampleCount > 0 {
+            append(until: max(start, gap.startSample))
+            start = min(source.endSample, max(start, gap.endSample))
+        }
+        append(until: source.endSample)
+        return result
     }
 
     /// Min/max of each consecutive source bucket. The raw sample indices and values survive.

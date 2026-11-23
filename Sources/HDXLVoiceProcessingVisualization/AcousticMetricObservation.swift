@@ -18,6 +18,7 @@ public enum AcousticPerturbationContext: Sendable, Hashable {
 /// Offsets are relative to an integer sample anchor, including for fractional query centers.
 public struct AcousticMetricObservation: Sendable, Hashable {
     public let measurement: VisualizationMeasurement
+    public let observationWindow: SourceInterval
     public let dependency: SourceInterval
     let midpointSupport: SourceInterval?
     public let anchorSample: Int64
@@ -29,6 +30,7 @@ public struct AcousticMetricObservation: Sendable, Hashable {
     public init(_ measurement: VisualizationMeasurement) {
         let support = measurement.result.timing.source
         self.measurement = measurement
+        observationWindow = measurement.scheduled?.observationWindow ?? support
         perturbation = nil
         sampleAlignedQuery = nil
         dependency = measurement.scheduled?.dependencyTiming.source ?? support
@@ -56,10 +58,12 @@ public struct AcousticMetricObservation: Sendable, Hashable {
 
     private init(
         _ result: MeasurementResult, anchor: SourceInterval, offset: Double? = nil,
-        dependency: SourceInterval? = nil, perturbation: AcousticPerturbationContext? = nil,
+        observationWindow: SourceInterval? = nil, dependency: SourceInterval? = nil,
+        perturbation: AcousticPerturbationContext? = nil,
         sampleAlignedQuery: SourceInterval? = nil, context: [String] = []
     ) {
         measurement = VisualizationMeasurement(result)
+        self.observationWindow = observationWindow ?? result.timing.source
         self.dependency = dependency ?? result.timing.source
         anchorSample = anchor.startSample
         midpointSupport = offset == nil ? anchor : nil
@@ -78,6 +82,7 @@ public struct AcousticMetricObservation: Sendable, Hashable {
     public init(_ frame: LevelWindowResult, kind: MeasurementKind, unit: MeasurementUnit) throws {
         self.init(
             try frame.measurementResult(kind: kind, unit: unit), anchor: frame.source,
+            dependency: kind == .kWeightedEnergy ? frame.filterHistorySource : nil,
             context: [
                 "Window \(frame.configuration.windowLength) samples · hop \(frame.configuration.hopLength) samples"
             ])
@@ -102,6 +107,7 @@ public struct AcousticMetricObservation: Sendable, Hashable {
         self.init(
             try frame.measurementResult(), anchor: frame.dependencyTiming.source,
             offset: frame.centerSecondsFromNormalizationOrigin,
+            observationWindow: frame.frameTiming.source,
             context: [
                 "Analysis window · samples \(frame.frameTiming.source.startSample)..<\(frame.frameTiming.source.endSample)"
             ])
@@ -176,7 +182,7 @@ public struct AcousticMetricObservation: Sendable, Hashable {
 
     func intersects(_ selection: VisualizationSelection) -> Bool {
         guard let perturbation else {
-            return selection.intersects(measurement.result.timing.source)
+            return selection.intersects(observationWindow)
         }
         if let sampleAlignedQuery { return selection.intersects(sampleAlignedQuery) }
         let source = selection.source

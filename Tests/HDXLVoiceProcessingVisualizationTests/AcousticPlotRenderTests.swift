@@ -28,7 +28,11 @@ import Testing
                 column: plot.columns.count / 2, bin: min(3, plot.binCount - 1))
             let cursor = try #require(plot.cursor(for: index))
             for width in [350, 800] {
-                let content = AcousticPlotView(plot, selection: .constant(cursor))
+                let view = AcousticPlotView(
+                    plot, selection: .constant(cursor), initialInspection: index)
+                #expect(view.active == index)
+                let content =
+                    view
                     .padding(12).frame(width: CGFloat(width)).fixedSize(
                         horizontal: false, vertical: true
                     )

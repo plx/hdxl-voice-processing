@@ -17,6 +17,8 @@ public enum ScheduledMetric: String, Sendable, Hashable, Codable {
 public struct ScheduledMeasurementExport: Sendable, Hashable {
     public let result: MeasurementResult
     public let origin: AnalysisScheduleOrigin
+    /// Acquired local estimator window when the kernel identifies one separately.
+    public let observationWindow: SourceInterval?
     public let dependencyTiming: AnalysisTiming
     public let dependencyCoverage: AnalysisCoverageCounts
     public let mask: AnalysisMaskProvenance?
@@ -52,8 +54,18 @@ public struct ScheduledFrame: Sendable, Hashable {
     }
 
     public func export(_ metric: ScheduledMetric) throws -> ScheduledMeasurementExport {
-        try ScheduledMeasurementExport(
+        let window: SourceInterval?
+        switch value {
+        case .levels(let frame): window = frame.source
+        case .pitch(let raw, _): window = raw.timing.source
+        case .swipePrime(let frame): window = frame.timing.source
+        case .hnr(.frame(let frame)): window = frame.frameTiming.source
+        case .hnr(.unavailable(let frame)): window = frame.timing.source
+        case .cpps: window = nil
+        }
+        return try ScheduledMeasurementExport(
             result: measurementResult(metric), origin: origin,
+            observationWindow: window.map(origin.sourceInterval(for:)),
             dependencyTiming: timing, dependencyCoverage: coverage, mask: mask,
             frameCenterSecondsFromOrigin: frameCenterSecondsFromOrigin,
             workerBatchingUpperBoundSeconds: workerBatchingUpperBoundSeconds)

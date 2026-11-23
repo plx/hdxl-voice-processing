@@ -31,7 +31,7 @@ import Testing
                 #expect(plot.coordinate(of: cell) == row.frameCenterSecondsFromOrigin)
                 #expect(plot.columns[i].value(at: 0) == row.result.outcome.estimate?.value)
                 #expect(
-                    plot.columns[i].support == row.result.timing.source
+                    plot.columns[i].support == (row.observationWindow ?? row.result.timing.source)
                         && plot.columns[i].dependency == row.dependencyTiming.source)
                 let cursor = try #require(plot.cursor(for: cell))
                 #expect(plot.inspect(cursor) == cell)

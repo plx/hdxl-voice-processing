@@ -108,6 +108,8 @@ public struct AcousticPlotMarker: Sendable, Hashable {
 /// to a selected interval's CPPS median. Frame-level scalar values keep their own semantics.
 public struct AcousticPersonalTargetOverlay: Sendable, Hashable {
     public let source: SourceInterval
+    public let proximity: PersonalTargetFeedbackProximity?
+    public let reasons: [PersonalTargetFeedbackReason]
     public let state: PersonalTargetFeedbackState
     public let target: CalibrationDigest
     public let profile: ProfileIdentity
@@ -122,14 +124,30 @@ public struct AcousticPersonalTargetOverlay: Sendable, Hashable {
         else { return nil }
         source = interval.source
         state = snapshot.state
+        proximity = snapshot.proximity
+        reasons = snapshot.reasons
         target = snapshot.targetIdentity
         profile = snapshot.profile
         selectedMedianDB = snapshot.values?.cppsDB
     }
 
+    public var intervalDescription: String {
+        switch proximity {
+        case .insidePreferred: "Current interval inside preferred range"
+        case .withinExitMargin: "Current interval within the exit margin"
+        case .outsideTarget: "Current interval outside the target"
+        case nil: "Current interval has no scored proximity"
+        }
+    }
+
     public func applies(to plot: AcousticPlotData) -> Bool {
-        guard case .metric(let descriptor) = plot.kind else { return false }
+        guard case .metric(let descriptor) = plot.kind,
+            let span = try? plot.timeAxis.placement(of: source)
+        else { return false }
         return descriptor.kind == .cpps && descriptor.unit == .decibelsRatio
             && plot.profile == profile && plot.timeAxis.source.contains(source)
+            && plot.centers.contains { center in
+                return center >= span.lowerSeconds && center < span.upperSeconds
+            }
     }
 }

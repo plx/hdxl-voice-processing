@@ -57,13 +57,15 @@ func pitchPlot(_ frames: [ScheduledFrame], axis: VisualizationTimeAxis,
 | Waveform | One mono PCM value per source sample in normalized amplitude. The min/max envelope groups consecutive visible samples for display. Inspection returns the original sample and index. A `PulseSnapshot` adds eligible and rejected acoustic landmarks inside the visible interval. |
 | Frequency spectrum | One owned `SpectrogramFrame` with `SpectrumPresentation` for bin power (FS²), bin RMS amplitude (FS), density (FS²/Hz) or log power (dB relative to the specified positive power). Inspection retains original bin power. Zero power has no finite log value. |
 | Spectrum overlays | Supply a `RawHarmonicFrame`, `BurgFormantFrame` or `SpectralShapeResult` independently. Guides mark measured harmonic frequencies, credible formants, centroid and roll-off in Hz. Open **Overlays** for fitted peak amplitude, formant bandwidth, support and profile. |
-| Spectrogram / power cepstrogram | Pass ordered owned frames and their matching layout or recipe. Frequency is in Hz and quefrency in seconds. Color encodes the labeled intensity. Empty or partial columns retain their status and any original stored bins. |
+| Spectrogram / power cepstrogram | Pass ordered owned frames and their matching layout or recipe. Frequency is in Hz and quefrency in seconds. Color encodes the labeled intensity. Empty or partial columns retain their status and any original stored bins. Spectrogram cells stop at the acquired window when its hop exceeds its duration. |
 | Scalar history | Use a `VisualizationMetricSnapshot` or supply a series and `[AcousticMetricObservation]`. Direct adapters accept YIN, level, CPP, CPPS, HNR, spectral-shape descriptors, numbered formant frequencies/bandwidths and raw or corrected H1–H2. Generic measurement results use their support midpoint. Scheduled exports preserve nominal estimator time, coverage and dependency support. |
 | Jitter / shimmer | Pass the typed analysis result and its variant. Each point retains its query, applicability and coverage. Readouts distinguish local ratios, absolute jitter in seconds, shimmer in dB, and neighborhood eligibility for RAP, PPQ and APQ. Fractional queries retain their original bounds relative to the dependency start. |
 
 Tap a mark or bin to inspect it, use the arrows to step through original
 observations, or drag across a time plot to select an interval. **Select support**
-shares the contributing source interval. **Zoom in 4×**, **Include zero** and the
+shares one sample for a waveform readout or the contributing analysis interval
+for an estimate. The initiating view keeps its exact observation while linked
+views inspect the shared interval. **Zoom in 4×**, **Include zero** and the
 waveform envelope affect presentation only. Scalar marks are individual estimates.
 An unavailable estimate has a cross and a reason. A cursor in a source gap has no
 available observation. Equal-center scalar observations remain individually
@@ -77,7 +79,10 @@ identity and its fingerprint. Optional personal targets have a different meaning
 Create `AcousticPersonalTargetOverlay` from an accepted `PersonalTargetFeedbackSnapshot`
 and pass it as `personalTarget:` to a CPPS plot on the same source clock and profile.
 The annotated time span refers to the selected interval’s CPPS lower median. Its
-label includes the policy state and personal calibration identity.
+time-only strip sits beneath the value axis. The readout names the current
+interval’s proximity, the policy state, its reasons and the calibration identity.
+A sustained policy state can span an interval outside the target during exit
+persistence.
 
 The named **Acoustic plots · phone width**, **Acoustic plots · desktop** and
 **Harmonics, pulses and perturbation** previews use finite synthetic signals

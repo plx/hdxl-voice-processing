@@ -40,7 +40,6 @@ struct AcousticPlotDrawing: View {
     let selection: VisualizationSelection?
     let focused: AcousticPlotIndex?
     let envelope: Bool
-    let target: AcousticPersonalTargetOverlay?
 
     var body: some View {
         Canvas { ctx, size in
@@ -105,9 +104,9 @@ struct AcousticPlotDrawing: View {
                 }
             case .spectrogram, .cepstrogram:
                 for (i, center) in data.centers.enumerated() {
-                    let half = (data.hopSeconds ?? 0) / 2
-                    let left = center - half
-                    let right = center + half
+                    guard let bounds = data.imageCell(at: i) else { continue }
+                    let left = bounds.lowerBound
+                    let right = bounds.upperBound
                     guard right >= horizontal.bounds.lowerBound,
                         left <= horizontal.bounds.upperBound
                     else { continue }
@@ -190,15 +189,6 @@ struct AcousticPlotDrawing: View {
                 line(
                     CGPoint(x: xx, y: top), CGPoint(x: xx, y: top + length), .indigo, 1.5,
                     dash: dash)
-            }
-            if let target, let span = try? data.timeAxis.placement(of: target.source),
-                span.upperSeconds >= horizontal.bounds.lowerBound,
-                span.lowerSeconds <= horizontal.bounds.upperBound
-            {
-                let yy = top + height - 4
-                line(
-                    CGPoint(x: x(span.lowerSeconds), y: yy),
-                    CGPoint(x: x(span.upperSeconds), y: yy), .purple, 3, dash: [6, 2])
             }
             if data.kind != .spectrum, let selection,
                 let span = try? data.timeAxis.placement(of: selection.source)

@@ -24,6 +24,18 @@ import Testing
         let plot = try AcousticPlotData(
             metric: input[0].measurement.id.series, observations: input, axis: axis)
         #expect(plot.columns.compactMap { $0.value(at: 0) } == [2, 3, 4, 1])
+        let tie = try VisualizationSelection(source: visualizationSource(start + 10, 0))
+        #expect(plot.scalarIndex(for: tie, center: plot.centers[0], ordinate: 3)?.column == 1)
+        #expect(plot.inspect(tie)?.column == 0)
+        let gap = try SourceDiscontinuity(
+            previousEpoch: visualizationEpoch, nextEpoch: visualizationEpoch.successor(),
+            reason: .droppedAudio, missingSource: visualizationSource(start + 20, 12))
+        let interrupted = try AcousticPlotData(
+            metric: input[0].measurement.id.series, observations: input, axis: axis,
+            boundaries: [gap])
+        #expect(interrupted.inspect(.init(source: try visualizationSource(start + 20, 12))) == nil)
+        #expect(
+            interrupted.inspect(.init(source: try visualizationSource(start + 30, 4)))?.column == 3)
         let longWindowOnly = try VisualizationSelection(source: visualizationSource(start + 14, 0))
         #expect(plot.inspect(longWindowOnly)?.column == 3)
         let cursor = try #require(plot.cursor(for: .init(column: 2, bin: 0)))
@@ -61,6 +73,106 @@ import Testing
         }
     }
 
+    @Test func emptyScalarHistoryChargesItsDescriptorBeforeRetainingIt() throws {
+        let axis = try VisualizationTimeAxis(origin: visualizationSource(100, 0))
+        let profile = try ProfileIdentity(
+            identifier: .init(name: "p", version: 1), sha256: String(repeating: "a", count: 64))
+        let descriptor = try MeasurementDescriptor(
+            kind: .rms, unit: .normalizedAmplitude,
+            algorithm: .init(name: String(repeating: "x", count: 80), version: 1))
+        let key = try VisualizationSeriesKey(
+            measurement: descriptor, profile: profile, source: axis.source)
+        let limit = try VisualizationLimits(
+            maximumMeasurements: 2, maximumFrameScalars: 2, maximumSegments: 2,
+            maximumMetadataBytes: 115)
+        #expect(throws: VisualizationError.capacityExceeded) {
+            try AcousticPlotData(metric: key, observations: [], axis: axis, limits: limit)
+        }
+    }
+
+    @Test func exactSampleSupportAndSharedDependencyRetainLocalFocus() throws {
+        let f = try AcousticPlotPrimaryTests.fixture.get()
+        let wave = try f.waveform()
+        let index = AcousticPlotIndex(column: 0, bin: 3)
+        let sample = try #require(wave.contributingSelection(for: index))
+        #expect(
+            sample.source.startSample == f.source.startSample + 3 && sample.source.sampleCount == 1)
+        let levels = try f.metric(.levelDBFS, algorithm: .levels)
+        let aligned = try #require(levels.cursor(for: .init(column: 3, bin: 0)))
+        #expect(aligned.source.startSample == f.source.startSample + 680)
+        let cpps = try f.metric(.cpps, algorithm: .cpps)
+        let first = AcousticPlotIndex(column: 0, bin: 0)
+        let focus = try #require(AcousticPlotInspection(first, in: cpps, shareSupport: true))
+        #expect(focus.index == first && focus.matches(focus.shared, in: cpps))
+        #expect(
+            focus.shared.source == cpps.columns[0].dependency
+                && !focus.matches(focus.shared, in: levels))
+    }
+
+    @Test func localHNRWindowAndCausalLevelFilterRetainDistinctDependencies() throws {
+        let f = try AcousticPlotPrimaryTests.fixture.get()
+        let hnr = try #require(
+            f.frames.compactMap { frame -> HNRFrameResult? in
+                if case .hnr(.frame(let result)) = frame.value { return result }
+                return nil
+            }.first {
+                $0.frameTiming.source.sampleCount < $0.dependencyTiming.source.sampleCount
+                    && $0.selectedObservation != nil
+            })
+        let point = try AcousticMetricObservation(hnr)
+        #expect(
+            point.observationWindow == hnr.frameTiming.source
+                && point.dependency == hnr.dependencyTiming.source)
+        let after = try SourceInterval(
+            epoch: point.dependency.epoch, startSample: point.observationWindow.endSample,
+            sampleCount: 0, sampleRate: point.dependency.sampleRate)
+        #expect(!point.intersects(.init(source: after)))
+        let window = try PreparedLevelAnalyzer<Double>(
+            configuration: .init(
+                sampleRate: 16000, inputPrecision: .float64,
+                windowLength: 400, hopLength: 160, accumulation: .direct,
+                weighting: .bs1770Revision5(warmupSampleCount: 128)), epoch: f.source.epoch,
+            startSample: f.source.startSample)
+        var frames: [LevelWindowResult] = []
+        _ = try f.pcm.withUnsafeBufferPointer {
+            try window.process($0, interval: f.source) { frames.append($0) }
+        }
+        let frame = try #require(frames.last)
+        let weighted = try AcousticMetricObservation(
+            frame, kind: .kWeightedEnergy, unit: .normalizedSquaredAmplitude)
+        let rms = try AcousticMetricObservation(frame, kind: .rms, unit: .normalizedAmplitude)
+        #expect(
+            weighted.dependency == frame.filterHistorySource
+                && weighted.dependency.startSample < weighted.observationWindow.startSample)
+        #expect(rms.dependency == frame.source && rms.observationWindow == frame.source)
+    }
+
+    @Test func sparseSpectrogramCellsStopAtTheAcquiredSampleBoundary() throws {
+        let f = try AcousticPlotPrimaryTests.fixture.get()
+        let layout = try SpectrogramLayout(
+            framing: .init(
+                window: .init(
+                    definition: .hannPeriodic, sampleCount: 128, sampleRate: 16_000,
+                    precision: .float64), hopLength: 512, partialWindowPolicy: .emitUnavailable),
+            transformLength: 128, channels: .init(channelIndex: 0))
+        let fft = try PreparedSpectrogram<Double>(
+            layout: layout, epoch: f.source.epoch, startSample: f.source.startSample)
+        var columns: [SpectrogramFrame] = []
+        _ = try f.pcm.withUnsafeBufferPointer {
+            try fft.process($0, interval: f.source) { columns.append($0.owned()) }
+        }
+        let plot = try AcousticPlotData(spectrogram: columns, layout: layout, axis: f.axis)
+        #expect(plot.imageCell(at: 0) == 0..<(128.0 / 16000))
+        for i in [128, 200, 511] {
+            let hole = try SourceInterval(
+                epoch: f.source.epoch, startSample: f.source.startSample + Int64(i), sampleCount: 0,
+                sampleRate: 16_000)
+            #expect(plot.inspect(.init(source: hole)) == nil)
+        }
+        let next = try #require(plot.cursor(atSeconds: 512.0 / 16000))
+        #expect(plot.inspect(next)?.column == 1)
+    }
+
     @Test func personalOverlayPreservesSelectedMedianCalibrationAndSourceIdentity() throws {
         let f = try AcousticPlotPrimaryTests.fixture.get()
         let cpps = try f.metric(.cpps, algorithm: .cpps)
@@ -77,7 +189,9 @@ import Testing
             levelAvailableFraction: 1)
         func overlay(
             _ coverage: CalibrationCoverage?, _ profile: ProfileIdentity?, _ source: SourceInterval,
-            disposition: PersonalTargetFeedbackInputDisposition = .accepted
+            disposition: PersonalTargetFeedbackInputDisposition = .accepted,
+            proximity: PersonalTargetFeedbackProximity = .insidePreferred,
+            reasons: [PersonalTargetFeedbackReason] = [.targetMatch]
         ) -> AcousticPersonalTargetOverlay? {
             let evidence = PersonalTargetFeedbackInterval(
                 source: source, analysisIdentity: identity, profile: profile,
@@ -88,8 +202,8 @@ import Testing
                 .init(
                     targetIdentity: identity, configurationIdentity: identity,
                     profile: cpps.profile, statistic: .selectedIntervalLowerMedianV1,
-                    state: .onTarget, reasons: [.targetMatch],
-                    modelReasons: [], responsibleFeature: .cpps, proximity: .insidePreferred,
+                    state: .onTarget, reasons: reasons,
+                    modelReasons: [], responsibleFeature: .cpps, proximity: proximity,
                     evidence: evidence, values: values,
                     progress: .init(
                         qualifiedSeconds: 1, entrySeconds: 1, exitSeconds: 0, entryObservations: 1,
@@ -102,6 +216,19 @@ import Testing
         let mark = try #require(overlay(counts, cpps.profile, source))
         #expect(mark.target == identity && mark.profile == cpps.profile && mark.source == source)
         #expect(mark.state == .onTarget && mark.selectedMedianDB == 13.5 && mark.applies(to: cpps))
+        let held = try #require(
+            overlay(
+                counts, cpps.profile, source, proximity: .outsideTarget, reasons: [.exitPersistence]
+            ))
+        #expect(
+            held.state == .onTarget && held.proximity == .outsideTarget
+                && held.reasons == [.exitPersistence])
+        #expect(held.intervalDescription == "Current interval outside the target")
+        let later = try SourceInterval(
+            epoch: source.epoch, startSample: f.source.endSample + 1000, sampleCount: 50,
+            sampleRate: source.sampleRate)
+        let disjoint = try #require(overlay(counts, cpps.profile, later))
+        #expect(!disjoint.applies(to: cpps))
         #expect(!mark.applies(to: try f.metric(.cpp, algorithm: .cpps)))
         #expect(overlay(nil, cpps.profile, source) == nil)
         #expect(overlay(counts, cpps.profile, source, disposition: .duplicate) == nil)

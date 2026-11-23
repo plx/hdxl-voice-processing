@@ -1,6 +1,34 @@
 import HDXLVoiceProcessing
 import SwiftUI
 
+/// Exact local inspection is independent of the source interval published to sibling plots.
+struct AcousticPlotInspection {
+    let index: AcousticPlotIndex
+    let shared: VisualizationSelection
+    let cursor: VisualizationSelection
+    let support: VisualizationSelection
+    let kind: AcousticPlotKind
+    let profile: ProfileIdentity
+
+    init?(_ index: AcousticPlotIndex, in data: AcousticPlotData, shareSupport: Bool = false) {
+        guard let cursor = data.cursor(for: index),
+            let support = data.contributingSelection(for: index)
+        else { return nil }
+        self.index = index
+        self.cursor = cursor
+        self.support = support
+        shared = shareSupport ? support : cursor
+        kind = data.kind
+        profile = data.profile
+    }
+
+    func matches(_ selection: VisualizationSelection, in data: AcousticPlotData) -> Bool {
+        shared == selection && kind == data.kind && profile == data.profile
+            && data.cursor(for: index) == cursor
+            && data.contributingSelection(for: index) == support
+    }
+}
+
 /// A fixed-history plot for a single acoustic series. Bind the same selection to multiple
 /// plots on the same source clock. Preparing snapshots never starts an analysis or audio session.
 public struct AcousticPlotView: View {
@@ -11,25 +39,29 @@ public struct AcousticPlotView: View {
     @State private var includeZero = false
     @State private var envelope = true
     @State private var bin = 0
-    @State private var lastInspected: AcousticPlotIndex?
+    @State private var lastInspected: AcousticPlotInspection?
     @State private var showTarget = true
     @State private var zoomCenter: Double?
 
     public init(
         _ data: AcousticPlotData, selection: Binding<VisualizationSelection?>,
-        personalTarget: AcousticPersonalTargetOverlay? = nil
+        personalTarget: AcousticPersonalTargetOverlay? = nil,
+        initialInspection: AcousticPlotIndex? = nil
     ) {
         self.data = data
+        let initial = initialInspection.flatMap { AcousticPlotInspection($0, in: data) }
+        _lastInspected = State(initialValue: initial)
+        _bin = State(initialValue: initial?.index.bin ?? 0)
         _selection = selection
         target = personalTarget.flatMap { $0.applies(to: data) ? $0 : nil }
     }
 
-    private var active: AcousticPlotIndex? {
+    var active: AcousticPlotIndex? {
         guard !data.columns.isEmpty else { return nil }
         let validBin = min(max(0, bin), data.binCount - 1)
         if let selection {
-            if let lastInspected, data.cursor(for: lastInspected) == selection {
-                return lastInspected
+            if let lastInspected, lastInspected.matches(selection, in: data) {
+                return lastInspected.index
             }
             return data.inspect(selection, bin: validBin)
         }
@@ -98,7 +130,12 @@ public struct AcousticPlotView: View {
                         "Personal target · calibrated selected-interval CPPS median",
                         isOn: $showTarget)
                     if showTarget {
-                        Label(target.state.text, systemImage: "line.diagonal")
+                        Label(target.intervalDescription, systemImage: "line.diagonal")
+                        Text("Policy state · \(target.state.text)")
+                        Text(
+                            "Policy reasons · "
+                                + target.reasons.map(\.rawValue).joined(separator: ", ")
+                        ).font(.caption)
                         Text(
                             "Target support \(target.source.startSample)..<\(target.source.endSample) samples"
                         )
@@ -171,17 +208,38 @@ public struct AcousticPlotView: View {
                     GeometryReader { proxy in
                         AcousticPlotDrawing(
                             data: data, horizontal: horizontal, vertical: vertical,
-                            selection: selection, focused: active, envelope: envelope,
-                            target: showTarget ? target : nil
+                            selection: selection, focused: active, envelope: envelope
                         )
                         .contentShape(Rectangle())
-                        .gesture(
-                            DragGesture(minimumDistance: 0).onEnded { gesture in
-                                select(gesture, size: proxy.size)
+                        .onTapGesture(coordinateSpace: .local) { location in
+                            selectPoint(location, size: proxy.size)
+                        }
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance: 8).onEnded { gesture in
+                                if abs(gesture.translation.width) > abs(gesture.translation.height)
+                                {
+                                    selectInterval(
+                                        from: gesture.startLocation, to: gesture.location,
+                                        size: proxy.size)
+                                }
                             }
                         )
                         .clipped()
                     }.frame(height: 154)
+                    if showTarget, let target,
+                        let span = try? data.timeAxis.placement(of: target.source),
+                        span.lowerSeconds <= horizontal.bounds.upperBound,
+                        span.upperSeconds >= horizontal.bounds.lowerBound
+                    {
+                        GeometryReader { proxy in
+                            let width = max(1, proxy.size.width - 8)
+                            let low = horizontal.fraction(span.lowerSeconds) * width
+                            let high = horizontal.fraction(span.upperSeconds) * width
+                            Capsule().fill(.purple).frame(width: max(2, high - low), height: 3)
+                                .offset(x: 4 + low, y: 2)
+                        }.frame(height: 7)
+                        Text("Personal calibration interval").font(.caption2)
+                    }
                     HStack {
                         Text(tick(horizontal.bounds.lowerBound))
                         Spacer()
@@ -259,8 +317,10 @@ public struct AcousticPlotView: View {
 
     @ViewBuilder private var selectionButtons: some View {
         Button("Select support", systemImage: "selection.pin.in.out") {
-            if let active {
-                selection = VisualizationSelection(source: data.columns[active.column].dependency)
+            if let active, let focus = AcousticPlotInspection(active, in: data, shareSupport: true)
+            {
+                lastInspected = focus
+                selection = focus.shared
             }
         }.disabled(active == nil)
         Button("Clear selection", systemImage: "xmark.circle") {
@@ -281,42 +341,49 @@ public struct AcousticPlotView: View {
         return { inspect(.init(column: active?.column ?? 0, bin: i)) }
     }
 
-    private func select(_ gesture: DragGesture.Value, size: CGSize) {
-        guard size.width > 0 else { return }
-        let from = horizontal.value((gesture.startLocation.x - 4) / max(1, size.width - 8))
-        let x = horizontal.value((gesture.location.x - 4) / max(1, size.width - 8))
-        let ordinate = vertical.value(1 - (gesture.location.y - 4) / max(1, size.height - 18))
-        if data.kind != .spectrum, abs(gesture.translation.width) >= 8,
-            let a = data.cursor(atSeconds: min(from, x)),
-            let b = data.cursor(atSeconds: max(from, x)),
+    private func selectInterval(from start: CGPoint, to end: CGPoint, size: CGSize) {
+        guard size.width > 0, data.kind != .spectrum else { return }
+        let from = horizontal.value((start.x - 4) / max(1, size.width - 8))
+        let to = horizontal.value((end.x - 4) / max(1, size.width - 8))
+        guard let a = data.cursor(atSeconds: min(from, to)),
+            let b = data.cursor(atSeconds: max(from, to)),
             let source = try? SourceInterval(
                 epoch: a.source.epoch, startSample: a.source.startSample,
                 sampleCount: b.source.startSample - a.source.startSample,
                 sampleRate: a.source.sampleRate)
-        {
-            selection = VisualizationSelection(source: source)
+        else { return }
+        selection = VisualizationSelection(source: source)
+        lastInspected = nil
+    }
+
+    private func selectPoint(_ location: CGPoint, size: CGSize) {
+        let x = horizontal.value((location.x - 4) / max(1, size.width - 8))
+        let ordinate = vertical.value(1 - (location.y - 4) / max(1, size.height - 18))
+        guard let index = data.nearestIndex(x: x, ordinate: ordinate) else { return }
+        if data.kind == .waveform || data.kind == .spectrum {
+            inspect(index)
+            return
+        }
+        guard let cursor = data.cursor(atSeconds: x) else { return }
+        let match: AcousticPlotIndex?
+        if case .metric = data.kind {
+            match = data.scalarIndex(for: cursor, center: x, ordinate: ordinate)
+        } else {
+            match = data.inspect(cursor, bin: index.bin)
+        }
+        if let match {
+            inspect(match)
+        } else {
+            selection = cursor
             lastInspected = nil
-        } else if let index = data.nearestIndex(x: x, ordinate: ordinate) {
-            if data.kind != .waveform && data.kind != .spectrum,
-                let cursor = data.cursor(atSeconds: x)
-            {
-                if let match = data.inspect(cursor, bin: index.bin) {
-                    inspect(match)
-                } else {
-                    selection = cursor
-                    lastInspected = nil
-                }
-            } else {
-                inspect(index)
-            }
         }
     }
 
     private func inspect(_ index: AcousticPlotIndex) {
-        guard let cursor = data.cursor(for: index) else { return }
+        guard let focus = AcousticPlotInspection(index, in: data) else { return }
         bin = index.bin
-        lastInspected = index
-        selection = cursor
+        lastInspected = focus
+        selection = focus.shared
         if zoom, let x = data.coordinate(of: index), !horizontal.bounds.contains(x) {
             zoomCenter = x
         }
@@ -353,6 +420,13 @@ public struct AcousticPlotView: View {
                 }
                 Text(
                     "Frame support \(column.support.startSample)..<\(column.support.endSample) samples"
+                )
+            }
+            if case .metric(let point) = column,
+                point.observationWindow != point.measurement.result.timing.source
+            {
+                Text(
+                    "Local analysis samples \(point.observationWindow.startSample)..<\(point.observationWindow.endSample)"
                 )
             }
             if column.support != column.dependency {

@@ -27,7 +27,7 @@ public enum AcousticPlotPayload: Sendable, Hashable {
 
     public var support: SourceInterval {
         switch self {
-        case .metric(let sample): sample.measurement.result.timing.source
+        case .metric(let sample): sample.observationWindow
         case .waveform(let frame): frame.source
         case .spectral(let frame, _): frame.info.source
         case .cepstral(let frame): frame.context.timing.source
@@ -131,12 +131,13 @@ public struct AcousticPlotData: Sendable {
         else { throw VisualizationError.incompatibleAxis }
         var metadata = VisualizationMetadataBudget(limits)
         try metadata.charge(profile)
+        if case .metric(let descriptor) = kind { try metadata.charge(descriptor.algorithm) }
         try metadata.charge(settings)
         if let calibration { try metadata.charge(calibration) }
         var positions: [Double] = []
         var minimum: Double?
         var maximum: Double?
-        var intermediates = 0
+        var retainedScalars = columns.count * bins
         for column in columns {
             guard axis.source.contains(column.support), axis.source.contains(column.dependency)
             else {
@@ -154,10 +155,10 @@ public struct AcousticPlotData: Sendable {
                 if let mask = point.measurement.scheduled?.mask { try metadata.charge(mask) }
                 for detail in point.context { try metadata.charge(detail) }
                 for frame in point.measurement.result.intermediates {
-                    guard frame.values.count <= limits.maximumFrameScalars - intermediates else {
+                    guard frame.values.count <= limits.maximumFrameScalars - retainedScalars else {
                         throw VisualizationError.capacityExceeded
                     }
-                    intermediates += frame.values.count
+                    retainedScalars += frame.values.count
                 }
             case .spectral(let frame, _):
                 try metadata.charge(frame.layout.profile)
