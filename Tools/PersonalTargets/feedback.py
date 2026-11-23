@@ -9,13 +9,13 @@ import re
 import statistics
 import subprocess
 import sys
+import tempfile
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "Tools"))
 import ci
 
-MARKER = "PERSONAL_FEEDBACK_EVIDENCE "
 RATES = (4, 40, 1000)
 MODES = ("disabled", "sampled", "detailed")
 TEXT = {"mode", "targetSHA256", "configurationSHA256", "outputSHA256", "finalState"}
@@ -107,12 +107,17 @@ def validate_report(report):
             "interpretation": "Three repetitions with rotated mode/observer order; preparation measured once per rate outside updates. Timed update includes policy, snapshot construction and publication. Consumer drains, assertions, encoding and hashing are outside timings. Rates are virtual source cadences, not paced hardware deadlines. No universal time threshold."}
 
 
-def parse_report(log):
-    records = [line.removeprefix(MARKER) for line in log.splitlines() if line.startswith(MARKER)]
-    require(len(records) == 1, "Expected exactly one fresh feedback evidence record")
-    report = json.loads(records[0])
-    validate_report(report)
-    return report
+def read_report(path):
+    def unique_fields(pairs):
+        result = dict(pairs)
+        require(len(result) == len(pairs), "Duplicate feedback evidence field")
+        return result
+
+    require(path.is_file(), "Swift test did not write its feedback evidence report")
+    try:
+        return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_fields)
+    except (json.JSONDecodeError, UnicodeDecodeError) as error:
+        raise ValueError(f"Invalid feedback evidence report: {error}") from error
 
 
 def validate_test_reports(output, reports):
@@ -136,12 +141,14 @@ def run(output):
         (output / "environment.json").write_text(ci.redact(json.dumps(environment, indent=2)) + "\n")
         command = ["swift", "test", "--configuration", "release", "--scratch-path", ".build/feedback-evidence",
                    "--filter", "feedbackPerformanceEvidenceTrials", "--xunit-output", str(output / "tests.xml")]
-        with (output / "commands.log").open("w") as log:
-            ci.run_command(command, log, result["commands"])
-        reports = ci.test_reports(output)
-        validate_test_reports(output, reports)
-        report = parse_report((output / "commands.log").read_text())
-        summary = validate_report(report)
+        with tempfile.TemporaryDirectory(dir=output) as directory:
+            path = Path(directory) / "feedback.json"
+            with (output / "commands.log").open("w") as log:
+                ci.run_command(["env", f"HDXL_PERSONAL_FEEDBACK_REPORT={path}", *command], log, result["commands"])
+            reports = ci.test_reports(output)
+            validate_test_reports(output, reports)
+            report = read_report(path)
+            summary = validate_report(report)
         (output / "trials.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
         (output / "distributions.json").write_text(json.dumps(summary, indent=2, allow_nan=False) + "\n")
         sources = ["Package.swift", "Configuration/build.json", "Tools/ci.py", "Tools/PersonalTargets/feedback.py",
