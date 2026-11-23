@@ -103,7 +103,7 @@ class PersonalFeedbackEvidenceTests(unittest.TestCase):
             self.assertEqual(key, "HDXL_PERSONAL_FEEDBACK_REPORT")
             path = Path(destination)
             self.assertFalse(path.exists())
-            (output / "tests.xml").write_text(
+            (output / "tests-swift-testing.xml").write_text(
                 '<testsuite><testcase classname="HDXLVoiceProcessingTests" '
                 'name="feedbackPerformanceEvidenceTrials()"/></testsuite>')
             producer(path, log)
