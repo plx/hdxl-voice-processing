@@ -158,8 +158,11 @@ private struct FeedbackEvidenceReport: Encodable {
         }
         try #require(Set(rows.filter { $0.rateHz == rate }.map(\.outputSHA256)).count == 1)
     }
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = [.sortedKeys]
-    let bytes = try encoder.encode(FeedbackEvidenceReport(preparations: preparations, trials: rows))
-    print("PERSONAL_FEEDBACK_EVIDENCE " + String(decoding: bytes, as: UTF8.self))
+    if let path = ProcessInfo.processInfo.environment["HDXL_PERSONAL_FEEDBACK_REPORT"] {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        let report = FeedbackEvidenceReport(preparations: preparations, trials: rows)
+        try encoder.encode(report).write(
+            to: URL(fileURLWithPath: path), options: .withoutOverwriting)
+    }
 }

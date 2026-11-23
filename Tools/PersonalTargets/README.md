@@ -38,6 +38,15 @@ mode differences, toolchain/source identities and exact successful test inventor
 These are host software cost measurements, without a universal latency threshold
 or a physical capture/display claim. An existing output directory is refused.
 
+The harness gives the Swift test a fresh file location in
+`HDXL_PERSONAL_FEEDBACK_REPORT`. The producer writes the complete JSON once,
+after timing ends, and refuses to overwrite an existing file. Test-runner output
+is retained in `commands.log`. The harness checks Swift's exit status and the
+named passing test in the xUnit file listed under `testReports` in `result.json`
+(`tests-swift-testing.xml` on the pinned toolchain). It validates the temporary
+report and publishes `trials.json` and `distributions.json`. A missing file,
+malformed or duplicate JSON, or an incomplete trial matrix fails the run.
+
 Verify committed expectations without running Praat:
 
 ```sh

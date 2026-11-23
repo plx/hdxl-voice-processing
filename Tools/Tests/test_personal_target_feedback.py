@@ -1,10 +1,13 @@
 import copy
+import contextlib
 import hashlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 SPEC = importlib.util.spec_from_file_location("personal_feedback", Path(__file__).parents[1] / "PersonalTargets/feedback.py")
 PROBE = importlib.util.module_from_spec(SPEC)
@@ -93,12 +96,79 @@ class PersonalFeedbackEvidenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             PROBE.validate_report(report)
 
-    def test_log_requires_one_fresh_record(self):
-        record = PROBE.MARKER + json.dumps(evidence())
-        self.assertEqual(len(PROBE.parse_report("compiler output\n" + record)["trials"]), 54)
-        for log in ("", record + "\n" + record, PROBE.MARKER + "{}"):
-            with self.assertRaises(ValueError):
-                PROBE.parse_report(log)
+    def collect(self, output, producer):
+        def run_swift(command, log, records):
+            self.assertEqual(command[0], "env")
+            key, destination = command[1].split("=", 1)
+            self.assertEqual(key, "HDXL_PERSONAL_FEEDBACK_REPORT")
+            path = Path(destination)
+            self.assertFalse(path.exists())
+            (output / "tests-swift-testing.xml").write_text(
+                '<testsuite><testcase classname="HDXLVoiceProcessingTests" '
+                'name="feedbackPerformanceEvidenceTrials()"/></testsuite>')
+            producer(path, log)
+            records.append({"exitCode": 0})
+
+        with mock.patch.object(PROBE.ci, "environment", return_value={}), \
+                mock.patch.object(PROBE.ci, "validate_environment"), \
+                mock.patch.object(PROBE.ci, "run_command", side_effect=run_swift), \
+                contextlib.redirect_stderr(io.StringIO()):
+            return PROBE.run(output)
+
+    def test_console_interleaving_cannot_change_the_structured_report(self):
+        report = evidence()
+        document = json.dumps(report)
+        record = "PERSONAL_FEEDBACK_EVIDENCE " + document
+        boundary = 81_920
+        self.assertGreater(len(record), boundary)
+        log_text = record[:boundary] + "✔ Test passed.\n✔ Test run passed.\n" + record[boundary:]
+
+        def produce(path, log):
+            with path.open("x") as stream:
+                stream.write(document[:boundary])
+                log.write(log_text)
+                stream.write(document[boundary:])
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "evidence"
+            self.assertEqual(self.collect(output, produce), 0)
+            self.assertEqual((output / "commands.log").read_text(), log_text)
+            self.assertEqual(json.loads((output / "trials.json").read_bytes()), report)
+            self.assertEqual(json.loads((output / "distributions.json").read_bytes()), PROBE.validate_report(report))
+            with self.assertRaises(FileExistsError):
+                self.collect(output, produce)
+
+    def test_passing_test_and_console_record_cannot_replace_missing_or_invalid_report(self):
+        report = json.dumps(evidence())
+        cases = [(None, "did not write"), (report[:-1], "Invalid feedback evidence report"),
+                 (report + report, "Invalid feedback evidence report"),
+                 (report.replace('"rateHz": 4', '"rateHz": 5, "rateHz": 4', 1), "Duplicate feedback evidence field"),
+                 ('{"preparations":[],"trials":[]}', "Missing preparation"),
+                 (report[:-1] + ',"private":"forbidden"}', "Unexpected feedback evidence fields")]
+        for document, reason in cases:
+            def produce(path, log):
+                log.write("PERSONAL_FEEDBACK_EVIDENCE " + report)
+                if document is not None:
+                    path.write_text(document)
+            with self.subTest(reason=reason), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "evidence"
+                self.assertEqual(self.collect(output, produce), 1)
+                result = json.loads((output / "result.json").read_bytes())
+                self.assertEqual(result["status"], "failed")
+                self.assertIn(reason, result["error"])
+                self.assertFalse((output / "trials.json").exists())
+                self.assertFalse((output / "distributions.json").exists())
+                self.assertFalse(list(output.rglob("feedback.json")))
+
+    def test_failed_command_with_complete_artifacts_cannot_pass(self):
+        def fail_after_writing(path, log):
+            path.write_text(json.dumps(evidence()))
+            raise RuntimeError("Swift test exited 1")
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "evidence"
+            self.assertEqual(self.collect(output, fail_after_writing), 1)
+            self.assertIn("Swift test exited 1", json.loads((output / "result.json").read_bytes())["error"])
+            self.assertFalse((output / "trials.json").exists())
 
     def test_exact_successful_test_inventory_required(self):
         with tempfile.TemporaryDirectory() as directory:
