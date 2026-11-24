@@ -1,0 +1,62 @@
+name: Streaming replay
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Package.swift'
+      - 'Sources/HDXLVoiceProcessing/**'
+      - 'Sources/HDXLVoiceProcessingAudio/**'
+      - 'Tools/Streaming*/**'
+      - 'Tools/ci.py'
+      - 'Tools/instrumentation.py'
+      - 'Tools/Performance/records.py'
+      - 'Tools/Tests/test_streaming_replay.py'
+      - 'Configuration/build.json'
+      - '.github/workflows/streaming-replay.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: streaming-replay-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  replay:
+    name: Streaming replay / ${{ matrix.group }}
+    runs-on: xcode-27
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [cpps, core, full, overhead, stress, capacity, soak, trace]
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+      REPLAY_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Build release replay
+        run: python3 Tools/Streaming/build.py .build/streaming
+      - name: Measure the production streaming path
+        if: matrix.group != 'trace'
+        run: python3 Tools/Streaming/benchmark.py .build/streaming/build.json "$REPLAY_GROUP" .build/streaming-evidence
+      - name: Trace CPPS from native ingress through delivery and overrun recovery
+        if: matrix.group == 'trace'
+        run: |
+          mkdir -p .build/streaming-evidence
+          python3 Tools/Streaming/trace.py .build/streaming/build.json .build/streaming-evidence/signposts.json
+      - name: Retain unbatched timings, source denominators and native checks
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: streaming-replay-${{ matrix.group }}-${{ github.run_attempt }}
+          path: .build/streaming-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

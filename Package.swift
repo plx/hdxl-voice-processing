@@ -18,6 +18,10 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
+            name: "StreamingReplayProbe",
+            dependencies: ["HDXLVoiceProcessing", "HDXLVoiceProcessingAudio"],
+            path: "Tools/StreamingReplayProbe"),
+        .executableTarget(
             name: "PulseStageProbe", dependencies: ["HDXLVoiceProcessing"],
             path: "Tools/PulseStageProbe"),
         .executableTarget(

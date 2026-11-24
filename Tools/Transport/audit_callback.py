@@ -11,6 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "Tools"))
 import ci
+from Streaming.callback_audit import inspect_tap
 
 TARGETS = {
     "macos-arm64": ("macosx", "arm64-apple-macosx27.0"),
@@ -124,8 +125,13 @@ def main():
                 ci.run_command([*common, "-whole-module-optimization", "-emit-assembly",
                                 "-module-name", "HDXLVoiceProcessingAudio", "-I", str(folder),
                                 "-o", str(assembly), *map(str, audio)], log, result["commands"])
-                selected, report = audit(assembly.read_text(), target.split("-")[0])
-                capture = "\n".join(selected.values())
+                source = assembly.read_text()
+                selected, report = audit(source, target.split("-")[0])
+                bodies = functions(source)
+                report["nativeTap"] = inspect_tap(bodies, selected)
+                tap = {symbol: bodies[symbol] for symbol in report["nativeTap"]["calls"]}
+                audited = selected | tap
+                capture = "\n".join(audited[symbol] for symbol in sorted(audited))
                 (folder / "capture.s").write_text(capture)
                 report["captureAssemblySHA256"] = hashlib.sha256(capture.encode()).hexdigest()
                 result["targets"][name] = report

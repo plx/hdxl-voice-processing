@@ -75,7 +75,8 @@ public final class PreparedPCMTransferSchedule<Sample: BinaryFloatingPoint & Sen
     package init(
         transfer: PCMTransfer, profile: AnalysisScheduleProfile,
         origin: AnalysisScheduleOrigin, sourceTileCapacity: Int,
-        measureBlockTimes: Bool, inspect: ((BorrowedScheduledInspection) -> Void)? = nil,
+        measureBlockTimes: Bool, diagnosticMode: RuntimeDiagnosticMode = .disabled,
+        inspect: ((BorrowedScheduledInspection) -> Void)? = nil,
         clock: @escaping @Sendable () -> UInt64 = { DispatchTime.now().uptimeNanoseconds }
     ) throws {
         guard profile.inputFormat == transfer.configuration.format,
@@ -88,7 +89,9 @@ public final class PreparedPCMTransferSchedule<Sample: BinaryFloatingPoint & Sen
         self.clock = clock
         schedule = try PreparedAnalysisSchedule(
             profile: profile, origin: origin,
-            mode: .continuous, sourceTileCapacity: sourceTileCapacity, inspect: inspect)
+            mode: .continuous, sourceTileCapacity: sourceTileCapacity,
+            diagnosticMode: diagnosticMode,
+            inspect: inspect)
         scratch = .allocate(
             capacity: Int(transfer.configuration.maximumFramesPerChunk)
                 * profile.inputFormat.channelCount)
