@@ -12,7 +12,12 @@ import Observation
     private(set) var isBusy = false
     private(set) var observation: IOSCaptureObservation?
     private(set) var frames: UInt64 = 0
-    private(set) var acceptedChunks: UInt64 = 0
+    private(set) var drainedChunks: UInt64?
+    private(set) var transport: PCMTransferSnapshot?
+    private(set) var queueCapacity = 0
+    private(set) var maximumFramesPerChunk: UInt32 = 0
+    private(set) var resourceReport: String?
+    @ObservationIgnored private var history = CaptureResourceHistory()
     private(set) var sessionNeedsAttention = false
     @ObservationIgnored private var operation: Task<Void, Never>?
     @ObservationIgnored private var counters: Task<Void, Never>?
@@ -23,8 +28,13 @@ import Observation
     func start() {
         guard !isBusy, !sessionNeedsAttention else { return }
         isBusy = true
+        resourceReport = nil
+        history = CaptureResourceHistory()
         frames = 0
-        acceptedChunks = 0
+        drainedChunks = nil
+        transport = nil
+        queueCapacity = 0
+        maximumFramesPerChunk = 0
         observation = nil
         status = "Preparing microphone…"
         let intent = capture.prepareStart()
@@ -40,7 +50,8 @@ import Observation
 
     private func run(intent: IOSCaptureStartIntent) async {
         var attemptedActivation = false
-        var worker: Task<UInt64, any Error>?
+        var worker: Task<HostPCMConsumer.Counts, any Error>?
+        var transfer: PCMTransfer?
         var problem: (any Error)?
         do {
             if SystemMicrophoneAuthorization().microphoneAuthorization() == .undetermined {
@@ -62,9 +73,12 @@ import Observation
                 request: CaptureRequest(
                     channelSelection: .arithmeticMean, processing: .measurement),
                 buffering: CaptureBuffering(), lease: IOSCaptureHostLease(activity: .active))
+            transfer = session.transfer
             let task = Task.detached { try await HostPCMConsumer.drain(session.transfer) }
             worker = task
-            frames = try await task.value
+            let counts = try await task.value
+            frames = counts.frames
+            drainedChunks = counts.chunks
         } catch {
             problem = error
         }
@@ -80,6 +94,13 @@ import Observation
         }
         counters?.cancel()
         counters = nil
+        if let transfer {
+            transport = transfer.snapshot()
+            history.observe(transfer, finishing: true)
+            if let data = try? JSONEncoder().encode(history.readings) {
+                resourceReport = String(decoding: data, as: UTF8.self)
+            }
+        }
         if attemptedActivation {
             // This host owns the whole shared session, including failed startup.
             // A multi-feature host must instead arbitrate its own deactivation.
@@ -107,10 +128,13 @@ import Observation
         switch event {
         case .started(let session):
             observation = session.observation
+            queueCapacity = session.transfer.configuration.slotCount
+            maximumFramesPerChunk = session.transfer.configuration.maximumFramesPerChunk
             status = "Capturing in the foreground."
             counters = Task {
                 while !Task.isCancelled {
-                    acceptedChunks = session.transfer.snapshot().acceptedChunks
+                    history.observe(session.transfer)
+                    transport = session.transfer.snapshot()
                     do { try await Task.sleep(for: .milliseconds(100)) } catch { return }
                 }
             }

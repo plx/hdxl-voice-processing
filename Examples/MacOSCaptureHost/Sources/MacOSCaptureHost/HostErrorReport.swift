@@ -10,6 +10,7 @@ enum HostErrorReport {
         case .alreadyRunning: return "capture already running"
         case .configurationChanged: return "input configuration changed"
         case .preparation: return "capture preparation failed"
+        case .integration(.permissionDenied): return "microphone permission denied"
         case .integration: return "capture permission or configuration rejected"
         case .tapInstallation(_, let code): return "tap installation failed (code \(code))"
         case .engineStart(_, let code): return "engine start failed (code \(code))"

@@ -18,6 +18,8 @@ No self-hosted runner, signing credential, or larger paid runner is provisioned.
 
 ## Checks and local reproduction
 
+The Debug artifact includes `native-acceptance.json`, which identifies the actual executed tests for native runtime acceptance. The [capture protocol](NativeCaptureAcceptance.md) ties these results to the signed host, Simulator, callback audits, streaming evidence and deferred device trials.
+
 All six lanes run on PRs and `main`, without path filters that could skip a
 correctness case. Each has a 120-minute timeout to retain complete CPPS reference
 coverage under debug and sanitizer instrumentation. Strategy fail-fast is off so a

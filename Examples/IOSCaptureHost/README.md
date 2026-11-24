@@ -91,3 +91,5 @@ before recording any private voice; this baseline fixture discards its audio.
 Summaries must distinguish physical execution from fake-controller, Simulator and
 compile evidence. Keep private raw traces/audio and route identifiers local; share
 only reviewed, consented summaries in #74 and revise support claims as needed.
+
+The [native capture acceptance protocol](../../Documentation/NativeCaptureAcceptance.md) describes the physical trial forms, resource samples and route-specific outcomes.

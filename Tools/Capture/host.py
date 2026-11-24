@@ -31,8 +31,8 @@ def main():
                            log, result["commands"])
             ci.run_command(["bash", "Tools/build-macos-capture-host.sh"], log, result["commands"])
         result["testReports"] = ci.test_reports(output)
-        if sum(r["testCases"] for r in result["testReports"]) != 3:
-            raise ValueError("Expected both privacy regressions and the public lifecycle smoke test")
+        if sum(r["testCases"] for r in result["testReports"]) != 4:
+            raise ValueError("Expected the privacy, lifecycle and acceptance-drain tests")
         for report in output.glob("*.xml"):
             ci.redact_report(report)
         bundle = ROOT / ".build/macos-capture-host/MacOSCaptureHost.app"
@@ -41,6 +41,9 @@ def main():
             ["codesign", "--display", "--entitlements", "-", "--xml", str(bundle)], stderr=subprocess.PIPE))
         if info["LSMinimumSystemVersion"] != "27.0" or not info["NSMicrophoneUsageDescription"]:
             raise ValueError("Missing host deployment or microphone description")
+        if (info.get("HDXLCaptureRevision") != environment["commit"]
+                or info.get("HDXLCaptureSourceState") != ("dirty" if environment["workingTreeDirty"] else "clean")):
+            raise ValueError("Signed capture fixture has an unexpected source identity")
         if entitlements != {"com.apple.security.device.audio-input": True}:
             raise ValueError("Unexpected hardened-runtime development host entitlements")
         binary = bundle / "Contents/MacOS/MacOSCaptureHost"

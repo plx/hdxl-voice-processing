@@ -8,6 +8,8 @@ on:
       - 'Sources/HDXLVoiceProcessing/**'
       - 'Sources/HDXLVoiceProcessingAudio/**'
       - 'Tools/Streaming*/**'
+      - 'Tools/Capture/acceptance.py'
+      - 'Tools/Capture/device_trial.py'
       - 'Tools/ci.py'
       - 'Tools/instrumentation.py'
       - 'Tools/Performance/records.py'

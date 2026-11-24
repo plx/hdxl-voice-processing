@@ -172,6 +172,8 @@ publishes the boundary before measurements under the new conditions.
 
 ## Verification and deferred work
 
+Use the [native capture acceptance protocol](NativeCaptureAcceptance.md) for the named CI gates, physical route matrix, small host commands and versioned device trial records.
+
 `CaptureIntegrationTests` use injected providers to cover initialization without
 queries; all permission states; unavailable/unknown input; unsupported/unqualified
 capabilities; foreground/background; all activation/deactivation grants; host-managed

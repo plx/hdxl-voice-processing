@@ -45,3 +45,35 @@ import Testing
             "bounded-lifecycle-display-completion", "independent-lifecycle-strict-delivery",
         ])
 }
+
+@Test func acceptanceDrainCountsTerminalLossWithoutSavingSamples() async throws {
+    let config = try PCMTransferConfiguration(
+        format: PCMFormat(sampleRate: 48000, channelCount: 1, layout: .interleaved),
+        epoch: StreamEpoch(streamID: UUID()), maximumFramesPerChunk: 4, slotCount: 2)
+    let transfer = PCMTransfer(configuration: config)
+    let block = [Float](repeating: 0.25, count: 4)
+    for start in [0, 4, 8] {
+        _ = block.withUnsafeBytes {
+            transfer.offerInterleaved(
+                $0, frameCount: 4, sourceStartSample: Int64(start),
+                configurationToken: config.captureToken)
+        }
+    }
+    transfer.close()
+    let counts = try await AcceptanceProbe.drain(transfer)
+    #expect(counts.blocks == 2)
+    #expect(counts.frames == 8)
+    #expect(counts.knownGapFrames == 4)
+    #expect(counts.unknownGaps == 0)
+    var resources = CaptureResourceHistory()
+    resources.observe(transfer)
+    resources.observe(transfer)
+    resources.observe(transfer, finishing: true)
+    let readings = resources.readings
+    #expect(readings.count == 2)
+    #expect(
+        readings.allSatisfy {
+            $0.epoch == config.epoch.streamID.uuidString && $0.queueDepthSlots == 0
+        })
+    #expect(readings.allSatisfy { ($0.residentBytes ?? 0) > 0 && $0.processCPUSeconds != nil })
+}

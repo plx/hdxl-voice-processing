@@ -117,7 +117,8 @@ enum HostSelfTest {
             }) == .accepted(sequence: 1)
         else { throw HostProbeError.failed }
         transfer.close()
-        guard try await HostPCMConsumer.drain(transfer) == 4 else { throw HostProbeError.failed }
+        let drained = try await HostPCMConsumer.drain(transfer)
+        guard drained.frames == 4, drained.chunks == 1 else { throw HostProbeError.failed }
         checks.append("closed-transfer-drained")
         let gapTransfer = PCMTransfer(configuration: configuration)
         let oversized = samples.withUnsafeBytes {

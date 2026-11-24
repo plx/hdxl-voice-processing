@@ -3,11 +3,21 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 package=Examples/MacOSCaptureHost
 destination=.build/macos-capture-host/MacOSCaptureHost.app
+revision=$(git rev-parse --verify HEAD 2>/dev/null || echo unavailable)
+source_state=unavailable
+if [[ "$revision" != unavailable ]]; then
+    if [[ -n "$(git status --porcelain)" ]]; then source_state=dirty; else source_state=clean; fi
+fi
 swift build --package-path "$package" --configuration release
 binary_dir=$(swift build --package-path "$package" --configuration release --show-bin-path)
 mkdir -p "$destination/Contents/MacOS"
 cp "$binary_dir/MacOSCaptureHost" "$destination/Contents/MacOS/MacOSCaptureHost"
 cp "$package/Info.plist" "$destination/Contents/Info.plist"
+if [[ "$revision" != unavailable && ( "$(git rev-parse --verify HEAD)" != "$revision" || -n "$(git status --porcelain)" ) ]]; then
+    source_state=dirty
+fi
+plutil -insert HDXLCaptureRevision -string "$revision" "$destination/Contents/Info.plist"
+plutil -insert HDXLCaptureSourceState -string "$source_state" "$destination/Contents/Info.plist"
 plutil -lint "$destination/Contents/Info.plist" "$package/Development.entitlements"
 # Default: ad-hoc local development identity. Supply an existing identity explicitly
 # for stable TCC identity; no credentials, provisioning, or distribution setup here.

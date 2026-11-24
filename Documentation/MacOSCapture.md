@@ -138,3 +138,5 @@ of the returned CF object; the native backend releases that object after reading
 runs its privacy tests and synthetic public-lifecycle test, then executes
 `--self-test-error-reporting` and `--self-test-lifecycle`. These modes request no
 permission and create no native capture operation; they do not qualify TCC or hardware.
+
+The [native capture acceptance protocol](NativeCaptureAcceptance.md) describes the physical trial forms, resource samples and route-specific outcomes.
