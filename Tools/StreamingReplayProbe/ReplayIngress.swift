@@ -60,7 +60,16 @@
             UInt64((Double(index) * 1e9 / Double(options.rate)).rounded(.toNearestOrEven))
         }
 
-        private func offer(frames: Int) throws {
+        private struct Callback {
+            let sourceStart: Int
+            let frames: Int
+            let hostNS: UInt64
+            let buffer: AVReadOnlyAudioPCMBuffer
+            let time: AVAudioTime
+            let previouslyAdmitted: UInt64
+        }
+
+        private func prepare(frames: Int) throws -> Callback {
             let start = source
             let buffer = try AVReadOnlyAudioPCMBuffer(format: format, frameCapacity: frames) {
                 list in
@@ -77,14 +86,21 @@
             ).quotient
             let time = AVAudioTime(
                 hostTime: ticks, sampleTime: Int64(start), atRate: Double(options.rate))
-            let previous = tap.transfer.snapshot().acceptedChunks
+            return Callback(
+                sourceStart: start, frames: frames, hostNS: host, buffer: buffer, time: time,
+                previouslyAdmitted: tap.transfer.snapshot().acceptedChunks)
+        }
+
+        private func offer(_ callback: Callback) throws {
             let entered = replayClock()
-            tap.accept(buffer, at: time)
+            tap.accept(callback.buffer, at: callback.time)
             let returned = replayClock()
             guard tap.failure == nil else {
                 throw ReplayFailure("tap rejected native buffer format or clock")
             }
-            let admitted = tap.transfer.snapshot().acceptedChunks > previous
+            let admitted = tap.transfer.snapshot().acceptedChunks > callback.previouslyAdmitted
+            let start = callback.sourceStart
+            let frames = callback.frames
             if report.firstOfferNS == nil { report.firstOfferNS = entered }
             report.lastReturnNS = returned
             report.offered += 1
@@ -107,7 +123,7 @@
             if options.operation != .soak {
                 report.retainedCallbacks.append(
                     CallbackRecord(
-                        sourceStart: start, frames: frames, sourceHostNS: host,
+                        sourceStart: start, frames: frames, sourceHostNS: callback.hostNS,
                         enteredNS: entered, returnedNS: returned, admitted: admitted))
             }
             source += frames
@@ -133,13 +149,15 @@
         func startupBurst(forCancellation: Bool) throws {
             if forCancellation {
                 anchor = replayClock()
-                for _ in 0..<tap.transfer.configuration.slotCount { try offer(frames: 1024) }
+                for _ in 0..<tap.transfer.configuration.slotCount {
+                    try offer(prepare(frames: 1024))
+                }
                 return
             }
             guard options.load == .burst else { return }
             anchor = replayClock()
             for _ in 0..<(tap.transfer.configuration.slotCount + 4) {
-                try offer(frames: nextSize())
+                try offer(prepare(frames: nextSize()))
             }
         }
 
@@ -149,6 +167,7 @@
             while report.offeredFrames < target {
                 try Task.checkCancellation()
                 let size = nextSize()
+                let callback = try prepare(frames: size)
                 if options.load == .paced {
                     let due = anchor! + offset(source + size)
                     let now = replayClock()
@@ -165,7 +184,7 @@
                         try await Task.sleep(for: .microseconds(100))
                     }
                 }
-                try offer(frames: size)
+                try offer(callback)
             }
             return report
         }

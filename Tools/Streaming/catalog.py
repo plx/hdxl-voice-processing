@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "Tools"))
 from Performance.records import sha
 from Streaming.benchmark import PROFILES, SEED, cases, validate_group
+from Streaming.build import validate_build
 from Streaming.report import summarize
 
 GROUPS = (*PROFILES, "capacity", "stress", "overhead", "soak")
@@ -31,6 +32,7 @@ def compact(trial):
 
 def group_index(path):
     receipt = json.loads(path.read_bytes())
+    validate_build(receipt["build"], receipt["environment"], receipt["binarySHA256"])
     group = receipt["group"]
     planned = list(cases(group))
     if receipt.get("schemaVersion") != 1 or len(planned) != len(receipt["runs"]):
@@ -66,7 +68,7 @@ def group_index(path):
     paired = validate_group(group, receipt["runs"])
     if receipt.get("instrumentationOverhead") != paired:
         raise ValueError("Paired overhead differs from raw evidence")
-    evidence = dict(environment=receipt["environment"], receiptSHA256=sha(path), binarySHA256=receipt["binarySHA256"],
+    evidence = dict(environment=receipt["environment"], receiptSHA256=sha(path), binarySHA256=receipt["binarySHA256"], build=receipt["build"],
                     runs=rows)
     if paired is not None:
         evidence["pairedOverhead"] = paired
@@ -87,6 +89,8 @@ def main():
     if set(groups) != set(GROUPS):
         raise ValueError("Supply one results.json from every timing and lifecycle group")
     commits = {v["environment"]["commit"] for v in groups.values()}
+    if len({v["build"]["sourceSHA256"] for v in groups.values()}) != 1:
+        raise ValueError("Catalog contains different package sources")
     if len(commits) != 1 or not re.fullmatch("[0-9a-f]{40}", next(iter(commits))) or any(
             v["environment"]["workingTreeDirty"] for v in groups.values()):
         raise ValueError("Published catalog requires one clean measured source revision")

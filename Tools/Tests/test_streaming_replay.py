@@ -1,11 +1,13 @@
 import copy
+import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from Streaming import benchmark, callback_audit, report, trace
+from Streaming import benchmark, build, callback_audit, report, trace
 
 
 class StreamingReplayTests(unittest.TestCase):
@@ -21,34 +23,58 @@ class StreamingReplayTests(unittest.TestCase):
                      finishedNS=1_340_200, afterPublicationNS=1_340_230, depthAfter=0)
         frame = dict(lane="cpps", regionStart=0, windowEnd=64, acousticEndNS=1_333_433,
                      dependencyEndNS=1_333_433, effectiveDelaySeconds=.01, publishedNS=1_340_210,
-                     observedNS=1_340_240, outcomes={"cpps": "insufficientData"})
+                     observedNS=1_340_240, outcomes={"cpp": "available", "cpps": "insufficientData"})
         windows = dict(noCapacityLossFrames=1, omittedWindowPositions=0,
                        addedWindowPositionsAfterReset=0, withheldAtExplicitStop=1)
         trial = dict(profile="cpps", profileSHA256="stub", sampleRate=48000, pattern=[64], load="paced",
                      mode="disabled", operation="single", seconds=1, seed=7, consumedFrames=64, drainedBlocks=1,
-                     emittedFrames=1, gapCount=0, resetCount=0, knownMissingFrames=0, unknownGaps=0, droppedFrames=0,
-                     overflowChunks=0, queueHighWater=1, queueSlots=32, schedulerBytes=512, pcmBytes=1024,
+                     emittedFrames=1, gapCount=0, resetCount=0, knownMissingFrames=0, unknownGaps=0, droppedFrames=47936,
+                     queueHighWater=1, queueSlots=32, schedulerBytes=512, pcmBytes=1024,
                      fast={"highWater": 1, "capacity": 256}, slow={"highWater": 1}, paused={"highWater": 4},
                      stopReason="explicitStop", requirements=[{"lane": "cpps", "hopSeconds": .01}], resident=[],
                      processingNS=90, finalDrainNS=1_340_230, drains=[drain], ingress=dict(
-                         offeredFrames=64, offered=1, firstOfferNS=1_340_100, explicitGapFrames=0,
+                         offeredFrames=48000, admittedFrames=64, firstOfferNS=1_340_100, explicitGapFrames=960,
                          retainedCallbacks=[call], admittedRegionCount=1, lastAdmittedRegion=[0,64],
                          admittedRegions=[[0,64]]), science=dict(records=[frame], equivalentNativeFrames=1,
                          sha256="stub", windows={"cpps": windows}))
+        calls = trial["ingress"]["retainedCallbacks"]
+        for region in (0, 24960):
+            for offset in range(0, 24000, 64):
+                start = region + offset
+                if start == 0:
+                    continue  # Only the first callback reached the worker.
+                size = min(64, 24000 - offset)
+                host = 100 + round(start * 1e9 / 48000)
+                due = host + round(size * 1e9 / 48000)
+                calls.append(dict(sourceStart=start, frames=size, sourceHostNS=host,
+                                  enteredNS=due, returnedNS=due + 60, admitted=False))
+        trial["ingress"].update(offered=len(calls), lastReturnNS=calls[-1]["returnedNS"])
+        trial["overflowChunks"] = len(calls) - 1
         result = report.summarize(trial)
         self.assertEqual((result["enqueueToDequeueLowerNS"]["p50"], result["enqueueToDequeueUpperNS"]["p50"]), (0,25))
         self.assertEqual(result["lanes"]["cpps"]["acousticEndToObservationNS"]["p99"], 6807)
-        self.assertEqual(result["lanes"]["cpps"]["outcomes"], {"cpps": {"insufficientData": 1}})
+        self.assertEqual(result["lanes"]["cpps"]["outcomes"], {"cpp": {"available": 1}, "cpps": {"insufficientData": 1}})
         for key, value in (("sourceHostNS", 101), ("frames", 32), ("dequeuedNS", 1_340_099)):
             broken = copy.deepcopy(trial)
             broken["drains"][0][key] = value
             with self.subTest(key=key), self.assertRaises(ValueError):
                 report.summarize(broken)
         gap = copy.deepcopy(trial)
-        gap["ingress"]["lastAdmittedRegion"] = [20,84]
-        gap["ingress"]["explicitGapFrames"] = 20
+        gap["knownMissingFrames"] = 20
         with self.assertRaisesRegex(ValueError, "before the final admitted"):
             report.summarize(gap)
+        for field, index in (("sourceStart", len(calls) // 2), ("frames", -1)):
+            broken = copy.deepcopy(trial)
+            broken["ingress"]["retainedCallbacks"][index][field] += 1
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, "callback geometry"):
+                report.summarize(broken)
+        for operation in ("single", "overhead"):
+            broken = copy.deepcopy(trial) | {"operation": operation}
+            del broken["science"]["records"][0]["outcomes"]["cpp"]
+            with self.subTest(operation=operation), self.assertRaisesRegex(ValueError, "configured metric"):
+                report.summarize(broken)
+        with self.assertRaisesRegex(ValueError, "Worker aggregate"):
+            report.summarize(dict(trial, processingNS=0))
         soak = copy.deepcopy(trial) | {"operation": "soak", "drains": [], "science": None}
         soak["ingress"] = dict(soak["ingress"], retainedCallbacks=[], admittedRegions=[])
         for states in ({}, {"cpps": {"cpps": {"available": 1}}}):
@@ -57,6 +83,27 @@ class StreamingReplayTests(unittest.TestCase):
         windows["omittedWindowPositions"] = 1
         with self.assertRaisesRegex(ValueError, "window positions"):
             report.summarize(trial)
+
+    def test_release_receipt_binds_source_product_and_environment(self):
+        env = dict(commit="1" * 40, workingTreeDirty=False, architecture="arm64", hostOSBuild="build",
+                   swift="swift", xcode="xcode", sdks={"macosx": "27.0"})
+        source = "2" * 64
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(build, "sources", return_value=source):
+            path = Path(directory)
+            binary = path / "swiftpm" / "release" / build.PRODUCT
+            binary.parent.mkdir(parents=True)
+            binary.write_bytes(b"release executable")
+            receipt = path / "build.json"
+            expected = dict(schemaVersion=1, product=build.PRODUCT, swiftBuildArguments=build.FLAGS,
+                            sourceSHA256=source, binarySHA256=build.sha(binary), environment=env)
+            receipt.write_text(json.dumps(expected))
+            self.assertEqual(build.verified_binary(receipt, env), (binary.resolve(), expected))
+            for change in (dict(binarySHA256="0" * 64), dict(sourceSHA256="0" * 64),
+                           dict(swiftBuildArguments=["-c", "debug", "--product", build.PRODUCT]),
+                           dict(environment=dict(env, commit="3" * 40)), dict(environment=dict(env, xcode="other"))):
+                receipt.write_text(json.dumps(expected | change))
+                with self.subTest(change=change), self.assertRaises(ValueError):
+                    build.verified_binary(receipt, env)
 
     def test_mode_comparison_requires_every_pair_and_identical_validity(self):
         runs = [dict(repeat=rep, trials=[dict(profile=p, mode=m, scienceSHA256=p,

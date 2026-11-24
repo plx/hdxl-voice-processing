@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "Tools"))
 import ci
 from Performance.records import sha, system_state
+from Streaming.build import verified_binary
 from Streaming.report import summarize
 
 PROFILES = ("cpps", "core", "full")
@@ -96,13 +97,13 @@ def validate_group(group, runs):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("binary", type=Path)
+    parser.add_argument("build_receipt", type=Path)
     parser.add_argument("group", choices=(*PROFILES, "overhead", "stress", "soak", "capacity"))
     parser.add_argument("output", type=Path)
     parser.add_argument("--development-toolchain", action="store_true")
     args = parser.parse_args()
-    binary = args.binary.resolve(strict=True)
     environment = ci.environment("release")
+    binary, build = verified_binary(args.build_receipt, environment)
     if not args.development_toolchain:
         ci.validate_environment(environment, json.loads((ROOT / "Configuration/build.json").read_bytes()))
     environment.update(execution="synthetic PCM via production tap, lifecycle, worker and subscriptions",
@@ -130,7 +131,9 @@ def main():
             results.append(row)
             raw.unlink()
     paired = validate_group(args.group, results)
-    receipt = dict(schemaVersion=1, group=args.group, binarySHA256=sha(binary), environment=environment,
+    if verified_binary(args.build_receipt, ci.environment("release"))[1] != build:
+        raise ValueError("Release build changed during measurement")
+    receipt = dict(schemaVersion=1, group=args.group, binarySHA256=build["binarySHA256"], build=build, environment=environment,
                    physicalFollowup=74, integrationIssue=62, deviceProtocolIssue=64, runs=results)
     if paired:
         receipt["instrumentationOverhead"] = paired

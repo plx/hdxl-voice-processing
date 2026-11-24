@@ -5,14 +5,14 @@ The release probe feeds deterministic native Float32 buffers into `PreparedCaptu
 ## Reproduce
 
 ```sh
-swift build -c release --product StreamingReplayProbe --scratch-path .build/streaming
-binary=.build/streaming/release/StreamingReplayProbe
+python3 Tools/Streaming/build.py .build/streaming
+binary=.build/streaming/swiftpm/release/StreamingReplayProbe
 "$binary" core 48000 mixed paced disabled 2 7 single /tmp/core-replay.json
-python3 Tools/Streaming/benchmark.py "$binary" full .build/full-streaming-results
-python3 Tools/Streaming/trace.py "$binary" .build/streaming-signposts.json
+python3 Tools/Streaming/benchmark.py .build/streaming/build.json full .build/full-streaming-results
+python3 Tools/Streaming/trace.py .build/streaming/build.json .build/streaming-signposts.json
 ```
 
-Use a fresh output directory for each benchmark group. The default runner checks the toolchain pinned in `Configuration/build.json`. Use `--development-toolchain` for a separately labelled local run. Groups `cpps`, `core` and `full` cover 44.1/48 kHz and 64, 128, 256, 512, 1024 and mixed callbacks, each at native pace and at maximum sustainable throughput. The mixed pattern also includes 93 and 711 frames. The one-second deterministic source repeats seeded voiced harmonics, silence and a clipped segment. Each run includes a 20 ms jump in the device sample clock.
+The builder requires a fresh directory and binds the release executable to the source digest, Git revision and compiler. Every group verifies this receipt before and after measurement. Use a fresh output directory for each benchmark group. The default runner checks the toolchain pinned in `Configuration/build.json`. Use `--development-toolchain` for a separately labelled local run. Groups `cpps`, `core` and `full` cover 44.1/48 kHz and 64, 128, 256, 512, 1024 and mixed callbacks, each at native pace and at maximum sustainable throughput. The mixed pattern also includes 93 and 711 frames. The one-second deterministic source repeats seeded voiced harmonics, silence and a clipped segment. Each run includes a 20 ms jump in the device sample clock.
 
 | Group | Question |
 | --- | --- |

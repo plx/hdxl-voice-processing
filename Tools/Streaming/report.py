@@ -21,6 +21,64 @@ def distribution(values):
             **{f"p{p}": ordered[ceil(p * len(ordered) / 100) - 1] for p in (50, 95, 99)}}
 
 
+def callback_geometry(t):
+    """Reconstruct actual source positions including midpoint division and terminal partial input."""
+    target = t["sampleRate"] * t["seconds"]
+    half = target // 2
+    gap = t["sampleRate"] // 50
+    pattern = t["pattern"]
+    offered = 0
+    index = 0
+    if not pattern or any(type(n) is not int or n <= 0 for n in pattern):
+        raise ValueError("Invalid requested callback pattern")
+    while offered < target:
+        boundary = half if offered < half else target
+        size = min(pattern[index % len(pattern)], boundary - offered)
+        yield offered + (gap if offered >= half else 0), size
+        offered += size
+        index += 1
+
+
+def verify_callbacks(t):
+    ingress = t["ingress"]
+    calls = ingress["retainedCallbacks"]
+    regions = []
+    admitted = 0
+    previous_return = None
+    for call, (start, frames) in zip(calls, callback_geometry(t), strict=True):
+        if (call["sourceStart"], call["frames"]) != (start, frames):
+            raise ValueError("Actual callback geometry differs from the declared workload")
+        if (call["enteredNS"] > call["returnedNS"] or type(call["admitted"]) is not bool
+                or previous_return is not None and call["enteredNS"] < previous_return):
+            raise ValueError("Invalid callback duration or admission")
+        previous_return = call["returnedNS"]
+        if call["admitted"]:
+            admitted += 1
+            end = start + frames
+            if regions and regions[-1][1] == start:
+                regions[-1][1] = end
+            else:
+                regions.append([start, end])
+    if (not regions or regions != ingress["admittedRegions"] or len(regions) != ingress["admittedRegionCount"]
+            or regions[-1] != ingress["lastAdmittedRegion"] or len(calls) != ingress["offered"]
+            or ingress["explicitGapFrames"] != t["sampleRate"] // 50
+            or ingress["offeredFrames"] != t["seconds"] * t["sampleRate"]
+            or admitted != t["drainedBlocks"] or len(calls) - admitted != t["overflowChunks"]
+            or ingress["admittedFrames"] != t["consumedFrames"]
+            or calls[0]["enteredNS"] != ingress["firstOfferNS"] or previous_return != ingress["lastReturnNS"]):
+        raise ValueError("Observed acquisition geometry differs from the ingress summary")
+
+
+def verify_outputs(t):
+    records = t["science"]["records"]
+    if (len(records) != t["emittedFrames"] or t["science"]["equivalentNativeFrames"] != len(records)
+            or {r["lane"] for r in records} != PROFILE_LANES[t["profile"]]):
+        raise ValueError("Scientific oracle denominator differs from delivery")
+    for record in records:
+        if set(record["outcomes"]) != METRICS[record["lane"]]:
+            raise ValueError("Missing configured metric from native frame")
+
+
 def summarize(t):
     ingress = t["ingress"]
     rate = t["sampleRate"]
@@ -40,6 +98,14 @@ def summarize(t):
     if {r["lane"] for r in t["requirements"]} != PROFILE_LANES[t["profile"]]:
         raise ValueError("Incomplete schedule requirements")
     process = t.get("processingNS")
+    if t["operation"] != "soak":
+        verify_callbacks(t)
+        verify_outputs(t)
+    if t["operation"] not in {"soak", "overhead"}:
+        turns = [d["finishedNS"] - d["startedNS"] for d in t["drains"]]
+        if not turns or min(turns) < 0 or process != sum(turns):
+            raise ValueError("Worker aggregate differs from individual drain durations")
+        process = sum(turns)
     consumed_seconds = t["consumedFrames"] / rate
     common = {k: t[k] for k in ("profile", "profileSHA256", "sampleRate", "pattern", "load", "mode", "operation",
                                 "seconds", "seed", "consumedFrames", "drainedBlocks", "emittedFrames", "gapCount",
@@ -108,8 +174,6 @@ def summarize(t):
         common["arrivalLatenessNS"] = distribution(c["enteredNS"] - c["sourceHostNS"] - ns(c["frames"]) for c in calls)
     finished = [d["afterPublicationNS"] for d in drains]
     records = t["science"]["records"]
-    if len(records) != t["emittedFrames"] or t["science"]["equivalentNativeFrames"] != len(records):
-        raise ValueError("Scientific oracle denominator differs from delivery")
     requirements = {r["lane"]: r for r in t["requirements"]}
     lanes = defaultdict(list)
     for record in records:

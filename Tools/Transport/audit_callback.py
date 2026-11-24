@@ -130,7 +130,8 @@ def main():
                 bodies = functions(source)
                 report["nativeTap"] = inspect_tap(bodies, selected)
                 tap = {symbol: bodies[symbol] for symbol in report["nativeTap"]["calls"]}
-                capture = "\n".join((selected | tap).values())
+                audited = selected | tap
+                capture = "\n".join(audited[symbol] for symbol in sorted(audited))
                 (folder / "capture.s").write_text(capture)
                 report["captureAssemblySHA256"] = hashlib.sha256(capture.encode()).hexdigest()
                 result["targets"][name] = report

@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "Tools"))
 import ci
 from instrumentation import signpost_records
 from Performance.records import sha
+from Streaming.build import verified_binary
 from Streaming.report import distribution, summarize
 
 META = re.compile(r"session=(\d+) epoch=(\d+) span=(\d+) profile=(\d+) frame=(\d+) samples=(\d+) "
@@ -166,18 +167,20 @@ def capture(binary, profile, load, directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("binary", type=Path)
+    parser.add_argument("build_receipt", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
-    binary = args.binary.resolve(strict=True)
+    environment = ci.environment("release")
+    binary, build = verified_binary(args.build_receipt, environment)
     with tempfile.TemporaryDirectory() as directory:
         recordings = {name: capture(binary, profile, load, Path(directory)) for name, profile, load in
                       (("paced", "cpps", "paced"), ("burst", "cpps", "burst"), ("full", "full", "throughput"))}
-    environment = ci.environment("release")
+    if verified_binary(args.build_receipt, ci.environment("release"))[1] != build:
+        raise ValueError("Release build changed during trace acquisition")
     environment["execution"] = "Instruments Logging on governed, synthetic native PCM"
     environment["model"] = ci.capture("sysctl", "-n", "hw.model")
     report = dict(schemaVersion=1, template="Logging", toolchain=environment,
-                  binarySHA256=sha(binary), recordings=recordings)
+                  binarySHA256=build["binarySHA256"], build=build, recordings=recordings)
     with args.output.open("x") as output:
         output.write(ci.redact(json.dumps(report, indent=2, allow_nan=False)) + "\n")
 

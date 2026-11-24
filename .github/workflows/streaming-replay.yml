@@ -42,15 +42,15 @@ jobs:
         with:
           python-version: '3.14.8'
       - name: Build release replay
-        run: swift build -c release --product StreamingReplayProbe --scratch-path .build/streaming
+        run: python3 Tools/Streaming/build.py .build/streaming
       - name: Measure the production streaming path
         if: matrix.group != 'trace'
-        run: python3 Tools/Streaming/benchmark.py .build/streaming/release/StreamingReplayProbe "$REPLAY_GROUP" .build/streaming-evidence
+        run: python3 Tools/Streaming/benchmark.py .build/streaming/build.json "$REPLAY_GROUP" .build/streaming-evidence
       - name: Trace CPPS from native ingress through delivery and overrun recovery
         if: matrix.group == 'trace'
         run: |
           mkdir -p .build/streaming-evidence
-          python3 Tools/Streaming/trace.py .build/streaming/release/StreamingReplayProbe .build/streaming-evidence/signposts.json
+          python3 Tools/Streaming/trace.py .build/streaming/build.json .build/streaming-evidence/signposts.json
       - name: Retain unbatched timings, source denominators and native checks
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

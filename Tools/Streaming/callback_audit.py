@@ -21,7 +21,7 @@ def inspect_tap(bodies, transport):
     names = {name for name in bodies if "PreparedCaptureTapC6accept" in name}
     if not any(name.endswith("CtF") for name in names) or not any("BufferListVGXEfU_" in name for name in names):
         raise ValueError("Missing native tap entry or buffer borrow closure")
-    pending = list(names)
+    pending = sorted(names)
     calls = {}
     while pending:
         name = pending.pop()
@@ -66,7 +66,7 @@ def inspect_tap(bodies, transport):
     all_targets = set().union(*calls.values())
     if not all_targets.intersection(transport) or not any("withUnsafe" in name for name in all_targets):
         raise ValueError("Optimized tap did not reach both native borrow and audited transport")
-    return dict(libraryFunctions=len(calls), calls=calls, namedSDKBoundaries=sorted(all_targets & SDK),
+    return dict(libraryFunctions=len(calls), calls=dict(sorted(calls.items())), namedSDKBoundaries=sorted(all_targets & SDK),
                 runtimeAndMemoryPrimitives=sorted(all_targets & PRIMITIVES),
                 handoffTargets=sorted(all_targets.intersection(transport)),
                 descriptorLoopBound="validated native buffer count equals one or configured channels (at most 32)")
