@@ -1,0 +1,27 @@
+// !$*UTF8*$!
+{
+    archiveVersion = 1;
+    classes = {};
+    objectVersion = 77;
+    objects = {
+        A00000000000000000000001 = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = YES; LastUpgradeCheck = 2700; TargetAttributes = {A00000000000000000000002 = {CreatedOnToolsVersion = 27.0;};};}; buildConfigurationList = A00000000000000000000010; compatibilityVersion = "Xcode 16.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = A00000000000000000000004; packageReferences = (A00000000000000000000040); productRefGroup = A00000000000000000000005; projectDirPath = ""; projectRoot = ""; targets = (A00000000000000000000002);};
+        A00000000000000000000002 = {isa = PBXNativeTarget; buildConfigurationList = A00000000000000000000011; buildPhases = (A00000000000000000000020, A00000000000000000000021, A00000000000000000000022); buildRules = (); dependencies = (); fileSystemSynchronizedGroups = (A00000000000000000000008); name = WatchFeasibilityProbe; packageProductDependencies = (A00000000000000000000042); productName = WatchFeasibilityProbe; productReference = A00000000000000000000006; productType = "com.apple.product-type.application";};
+        A00000000000000000000004 = {isa = PBXGroup; children = (A00000000000000000000008, A00000000000000000000005); sourceTree = "<group>";};
+        A00000000000000000000005 = {isa = PBXGroup; children = (A00000000000000000000006); name = Products; sourceTree = "<group>";};
+        A00000000000000000000006 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchFeasibilityProbe.app; sourceTree = BUILT_PRODUCTS_DIR;};
+        A00000000000000000000008 = {isa = PBXFileSystemSynchronizedRootGroup; path = Sources; sourceTree = "<group>";};
+        A00000000000000000000010 = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000060, A00000000000000000000061); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;};
+        A00000000000000000000011 = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000062, A00000000000000000000063); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;};
+        A00000000000000000000020 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;};
+        A00000000000000000000021 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A00000000000000000000077); runOnlyForDeploymentPostprocessing = 0;};
+        A00000000000000000000022 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;};
+        A00000000000000000000040 = {isa = XCLocalSwiftPackageReference; relativePath = ../..;};
+        A00000000000000000000042 = {isa = XCSwiftPackageProductDependency; productName = HDXLVoiceProcessing;};
+        A00000000000000000000060 = {isa = XCBuildConfiguration; name = Debug; buildSettings = {CLANG_ENABLE_MODULES = YES; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_TESTABILITY = YES; GCC_OPTIMIZATION_LEVEL = 0; ONLY_ACTIVE_ARCH = YES; WATCHOS_DEPLOYMENT_TARGET = 27.0; SDKROOT = watchos; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; SWIFT_VERSION = 6.0;};};
+        A00000000000000000000061 = {isa = XCBuildConfiguration; name = Release; buildSettings = {CLANG_ENABLE_MODULES = YES; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; WATCHOS_DEPLOYMENT_TARGET = 27.0; SDKROOT = watchos; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_OPTIMIZATION_LEVEL = "-O"; SWIFT_VERSION = 6.0;};};
+        A00000000000000000000062 = {isa = XCBuildConfiguration; name = Debug; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_WKApplication = YES; INFOPLIST_KEY_WKWatchOnly = YES; INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record a short voice sample when you choose Record. The probe analyzes it locally and discards the audio."; MARKETING_VERSION = 0.1; PRODUCT_BUNDLE_IDENTIFIER = org.hdxl.voice-processing.watch-feasibility; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "watchos watchsimulator"; TARGETED_DEVICE_FAMILY = 4;};};
+        A00000000000000000000063 = {isa = XCBuildConfiguration; name = Release; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_WKApplication = YES; INFOPLIST_KEY_WKWatchOnly = YES; INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record a short voice sample when you choose Record. The probe analyzes it locally and discards the audio."; MARKETING_VERSION = 0.1; PRODUCT_BUNDLE_IDENTIFIER = org.hdxl.voice-processing.watch-feasibility; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "watchos watchsimulator"; TARGETED_DEVICE_FAMILY = 4;};};
+        A00000000000000000000077 = {isa = PBXBuildFile; productRef = A00000000000000000000042;};
+    };
+    rootObject = A00000000000000000000001;
+}

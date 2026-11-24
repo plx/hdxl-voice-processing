@@ -59,7 +59,7 @@ demonstrates collection, labeling, comparisons and evaluation without private re
 See [contribution instructions](CONTRIBUTING.md),
 [architecture](Documentation/Architecture/0001-package-boundaries.md), and the
 [roadmap](https://github.com/plx/hdxl-voice-processing/issues/1).
-watchOS is pending a separate capability decision. Physical-device validation
+The [watchOS 27 feasibility probe](Documentation/WatchFeasibility.md) exercises bounded segment replay. Physical-device validation
 is deferred to [follow-up #74](https://github.com/plx/hdxl-voice-processing/issues/74).
 
 Pinned developer-only Praat runners, original synthetic goldens, and offline Swift

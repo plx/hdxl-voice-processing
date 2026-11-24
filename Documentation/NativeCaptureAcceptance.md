@@ -23,7 +23,7 @@ The shared Debug job checks the test index on every PR. Dedicated capture, iOS h
 | Native Mac, built-in microphone | Pending physical validation | Required baseline on a Mac with built-in input. Record model and actual format. |
 | Foreground iPhone, built-in microphone | Pending physical validation | Required baseline on a signed device with an active host-owned session. |
 | iPad, wired headset, USB or Bluetooth input | Untested | Optional separate records for each available route. A missing accessory is deferred. Report actual processing and format on each route. |
-| Watch | Unqualified | Scope belongs to [#60](https://github.com/plx/hdxl-voice-processing/issues/60). |
+| Watch | Unqualified | See the [standalone watch probe and decision](WatchFeasibility.md). |
 | Mac Catalyst and continuous iOS background recording | Outside the capture baseline | Backgrounding the foreground host should stop it. Native macOS has no shared audio-session interruption scenario. |
 
 The device-lab operator runs the cases below, records private observations and attaches reviewed summaries to #74. The capture maintainer reproduces functional failures. The release maintainer updates route/profile claims only after the relevant trials and the applicable [scoped performance budget](BenchmarkProtocol.md) have been reviewed. Device absence, an unobservable required step or a missing budget leaves the corresponding gate open.

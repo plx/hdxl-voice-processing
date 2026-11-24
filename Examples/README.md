@@ -9,3 +9,6 @@ foreground iPhone/iPad app with a synthetic-only Simulator test mode. Hosts own
 permission descriptions, consent UX, entitlements, audio sessions and app lifecycle.
 The root package produces libraries, not runnable application bundles. Physical
 capture validation remains pending #74; the workbench UI is later roadmap work.
+
+[WatchFeasibilityProbe](../Documentation/WatchFeasibility.md) is a standalone watchOS 27
+experimental host for synthetic replay and explicit short foreground recording trials.

@@ -16,10 +16,10 @@ is promised. macOS here means native macOS; Mac Catalyst is not qualified.
 
 | Capability | macOS 27 | iOS 27 / iPadOS 27 | watchOS 27 (provisional) |
 | --- | --- | --- | --- |
-| DSP-only processing | Core implemented; native software tests | Core cross-compiled for device and Simulator | Unqualified; subset decision in #60 |
-| File decoding | Audio product implemented with native fixture tests | Audio product cross-compiled; device decoding evidence pending | SDK APIs are insufficient to claim support; #60 |
-| Live capture | [Native adapter](MacOSCapture.md), fake-engine tests and synthetic callback profiling; physical validation pending | [Foreground adapter](IOSCapture.md), policy tests, native builds and synthetic host execution; physical validation pending | Unsupported by the current package; evaluate in #60 |
-| Shared-session configuration | Unsupported; native macOS has no AVAudioSession path | Host-managed or explicitly delegated operation under a cooperative host lease; see [iOS contract](IOSCapture.md) | SDK has session APIs; package integration unqualified |
+| DSP-only processing | Core implemented; native software tests | Core cross-compiled for device and Simulator | Core recorded-segment probe; see [watch matrix](WatchFeasibility.md) |
+| File decoding | Audio product implemented with native fixture tests | Audio product cross-compiled; device decoding evidence pending | Probe-owned bounded mono segment; general decoding unqualified |
+| Live capture | [Native adapter](MacOSCapture.md), fake-engine tests and synthetic callback profiling; physical validation pending | [Foreground adapter](IOSCapture.md), policy tests, native builds and synthetic host execution; physical validation pending | Unsupported; experimental foreground recording for post-stop analysis only |
+| Shared-session configuration | Unsupported; native macOS has no AVAudioSession path | Host-managed or explicitly delegated operation under a cooperative host lease; see [iOS contract](IOSCapture.md) | Probe-owned experimental activation; physical behavior pending |
 | Playback | Application-owned; no package playback implementation | Application-owned; no package playback implementation | Unqualified |
 | Visualization | Optional target compiles; UI implementation remains roadmap work | Optional target cross-compiles; UI implementation remains roadmap work | Unqualified |
 | Background execution | Host controls process lifetime; no capture deadline or continuous-runtime guarantee | Foreground baseline; background audio needs host declarations, policy and later evidence | Unqualified; no continuous-recording promise |
@@ -31,7 +31,7 @@ is promised. macOS here means native macOS; Mac Catalyst is not qualified.
 | iOS device build | All three products plus an independent core consumer compile with the declared 27.0 minimum, without signing | Execution or physical recording |
 | iOS Simulator software evidence | Product/consumer compilation for both architectures; iOS 27 development host synthetic test and app-launch probe | Native microphone signal path, real interruptions/routes and a physical iPhone/iPad signal path |
 | Physical devices | **Pending physical validation** under owner-approved #74 | Permission journeys, routes, processing, background operation, latency, energy and sustained capture |
-| Watch | SDK availability only; no package build/execution qualification here | #60 must publish an explicit supported subset or deferral |
+| Watch | Core consumer and standalone probe builds; synthetic replay fixture | Physical capture and sustained qualification in #74/#64 |
 
 Per-PR CI receipts identify actual compiler, SDK, runtime, revision and test results.
 A Swift Testing runner's own build-target banner is not the deployment minimum of

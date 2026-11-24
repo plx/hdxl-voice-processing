@@ -26,7 +26,7 @@
             @unknown default: return .unavailable
             }
         #else
-            // Other platforms, including watchOS, remain unqualified pending #60.
+            // The experimental watch host owns its permission flow outside this product.
             return .unavailable
         #endif
     }

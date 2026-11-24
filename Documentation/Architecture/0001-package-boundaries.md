@@ -41,9 +41,9 @@ The library is not an app bundle. Hosts own microphone usage descriptions,
 authorization UX, sandbox entitlements when needed, audio-session activation,
 interruptions, route policy, and lifecycle. Importing a product does none of this.
 
-watchOS is pending #60; an omitted manifest platform entry does not prevent
-SwiftPM from attempting other destinations, and does not promise support.
-If added, watchOS will use the owner's 27-generation minimum policy. Linux,
+The [watch feasibility decision](../WatchFeasibility.md) sets a 27.0 build floor
+for the standalone Core consumer. Watch microphone behavior and sustained workloads
+await hardware qualification. Linux,
 Windows, tvOS, and visionOS are unqualified. Physical-device evidence is deferred
 by the owner to #74; build/simulator evidence cannot establish capture or energy
 behavior. Public release authorization remains a separate final decision.
