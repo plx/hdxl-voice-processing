@@ -37,8 +37,20 @@ public final class PreparedPCMShimmer<Sample: BinaryFloatingPoint & Sendable> {
         try self.init(
             configuration: configuration, pulseConfiguration: pulseConfiguration,
             maximumSampleCount: maximumSampleCount, maximumF0FrameCount: maximumF0FrameCount,
+            maximumTrackingAttempts: maximumTrackingAttempts, diagnosticMode: .disabled)
+    }
+
+    public convenience init(
+        configuration: ShimmerConfiguration, pulseConfiguration: PulseConfiguration,
+        maximumSampleCount: Int, maximumF0FrameCount: Int, maximumTrackingAttempts: Int,
+        diagnosticMode: RuntimeDiagnosticMode
+    ) throws {
+        try self.init(
+            configuration: configuration, pulseConfiguration: pulseConfiguration,
+            maximumSampleCount: maximumSampleCount, maximumF0FrameCount: maximumF0FrameCount,
             maximumTrackingAttempts: maximumTrackingAttempts,
-            pulseDiagnostics: WorkerDiagnostics(), statisticsDiagnostics: WorkerDiagnostics())
+            pulseDiagnostics: WorkerDiagnostics(mode: diagnosticMode.facadeMode),
+            statisticsDiagnostics: WorkerDiagnostics(mode: diagnosticMode.facadeMode))
     }
 
     package init(

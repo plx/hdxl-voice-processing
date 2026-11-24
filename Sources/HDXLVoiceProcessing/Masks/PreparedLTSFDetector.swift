@@ -136,8 +136,16 @@ public final class PreparedLTSFDetector<Sample: BinaryFloatingPoint & Sendable> 
     private let diagnostics: WorkerDiagnostics
 
     public convenience init(configuration: LTSFConfiguration, source: SourceInterval) throws {
+        try self.init(configuration: configuration, source: source, diagnosticMode: .disabled)
+    }
+
+    public convenience init(
+        configuration: LTSFConfiguration, source: SourceInterval,
+        diagnosticMode: RuntimeDiagnosticMode
+    ) throws {
         try self.init(
-            configuration: configuration, source: source, diagnostics: WorkerDiagnostics())
+            configuration: configuration, source: source,
+            diagnostics: WorkerDiagnostics(mode: diagnosticMode.facadeMode))
     }
 
     package init(

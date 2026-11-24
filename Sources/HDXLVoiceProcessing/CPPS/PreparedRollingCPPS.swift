@@ -69,7 +69,15 @@ public final class PreparedRollingCPPS {
     private let diagnostics: WorkerDiagnostics
 
     public convenience init(profile: CPPSStatisticProfile, origin: SourceInterval) throws {
-        try self.init(profile: profile, origin: origin, diagnostics: WorkerDiagnostics())
+        try self.init(profile: profile, origin: origin, diagnosticMode: .disabled)
+    }
+
+    public convenience init(
+        profile: CPPSStatisticProfile, origin: SourceInterval, diagnosticMode: RuntimeDiagnosticMode
+    ) throws {
+        try self.init(
+            profile: profile, origin: origin,
+            diagnostics: WorkerDiagnostics(mode: diagnosticMode.facadeMode))
     }
     package init(
         profile: CPPSStatisticProfile, origin: SourceInterval, diagnostics: WorkerDiagnostics

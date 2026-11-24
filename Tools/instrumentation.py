@@ -8,11 +8,56 @@ import shutil
 import statistics
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 import ci
 
 ROOT = ci.ROOT
+SUBSYSTEM = "org.hdxl.voice-processing"
 MODES = ("bare", "disabled", "sampled", "detailed")
+
+
+def signpost_records(xml):
+    root = ET.fromstring(xml)
+    ids = {node.attrib["id"]: node for node in root.iter() if "id" in node.attrib}
+    def resolve(node):
+        return ids[node.attrib["ref"]] if "ref" in node.attrib else node
+    def value(node):
+        node = resolve(node)
+        return node.attrib.get("fmt", node.text or "")
+    def metadata(node):
+        node = resolve(node)
+        if not len(node):
+            return value(node)
+        # Instruments fmt strings apply locale grouping to large integers. Use
+        # typed raw arguments, never localized presentation text, for validation.
+        parts = []
+        for child in node:
+            child = resolve(child)
+            if child.tag == "narrative-text":
+                parts.append(child.text or "")
+            elif child.tag == "uint64" and (child.text or "").isascii() and (child.text or "").isdigit():
+                number = int(child.text)
+                if number > (1 << 64) - 1:
+                    raise ValueError("Out-of-range diagnostic argument")
+                parts.append(str(number))
+            else:
+                raise ValueError("Unapproved diagnostic argument type")
+        return "".join(parts)
+    records = []
+    for table in root.findall("node"):
+        schema = table.find("schema")
+        if schema is None or schema.attrib.get("name") != "os-signpost":
+            continue
+        columns = [col.findtext("mnemonic") for col in schema.findall("col")]
+        for row in table.findall("row"):
+            if len(row) != len(columns):
+                raise ValueError("Signpost schema column mismatch")
+            fields = dict(zip(columns, row))
+            if value(fields["subsystem"]) == SUBSYSTEM:
+                records.append({key: value(node) for key, node in fields.items()} |
+                               {"time": int(resolve(fields["time"]).text), "message": metadata(fields["message"])})
+    return records
 
 
 def expected_checksum(iterations):

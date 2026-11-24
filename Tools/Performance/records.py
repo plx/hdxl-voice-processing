@@ -94,7 +94,8 @@ def index_operations(directory, mode):
         role = fields[2] if fields[0] == "SWIPEComparison" else fields[1]
         boundary_key = ("Sequential4/Concurrent4" if fields[0] == "Fourier"
                         and role.startswith(("Sequential4", "Concurrent4")) else role)
-        boundary = env.get("operations", {}).get(boundary_key) or env.get("measurement")
+        boundary = (rows[index].get("measurementBoundary") or env.get("operations", {}).get(boundary_key)
+                    or env.get("measurement"))
         if not boundary:
             raise ValueError(f"Missing timing boundary for {op}")
         entries.append(dict(id=op, role=role, caseIndex=index, boundary=boundary))

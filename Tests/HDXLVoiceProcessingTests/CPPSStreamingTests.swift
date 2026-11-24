@@ -172,7 +172,7 @@ private func previewCPPS(_ samples: [Double], worker: PreparedPreviewCPPS<Double
     #expect(try profile.identity() != cppsProfile(preview: false).identity())
     let worker = try PreparedPreviewCPPS<Double>(profile: profile, epoch: cppsEpoch)
     let old = cppsSignal(Double.self, count: 2000)
-    try old.withUnsafeBufferPointer { input in
+    let beforeGap = try old.withUnsafeBufferPointer { input in
         try worker.process(
             input,
             interval: SourceInterval(
@@ -180,6 +180,7 @@ private func previewCPPS(_ samples: [Double], worker: PreparedPreviewCPPS<Double
                 sampleCount: 2000, sampleRate: 16_000)
         ) { _ in }
     }
+    #expect(beforeGap.consumedSampleCount == old.count)
     let next = try cppsEpoch.successor()
     try worker.reset(
         for: SourceDiscontinuity(
