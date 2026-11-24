@@ -11,8 +11,17 @@ import Observation
     private(set) var status = "Ready. Audio stays in memory and is discarded."
     private(set) var isBusy = false
     private(set) var observation: IOSCaptureObservation?
-    private(set) var frames: UInt64 = 0
-    private(set) var acceptedChunks: UInt64 = 0
+    private(set) var drained: HostPCMConsumer.Counts?
+    private(set) var transport: PCMTransferSnapshot?
+    private(set) var queueCapacity = 0
+    private(set) var maximumFramesPerChunk: UInt32 = 0
+    private(set) var durationNS: UInt64?
+    @ObservationIgnored private var transfer: PCMTransfer?
+    @ObservationIgnored private var worker: Task<HostPCMConsumer.Counts, any Error>?
+    @ObservationIgnored private var startedNS: UInt64?
+    private(set) var boundary: String?
+    private(set) var resourceReport: String?
+    @ObservationIgnored private var history = CaptureResourceHistory()
     private(set) var sessionNeedsAttention = false
     @ObservationIgnored private var operation: Task<Void, Never>?
     @ObservationIgnored private var counters: Task<Void, Never>?
@@ -23,8 +32,14 @@ import Observation
     func start() {
         guard !isBusy, !sessionNeedsAttention else { return }
         isBusy = true
-        frames = 0
-        acceptedChunks = 0
+        resourceReport = nil
+        startedNS = nil
+        durationNS = nil
+        boundary = nil
+        drained = nil
+        transport = nil
+        queueCapacity = 0
+        maximumFramesPerChunk = 0
         observation = nil
         status = "Preparing microphone…"
         let intent = capture.prepareStart()
@@ -40,7 +55,6 @@ import Observation
 
     private func run(intent: IOSCaptureStartIntent) async {
         var attemptedActivation = false
-        var worker: Task<UInt64, any Error>?
         var problem: (any Error)?
         do {
             if SystemMicrophoneAuthorization().microphoneAuthorization() == .undetermined {
@@ -57,14 +71,12 @@ import Observation
             attemptedActivation = true
             guard try await shared.activate() else { throw HostProbeError.failed }
             try Task.checkCancellation()
-            let session = try await capture.start(
+            try await capture.start(
                 intent: intent,
                 request: CaptureRequest(
                     channelSelection: .arithmeticMean, processing: .measurement),
                 buffering: CaptureBuffering(), lease: IOSCaptureHostLease(activity: .active))
-            let task = Task.detached { try await HostPCMConsumer.drain(session.transfer) }
-            worker = task
-            frames = try await task.value
+            _ = await worker?.result
         } catch {
             problem = error
         }
@@ -75,11 +87,29 @@ import Observation
             if problem == nil || problem is CancellationError { problem = error }
         }
         if let worker {
-            worker.cancel()
-            _ = await worker.result
+            do { drained = try await worker.value } catch let gap as HostPCMConsumer.GapFailure {
+                drained = gap.counts
+                if problem == nil || problem is CancellationError { problem = gap }
+            } catch {
+                if problem == nil || problem is CancellationError { problem = error }
+            }
+            self.worker = nil
         }
         counters?.cancel()
         counters = nil
+        if let transfer {
+            if let startedNS, let closed = capture.admissionClosedUptimeNanoseconds,
+                closed >= startedNS
+            {
+                durationNS = closed - startedNS
+            }
+            transport = transfer.snapshot()
+            history.observe(transfer, finishing: true)
+            self.transfer = nil
+            if let data = try? JSONEncoder().encode(history.readings) {
+                resourceReport = String(decoding: data, as: UTF8.self)
+            }
+        }
         if attemptedActivation {
             // This host owns the whole shared session, including failed startup.
             // A multi-feature host must instead arbitrate its own deactivation.
@@ -98,7 +128,8 @@ import Observation
         status =
             sessionNeedsAttention
             ? "Audio session cleanup failed. Restart this development app before capturing again."
-            : problem.map(HostErrorReport.message) ?? "Stopped. Consumed \(frames) sample frames."
+            : problem.map(HostErrorReport.message)
+                ?? "Stopped. Consumed \(drained?.frames ?? 0) sample frames."
         isBusy = false
         operation = nil
     }
@@ -106,15 +137,45 @@ import Observation
     private func receive(_ event: IOSCaptureEvent) {
         switch event {
         case .started(let session):
+            transfer = session.transfer
+            worker = Task.detached { [capture] in
+                try await HostPCMConsumer.drain(session.transfer) { await capture.stop() }
+            }
+            let now = DispatchTime.now().uptimeNanoseconds
+            startedNS = now
+            history = CaptureResourceHistory(startNS: now)
+            history.observe(session.transfer)
             observation = session.observation
+            queueCapacity = session.transfer.configuration.slotCount
+            maximumFramesPerChunk = session.transfer.configuration.maximumFramesPerChunk
             status = "Capturing in the foreground."
             counters = Task {
                 while !Task.isCancelled {
-                    acceptedChunks = session.transfer.snapshot().acceptedChunks
+                    history.observe(session.transfer)
+                    transport = session.transfer.snapshot()
                     do { try await Task.sleep(for: .milliseconds(100)) } catch { return }
                 }
             }
-        case .configurationChanged, .calibrationInvalidated:
+        case .configurationChanged(_, let change, let discontinuity):
+            let name: String
+            switch change {
+            case .route: name = "Route change"
+            case .systemInterruption: name = "System interruption"
+            case .enteredBackground: name = "Entered background"
+            case .mediaServicesLost: name = "Media services lost"
+            case .mediaServicesReset: name = "Media services reset"
+            default: name = "Configuration change"
+            }
+            if let discontinuity {
+                let extent =
+                    discontinuity.missingSource.map { "\($0.sampleCount) missing source frames" }
+                    ?? "unknown loss extent"
+                boundary = "\(name), \(discontinuity.reason.rawValue), \(extent)"
+            } else {
+                boundary = "\(name), no source boundary observed"
+            }
+            status = "Capture conditions changed. Stopping…"
+        case .calibrationInvalidated:
             status = "Capture conditions changed. Stopping…"
         case .failed(let failure): status = HostErrorReport.message(for: failure)
         case .resumptionRecommended:

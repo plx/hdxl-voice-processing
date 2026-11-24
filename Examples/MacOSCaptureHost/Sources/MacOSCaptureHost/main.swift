@@ -22,6 +22,10 @@ private enum HostError: Error {
 
     @MainActor private static func run() async throws {
         let args = Array(CommandLine.arguments.dropFirst())
+        if args.first == "--capture-check" {
+            try await AcceptanceProbe.run(args)
+            return
+        }
         if args == ["--self-test-error-reporting"] {
             // A pure error-boundary probe: no engine, permission, input, or file access.
             throw NSError(
@@ -49,7 +53,9 @@ private enum HostError: Error {
             let seconds = Double(args[3]), seconds.isFinite, (0.1...300).contains(seconds),
             args[1].hasPrefix("/"), args[1].hasSuffix(".caf")
         else {
-            print("Use --request-permission, or --record /absolute/path/sample.caf --seconds 5")
+            print(
+                "Use --request-permission, --record /absolute/path/sample.caf --seconds 5, or --capture-check /absolute/path/trial.json --seconds 5 --runs 2"
+            )
             return
         }
         let url = URL(fileURLWithPath: args[1])

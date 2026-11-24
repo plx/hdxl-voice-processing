@@ -18,11 +18,44 @@ import SwiftUI
                             .disabled(model.isBusy || model.sessionNeedsAttention || synthetic)
                         Button("Stop", role: .cancel) { model.stop() }
                             .disabled(!model.isBusy || synthetic)
-                        LabeledContent("Accepted chunks", value: "\(model.acceptedChunks)")
+                        LabeledContent(
+                            "Accepted chunks", value: "\(model.transport?.acceptedChunks ?? 0)")
+                        if let duration = model.durationNS {
+                            LabeledContent("Capture duration (ns)", value: "\(duration)")
+                        }
+                        if let boundary = model.boundary {
+                            LabeledContent("Capture boundary", value: boundary)
+                        }
+                        if let transport = model.transport {
+                            LabeledContent(
+                                "Dropped sample frames", value: "\(transport.droppedFrames)")
+                            LabeledContent("Invalid chunks", value: "\(transport.invalidChunks)")
+                            if transport.producerContractViolated {
+                                Text("Capture producer contract failed")
+                            }
+                            LabeledContent(
+                                "Peak occupied slots",
+                                value: "\(transport.highWaterSlots) / \(model.queueCapacity)")
+                            LabeledContent(
+                                "Maximum frames per chunk", value: "\(model.maximumFramesPerChunk)")
+                            if let drained = model.drained {
+                                LabeledContent(
+                                    "Known gap frames", value: "\(drained.knownGapFrames)")
+                                LabeledContent("Unknown gaps", value: "\(drained.unknownGaps)")
+                                LabeledContent("Drained chunks", value: "\(drained.chunks)")
+                                LabeledContent("Consumed sample frames", value: "\(drained.frames)")
+                            }
+                        }
+                    }
+                    if let resourceReport = model.resourceReport {
+                        ShareLink("Share resource samples", item: resourceReport)
                     }
                     if let observation = model.observation {
                         Section("Effective settings") {
                             let format = observation.capture.effectiveFormat
+                            LabeledContent(
+                                "Capture epoch",
+                                value: CaptureResourceHistory.identifier(observation.capture.epoch))
                             LabeledContent("Tap sample rate", value: "\(format.sampleRate) Hz")
                             LabeledContent("Native channels", value: "\(format.channelCount)")
                             LabeledContent("Sample encoding", value: format.encoding.rawValue)

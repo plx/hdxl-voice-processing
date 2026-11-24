@@ -40,6 +40,9 @@ jobs:
         run: bash Tools/check-workflows.sh
       - name: Run correctness lane
         run: python3 Tools/ci.py '${{ matrix.lane }}'
+      - name: Verify native capture acceptance cases
+        if: matrix.lane == 'debug'
+        run: python3 Tools/Capture/acceptance.py .build/ci-artifacts/debug
       - name: Retain public correctness evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

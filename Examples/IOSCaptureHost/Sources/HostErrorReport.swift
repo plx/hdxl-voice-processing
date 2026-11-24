@@ -4,6 +4,9 @@ import HDXLVoiceProcessingAudio
 /// Render an allowlist, never an arbitrary error description, route ID or domain.
 enum HostErrorReport {
     static func message(for error: any Error) -> String {
+        if error is HostPCMConsumer.GapFailure {
+            return "Input gap. Capture stopped and queued audio was drained."
+        }
         if error is CancellationError { return "Stopped." }
         if let integration = error as? CaptureIntegrationError {
             switch integration {
