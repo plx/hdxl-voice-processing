@@ -117,7 +117,7 @@ enum HostSelfTest {
             }) == .accepted(sequence: 1)
         else { throw HostProbeError.failed }
         transfer.close()
-        let drained = try await HostPCMConsumer.drain(transfer)
+        let drained = try await HostPCMConsumer.drain(transfer) { transfer.close() }
         guard drained.frames == 4, drained.chunks == 1 else { throw HostProbeError.failed }
         checks.append("closed-transfer-drained")
         let gapTransfer = PCMTransfer(configuration: configuration)
@@ -129,9 +129,13 @@ enum HostSelfTest {
         guard oversized == .droppedOversized else { throw HostProbeError.failed }
         gapTransfer.close()
         do {
-            _ = try await HostPCMConsumer.drain(gapTransfer)
+            _ = try await HostPCMConsumer.drain(gapTransfer) { gapTransfer.close() }
             throw HostProbeError.failed
-        } catch HostProbeError.gap {}
+        } catch let failure as HostPCMConsumer.GapFailure {
+            guard failure.counts.knownGapFrames == 5, failure.counts.unknownGaps == 0 else {
+                throw HostProbeError.failed
+            }
+        }
         checks.append("worker-rejects-gap")
         return HostSelfTestResult(status: "passed", checks: checks)
     }

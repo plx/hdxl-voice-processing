@@ -11,11 +11,13 @@ import Observation
     private(set) var status = "Ready. Audio stays in memory and is discarded."
     private(set) var isBusy = false
     private(set) var observation: IOSCaptureObservation?
-    private(set) var frames: UInt64 = 0
-    private(set) var drainedChunks: UInt64?
+    private(set) var drained: HostPCMConsumer.Counts?
     private(set) var transport: PCMTransferSnapshot?
     private(set) var queueCapacity = 0
     private(set) var maximumFramesPerChunk: UInt32 = 0
+    private(set) var durationNS: UInt64?
+    @ObservationIgnored private var startedNS: UInt64?
+    private(set) var boundary: String?
     private(set) var resourceReport: String?
     @ObservationIgnored private var history = CaptureResourceHistory()
     private(set) var sessionNeedsAttention = false
@@ -29,9 +31,10 @@ import Observation
         guard !isBusy, !sessionNeedsAttention else { return }
         isBusy = true
         resourceReport = nil
-        history = CaptureResourceHistory()
-        frames = 0
-        drainedChunks = nil
+        startedNS = nil
+        durationNS = nil
+        boundary = nil
+        drained = nil
         transport = nil
         queueCapacity = 0
         maximumFramesPerChunk = 0
@@ -74,11 +77,14 @@ import Observation
                     channelSelection: .arithmeticMean, processing: .measurement),
                 buffering: CaptureBuffering(), lease: IOSCaptureHostLease(activity: .active))
             transfer = session.transfer
-            let task = Task.detached { try await HostPCMConsumer.drain(session.transfer) }
+            let task = Task.detached { [capture] in
+                try await HostPCMConsumer.drain(session.transfer) { await capture.stop() }
+            }
             worker = task
-            let counts = try await task.value
-            frames = counts.frames
-            drainedChunks = counts.chunks
+            drained = try await task.value
+        } catch let failure as HostPCMConsumer.GapFailure {
+            drained = failure.counts
+            problem = failure
         } catch {
             problem = error
         }
@@ -119,7 +125,8 @@ import Observation
         status =
             sessionNeedsAttention
             ? "Audio session cleanup failed. Restart this development app before capturing again."
-            : problem.map(HostErrorReport.message) ?? "Stopped. Consumed \(frames) sample frames."
+            : problem.map(HostErrorReport.message)
+                ?? "Stopped. Consumed \(drained?.frames ?? 0) sample frames."
         isBusy = false
         operation = nil
     }
@@ -127,6 +134,10 @@ import Observation
     private func receive(_ event: IOSCaptureEvent) {
         switch event {
         case .started(let session):
+            let now = DispatchTime.now().uptimeNanoseconds
+            startedNS = now
+            history = CaptureResourceHistory(startNS: now)
+            history.observe(session.transfer)
             observation = session.observation
             queueCapacity = session.transfer.configuration.slotCount
             maximumFramesPerChunk = session.transfer.configuration.maximumFramesPerChunk
@@ -138,7 +149,33 @@ import Observation
                     do { try await Task.sleep(for: .milliseconds(100)) } catch { return }
                 }
             }
-        case .configurationChanged, .calibrationInvalidated:
+        case .stopped:
+            if let startedNS, durationNS == nil {
+                durationNS = DispatchTime.now().uptimeNanoseconds - startedNS
+            }
+        case .configurationChanged(_, let change, let discontinuity):
+            if let startedNS, durationNS == nil {
+                durationNS = DispatchTime.now().uptimeNanoseconds - startedNS
+            }
+            let name: String
+            switch change {
+            case .route: name = "Route change"
+            case .systemInterruption: name = "System interruption"
+            case .enteredBackground: name = "Entered background"
+            case .mediaServicesLost: name = "Media services lost"
+            case .mediaServicesReset: name = "Media services reset"
+            default: name = "Configuration change"
+            }
+            if let discontinuity {
+                let extent =
+                    discontinuity.missingSource.map { "\($0.sampleCount) missing source frames" }
+                    ?? "unknown loss extent"
+                boundary = "\(name), \(discontinuity.reason.rawValue), \(extent)"
+            } else {
+                boundary = "\(name), no source boundary observed"
+            }
+            status = "Capture conditions changed. Stopping…"
+        case .calibrationInvalidated:
             status = "Capture conditions changed. Stopping…"
         case .failed(let failure): status = HostErrorReport.message(for: failure)
         case .resumptionRecommended:

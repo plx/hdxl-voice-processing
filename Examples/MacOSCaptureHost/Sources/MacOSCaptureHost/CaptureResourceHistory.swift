@@ -1,5 +1,6 @@
 import Darwin
 import Foundation
+import HDXLVoiceProcessing
 import HDXLVoiceProcessingAudio
 
 /// Development-host observations, taken on the control side. Keep a bounded,
@@ -7,9 +8,11 @@ import HDXLVoiceProcessingAudio
 struct CaptureResourceHistory {
     struct Sample: Encodable {
         let epoch: String
+        let uptimeNS: UInt64
         let elapsedSeconds: Double
         let processCPUSeconds: Double?
         let residentBytes: UInt64?
+        let acceptedChunks: UInt64
         let queueDepthSlots: Int?
         let thermalState: String
     }
@@ -23,15 +26,23 @@ struct CaptureResourceHistory {
         self.startNS = startNS
     }
 
+    static func identifier(_ epoch: StreamEpoch) -> String {
+        "\(epoch.streamID.uuidString)/\(epoch.sequence)"
+    }
+
     mutating func observe(_ transfer: PCMTransfer, finishing: Bool = false) {
-        let elapsed = Double(DispatchTime.now().uptimeNanoseconds - startNS) / 1e9
+        let now = DispatchTime.now().uptimeNanoseconds
+        let elapsed = Double(now - startNS) / 1e9
         if let previous = samples.last, !finishing, elapsed - previous.elapsedSeconds < interval {
             return
         }
+        let snapshot = transfer.snapshot()
         let sample = Sample(
-            epoch: transfer.configuration.epoch.streamID.uuidString, elapsedSeconds: elapsed,
+            epoch: Self.identifier(transfer.configuration.epoch), uptimeNS: now,
+            elapsedSeconds: elapsed,
             processCPUSeconds: Self.cpuSeconds(), residentBytes: Self.residentBytes(),
-            queueDepthSlots: transfer.snapshot().depth, thermalState: Self.thermalState())
+            acceptedChunks: snapshot.acceptedChunks, queueDepthSlots: snapshot.depth,
+            thermalState: Self.thermalState())
         if finishing {
             final = sample
             return

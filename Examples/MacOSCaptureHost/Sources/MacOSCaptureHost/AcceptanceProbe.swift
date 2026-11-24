@@ -52,7 +52,6 @@ enum AcceptanceProbe {
         let destination = URL(fileURLWithPath: args[1])
         var runs: [[String: Any]] = []
         let startedAt = Date.now.formatted(.iso8601)
-        let startNS = DispatchTime.now().uptimeNanoseconds
         func save(_ status: String, error: String? = nil, new: Bool = false) throws {
             var report: [String: Any] = [
                 "schemaVersion": 1, "status": status, "operation": "capture-only",
@@ -70,23 +69,23 @@ enum AcceptanceProbe {
             try data.write(to: destination, options: new ? .withoutOverwriting : .atomic)
         }
         try save("running", new: true)
-        var inputChanged = false
+        var changedAt: UInt64?
         let capture = MacOSMicrophoneCapture { event in
             switch event {
-            case .configurationChanged: inputChanged = true
+            case .configurationChanged: changedAt = DispatchTime.now().uptimeNanoseconds
             default: break
             }
         }
         do {
             for _ in 0..<repetitions {
-                inputChanged = false
+                changedAt = nil
                 let session = try capture.start(
                     request: CaptureRequest(
                         channelSelection: .arithmeticMean, processing: .measurement),
                     buffering: MacOSCaptureBuffering())
                 let start = DispatchTime.now().uptimeNanoseconds
                 let worker = Task.detached { try await drain(session.transfer) }
-                var history = CaptureResourceHistory(startNS: startNS)
+                var history = CaptureResourceHistory(startNS: start)
                 let clock = ContinuousClock()
                 let deadline = clock.now.advanced(by: .seconds(seconds))
                 do {
@@ -95,6 +94,7 @@ enum AcceptanceProbe {
                         try await clock.sleep(
                             until: min(deadline, clock.now.advanced(by: .seconds(1))))
                     } while clock.now < deadline && !session.transfer.snapshot().isClosed
+                    let stopped = changedAt ?? DispatchTime.now().uptimeNanoseconds
                     capture.stop()
                     var terminalError: (any Error)?
                     do { try await capture.finish() } catch { terminalError = error }
@@ -106,9 +106,9 @@ enum AcceptanceProbe {
                     let config = session.transfer.configuration
                     let format = config.format
                     let run: [String: Any] = [
-                        "epoch": config.epoch.streamID.uuidString,
-                        "sequence": config.epoch.sequence,
-                        "durationNS": DispatchTime.now().uptimeNanoseconds - start,
+                        "epoch": CaptureResourceHistory.identifier(config.epoch),
+                        "durationNS": stopped - start, "startedUptimeNS": start,
+                        "stoppedUptimeNS": stopped,
                         "sampleRate": format.sampleRate, "channels": format.channelCount,
                         "encoding": format.encoding.rawValue, "layout": format.layout.rawValue,
                         "queueSlots": config.slotCount,
@@ -120,11 +120,11 @@ enum AcceptanceProbe {
                         "knownGapFrames": counts.knownGapFrames,
                         "unknownGaps": counts.unknownGaps, "invalidChunks": final.invalidChunks,
                         "producerContractViolated": final.producerContractViolated,
-                        "inputChanged": inputChanged, "resourceSamples": samples,
+                        "inputChanged": changedAt != nil, "resourceSamples": samples,
                     ]
                     runs.append(run)
                     if let terminalError { throw terminalError }
-                    if inputChanged { throw Failure.inputChanged }
+                    if changedAt != nil { throw Failure.inputChanged }
                     guard final.isClosed, counts.frames > 0,
                         final.acceptedChunks == counts.blocks, !final.producerContractViolated,
                         final.invalidChunks == 0, final.droppedFrames == 0,

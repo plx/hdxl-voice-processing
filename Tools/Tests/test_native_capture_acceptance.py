@@ -60,8 +60,10 @@ class AcceptanceTests(unittest.TestCase):
                                   consumedFrames=3072, droppedFrames=0, knownGapFrames=0, unknownGaps=0,
                                   invalidChunks=0, producerContractViolated=False, queueHighWater=2)]
         if scenario == "sustained-foreground":
+            row["epochs"][0].update(acceptedChunks=6000, drainedChunks=6000, consumedFrames=5_760_000,
+                                    durationNS=120_000_000_000)
             row["resourceSamples"] = [dict(epoch="e1", elapsedSeconds=t, processCPUSeconds=t/4,
-                                           residentBytes=1024+t, queueDepthSlots=1, thermalState="unavailable")
+                                           residentBytes=1024+t, acceptedChunks=t*50, queueDepthSlots=1, thermalState="unavailable")
                                       for t in (0, 60, 120)]
             row["latencies"]["callbackDurationNS"] = [1, 2, 3, 80]
         return row
@@ -110,6 +112,10 @@ class AcceptanceTests(unittest.TestCase):
         incomplete = copy.deepcopy(row)
         del incomplete["resourceSamples"][1]["queueDepthSlots"]
         self.assertIn("sustained queueDepthSlots observations", device_trial.evaluate(incomplete, self.folder)["missing"])
+        stalled = copy.deepcopy(row)
+        for sample in stalled["resourceSamples"]:
+            sample["acceptedChunks"] = 1
+        self.assertEqual(device_trial.evaluate(stalled, self.folder)["functionalStatus"], "failed")
         row["run"]["operation"] = "live-analysis"
         self.assertIn("acousticEndToObservationNS", device_trial.evaluate(row, self.folder)["missing"])
 
@@ -130,11 +136,20 @@ class AcceptanceTests(unittest.TestCase):
         row.update(deviceClass="Mac", platform="macOS")
         self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "deferred")
         first = row["epochs"].pop()
+        first.update(startedUptimeNS=1, stoppedUptimeNS=101, durationNS=100, inputChanged=False, resourceSamples=[])
+        second = dict(first, epoch="e2", startedUptimeNS=102, stoppedUptimeNS=202)
         receipt = dict(schemaVersion=1, operation="capture-only", status="completed", requestedRuns=2,
-                       revision=self.commit, sourceState="clean", runs=[first, dict(first, epoch="e2")])
+                       revision=self.commit, sourceState="clean", runs=[first, second])
         item = dict(kind="mac-capture-check", file="native.json", sha256=self.save("native.json", receipt))
         row["evidence"].append(item)
         self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "passed")
+        receipt.update(requestedRuns=1, runs=[first])
+        item["sha256"] = self.save("native.json", receipt)
+        extra = dict(kind="mac-capture-check", file="second.json", sha256=self.save("second.json", dict(receipt, runs=[second])))
+        row["evidence"].append(extra)
+        self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "deferred")
+        row["evidence"].pop()
+        receipt.update(requestedRuns=2, runs=[first, second])
         item["sha256"] = "0" * 64
         with self.assertRaises(ValueError):
             device_trial.evaluate(row, self.folder)
@@ -147,7 +162,10 @@ class AcceptanceTests(unittest.TestCase):
         row = self.physical()
         row.update(deviceClass="Mac", platform="macOS")
         epoch = row["epochs"].pop()
-        epoch.update(resourceSamples=row.pop("resourceSamples"), durationNS=120_000_000_000)
+        epoch.update(resourceSamples=row.pop("resourceSamples"), durationNS=120_000_000_000, inputChanged=False,
+                     startedUptimeNS=10, stoppedUptimeNS=120_000_000_010)
+        for sample in epoch["resourceSamples"]:
+            sample["uptimeNS"] = 10 + sample["elapsedSeconds"] * 1_000_000_000
         row["resourceSamples"] = []
         receipt = dict(schemaVersion=1, operation="capture-only", status="completed", requestedRuns=1,
                        revision=self.commit, sourceState="clean", runs=[epoch])
@@ -155,11 +173,43 @@ class AcceptanceTests(unittest.TestCase):
         row["evidence"].append(item)
         self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "passed")
         epoch["durationNS"] -= 1
+        epoch["stoppedUptimeNS"] -= 1
         item["sha256"] = self.save("native.json", receipt)
         self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "deferred")
         receipt.update(status="failed", failure="capture callback failed")
         item["sha256"] = self.save("native.json", receipt)
         self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "failed")
+
+    def test_route_recovery_requires_a_completed_epoch_after_the_change_and_keeps_samples(self):
+        row = self.physical("route-change")
+        row.update(deviceClass="Mac", platform="macOS")
+        first = row["epochs"].pop()
+        def epoch(start, key, changed):
+            sample = dict(epoch=key, uptimeNS=start + 1, elapsedSeconds=0, thermalState="fair",
+                          processCPUSeconds=1, residentBytes=1024, queueDepthSlots=1, acceptedChunks=1)
+            return dict(first, epoch=key, durationNS=100, startedUptimeNS=start, stoppedUptimeNS=start + 100,
+                        inputChanged=changed, resourceSamples=[sample])
+        one, two, three = epoch(1, "e1", False), epoch(110, "e2", True), epoch(220, "e3", False)
+        receipt = dict(schemaVersion=1, operation="capture-only", requestedRuns=2, revision=self.commit,
+                       sourceState="clean", status="failed", failure="input configuration changed", runs=[one,two])
+        row["evidence"].append(dict(kind="mac-capture-check", file="before.json", sha256=self.save("before.json",receipt)))
+        self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "deferred")
+        after = dict(receipt, requestedRuns=1, status="completed", runs=[three])
+        row["evidence"].append(dict(kind="mac-capture-check", file="after.json", sha256=self.save("after.json",after)))
+        result = device_trial.evaluate(row, self.folder)
+        self.assertEqual(result["functionalStatus"], "passed")
+        self.assertEqual(result["measurements"]["queueDepthSlots"]["count"], 3)
+        self.assertEqual(result["resourceSamples"][-1]["elapsedSeconds"], 219e-9)
+
+    def test_stalled_microphone_and_impossible_pcm_configuration_do_not_qualify(self):
+        row = self.physical()
+        row["epochs"][0]["consumedFrames"] = 6000
+        self.assertIn("delivered audio duration differs from the capture interval", device_trial.evaluate(row, self.folder)["failures"])
+        for changes in (dict(channels=33), dict(queueSlots=4096, maximumFramesPerChunk=65536)):
+            invalid = copy.deepcopy(row)
+            invalid["epochs"][0].update(changes)
+            with self.assertRaises(ValueError):
+                device_trial.evaluate(invalid, self.folder)
 
     def test_invalid_clock_counter_and_sensor_observations_cannot_pass(self):
         row = self.physical()

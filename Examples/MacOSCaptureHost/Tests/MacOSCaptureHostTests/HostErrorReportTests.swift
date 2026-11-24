@@ -69,11 +69,14 @@ import Testing
     resources.observe(transfer)
     resources.observe(transfer)
     resources.observe(transfer, finishing: true)
+    let next = try config.epoch.successor()
+    #expect(
+        CaptureResourceHistory.identifier(next) != CaptureResourceHistory.identifier(config.epoch))
     let readings = resources.readings
     #expect(readings.count == 2)
     #expect(
         readings.allSatisfy {
-            $0.epoch == config.epoch.streamID.uuidString && $0.queueDepthSlots == 0
+            $0.epoch == CaptureResourceHistory.identifier(config.epoch) && $0.queueDepthSlots == 0
         })
     #expect(readings.allSatisfy { ($0.residentBytes ?? 0) > 0 && $0.processCPUSeconds != nil })
 }
