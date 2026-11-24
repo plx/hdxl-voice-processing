@@ -127,8 +127,10 @@ def main():
                                 "-o", str(assembly), *map(str, audio)], log, result["commands"])
                 source = assembly.read_text()
                 selected, report = audit(source, target.split("-")[0])
-                report["nativeTap"] = inspect_tap(functions(source), selected)
-                capture = "\n".join(selected.values())
+                bodies = functions(source)
+                report["nativeTap"] = inspect_tap(bodies, selected)
+                tap = {symbol: bodies[symbol] for symbol in report["nativeTap"]["calls"]}
+                capture = "\n".join((selected | tap).values())
                 (folder / "capture.s").write_text(capture)
                 report["captureAssemblySHA256"] = hashlib.sha256(capture.encode()).hexdigest()
                 result["targets"][name] = report

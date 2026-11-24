@@ -85,13 +85,14 @@
                 @escaping (@escaping @MainActor @Sendable (CaptureLifecycleSignal) -> Void) ->
                 any CaptureLifecycleDriver,
             diagnostics: RuntimeDiagnosticMode,
+            measureDrains: Bool,
             observeDrain: @escaping @MainActor (CaptureWorkerObservation) -> Void,
             onEvent: @escaping @MainActor (CaptureLifecycleEvent) -> Void
         ) {
             self.init(
                 makeDriver: driverFactory,
                 makeWorker: {
-                    CaptureAnalysisWorker(diagnostics: diagnostics, measureDrains: true)
+                    CaptureAnalysisWorker(diagnostics: diagnostics, measureDrains: measureDrains)
                 },
                 diagnostics: diagnostics, observeDrain: observeDrain, onEvent: onEvent)
         }
@@ -340,10 +341,10 @@
                 guard isCurrent(op) else { return false }
                 publish(.analysis(event))
             }
-            if let observation = batch.observation,
+            if let observeDrain, let observation = batch.observation,
                 observation.deliveredPCMEvents > 0 || !batch.events.isEmpty
             {
-                observeDrain?(observation)
+                observeDrain(observation)
             }
             return isCurrent(op)
         }

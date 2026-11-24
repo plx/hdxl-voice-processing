@@ -28,7 +28,8 @@ def inspect_tap(bodies, transport):
         if name in calls:
             continue
         targets = set()
-        for line in bodies[name].splitlines():
+        lines = bodies[name].splitlines()
+        for index, line in enumerate(lines):
             words = line.strip().split()
             if len(words) < 2:
                 continue
@@ -40,6 +41,20 @@ def inspect_tap(bodies, transport):
             target = line.split(";", 1)[0].split("# ", 1)[0].split()[-1] if conditional else words[1]
             if (conditional or op in {"b", "jmp", "jmpq"}) and re.fullmatch(r"L\w+", target):
                 continue
+            relocation = re.fullmatch(r"\*(_[A-Za-z0-9_$]+)@GOTPCREL\(%rip\)", target)
+            if relocation:
+                target = relocation[1]
+            if target == "_objc_msgSend":
+                # x86_64 passes the selector in rsi, optionally setting the receiver
+                # in rdi between the selector load and the call. Resolve that exact ABI pattern.
+                prior = index - 1
+                if prior >= 0 and re.fullmatch(r"\s*movq\s+%\w+, %rdi", lines[prior]):
+                    prior -= 1
+                selector = re.fullmatch(r'\s*movq\s+"L_selector\((\w+)\)"\(%rip\), %rsi',
+                                        lines[prior]) if prior >= 0 else None
+                if not selector:
+                    raise ValueError("Unresolved Objective-C selector on capture")
+                target = "_objc_msgSend$" + selector[1]
             targets.add(target)
             if target in SDK or target in PRIMITIVES or target in transport:
                 continue

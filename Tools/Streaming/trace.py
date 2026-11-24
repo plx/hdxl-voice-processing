@@ -22,26 +22,48 @@ STAGES = {"Resample", "PreEmphasis", "FrameAssembly", "FFT", "Cepstrum", "CPP", 
           "CPPSFitting", "ResultPublication", "ResultDelivery", "AnalysisFrame"}
 
 
+FULL_STAGES = {"LevelEnergy", "KWeighting", "Pitch", "PitchTracking", "HNR", "HNRNormalization",
+               "HNRWindow", "HNRCorrelation", "HNRPeriodSearch"}
+
+
 class IncompleteRecording(ValueError):
     """Instruments omitted target records. Keep the attempt reason if recording again."""
+
+
+def reconcile_kernels(profiled, expected):
+    observed_dsp = {key.lower(): len(values) for key, values in profiled.items()}
+    expected_dsp = {key.lower(): count for key, count in expected.items()}
+    if not expected_dsp or observed_dsp != expected_dsp:
+        mismatch = {k: (expected_dsp.get(k), observed_dsp.get(k)) for k in expected_dsp.keys() | observed_dsp.keys()
+                    if expected_dsp.get(k) != observed_dsp.get(k)}
+        raise IncompleteRecording(f"DSP invocation counts differ from the independent scheduler: {mismatch}")
+    return expected_dsp
 
 
 def inspect(xml, document):
     trial = document["trials"][0]
     target = f"StreamingReplayProbe ({document['processID']})"
     rows = [r for r in signpost_records(xml) if r["process"] == target]
-    active, seen, durations, events = {}, set(), defaultdict(list), Counter()
-    overruns, dequeues, post_gap_publications = [], [], []
+    active, seen, durations, profiled, events = {}, set(), defaultdict(list), defaultdict(list), Counter()
+    required_stages = STAGES | (FULL_STAGES if trial.get("profile") == "full" else set())
+    overruns, resets, dequeues, publications = [], [], [], []
     subscriber_delays = []
     for row in sorted(rows, key=lambda item: item["time"]):
         stage, kind, time = row["name"], row["event-type"], row["time"]
         key = row["category"], stage, row["identifier"]
+        category = ({"Reset": "lifecycle", "Initialize": "lifecycle", "Overrun": "flow", "Drop": "flow",
+                     "Dequeue": "flow", "CaptureHandoff": "flow", "ResultDelivery": "delivery"}).get(stage, "worker")
+        if row["category"] != category:
+            raise ValueError("Unexpected signpost category")
         if kind == "End":
             if row["message"]:
                 raise ValueError("Signpost end contains unexpected metadata")
             if key not in active:
                 raise IncompleteRecording(f"Unmatched {stage} end")
-            durations[stage].append(time - active.pop(key))
+            start, profile = active.pop(key)
+            durations[stage].append(time - start)
+            if profile not in {54, 5401, 5402}:
+                profiled[f"{stage}/{profile}"].append(time - start)
             continue
         match = META.fullmatch(row["message"])
         if not match:
@@ -51,17 +73,23 @@ def inspect(xml, document):
             raise ValueError("Invalid session or duplicate signpost identity")
         seen.add((session, span))
         if kind == "Begin":
+            if stage not in required_stages:
+                raise ValueError("Unexpected streaming interval name")
             if key in active:
                 raise IncompleteRecording(f"Missing prior {stage} end")
-            active[key] = time
+            active[key] = (time, profile)
             if stage == "ResultDelivery":
                 if wait == 2**64-1:
                     raise ValueError("Missing consumer observation lag")
                 subscriber_delays.append(wait)
             if stage == "ResultPublication":
-                post_gap_publications.append((time, sequence))
+                publications.append((time, sequence))
         elif kind == "Event":
+            if stage not in {"Initialize", "Reset", "Overrun", "Drop", "CaptureHandoff", "Dequeue", "Cancelled"}:
+                raise ValueError("Unexpected streaming event name")
             events[stage] += 1
+            if stage == "Reset" and profile == 54:
+                resets.append((time, epoch))
             if stage == "Overrun":
                 if profile != 54 or validity != 3:
                     raise ValueError("Overrun lost its worker/validity context")
@@ -76,27 +104,38 @@ def inspect(xml, document):
         "CaptureHandoff": trial["drainedBlocks"], "Dequeue": trial["drainedBlocks"], "Overrun": trial["gapCount"],
         "ResultPublication": trial["fast"]["accepted"],
         "ResultDelivery": sum(trial[s]["delivered"] for s in ("fast", "slow", "paused")),
-        "CPPSSmoothing": sum(r["outcomes"]["cpps"] == "available" for r in trial["science"]["records"]),
-        "CPPSFitting": sum(r["outcomes"]["cpps"] == "available" for r in trial["science"]["records"]),
+        "CPPSSmoothing": sum(r["outcomes"]["cpps"] == "available" for r in trial["science"]["records"] if r.get("lane") == "cpps"),
+        "CPPSFitting": sum(r["outcomes"]["cpps"] == "available" for r in trial["science"]["records"] if r.get("lane") == "cpps"),
     }
     counts = dict(events) | {k: len(values) for k, values in durations.items()}
-    if active or not STAGES <= durations.keys() or any(counts.get(k) != v or not v for k, v in expected.items()):
+    if active or not required_stages <= durations.keys() or any(counts.get(k) != v or not v for k, v in expected.items()):
         raise IncompleteRecording(f"Unbalanced or missing stages: open={len(active)}, stages={sorted(durations)}, "
                                   f"required={expected}, observed={counts}")
-    available_sequences = {r["publication"] for r in trial["science"]["records"] if r["outcomes"]["cpps"] == "available"}
+    expected_dsp = reconcile_kernels(profiled, trial["science"]["expectedTraceIntervals"])
+    if len(resets) != trial["resetCount"]:
+        raise IncompleteRecording("Missing worker reset")
+    available_sequences = {r["publication"]: r["continuity"] for r in trial["science"]["records"]
+                           if r["outcomes"].get("cpps") == "available"}
     for overrun, epoch in overruns:
-        if not any(t > overrun and e > epoch for t, e in dequeues) or not any(
-                t > overrun and sequence in available_sequences for t, sequence in post_gap_publications):
-            raise IncompleteRecording("Missing resumed dequeue or valid CPPS publication after an overrun")
-    return dict(stagesNS={stage: distribution(values) for stage, values in durations.items()},
+        if not any(t >= overrun and e == epoch for t, e in resets):
+            raise IncompleteRecording("Missing worker reset after overrun")
+        if not any(t > overrun and e == epoch + 1 for t, e in dequeues) or not any(
+                t > overrun and available_sequences.get(sequence) == epoch + 1 for t, sequence in publications):
+            raise IncompleteRecording("Missing resumed dequeue or valid CPPS publication on the new continuity epoch")
+    return dict(stagesNS={stage: dict(distribution(values), totalNS=sum(values)) for stage, values in durations.items()
+                          if stage not in {"AnalysisFrame", "ResultDelivery"}},
+                kernelProfileNS={key: dict(distribution(values), totalNS=sum(values)) for key, values in profiled.items()
+                                 if not key.startswith("AnalysisFrame/")},
+                independentKernelIntervals=expected_dsp, deliveryMarkerCount=len(durations["ResultDelivery"]),
                 events=dict(events), expectedCounts=expected, completeIntervals=sum(map(len, durations.values())),
                 subscriberLagNS=distribution(subscriber_delays), unmatchedIntervals=0,
                 approvedNumericMetadataOnly=True)
 
 
-def capture(binary, load, directory):
+def capture(binary, profile, load, directory):
     def run_args(mode, path):
-        return [binary, "cpps", "48000", "512", load, mode, "1", "7", "single", path]
+        return [binary, profile, "48000", "512", load, mode, "1", "7",
+                "trace" if mode == "detailed" else "single", path]
     reference = directory / f"{load}-disabled.json"
     subprocess.run(run_args("disabled", reference), check=True, timeout=90)
     baseline = json.loads(reference.read_bytes())["trials"][0]
@@ -132,8 +171,12 @@ def main():
     args = parser.parse_args()
     binary = args.binary.resolve(strict=True)
     with tempfile.TemporaryDirectory() as directory:
-        recordings = {load: capture(binary, load, Path(directory)) for load in ("paced", "burst")}
-    report = dict(schemaVersion=1, template="Logging", toolchain=ci.environment("release"),
+        recordings = {name: capture(binary, profile, load, Path(directory)) for name, profile, load in
+                      (("paced", "cpps", "paced"), ("burst", "cpps", "burst"), ("full", "full", "throughput"))}
+    environment = ci.environment("release")
+    environment["execution"] = "Instruments Logging on governed, synthetic native PCM"
+    environment["model"] = ci.capture("sysctl", "-n", "hw.model")
+    report = dict(schemaVersion=1, template="Logging", toolchain=environment,
                   binarySHA256=sha(binary), recordings=recordings)
     with args.output.open("x") as output:
         output.write(ci.redact(json.dumps(report, indent=2, allow_nan=False)) + "\n")

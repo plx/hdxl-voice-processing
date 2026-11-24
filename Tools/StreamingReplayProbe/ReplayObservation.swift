@@ -65,6 +65,7 @@
         private(set) var lastDeliveryNS: UInt64?
         private(set) var consumed: Int64 = 0
         private(set) var blocks = 0
+        private(set) var nativeTimedDrains: UInt64 = 0
         private(set) var drainProcessingNS: UInt64 = 0
         private(set) var preparedBytes = 0
         private(set) var resetCount = 0
@@ -83,7 +84,7 @@
             consumed += observation.consumedSourceFrames
             preparedBytes = observation.preparedBufferBytes
             lastDrainNS = now
-            if let start = observation.workerStartedHostNanoseconds,
+            if options.operation != .overhead, let start = observation.workerStartedHostNanoseconds,
                 let end = observation.workerFinishedHostNanoseconds
             {
                 drainProcessingNS += end - start
@@ -168,6 +169,7 @@
                 try requireCleared(snapshot)
             case .completed(let value):
                 completion = value
+                nativeTimedDrains = snapshot.runtime.processing.samples
                 try requireCleared(snapshot)
             default: break
             }

@@ -1,6 +1,7 @@
 #if os(macOS)
     import CryptoKit
     import Foundation
+    import Synchronization
     import HDXLVoiceProcessing
     import HDXLVoiceProcessingAudio
 
@@ -74,8 +75,22 @@
         var withheldAtExplicitStop = 0
     }
 
+    /// This independent scheduler uses an in-memory sink after the timed run. It
+    /// never calls an OS signposter and cannot contribute records to the trace.
+    private final class StageCounter: DiagnosticSink {
+        private let counts = Mutex<[String: Int]>([:])
+        func begin(_ record: DiagnosticRecord) -> DiagnosticIntervalToken? { .recorded }
+        func end(_ record: DiagnosticRecord, token: DiagnosticIntervalToken) {
+            let key = "\(record.stage.rawValue)/\(record.metadata.profileToken)"
+            counts.withLock { $0[key, default: 0] += 1 }
+        }
+        func event(_ record: DiagnosticRecord) -> Bool { true }
+        var completed: [String: Int] { counts.withLock { $0 } }
+    }
+
     struct ScientificReport: Codable {
         let windows: [String: WindowDenominator]
+        let expectedTraceIntervals: [String: Int]?
         let equivalentNativeFrames: Int
         let sha256: String
         let records: [FrameRecord]
@@ -98,7 +113,7 @@
     func verifyScientificReplay(
         configuration: CaptureLifecycleConfiguration, ingress: IngressReport,
         frames: [ReceivedFrame],
-        rate: Int, seed: UInt32
+        rate: Int, seed: UInt32, countTraceIntervals: Bool
     ) throws -> ScientificReport {
         let signal = replaySignal(rate: rate, seed: seed)
         let anchors = Dictionary(
@@ -117,10 +132,11 @@
             }
         }
         func replay(
-            _ regions: [Range<Int>], emit: (ScheduledFrame) -> Void,
+            _ regions: [Range<Int>], counter: StageCounter? = nil, emit: (ScheduledFrame) -> Void,
             finalTail: (ScheduledFrame) -> Void
         ) throws {
             var continuity = configuration.initialAnalysisContinuityEpoch
+            var retained: PreparedAnalysisSchedule<Float>?
             for (regionIndex, region) in regions.enumerated() {
                 guard let anchor = anchors[region.lowerBound] else {
                     throw ReplayFailure("missing accepted region anchor")
@@ -130,8 +146,17 @@
                     sampleCount: 0, sampleRate: Double(rate))
                 let origin = try AnalysisScheduleOrigin(
                     source: source, continuityEpoch: continuity, hostStartNanoseconds: anchor)
-                let direct = try PreparedAnalysisSchedule<Float>(
-                    profile: configuration.analysis, origin: origin, mode: .continuous)
+                let direct: PreparedAnalysisSchedule<Float>
+                if let retained {
+                    _ = try retained.reset(origin: origin, reason: .droppedAudio)
+                    direct = retained
+                } else {
+                    direct = try PreparedAnalysisSchedule(
+                        profile: configuration.analysis, origin: origin, mode: .continuous,
+                        diagnosticMode: counter == nil ? .disabled : .detailed,
+                        diagnosticSink: counter)
+                    if counter != nil { retained = direct }
+                }
                 var cursor = region.lowerBound
                 while cursor < region.upperBound {
                     let phase = cursor % rate
@@ -149,7 +174,7 @@
                 if regionIndex < regions.count - 1 {
                     _ = try direct.finish(emit: emit)
                     continuity = try continuity.successor()
-                } else {
+                } else if counter == nil {
                     _ = try direct.finish(emit: finalTail)
                 }
             }
@@ -249,8 +274,14 @@
                     publication: item.publication,
                     publishedNS: item.publishedNS, observedNS: item.observedNS, outcomes: statuses))
         }
+        let counter = countTraceIntervals ? StageCounter() : nil
+        if let counter {
+            try replay(
+                ingress.admittedRegions, counter: counter, emit: { _ in }, finalTail: { _ in })
+        }
         return ScientificReport(
-            windows: windows, equivalentNativeFrames: index,
+            windows: windows, expectedTraceIntervals: counter?.completed,
+            equivalentNativeFrames: index,
             sha256: digest.finalize().map { String(format: "%02x", $0) }.joined(),
             records: records)
     }

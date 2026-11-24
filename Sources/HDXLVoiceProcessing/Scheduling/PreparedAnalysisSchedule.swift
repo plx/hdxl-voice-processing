@@ -32,9 +32,10 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     private let inspect: ((BorrowedScheduledInspection) -> Void)?
     private let cppsIdentity: ProfileIdentity?
     private let diagnosticMode: RuntimeDiagnosticMode
+    private let diagnosticSink: (any DiagnosticSink)?
 
     private func workerDiagnostics() -> WorkerDiagnostics {
-        WorkerDiagnostics(mode: diagnosticMode.facadeMode)
+        WorkerDiagnostics(mode: diagnosticMode.facadeMode, sink: diagnosticSink)
     }
 
     private func workerOrigin(_ origin: AnalysisScheduleOrigin) throws -> AnalysisTiming {
@@ -70,13 +71,27 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     }
 
     /// Enable bounded worker signposts for profiling. This changes instrumentation only.
-    public init(
+    public convenience init(
         profile: AnalysisScheduleProfile, origin: AnalysisScheduleOrigin,
         mode: AnalysisScheduleMode, expectedSampleCount: Int64? = nil,
         sourceTileCapacity: Int = 256, mask: PreparedAnalysisMask? = nil,
         diagnosticMode: RuntimeDiagnosticMode,
         inspect: ((BorrowedScheduledInspection) -> Void)? = nil
     ) throws {
+        try self.init(
+            profile: profile, origin: origin, mode: mode, expectedSampleCount: expectedSampleCount,
+            sourceTileCapacity: sourceTileCapacity, mask: mask, diagnosticMode: diagnosticMode,
+            diagnosticSink: nil, inspect: inspect)
+    }
+
+    package init(
+        profile: AnalysisScheduleProfile, origin: AnalysisScheduleOrigin,
+        mode: AnalysisScheduleMode, expectedSampleCount: Int64? = nil,
+        sourceTileCapacity: Int = 256, mask: PreparedAnalysisMask? = nil,
+        diagnosticMode: RuntimeDiagnosticMode, diagnosticSink: (any DiagnosticSink)?,
+        inspect: ((BorrowedScheduledInspection) -> Void)? = nil
+    ) throws {
+        self.diagnosticSink = diagnosticSink
         self.diagnosticMode = diagnosticMode
         try Self.validate(
             profile: profile, origin: origin, mode: mode,

@@ -5,6 +5,14 @@ from collections import Counter, defaultdict
 from math import ceil
 
 
+METRICS = {
+    "levels": {"rms", "meanSquare", "peakAmplitude", "crestFactor", "levelDBFS", "clippingFraction", "kWeightedEnergy"},
+    "yin": {"fundamentalFrequency", "trackedFundamentalFrequency"}, "cpps": {"cpp", "cpps"},
+    "hnr": {"harmonicToNoiseRatio"}, "swipePrime": {"fundamentalFrequency"},
+}
+PROFILE_LANES = {"cpps": {"cpps"}, "core": {"cpps", "levels", "yin"}, "full": set(METRICS)}
+
+
 def distribution(values):
     ordered = sorted(values)
     if not ordered:
@@ -26,8 +34,12 @@ def summarize(t):
         raise ValueError("Worker or queue storage invalid")
     if t["fast"]["highWater"] > t["fast"]["capacity"] or t["slow"]["highWater"] > 2 or t["paused"]["highWater"] != 4:
         raise ValueError("Invalid subscriber mailbox high-water")
-    if t["load"] != "paced" and t["knownMissingFrames"] != t["droppedFrames"] + ingress["explicitGapFrames"]:
-        raise ValueError("Controlled source gap or overflow was not delivered")
+    last_end = ingress["lastAdmittedRegion"][1]
+    if t["unknownGaps"] or t["knownMissingFrames"] != last_end - t["consumedFrames"]:
+        raise ValueError("Published gap extents differ from loss before the final admitted block")
+    if {r["lane"] for r in t["requirements"]} != PROFILE_LANES[t["profile"]]:
+        raise ValueError("Incomplete schedule requirements")
+    process = t.get("processingNS")
     consumed_seconds = t["consumedFrames"] / rate
     common = {k: t[k] for k in ("profile", "profileSHA256", "sampleRate", "pattern", "load", "mode", "operation",
                                 "seconds", "seed", "consumedFrames", "drainedBlocks", "emittedFrames", "gapCount",
@@ -37,17 +49,32 @@ def summarize(t):
     common.update(offeredFrames=ingress["offeredFrames"], offeredCallbacks=ingress["offered"],
                   explicitGapFrames=ingress["explicitGapFrames"], admittedRegionCount=ingress["admittedRegionCount"],
                   admittedRegions=ingress["admittedRegions"],
-                  elapsedFirstOfferToLastDrainNS=duration, totalWorkerNS=t["processingNS"],
-                  workerSecondsPerAdmittedSecond=t["processingNS"] / 1e9 / consumed_seconds,
+                  elapsedFirstOfferToLastDrainNS=duration, totalWorkerNS=process,
+                  workerSecondsPerAdmittedSecond=None if process is None else process / 1e9 / consumed_seconds,
                   throughputRealtimeFactor=(consumed_seconds * 1e9 / duration if t["load"] == "throughput" else None),
                   pendingFinalTileFrames=(ingress["lastAdmittedRegion"][1]-ingress["lastAdmittedRegion"][0]) % 256)
+    common["sourceDomainFrames"] = ingress["offeredFrames"] + ingress["explicitGapFrames"]
+    common["missingFramesWithoutPublishedGapAtStop"] = common["sourceDomainFrames"] - last_end
+    if common["missingFramesWithoutPublishedGapAtStop"] < 0:
+        raise ValueError("Last admitted block extends past offered source")
+    if t["operation"] == "overhead":
+        science = t["science"]
+        if (t["drains"] or process is not None or (t["nativeTimedDrains"] == 0) != (t["mode"] == "disabled")
+                or science["equivalentNativeFrames"] != t["emittedFrames"]
+                or {r["lane"] for r in science["records"]} != PROFILE_LANES[t["profile"]]):
+            raise ValueError("Invalid production-timer overhead sample")
+        return dict(common, scienceSHA256=science["sha256"], nativeTimedDrains=t["nativeTimedDrains"])
     if t["operation"] == "soak":
         if ingress["admittedRegions"] or ingress["retainedCallbacks"] or t["drains"] or t.get("science") is not None or len(t["resident"]) > 14:
             raise ValueError("Soak retained unbounded per-operation telemetry")
         total_frames = 0
-        for metrics in t["soakOutcomes"].values():
+        if set(t["soakOutcomes"]) != PROFILE_LANES[t["profile"]]:
+            raise ValueError("Missing configured lane in soak")
+        for lane, metrics in t["soakOutcomes"].items():
+            if set(metrics) != METRICS[lane]:
+                raise ValueError("Missing configured metric in soak")
             counts = {sum(statuses.values()) for statuses in metrics.values()}
-            if len(counts) != 1:
+            if len(counts) != 1 or min(counts) <= 0:
                 raise ValueError("Missing metric validity in soak")
             total_frames += counts.pop()
         if total_frames != t["emittedFrames"]:

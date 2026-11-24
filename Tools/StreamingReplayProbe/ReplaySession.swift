@@ -31,7 +31,8 @@
         let pcmBytes: Int
         let schedulerBytes: Int
         let resident: [MemorySample]
-        let processingNS: UInt64
+        let nativeTimedDrains: UInt64
+        let processingNS: UInt64?
         let finalDrainNS: UInt64
         let finalDeliveryNS: UInt64
         let drains: [DrainRecord]
@@ -82,7 +83,8 @@
                 ? nil
                 : try verifyScientificReplay(
                     configuration: configuration, ingress: ingress, frames: observer.received,
-                    rate: options.rate, seed: options.seed)
+                    rate: options.rate, seed: options.seed,
+                    countTraceIntervals: options.operation == .trace)
             return try ReplayTrial(
                 profile: profile, profileSHA256: configuration.analysisIdentity.sha256,
                 sampleRate: options.rate, pattern: options.pattern, load: options.load,
@@ -100,7 +102,9 @@
                 queueSlots: transfer.configuration.slotCount,
                 pcmBytes: transfer.configuration.pcmStorageBytes,
                 schedulerBytes: observer.preparedBytes, resident: observer.resident,
-                processingNS: observer.drainProcessingNS, finalDrainNS: lastDrain,
+                nativeTimedDrains: observer.nativeTimedDrains,
+                processingNS: options.operation == .overhead
+                    ? nil : observer.drainProcessingNS, finalDrainNS: lastDrain,
                 finalDeliveryNS: lastDelivery,
                 drains: observer.records, fast: fast, slow: slow, paused: paused,
                 stopReason: String(describing: completion.change),
@@ -130,6 +134,7 @@
         private var nextIntent: CaptureLifecycleStartIntent?
         private lazy var lifecycle = CaptureLifecycle(
             driverFactory: { [driver] _ in driver }, diagnostics: options.mode,
+            measureDrains: options.operation != .overhead,
             observeDrain: { [weak self] in self?.observer?.drain($0) },
             onEvent: { [weak self] in self?.event($0) })
 
@@ -295,7 +300,7 @@
                 throw ReplayFailure(
                     "restart reused an analysis clock or lost the acquisition sequence")
             }
-        case .single, .soak:
+        case .single, .soak, .overhead, .trace:
             completed = [try await session.run(profile: options.profile)]
         }
         // Independent numerical replay and artifact encoding happen after every timed operation.

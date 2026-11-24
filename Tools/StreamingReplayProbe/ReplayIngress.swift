@@ -113,6 +113,21 @@
             source += frames
         }
 
+        /// Split the callback crossing the fixed source gap. Every geometry presents
+        /// identical source regions, independent of the next callback's nominal size.
+        private func nextSize() -> Int {
+            let target = options.seconds * options.rate
+            let midpoint = target / 2
+            if report.offeredFrames == midpoint, report.explicitGapFrames == 0 {
+                report.explicitGapFrames = options.rate / 50
+                source += report.explicitGapFrames
+            }
+            let boundary = report.offeredFrames < midpoint ? midpoint : target
+            return min(
+                options.pattern[report.offered % options.pattern.count],
+                boundary - report.offeredFrames)
+        }
+
         /// Fill and overrun the real queue before the lifecycle can prepare its worker.
         /// The rest of this run is backpressured and recovers through the normal pump.
         func startupBurst(forCancellation: Bool) throws {
@@ -124,7 +139,7 @@
             guard options.load == .burst else { return }
             anchor = replayClock()
             for _ in 0..<(tap.transfer.configuration.slotCount + 4) {
-                try offer(frames: options.pattern[report.offered % options.pattern.count])
+                try offer(frames: nextSize())
             }
         }
 
@@ -133,13 +148,7 @@
             let target = options.seconds * options.rate
             while report.offeredFrames < target {
                 try Task.checkCancellation()
-                if report.explicitGapFrames == 0, report.offeredFrames >= target / 2 {
-                    report.explicitGapFrames = options.rate / 50
-                    source += report.explicitGapFrames
-                }
-                let size = min(
-                    options.pattern[report.offered % options.pattern.count],
-                    target - report.offeredFrames)
+                let size = nextSize()
                 if options.load == .paced {
                     let due = anchor! + offset(source + size)
                     let now = replayClock()

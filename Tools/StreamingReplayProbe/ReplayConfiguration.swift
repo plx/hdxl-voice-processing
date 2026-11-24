@@ -47,7 +47,7 @@ enum ReplayProfile: String, Codable {
 }
 
 enum ReplayLoad: String, Codable { case throughput, paced, burst }
-enum ReplayOperation: String, Codable { case single, restart, concurrent, soak }
+enum ReplayOperation: String, Codable { case single, restart, concurrent, soak, overhead, trace }
 
 struct ReplayOptions {
     let profile: ReplayProfile
@@ -62,7 +62,7 @@ struct ReplayOptions {
     let output: URL
 
     static let usage =
-        "usage: StreamingReplayProbe {cpps|core|full} {44100|48000} {64|128|256|512|1024|mixed} {throughput|paced|burst} {disabled|sampled|detailed} SECONDS SEED {single|restart|concurrent|soak} OUTPUT.json [QUEUE_SLOTS]"
+        "usage: StreamingReplayProbe {cpps|core|full} {44100|48000} {64|128|256|512|1024|mixed} {throughput|paced|burst} {disabled|sampled|detailed} SECONDS SEED {single|restart|concurrent|soak|overhead|trace} OUTPUT.json [QUEUE_SLOTS]"
 
     init(arguments: [String]) throws {
         let mixed = [64, 128, 256, 512, 1024, 93, 711]

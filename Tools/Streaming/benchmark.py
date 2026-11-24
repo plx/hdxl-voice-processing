@@ -32,7 +32,7 @@ def cases(group):
         for profile in PROFILES:
             for trial in range(6):
                 for i in range(3):
-                    yield profile, 48000, "mixed", "throughput", MODES[(trial+i) % 3], 2, "single", trial
+                    yield profile, 48000, "mixed", "throughput", MODES[(trial+i) % 3], 2, "overhead", trial
     elif group == "stress":
         for profile in PROFILES:
             for mode in MODES:
@@ -66,16 +66,19 @@ def check_overhead(runs):
             for rep in range(6):
                 base, measured = indexed[rep, "disabled"], indexed[rep, mode]
                 times.append(dict(repeat=rep, wallDeltaNS=measured["elapsedFirstOfferToLastDrainNS"] -
-                                  base["elapsedFirstOfferToLastDrainNS"],
-                                  processingDeltaNS=measured["totalWorkerNS"] - base["totalWorkerNS"]))
+                                  base["elapsedFirstOfferToLastDrainNS"]))
             output[profile][mode] = dict(pairs=times, medianWallDeltaNS=statistics.median(
-                row["wallDeltaNS"] for row in times), medianProcessingDeltaNS=statistics.median(
-                    row["processingDeltaNS"] for row in times))
+                row["wallDeltaNS"] for row in times))
     return output
 
 
 def validate_group(group, runs):
     if group in PROFILES:
+        for rate in (44100, 48000):
+            peers = [r["trials"][0] for r in runs if r["trials"][0]["sampleRate"] == rate
+                     and r["trials"][0]["load"] == "throughput"]
+            if len(peers) != 6 or len({r["scienceSHA256"] for r in peers}) != 1:
+                raise ValueError("Callback geometry changed the fixed source regions or scientific output")
         for i in range(0, len(runs), 2):
             baseline, paced = runs[i]["trials"][0], runs[i+1]["trials"][0]
             if paced["droppedFrames"] == 0 and paced["scienceSHA256"] != baseline["scienceSHA256"]:
