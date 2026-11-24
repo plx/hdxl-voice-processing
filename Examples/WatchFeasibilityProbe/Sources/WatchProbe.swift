@@ -37,7 +37,12 @@ struct WatchTrial: Encodable {
     var events = [Event]()
     var input: Input?
     var result: SegmentLevel?
-    var recorderStopToResultReadySeconds: Double?
+    struct Timing: Encodable {
+        let origin: String
+        let resultReadySeconds: Double
+    }
+    var timing: Timing?
+    var privateFileCleanup: String?
     // File capture exposes neither hardware frame timestamps nor callback/drop counters.
     let captureDrops = "unobservable"
     init(source: String) {
@@ -65,10 +70,14 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
     @Published private(set) var busy = false
     @Published private(set) var recording = false
     @Published private(set) var evidenceError: String?
+    @Published private(set) var cleanupWarning: String?
     private let session = AVAudioSession.sharedInstance()
     private let scratch = FileManager.default.temporaryDirectory.appendingPathComponent(
         "HDXLWatchSegment.caf")
     private var recorder: AVAudioRecorder?
+    private var pendingActivation: UUID?
+    // Compare private port identity only in memory. The receipt stores anonymous port types.
+    private var inputIDs = [String]()
     private var trial: WatchTrial?
     private var origin = 0.0
     private var sessionActive = false
@@ -85,7 +94,10 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
     func scene(_ phase: ScenePhase) {
         isForeground = phase == .active
         event("scene-\(String(describing: phase))")
-        if !isForeground, recording { finishCapture("scene-inactive", analyze: false) }
+        if !isForeground {
+            pendingActivation = nil
+            if recording { finishCapture("capture-cancelled-on-scene-change") }
+        }
         if isForeground, !hasRunFixture,
             ProcessInfo.processInfo.arguments.contains("--synthetic-replay")
         {
@@ -95,12 +107,12 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
     }
     func replay() {
         guard !busy, isForeground else { return }
-        begin("synthetic-file")
-        analyze(url: nil, stopTime: nil)
+        guard begin("synthetic-file") else { return }
+        analyze(url: nil, boundary: nil)
     }
     func requestOrRecord() {
         guard !busy, isForeground else { return }
-        begin("microphone-file")
+        guard begin("microphone-file") else { return }
         switch AVAudioApplication.shared.recordPermission {
         case .undetermined:
             event("permission-requested")
@@ -108,26 +120,40 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
                 let granted = await AVAudioApplication.requestRecordPermission()
                 end(granted ? "granted-tap-record" : "permission-denied")
             }
-        case .granted: startCapture()
+        case .granted:
+            guard let id = trial?.id else { return }
+            pendingActivation = id
+            Task { await startCapture(id) }
         case .denied: end("permission-denied")
         @unknown default: end("permission-unknown")
         }
     }
-    private func startCapture() {
-        guard removeRecording() else {
-            end("private-file-cleanup-failed")
+    private func startCapture(_ id: UUID) async {
+        guard isForeground, pendingActivation == id, trial?.id == id else {
+            end("activation-cancelled")
             return
         }
         do {
             try session.setCategory(.record, mode: .measurement)
-            try session.setActive(true)
+            event("activation-requested")
+            guard try await session.activate(options: []) else {
+                pendingActivation = nil
+                end("activation-refused")
+                return
+            }
             sessionActive = true
+            guard isForeground, pendingActivation == id, trial?.id == id else {
+                finishCapture("activation-cancelled")
+                return
+            }
+            pendingActivation = nil
             let input = WatchTrial.Input(session)
             trial?.input = input
+            inputIDs = session.currentRoute.inputs.map(\.uid)
             guard input.sessionRate.isFinite, (4_000...192_000).contains(input.sessionRate),
                 input.sessionChannels > 0, !input.ports.isEmpty
             else {
-                finishCapture("no-usable-input", analyze: false)
+                finishCapture("no-usable-input")
                 return
             }
             let settings: [String: Any] = [
@@ -139,7 +165,7 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
             recorder = device
             device.delegate = self
             guard device.record(forDuration: 3) else {
-                finishCapture("recorder-refused", analyze: false)
+                finishCapture("recorder-refused")
                 return
             }
             recording = true
@@ -147,31 +173,39 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
             event("recording")
             timeout = Task {
                 do { try await Task.sleep(for: .seconds(5)) } catch { return }
-                finishCapture("completion-timeout", analyze: false)
+                finishCapture("completion-timeout")
             }
         } catch {
-            finishCapture("capture-setup-failed", analyze: false)
+            finishCapture("capture-setup-failed")
         }
     }
     func stop() {
         guard recording else { return }
-        finishCapture("user-stop", analyze: true)
+        finishCapture(
+            "user-stop", boundary: ("manual-stop-request", ProcessInfo.processInfo.systemUptime))
     }
     func routeChange() {
-        guard recording, WatchTrial.Input(session) != trial?.input else { return }
-        finishCapture("route-changed", analyze: false)
+        guard recording,
+            WatchTrial.Input(session) != trial?.input
+                || session.currentRoute.inputs.map(\.uid) != inputIDs
+        else { return }
+        finishCapture("route-changed")
     }
     func sessionInactive() {
+        pendingActivation = nil
         guard recording else { return }
-        finishCapture("session-inactive", analyze: false)
+        finishCapture("session-inactive")
     }
     nonisolated func audioRecorderDidFinishRecording(
         _ recorder: AVAudioRecorder, successfully flag: Bool
     ) {
+        let callbackTime = ProcessInfo.processInfo.systemUptime
         let id = ObjectIdentifier(recorder)
         Task { @MainActor in
             guard let current = self.recorder, ObjectIdentifier(current) == id else { return }
-            self.finishCapture(flag ? "duration-ended" : "recorder-failed", analyze: flag)
+            self.finishCapture(
+                flag ? "duration-ended" : "recorder-failed",
+                boundary: flag ? ("completion-callback-entry", callbackTime) : nil)
         }
     }
     nonisolated func audioRecorderEncodeErrorDidOccur(
@@ -180,32 +214,36 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
         let id = ObjectIdentifier(recorder)
         Task { @MainActor in
             guard let current = self.recorder, ObjectIdentifier(current) == id else { return }
-            self.finishCapture("recorder-encode-failed", analyze: false)
+            self.finishCapture("recorder-encode-failed")
         }
     }
-    private func finishCapture(_ reason: String, analyze shouldAnalyze: Bool) {
-        let stopTime = ProcessInfo.processInfo.systemUptime
+    private typealias StopBoundary = (name: String, uptime: Double)
+    private func finishCapture(_ reason: String, boundary: StopBoundary? = nil) {
+        pendingActivation = nil
+        inputIDs.removeAll()
         timeout?.cancel()
         timeout = nil
         recorder?.delegate = nil
         recorder?.stop()
         recorder = nil
         recording = false
-        event(reason)
         if sessionActive {
             do {
                 try session.setActive(false)
                 sessionActive = false
             } catch { event("deactivation-failed") }
         }
-        if shouldAnalyze {
-            analyze(url: scratch, stopTime: stopTime)
-        } else {
-            removeRecording()
+        if let boundary {
+            event(reason)
+            analyze(url: scratch, boundary: boundary)
+        } else if removeRecording() {
             end(reason)
+        } else {
+            event(reason)
+            end("private-file-cleanup-failed")
         }
     }
-    private func analyze(url: URL?, stopTime: Double?) {
+    private func analyze(url: URL?, boundary: StopBoundary?) {
         message = "Analyzing segment"
         event("analysis-started")
         Task {
@@ -215,11 +253,15 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
                     return try SegmentLevel.replay()
                 }.value
                 trial?.result = result
-                if let stopTime {
-                    trial?.recorderStopToResultReadySeconds =
-                        ProcessInfo.processInfo.systemUptime - stopTime
+                if let boundary {
+                    trial?.timing = .init(
+                        origin: boundary.name,
+                        resultReadySeconds: ProcessInfo.processInfo.systemUptime - boundary.uptime)
                 }
-                if url != nil { removeRecording() }
+                if url != nil, !removeRecording() {
+                    end("private-file-cleanup-failed")
+                    return
+                }
                 end("published")
                 if let value = result.lastWindow?.finiteDecibels {
                     message = String(format: "%.1f dBFS", value)
@@ -227,34 +269,46 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
                     message = result.lastWindow?.status.rawValue ?? "No complete window"
                 }
             } catch {
-                if url != nil { removeRecording() }
-                end("analysis-failed")
+                event("analysis-error")
+                end(
+                    url == nil || removeRecording()
+                        ? "analysis-failed" : "private-file-cleanup-failed")
             }
         }
     }
-    private func begin(_ source: String) {
+    private func begin(_ source: String) -> Bool {
         trial = WatchTrial(source: source)
         origin = ProcessInfo.processInfo.systemUptime
         busy = true
         evidenceError = nil
         event("started")
+        guard removeRecording() else {
+            end("private-file-cleanup-failed")
+            return false
+        }
+        return true
     }
     private func end(_ status: String) {
         trial?.status = status
         busy = false
         message = status
         event(status)
+        trial = nil
     }
     @discardableResult
     private func removeRecording() -> Bool {
-        guard FileManager.default.fileExists(atPath: scratch.path) else { return true }
         do {
             try FileManager.default.removeItem(at: scratch)
-            return true
+            trial?.privateFileCleanup = "removed"
+        } catch let error as CocoaError where error.code == .fileNoSuchFile {
+            trial?.privateFileCleanup = "absent"
         } catch {
-            evidenceError = "Could not delete the private recording"
+            trial?.privateFileCleanup = "failed"
+            cleanupWarning = "Could not delete the private recording"
             return false
         }
+        cleanupWarning = nil
+        return true
     }
     private func event(_ name: String) {
         guard var current = trial else { return }

@@ -11,6 +11,7 @@ struct WatchProbeApp: App {
             ScrollView {
                 VStack {
                     Text(probe.message)
+                    if let warning = probe.cleanupWarning { Text(warning) }
                     if let error = probe.evidenceError { Text(error) }
                     Button("Replay fixture") { probe.replay() }.disabled(probe.busy)
                     Button("Record segment") { probe.requestOrRecord() }.disabled(probe.busy)

@@ -21,8 +21,11 @@ struct SegmentLevel: Codable, Sendable {
         guard format.channelCount == 1, let rate = Int(exactly: format.sampleRate),
             (4_000...192_000).contains(rate)
         else { throw Failure.unsupportedFormat }
+        guard file.fileFormat.streamDescription.pointee.mFormatID == kAudioFormatLinearPCM,
+            file.fileFormat.channelCount == 1, file.fileFormat.sampleRate == format.sampleRate
+        else { throw Failure.unsupportedFormat }
         let length = file.length
-        guard length > 0, length <= Int64(rate * 4) else { throw Failure.invalidLength }
+        guard length >= 0, length <= Int64(rate * 4) else { throw Failure.invalidLength }
         let epoch = StreamEpoch(streamID: UUID())
         let window = rate / 10
         let configuration = try LevelConfiguration(
