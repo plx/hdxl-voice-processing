@@ -29,7 +29,8 @@
         /// Call on the serial worker that will own this schedule. Selection/downmix
         /// happens there while the tap preserves all native channels and metadata.
         public func makeSchedule<Sample: BinaryFloatingPoint & Sendable>(
-            profile: AnalysisScheduleProfile, sourceTileCapacity: Int = 256
+            profile: AnalysisScheduleProfile, sourceTileCapacity: Int = 256,
+            inspect: ((BorrowedScheduledInspection) -> Void)? = nil
         ) throws -> PreparedPCMTransferSchedule<Sample> {
             guard profile.channels == observation.channelSelection else {
                 throw AnalysisScheduleError.invalidConfiguration
@@ -41,7 +42,7 @@
                 continuityEpoch: observation.epoch)
             return try PreparedPCMTransferSchedule(
                 transfer: transfer, profile: profile, origin: origin,
-                sourceTileCapacity: sourceTileCapacity)
+                sourceTileCapacity: sourceTileCapacity, inspect: inspect)
         }
     }
 

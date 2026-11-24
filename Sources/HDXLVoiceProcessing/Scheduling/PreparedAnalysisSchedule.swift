@@ -29,6 +29,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     private var swipePrimeWorker: PreparedSWIPEPrimeAnalyzer<Sample>?
     private var callbackError: (any Error)?
     private var completion: AnalysisScheduleCompletion?
+    private let inspect: ((BorrowedScheduledInspection) -> Void)?
     private let cppsIdentity: ProfileIdentity?
 
     public var preparedBufferBytes: Int {
@@ -47,7 +48,8 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     public init(
         profile: AnalysisScheduleProfile, origin: AnalysisScheduleOrigin,
         mode: AnalysisScheduleMode, expectedSampleCount: Int64? = nil,
-        sourceTileCapacity: Int = 256, mask: PreparedAnalysisMask? = nil
+        sourceTileCapacity: Int = 256, mask: PreparedAnalysisMask? = nil,
+        inspect: ((BorrowedScheduledInspection) -> Void)? = nil
     ) throws {
         try Self.validate(
             profile: profile, origin: origin, mode: mode,
@@ -59,6 +61,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         self.mode = mode
         self.expectedSampleCount = expectedSampleCount
         self.sourceTileCapacity = sourceTileCapacity
+        self.inspect = inspect
         self.mask = mask
         try Self.validateMask(mask, origin: origin, count: expectedSampleCount)
         self.tile = .allocate(capacity: sourceTileCapacity)
@@ -301,12 +304,14 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         }
         if state == .prepared, callbackError == nil, let pitchWorker {
             _ = try pitchWorker.process(input, interval: interval) { value in
-                deliver(.pitch(raw: value.raw.result, tracked: value.tracked), emit: emit)
+                deliver(
+                    .pitch(raw: value.raw.result, tracked: value.tracked),
+                    diagnostic: .pitch(value), emit: emit)
             }
         }
         if state == .prepared, callbackError == nil, let previewWorker {
             _ = try previewWorker.process(input, interval: interval) { value in
-                deliver(.cpps(value.result), emit: emit)
+                deliver(.cpps(value.result), diagnostic: .cpps(value), emit: emit)
             }
         }
         if state == .prepared, callbackError == nil, let intervalWorker {
@@ -314,7 +319,7 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         }
         if state == .prepared, callbackError == nil, let hnrStreamWorker {
             _ = try hnrStreamWorker.process(input, interval: interval) { value in
-                deliver(.hnr(value.frame.result), emit: emit)
+                deliver(.hnr(value.frame.result), diagnostic: .harmonicity(value.frame), emit: emit)
             }
         }
         if state == .prepared, callbackError == nil, let hnrIntervalWorker {
@@ -330,7 +335,11 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         if let callbackError { throw callbackError }
     }
 
-    private func deliver(_ value: ScheduledFrameValue, emit: (ScheduledFrame) -> Void) {
+    private func deliver(
+        _ value: ScheduledFrameValue,
+        diagnostic: @autoclosure () -> BorrowedScheduledInspection.Output? = nil,
+        emit: (ScheduledFrame) -> Void
+    ) {
         guard state == .prepared, callbackError == nil else { return }
         do {
             let native: AnalysisTiming
@@ -366,16 +375,19 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
                     + native.source.durationSeconds / 2
             }
             let timing = try origin.mappedTiming(native)
+            let frame = ScheduledFrame(
+                schedule: identity, origin: origin, value: value, timing: timing,
+                coverage: try mask?.coverage(of: timing.source)
+                    ?? .acquired(timing.source.sampleCount),
+                mask: mask?.provenance,
+                frameCenterSecondsFromOrigin: center,
+                workerBatchingUpperBoundSeconds: Double(sourceTileCapacity)
+                    / origin.source.sampleRate)
             emittedFrameCount += 1
-            emit(
-                ScheduledFrame(
-                    schedule: identity, origin: origin, value: value, timing: timing,
-                    coverage: try mask?.coverage(of: timing.source)
-                        ?? .acquired(timing.source.sampleCount),
-                    mask: mask?.provenance,
-                    frameCenterSecondsFromOrigin: center,
-                    workerBatchingUpperBoundSeconds: Double(sourceTileCapacity)
-                        / origin.source.sampleRate))
+            if let inspect, let output = diagnostic() {
+                inspect(.init(frame: frame, profile: profile, output: output))
+            }
+            emit(frame)
         } catch { callbackError = error }
     }
 
@@ -408,14 +420,20 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             let pitch =
                 state == .prepared
                 ? try pitchWorker?.finish { value in
-                    deliver(.pitch(raw: value.raw.result, tracked: value.tracked), emit: emit)
+                    deliver(
+                        .pitch(raw: value.raw.result, tracked: value.tracked),
+                        diagnostic: .pitch(value), emit: emit)
                 } : nil
             if let callbackError { throw callbackError }
             var cpps: CPPSCompletion?
             if state == .prepared, let previewWorker {
-                cpps = try previewWorker.finish { deliver(.cpps($0.result), emit: emit) }
+                cpps = try previewWorker.finish {
+                    deliver(.cpps($0.result), diagnostic: .cpps($0), emit: emit)
+                }
             } else if state == .prepared, let intervalWorker {
-                cpps = try intervalWorker.finish { deliver(.cpps($0.result), emit: emit) }
+                cpps = try intervalWorker.finish {
+                    deliver(.cpps($0.result), diagnostic: .cpps($0), emit: emit)
+                }
             } else if state == .prepared, let cppsIdentity, receivedSampleCount == 0 {
                 cpps = try CPPSCompletion(
                     profile: cppsIdentity, source: localInterval(start: 0, count: 0),
@@ -425,11 +443,15 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             if let callbackError { throw callbackError }
             let hnrStream =
                 state == .prepared
-                ? try hnrStreamWorker?.finish { deliver(.hnr($0.frame.result), emit: emit) } : nil
+                ? try hnrStreamWorker?.finish {
+                    deliver(.hnr($0.frame.result), diagnostic: .harmonicity($0.frame), emit: emit)
+                } : nil
             if let callbackError { throw callbackError }
             let hnrInterval =
                 state == .prepared
-                ? try hnrIntervalWorker?.finish { deliver(.hnr($0.result), emit: emit) } : nil
+                ? try hnrIntervalWorker?.finish {
+                    deliver(.hnr($0.result), diagnostic: .harmonicity($0), emit: emit)
+                } : nil
             if let callbackError { throw callbackError }
             let swipePrime =
                 state == .prepared

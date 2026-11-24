@@ -3,7 +3,7 @@ import HDXLVoiceProcessing
 /// Counts arbitrary text before retaining it; fixed-size fields are bounded by
 /// record counts. Profile documents additionally check their canonical byte count.
 struct VisualizationMetadataBudget {
-    private var remaining: Int
+    private(set) var remaining: Int
 
     init(_ limits: VisualizationLimits) { remaining = limits.maximumMetadataBytes }
 

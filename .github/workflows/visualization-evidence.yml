@@ -44,6 +44,8 @@ jobs:
           HDXL_VISUALIZATION_PREVIEW_OUTPUT=.build/visualization-previews swift test --filter HDXLVoiceProcessingVisualizationTests --xunit-output .build/visualization-previews/tests.xml
       - name: Fresh-process construction and publication
         run: python3 Tools/Visualization/benchmark.py --output .build/visualization-evidence
+      - name: Inspector latency and memory on matched YIN frames
+        run: python3 Tools/Visualization/inspector.py --output .build/visualization-evidence/inspector
       - name: Retain synthetic visualization evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -54,6 +56,7 @@ jobs:
             .build/visualization-previews/*.xml
             .build/visualization-evidence/*.json
             .build/visualization-evidence/*.log
+            .build/visualization-evidence/inspector/*.json
           if-no-files-found: error
           include-hidden-files: true
           retention-days: 14

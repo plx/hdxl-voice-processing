@@ -348,8 +348,7 @@ extension AcousticPlotData {
         return closest.map { .init(column: $0, bin: 0) }
     }
 
-    private func acquiredPortions(of selection: VisualizationSelection) -> [VisualizationSelection]
-    {
+    func acquiredPortions(of selection: VisualizationSelection) -> [VisualizationSelection] {
         let gaps = boundaries.compactMap(\.missingSource).filter {
             $0.sampleCount > 0 && selection.intersects($0)
         }

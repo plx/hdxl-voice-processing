@@ -31,14 +31,15 @@ def main():
                                 f"platform=iOS Simulator,id={device}", "-derivedDataPath", str(scratch / "build"),
                                 "-parallel-testing-enabled", "NO", "-resultBundlePath", bundle,
                                 "-only-testing:HDXLVoiceProcessingVisualizationTests/AcousticPlotRenderTests",
+                                "-only-testing:HDXLVoiceProcessingVisualizationTests/AlgorithmInspectorRenderTests",
                                 "CODE_SIGNING_ALLOWED=NO", "test"], log, [])
             summary = json.loads(ci.capture("xcrun", "xcresulttool", "get", "test-results", "summary", "--path", bundle))
             (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
             destinations = [row["device"] for row in summary["devicesAndConfigurations"]]
-            if (summary["result"] != "Passed" or summary["totalTestCount"] != 1 or summary["passedTests"] != 1
+            if (summary["result"] != "Passed" or summary["totalTestCount"] != 2 or summary["passedTests"] != 2
                     or len(destinations) != 1 or destinations[0]["platform"] != "iOS Simulator"
                     or destinations[0]["osVersion"] != "27.0"):
-                raise ValueError("The acoustic plot rendering test must pass on iOS 27.0 Simulator")
+                raise ValueError("Both acoustic plot and inspector rendering tests must pass on iOS 27.0 Simulator")
             images = output / "renders"
             subprocess.run(["xcrun", "xcresulttool", "export", "attachments", "--path", bundle,
                             "--output-path", images], check=True)
@@ -51,7 +52,7 @@ def main():
                 if not 200 < height < 4096:
                     raise ValueError("Invalid plot height")
                 widths[width] += 1
-            if widths != {350: 17, 800: 17}:
+            if widths != {350: 21, 800: 21}:
                 raise ValueError(f"Incomplete plot renders: {widths}")
     finally:
         subprocess.run(["xcrun", "simctl", "shutdown", device], capture_output=True)

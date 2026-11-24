@@ -81,7 +81,7 @@ public enum MeasurementOutcome: Sendable, Hashable, Codable {
 /// Result construction enforces the shared scalar budget. This type retains no processor scratch.
 public struct IntermediateSnapshot: Sendable, Hashable, Codable {
     public let stage: VersionedIdentifier
-    public let source: SourceInterval
+    public private(set) var source: SourceInterval
     public let xUnit: MeasurementUnit
     public let yUnit: MeasurementUnit
     public let xOrigin: Double
@@ -104,6 +104,13 @@ public struct IntermediateSnapshot: Sendable, Hashable, Codable {
         self.xOrigin = xOrigin == 0 ? 0 : xOrigin
         self.xStep = xStep
         self.values = values.map { $0 == 0 ? 0 : $0 }
+    }
+
+    /// Move validated scalar storage from a kernel's continuity clock to its acquisition clock.
+    package func mapped(to origin: AnalysisScheduleOrigin) throws -> Self {
+        var copy = self
+        copy.source = try origin.sourceInterval(for: source)
+        return copy
     }
 
     private enum CodingKeys: String, CodingKey, CaseIterable {
