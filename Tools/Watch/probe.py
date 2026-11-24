@@ -50,7 +50,8 @@ def validate_replay(receipt):
         raise ValueError("Unexpected recording or lifecycle events in synthetic replay")
     if not (receipt.get("schemaVersion") == 1 and receipt.get("source") == "synthetic-file"
             and receipt.get("environment") == "watchOS Simulator" and receipt.get("status") == "published"
-            and "input" not in receipt and "timing" not in receipt and receipt.get("privateFileCleanup") == "absent"
+            and "input" not in receipt and "timing" not in receipt and receipt.get("preflightFileCleanup") == "absent"
+            and "privateFileCleanup" not in receipt
             and receipt.get("captureDrops") == "unobservable" and result.get("frames") == 16000 and result.get("sampleRate") == 16000
             and result.get("channels") == 1 and result.get("windows") == 10
             and result.get("profileSHA256") == REPLAY_PROFILE and result.get("fileFormatID") == 1819304813
@@ -91,6 +92,9 @@ def replay(bundle, install, info, output):
         selected = runtime()
     if not selected:
         raise RuntimeError("watchOS 27.0 Simulator runtime required for execution")
+    info["simulator"] = {"deviceType": DEVICE_TYPE, "runtime": selected["identifier"],
+                         "runtimeBuild": selected["buildversion"]}
+    save(info, output)
     device = command("xcrun", "simctl", "create", "HDXL Watch " + uuid.uuid4().hex, DEVICE_TYPE, selected["identifier"])
     try:
         for args in (["boot", device], ["bootstatus", device, "-b"], ["install", device, str(bundle)]):
@@ -99,6 +103,11 @@ def replay(bundle, install, info, output):
         target = container / "Documents/watch-trial.json"
         if target.exists():
             raise ValueError("Unexpected trial on the new simulator")
+        # Model a force-quit leftover with project-owned bytes on this fresh simulator.
+        marker = container / "tmp/HDXLWatchSegment.caf"
+        marker.parent.mkdir(exist_ok=True)
+        with marker.open("xb") as stream:
+            stream.write(b"synthetic recovery check")
         command("xcrun", "simctl", "launch", device, BUNDLE, "--synthetic-replay")
         deadline = time.monotonic() + 90
         while time.monotonic() < deadline:
@@ -110,7 +119,10 @@ def replay(bundle, install, info, output):
                     if receipt.get("status") != "published":
                         raise ValueError("Watch replay terminated: " + info["replayObservation"]["status"])
                     validate_replay(receipt)
-                    return {"deviceType": DEVICE_TYPE, "runtimeBuild": selected["buildversion"], "receipt": receipt}
+                    recovery = json.loads((container / "Documents/watch-launch.json").read_bytes())
+                    if recovery.get("privateFileCleanup") != "removed" or marker.exists():
+                        raise ValueError("Watch relaunch failed to remove the synthetic leftover")
+                    return {"launchRecovery": "removed-synthetic-leftover", "receipt": receipt}
             time.sleep(0.25)
         if target.exists():
             info["replayObservation"] = failure_observation(json.loads(target.read_bytes()))

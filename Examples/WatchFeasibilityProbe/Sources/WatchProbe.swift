@@ -42,7 +42,9 @@ struct WatchTrial: Encodable {
         let resultReadySeconds: Double
     }
     var timing: Timing?
+    var preflightFileCleanup: String?
     var privateFileCleanup: String?
+    var sessionRelease: String?
     // File capture exposes neither hardware frame timestamps nor callback/drop counters.
     let captureDrops = "unobservable"
     init(source: String) {
@@ -71,6 +73,7 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
     @Published private(set) var recording = false
     @Published private(set) var evidenceError: String?
     @Published private(set) var cleanupWarning: String?
+    @Published private(set) var needsSessionRelease = false
     private let session = AVAudioSession.sharedInstance()
     private let scratch = FileManager.default.temporaryDirectory.appendingPathComponent(
         "HDXLWatchSegment.caf")
@@ -88,7 +91,13 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
     override init() {
         super.init()
         // A force-quit has no reliable callback. Discard the last partial private segment on launch.
-        removeRecording()
+        struct LaunchRecovery: Encodable {
+            let observedAt: Date
+            let privateFileCleanup: String
+        }
+        write(
+            LaunchRecovery(observedAt: Date(), privateFileCleanup: removeRecording()),
+            to: "watch-launch.json")
     }
 
     func scene(_ phase: ScenePhase) {
@@ -148,19 +157,22 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
             }
             pendingActivation = nil
             let input = WatchTrial.Input(session)
-            trial?.input = input
-            inputIDs = session.currentRoute.inputs.map(\.uid)
-            guard input.sessionRate.isFinite, (4_000...192_000).contains(input.sessionRate),
+            guard input.ioBufferSeconds.isFinite, input.ioBufferSeconds >= 0,
+                input.sessionRate.isFinite, (4_000...192_000).contains(input.sessionRate),
                 input.sessionChannels > 0, !input.ports.isEmpty
             else {
                 finishCapture("no-usable-input")
                 return
             }
+            trial?.input = input
+            inputIDs = session.currentRoute.inputs.map(\.uid)
             let settings: [String: Any] = [
                 AVFormatIDKey: kAudioFormatLinearPCM,
                 AVSampleRateKey: input.sessionRate, AVNumberOfChannelsKey: 1,
                 AVLinearPCMBitDepthKey: 16, AVLinearPCMIsFloatKey: false,
             ]
+            trial?.privateFileCleanup = "pending"
+            event("preparing-recording")
             let device = try AVAudioRecorder(url: scratch, settings: settings)
             recorder = device
             device.delegate = self
@@ -184,14 +196,21 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
         finishCapture(
             "user-stop", boundary: ("manual-stop-request", ProcessInfo.processInfo.systemUptime))
     }
-    func routeChange() {
+    func routeChange(_ notification: Notification) {
+        let reason = (notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? NSNumber)?
+            .uintValue
         guard recording,
-            WatchTrial.Input(session) != trial?.input
+            reason == AVAudioSession.RouteChangeReason.routeConfigurationChange.rawValue
+                || WatchTrial.Input(session) != trial?.input
                 || session.currentRoute.inputs.map(\.uid) != inputIDs
         else { return }
         finishCapture("route-changed")
     }
-    func sessionInactive() {
+    func sessionInactive(_ notification: Notification) {
+        let context =
+            notification.userInfo?[AVAudioSession.deactivationContextKey]
+            as? AVAudioSession.DeactivationContext
+        guard context?.source != .app else { return }
         pendingActivation = nil
         guard recording else { return }
         finishCapture("session-inactive")
@@ -227,16 +246,11 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
         recorder?.stop()
         recorder = nil
         recording = false
-        if sessionActive {
-            do {
-                try session.setActive(false)
-                sessionActive = false
-            } catch { event("deactivation-failed") }
-        }
+        releaseSession()
         if let boundary {
             event(reason)
             analyze(url: scratch, boundary: boundary)
-        } else if removeRecording() {
+        } else if discardCurrentFile() {
             end(reason)
         } else {
             event(reason)
@@ -258,11 +272,11 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
                         origin: boundary.name,
                         resultReadySeconds: ProcessInfo.processInfo.systemUptime - boundary.uptime)
                 }
-                if url != nil, !removeRecording() {
+                if url != nil, !discardCurrentFile() {
                     end("private-file-cleanup-failed")
                     return
                 }
-                end("published")
+                end(needsSessionRelease ? "published-release-pending" : "published")
                 if let value = result.lastWindow?.finiteDecibels {
                     message = String(format: "%.1f dBFS", value)
                 } else {
@@ -271,18 +285,39 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
             } catch {
                 event("analysis-error")
                 end(
-                    url == nil || removeRecording()
+                    url == nil || discardCurrentFile()
                         ? "analysis-failed" : "private-file-cleanup-failed")
             }
         }
     }
+    func retryRelease() {
+        guard !busy, needsSessionRelease else { return }
+        releaseSession()
+        if !needsSessionRelease { message = "Audio session released" }
+    }
+    private func releaseSession() {
+        guard sessionActive else { return }
+        do {
+            try session.setActive(false)
+            sessionActive = false
+            needsSessionRelease = false
+            trial?.sessionRelease = "released"
+        } catch {
+            needsSessionRelease = true
+            trial?.sessionRelease = "failed"
+            event("deactivation-failed")
+        }
+    }
     private func begin(_ source: String) -> Bool {
+        guard !needsSessionRelease else { return false }
         trial = WatchTrial(source: source)
         origin = ProcessInfo.processInfo.systemUptime
         busy = true
         evidenceError = nil
+        let cleanup = removeRecording()
+        trial?.preflightFileCleanup = cleanup
         event("started")
-        guard removeRecording() else {
+        guard cleanup != "failed" else {
             end("private-file-cleanup-failed")
             return false
         }
@@ -295,20 +330,24 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
         event(status)
         trial = nil
     }
-    @discardableResult
-    private func removeRecording() -> Bool {
+    private func discardCurrentFile() -> Bool {
+        guard trial?.privateFileCleanup == "pending" else { return true }
+        let outcome = removeRecording()
+        trial?.privateFileCleanup = outcome
+        return outcome != "failed"
+    }
+    private func removeRecording() -> String {
         do {
             try FileManager.default.removeItem(at: scratch)
-            trial?.privateFileCleanup = "removed"
+            cleanupWarning = nil
+            return "removed"
         } catch let error as CocoaError where error.code == .fileNoSuchFile {
-            trial?.privateFileCleanup = "absent"
+            cleanupWarning = nil
+            return "absent"
         } catch {
-            trial?.privateFileCleanup = "failed"
             cleanupWarning = "Could not delete the private recording"
-            return false
+            return "failed"
         }
-        cleanupWarning = nil
-        return true
     }
     private func event(_ name: String) {
         guard var current = trial else { return }
@@ -316,14 +355,17 @@ final class WatchProbe: NSObject, ObservableObject, AVAudioRecorderDelegate {
         current.events.append(
             .init(name: name, elapsedSeconds: ProcessInfo.processInfo.systemUptime - origin))
         trial = current
+        write(current, to: "watch-trial.json")
+    }
+    private func write(_ value: some Encodable, to filename: String) {
         do {
             let folder = try FileManager.default.url(
                 for: .documentDirectory, in: .userDomainMask,
                 appropriateFor: nil, create: true)
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
-            try encoder.encode(current).write(
-                to: folder.appendingPathComponent("watch-trial.json"), options: .atomic)
+            try encoder.encode(value).write(
+                to: folder.appendingPathComponent(filename), options: .atomic)
         } catch { evidenceError = "Could not save the trial receipt" }
     }
 }
