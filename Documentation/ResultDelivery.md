@@ -171,3 +171,8 @@ are outside the measured worker-call/publication intervals, though test orchestr
 still affects scheduling. These controlled trials establish bounded behavior and
 retain comparative measurements; hardware deadline, thermal, energy and physical
 capture/display evidence remain deferred to #74.
+
+The streaming replay drives the production lifecycle with paced native buffers and
+measures individual observation-window end to subscriber latency, deliberate overrun,
+cancellation with queued work, and sustained resource use.
+[Streaming replay protocol and evidence](Evidence/streaming-replay.md)

@@ -14,6 +14,9 @@ public struct CaptureWorkerObservation: Sendable, Equatable {
     public let firstBlockHostStartNanoseconds: UInt64?
     public let firstBlockDequeuedHostNanoseconds: UInt64?
 
+    /// Retained scheduler and transfer-adapter scratch (excluding the PCM queue).
+    package var preparedBufferBytes: Int = 0
+
     public var processingNanoseconds: UInt64? {
         Self.difference(workerFinishedHostNanoseconds, workerStartedHostNanoseconds)
     }

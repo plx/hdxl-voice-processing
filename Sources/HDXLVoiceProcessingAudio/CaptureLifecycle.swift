@@ -33,6 +33,7 @@
         private var operation: Operation?
         private var completion: Task<CaptureLifecycleCompletion, Never>?
         private var delivering = false
+        private let observeDrain: (@MainActor (CaptureWorkerObservation) -> Void)?
         private let onEvent: @MainActor (CaptureLifecycleEvent) -> Void
         private let makeDriver:
             (@escaping @MainActor @Sendable (CaptureLifecycleSignal) -> Void) ->
@@ -77,6 +78,24 @@
                 diagnostics: diagnostics, onEvent: onEvent)
         }
 
+        /// A package probe can replace hardware ingress while exercising the normal worker,
+        /// lifecycle pump and subscriptions. The observer runs after publication on the owner.
+        package convenience init(
+            driverFactory:
+                @escaping (@escaping @MainActor @Sendable (CaptureLifecycleSignal) -> Void) ->
+                any CaptureLifecycleDriver,
+            diagnostics: RuntimeDiagnosticMode,
+            observeDrain: @escaping @MainActor (CaptureWorkerObservation) -> Void,
+            onEvent: @escaping @MainActor (CaptureLifecycleEvent) -> Void
+        ) {
+            self.init(
+                makeDriver: driverFactory,
+                makeWorker: {
+                    CaptureAnalysisWorker(diagnostics: diagnostics, measureDrains: true)
+                },
+                diagnostics: diagnostics, observeDrain: observeDrain, onEvent: onEvent)
+        }
+
         init(
             makeDriver:
                 @escaping (@escaping @MainActor @Sendable (CaptureLifecycleSignal) -> Void) ->
@@ -85,8 +104,10 @@
                 CaptureAnalysisWorker()
             },
             diagnostics: RuntimeDiagnosticMode = .disabled,
+            observeDrain: (@MainActor (CaptureWorkerObservation) -> Void)? = nil,
             onEvent: @escaping @MainActor (CaptureLifecycleEvent) -> Void = { _ in }
         ) {
+            self.observeDrain = observeDrain
             self.makeDriver = makeDriver
             self.makeWorker = makeWorker
             self.onEvent = onEvent
@@ -318,6 +339,11 @@
             for event in batch.events {
                 guard isCurrent(op) else { return false }
                 publish(.analysis(event))
+            }
+            if let observation = batch.observation,
+                observation.deliveredPCMEvents > 0 || !batch.events.isEmpty
+            {
+                observeDrain?(observation)
             }
             return isCurrent(op)
         }

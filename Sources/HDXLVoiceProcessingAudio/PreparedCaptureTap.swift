@@ -30,6 +30,8 @@
         private let active = Atomic<Bool>(false)
         private let closed = Atomic<Bool>(false)
         private let failureCode = Atomic<UInt8>(0)
+        // The C AudioBufferList stores mNumberBuffers inline descriptors beginning at mBuffers.
+        private let firstDescriptorOffset: Int
         private let planes: UnsafeMutableBufferPointer<UnsafeRawBufferPointer>
         private var nextSample: Int64 = 0
         private var expectedDeviceSample: Int64?
@@ -45,6 +47,7 @@
             interleaved = configuration.format.layout == .interleaved
             width = configuration.bytesPerSample
             token = configuration.captureToken
+            firstDescriptorOffset = MemoryLayout<AudioBufferList>.offset(of: \.mBuffers)!
             planes = .allocate(capacity: channels)
             planes.initialize(repeating: UnsafeRawBufferPointer(start: nil, count: 0))
             var timebase = mach_timebase_info_data_t()
@@ -153,20 +156,22 @@
                 }
             }
             buffer.withUnsafeAudioBufferList { list in
-                // The SDK guarantees the list extent. Descriptor storage is preallocated.
-                let buffers = UnsafeMutableAudioBufferListPointer(
-                    UnsafeMutablePointer(mutating: list))
+                let count = Int(list.pointee.mNumberBuffers)
                 let planeBytes = Int(frames) * width
-                guard buffers.count == (interleaved ? 1 : channels) else {
+                guard count == (interleaved ? 1 : channels) else {
                     fail(.invalidBuffer)
                     return
                 }
+                // The SDK owns the complete flexible-array extent for this borrow. Use its
+                // native descriptor layout without a resilient collection witness on capture.
+                let buffers = UnsafeRawPointer(list).advanced(by: firstDescriptorOffset)
+                    .assumingMemoryBound(to: AudioBuffer.self)
                 defer {
-                    for index in buffers.indices {
+                    for index in 0..<count {
                         planes[index] = UnsafeRawBufferPointer(start: nil, count: 0)
                     }
                 }
-                for index in buffers.indices {
+                for index in 0..<count {
                     let value = buffers[index]
                     let expectedChannels = interleaved ? channels : 1
                     let bytes = planeBytes * expectedChannels

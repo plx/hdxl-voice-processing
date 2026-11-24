@@ -2,19 +2,28 @@
     import Foundation
     import HDXLVoiceProcessing
 
-    struct CaptureLifecycleInput: Sendable {
+    package struct CaptureLifecycleInput: Sendable {
         let observation: CaptureConfigurationObservation
         let audioSession: IOSAudioSessionObservation?
         let transfer: PCMTransfer
+
+        package init(
+            observation: CaptureConfigurationObservation, audioSession: IOSAudioSessionObservation?,
+            transfer: PCMTransfer
+        ) {
+            self.observation = observation
+            self.audioSession = audioSession
+            self.transfer = transfer
+        }
     }
 
-    enum CaptureLifecycleSignal: Sendable {
+    package enum CaptureLifecycleSignal: Sendable {
         case changed(CaptureLifecycleChange)
         case failed(CaptureLifecycleFailure)
         case sessionDisposition(IOSCaptureSessionDisposition)
     }
 
-    @MainActor protocol CaptureLifecycleDriver: AnyObject {
+    @MainActor package protocol CaptureLifecycleDriver: AnyObject {
         func start(
             request: CaptureRequest, buffering: CaptureBuffering, epoch: StreamEpoch,
             lease: IOSCaptureHostLease?

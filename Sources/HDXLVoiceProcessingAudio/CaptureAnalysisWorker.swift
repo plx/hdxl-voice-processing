@@ -24,6 +24,12 @@
         private enum Schedule {
             case float(PreparedPCMTransferSchedule<Float>)
             case double(PreparedPCMTransferSchedule<Double>)
+            var preparedBufferBytes: Int {
+                switch self {
+                case .float(let p): p.preparedBufferBytes
+                case .double(let p): p.preparedBufferBytes
+                }
+            }
             func cancel() {
                 switch self {
                 case .float(let p): p.cancel()
@@ -40,20 +46,24 @@
             }
         }
         private var schedule: Schedule?
+        private var preparedBufferBytes = 0
         private var maximumResults = 0
         private var closed = false
         private var transfer: PCMTransfer?
         private let mode: RuntimeDiagnosticMode
         private let diagnostics: WorkerDiagnostics
+        private let measureDrains: Bool
         private let clock: @Sendable () -> UInt64
         private var turns: UInt64 = 0
 
         init(
             diagnostics mode: RuntimeDiagnosticMode = .disabled,
             sink: (any DiagnosticSink)? = nil,
+            measureDrains: Bool = false,
             clock: @escaping @Sendable () -> UInt64 = { DispatchTime.now().uptimeNanoseconds }
         ) {
             self.mode = mode
+            self.measureDrains = measureDrains || mode != .disabled
             self.diagnostics = WorkerDiagnostics(mode: mode.facadeMode, sink: sink)
             self.clock = clock
         }
@@ -84,14 +94,15 @@
                     try PreparedPCMTransferSchedule(
                         transfer: input.transfer, profile: profile, origin: origin,
                         sourceTileCapacity: limits.sourceTileCapacity,
-                        measureBlockTimes: mode != .disabled, clock: clock))
+                        measureBlockTimes: measureDrains, diagnosticMode: mode, clock: clock))
             } else {
                 schedule = .double(
                     try PreparedPCMTransferSchedule(
                         transfer: input.transfer, profile: profile, origin: origin,
                         sourceTileCapacity: limits.sourceTileCapacity,
-                        measureBlockTimes: mode != .disabled, clock: clock))
+                        measureBlockTimes: measureDrains, diagnosticMode: mode, clock: clock))
             }
+            preparedBufferBytes = schedule?.preparedBufferBytes ?? 0
             transfer = input.transfer
             maximumResults = limits.maximumResultEvents
             try Task.checkCancellation()
@@ -108,7 +119,7 @@
             var events: [PCMTransferScheduleEvent] = []
             events.reserveCapacity(maximumResults)
             var overflow = false
-            let start = mode == .disabled ? nil : clock()
+            let start = measureDrains ? clock() : nil
             var metadata = DiagnosticMetadata()
             metadata.profileToken = 54
             metadata.frameSequence = turns
@@ -145,7 +156,7 @@
                     throw error
                 }
             }
-            let end = mode == .disabled ? nil : clock()
+            let end = measureDrains ? clock() : nil
             turns = captureDeliveryAdd(turns)
             try Task.checkCancellation()
             guard !overflow else {
@@ -163,7 +174,8 @@
                     emittedResults: events.count,
                     workerStartedHostNanoseconds: start, workerFinishedHostNanoseconds: end,
                     firstBlockHostStartNanoseconds: report.firstBlockHostStartNanoseconds,
-                    firstBlockDequeuedHostNanoseconds: report.firstBlockDequeuedHostNanoseconds))
+                    firstBlockDequeuedHostNanoseconds: report.firstBlockDequeuedHostNanoseconds,
+                    preparedBufferBytes: preparedBufferBytes))
         }
 
         func close() {
