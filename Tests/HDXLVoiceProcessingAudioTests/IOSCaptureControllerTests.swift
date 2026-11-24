@@ -15,6 +15,7 @@
 
     @MainActor private final class IOSBackendDouble: IOSCaptureBackend {
         var calls: [String] = []
+        var stopBeganNS: UInt64?
         var handler: (@MainActor @Sendable (IOSCaptureBackendEvent) -> Void)?
         var installed: PreparedCaptureTap?
         var retainedCallback: PreparedCaptureTap?
@@ -63,6 +64,7 @@
         }
         func startEngine() throws { calls.append("start") }
         func stopEngine() {
+            stopBeganNS = DispatchTime.now().uptimeNanoseconds
             calls.append("stop")
             installed = nil
         }
@@ -240,7 +242,11 @@
         let h = IOSCaptureHarness()
         let session = try await h.start()
         let oldHandler = try #require(h.native.handler)
+        #expect(h.controller.admissionClosedUptimeNanoseconds == nil)
         oldHandler(.changed(.route(reason: 2)))
+        let closed = try #require(h.controller.admissionClosedUptimeNanoseconds)
+        let stopBegan = try #require(h.native.stopBeganNS)
+        #expect(closed <= stopBegan)
         #expect(h.controller.session == nil)
         #expect(
             await failureReason { try await h.controller.finish() }
@@ -257,6 +263,7 @@
             boundary.previousEpoch == session.observation.capture.epoch
                 && boundary.missingSource == nil)
         let restarted = try await h.start()
+        #expect(h.controller.admissionClosedUptimeNanoseconds == nil)
         oldHandler(.changed(.mediaServicesReset))
         #expect(h.controller.session?.observation == restarted.observation)
         try await h.controller.finish()

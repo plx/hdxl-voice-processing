@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import HDXLVoiceProcessing
 import HDXLVoiceProcessingAudio
@@ -43,6 +44,19 @@ enum AcceptanceProbe {
         }
     }
 
+    /// Boot-scoped identity for joining private receipts from different app launches.
+    static func bootSession() -> String? {
+        var bytes = [UInt8](repeating: 0, count: 64)
+        var count = bytes.count
+        let result = bytes.withUnsafeMutableBytes {
+            sysctlbyname("kern.bootsessionuuid", $0.baseAddress, &count, nil, 0)
+        }
+        guard result == 0, count > 0, count <= bytes.count else { return nil }
+        return UUID(
+            uuidString: String(decoding: bytes.prefix(count).prefix { $0 != 0 }, as: UTF8.self))?
+            .uuidString
+    }
+
     @MainActor static func run(_ args: [String]) async throws {
         guard args.count == 6, args[0] == "--capture-check", args[1].hasPrefix("/"),
             args[1].hasSuffix(".json"), args[2] == "--seconds", let seconds = Double(args[3]),
@@ -51,6 +65,7 @@ enum AcceptanceProbe {
         else { throw Failure.arguments }
         let destination = URL(fileURLWithPath: args[1])
         var runs: [[String: Any]] = []
+        let boot = bootSession()
         let startedAt = Date.now.formatted(.iso8601)
         func save(_ status: String, error: String? = nil, new: Bool = false) throws {
             var report: [String: Any] = [
@@ -63,6 +78,7 @@ enum AcceptanceProbe {
                 "sourceState": Bundle.main.object(forInfoDictionaryKey: "HDXLCaptureSourceState")
                     as? String ?? "unavailable",
             ]
+            if let boot { report["bootSession"] = boot }
             if let error { report["failure"] = error }
             let data = try JSONSerialization.data(
                 withJSONObject: report, options: [.sortedKeys, .prettyPrinted])

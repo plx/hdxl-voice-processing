@@ -12,6 +12,7 @@ struct CaptureResourceHistory {
         let elapsedSeconds: Double
         let processCPUSeconds: Double?
         let residentBytes: UInt64?
+        let longestObservedStallNS: UInt64
         let acceptedChunks: UInt64
         let queueDepthSlots: Int?
         let thermalState: String
@@ -19,6 +20,8 @@ struct CaptureResourceHistory {
 
     private let startNS: UInt64
     private var interval = 1.0
+    private var progress: (chunks: UInt64, sinceNS: UInt64)?
+    private var longestStallNS: UInt64 = 0
     private(set) var samples: [Sample] = []
     private(set) var final: Sample?
 
@@ -33,15 +36,24 @@ struct CaptureResourceHistory {
     mutating func observe(_ transfer: PCMTransfer, finishing: Bool = false) {
         let now = DispatchTime.now().uptimeNanoseconds
         let elapsed = Double(now - startNS) / 1e9
+        let snapshot = transfer.snapshot()
+        // Preserve stalls even when older memory/thermal readings are thinned.
+        if !snapshot.isClosed {
+            if let progress, progress.chunks == snapshot.acceptedChunks {
+                longestStallNS = max(longestStallNS, now - progress.sinceNS)
+            } else {
+                progress = (snapshot.acceptedChunks, now)
+            }
+        }
         if let previous = samples.last, !finishing, elapsed - previous.elapsedSeconds < interval {
             return
         }
-        let snapshot = transfer.snapshot()
         let sample = Sample(
             epoch: Self.identifier(transfer.configuration.epoch), uptimeNS: now,
             elapsedSeconds: elapsed,
             processCPUSeconds: Self.cpuSeconds(), residentBytes: Self.residentBytes(),
-            acceptedChunks: snapshot.acceptedChunks, queueDepthSlots: snapshot.depth,
+            longestObservedStallNS: longestStallNS, acceptedChunks: snapshot.acceptedChunks,
+            queueDepthSlots: snapshot.depth,
             thermalState: Self.thermalState())
         if finishing {
             final = sample

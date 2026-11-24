@@ -8,6 +8,12 @@
         private let controller: IOSCaptureController
         public var session: IOSCaptureSession? { controller.session }
 
+        /// Monotonic uptime observed on the control actor immediately after closing a
+        /// started tap, before synchronous engine teardown. Cleared at the next admitted start.
+        public var admissionClosedUptimeNanoseconds: UInt64? {
+            controller.admissionClosedUptimeNanoseconds
+        }
+
         public init(onEvent: @escaping @MainActor (IOSCaptureEvent) -> Void = { _ in }) {
             controller = IOSCaptureController(
                 authorization: SystemMicrophoneAuthorization(),

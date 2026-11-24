@@ -16,6 +16,8 @@ import Observation
     private(set) var queueCapacity = 0
     private(set) var maximumFramesPerChunk: UInt32 = 0
     private(set) var durationNS: UInt64?
+    @ObservationIgnored private var transfer: PCMTransfer?
+    @ObservationIgnored private var worker: Task<HostPCMConsumer.Counts, any Error>?
     @ObservationIgnored private var startedNS: UInt64?
     private(set) var boundary: String?
     private(set) var resourceReport: String?
@@ -53,8 +55,6 @@ import Observation
 
     private func run(intent: IOSCaptureStartIntent) async {
         var attemptedActivation = false
-        var worker: Task<HostPCMConsumer.Counts, any Error>?
-        var transfer: PCMTransfer?
         var problem: (any Error)?
         do {
             if SystemMicrophoneAuthorization().microphoneAuthorization() == .undetermined {
@@ -71,20 +71,12 @@ import Observation
             attemptedActivation = true
             guard try await shared.activate() else { throw HostProbeError.failed }
             try Task.checkCancellation()
-            let session = try await capture.start(
+            try await capture.start(
                 intent: intent,
                 request: CaptureRequest(
                     channelSelection: .arithmeticMean, processing: .measurement),
                 buffering: CaptureBuffering(), lease: IOSCaptureHostLease(activity: .active))
-            transfer = session.transfer
-            let task = Task.detached { [capture] in
-                try await HostPCMConsumer.drain(session.transfer) { await capture.stop() }
-            }
-            worker = task
-            drained = try await task.value
-        } catch let failure as HostPCMConsumer.GapFailure {
-            drained = failure.counts
-            problem = failure
+            _ = await worker?.result
         } catch {
             problem = error
         }
@@ -95,14 +87,25 @@ import Observation
             if problem == nil || problem is CancellationError { problem = error }
         }
         if let worker {
-            worker.cancel()
-            _ = await worker.result
+            do { drained = try await worker.value } catch let gap as HostPCMConsumer.GapFailure {
+                drained = gap.counts
+                if problem == nil || problem is CancellationError { problem = gap }
+            } catch {
+                if problem == nil || problem is CancellationError { problem = error }
+            }
+            self.worker = nil
         }
         counters?.cancel()
         counters = nil
         if let transfer {
+            if let startedNS, let closed = capture.admissionClosedUptimeNanoseconds,
+                closed >= startedNS
+            {
+                durationNS = closed - startedNS
+            }
             transport = transfer.snapshot()
             history.observe(transfer, finishing: true)
+            self.transfer = nil
             if let data = try? JSONEncoder().encode(history.readings) {
                 resourceReport = String(decoding: data, as: UTF8.self)
             }
@@ -134,6 +137,10 @@ import Observation
     private func receive(_ event: IOSCaptureEvent) {
         switch event {
         case .started(let session):
+            transfer = session.transfer
+            worker = Task.detached { [capture] in
+                try await HostPCMConsumer.drain(session.transfer) { await capture.stop() }
+            }
             let now = DispatchTime.now().uptimeNanoseconds
             startedNS = now
             history = CaptureResourceHistory(startNS: now)
@@ -149,14 +156,7 @@ import Observation
                     do { try await Task.sleep(for: .milliseconds(100)) } catch { return }
                 }
             }
-        case .stopped:
-            if let startedNS, durationNS == nil {
-                durationNS = DispatchTime.now().uptimeNanoseconds - startedNS
-            }
         case .configurationChanged(_, let change, let discontinuity):
-            if let startedNS, durationNS == nil {
-                durationNS = DispatchTime.now().uptimeNanoseconds - startedNS
-            }
             let name: String
             switch change {
             case .route: name = "Route change"

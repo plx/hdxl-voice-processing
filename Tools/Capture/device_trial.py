@@ -69,6 +69,7 @@ def label(value):
 def check_epochs(epochs, scenario, findings):
     require(isinstance(epochs, list), "epochs must be an array")
     ids = set()
+    affected = []
     for epoch in epochs:
         key = epoch["epoch"]
         require(label(key) and key not in ids, "Missing or repeated capture epoch")
@@ -98,12 +99,16 @@ def check_epochs(epochs, scenario, findings):
             findings.append("consumed frame count does not match the drained chunks")
         if epoch["droppedFrames"] > epoch["knownGapFrames"] and not epoch["unknownGaps"]:
             findings.append("dropped PCM missing from reported gaps")
-        if any(epoch[k] for k in ("droppedFrames", "knownGapFrames", "unknownGaps")) and scenario not in (
-                "route-change", "interruption"):
+        boundary = epoch.get("boundary")
+        require(boundary is None or boundary in ("route-change", "interruption"), "Invalid epoch boundary")
+        if boundary is not None:
+            require(boundary == scenario, "Observed epoch boundary differs from the scenario")
+            affected.append(key)
+        elif any(epoch[k] for k in ("droppedFrames", "knownGapFrames", "unknownGaps")):
             findings.append("nominal capture lost input")
     if scenario in NO_CAPTURE_CASES and epochs:
         findings.append("operation unexpectedly opened a capture epoch")
-    return ids
+    return ids, affected
 
 
 def resources(record, duration, findings):
@@ -172,6 +177,7 @@ def import_native(record, directory, missing, findings):
     changed_at = []
     successful_starts = []
     previous_stop = None
+    boot_sessions = []
     for item in record["evidence"]:
         require(item["kind"] in ("mac-capture-check", "operator-notes", "instrument-export"), "Unknown evidence kind")
         path = evidence_file(directory, item["file"], item["sha256"])
@@ -184,6 +190,10 @@ def import_native(record, directory, missing, findings):
             require(native["schemaVersion"] == 1 and native["operation"] == "capture-only"
                     and native["status"] in ("running", "completed", "failed"), "Invalid native capture receipt")
             require(native["revision"] == run["commit"], "Mac capture fixture and declared revision differ")
+            boot = native.get("bootSession")
+            require(boot is None or (label(boot) and re.fullmatch(
+                r"[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}", boot)), "Invalid native boot identity")
+            boot_sessions.append(boot)
             if native["sourceState"] != "clean":
                 missing.append("reproducible Mac fixture build")
             if native["status"] == "running":
@@ -212,11 +222,18 @@ def import_native(record, directory, missing, findings):
                                 and r["uptimeNS"] >= start for r in epoch["resourceSamples"]),
                         "Invalid native epoch sample")
                 native_samples.extend(epoch["resourceSamples"])
-                native_epochs.append({k: v for k, v in epoch.items() if k != "resourceSamples"})
+                observed = {k: v for k, v in epoch.items() if k != "resourceSamples"}
+                observed["boundary"] = "route-change" if epoch["inputChanged"] and scenario == "route-change" else None
+                native_epochs.append(observed)
     if not native_files:
         if device == "Mac" and run["operation"] == "capture-only":
             missing.append("native Mac capture receipt")
         return record
+    if len(native_files) > 1:
+        if None in boot_sessions:
+            missing.append("shared boot identity for native Mac receipts")
+        if len(set(boot_sessions) - {None}) > 1:
+            findings.append("native Mac receipts came from different boots")
     if scenario == "stop-restart" and not saw_restart:
         missing.append("two completed capture epochs on the same Mac owner")
     if scenario == "route-change" and (not changed_at or not any(s > max(changed_at) for s in successful_starts)):
@@ -233,6 +250,54 @@ def align_samples(samples):
     require(all(number(r.get("uptimeNS"), integer=True) for r in samples), "Cannot mix resource time bases")
     origin = samples[0]["uptimeNS"]
     return [dict(row, elapsedSeconds=(row["uptimeNS"] - origin) / 1e9) for row in samples]
+
+
+def sustained(record, result, missing, findings):
+    run = record["run"]
+    if len(record["epochs"]) != 1:
+        missing.append("one continuous foreground capture")
+        return
+    epoch = record["epochs"][0]
+    measured = epoch.get("durationNS")
+    if measured is None:
+        missing.append("observed capture interval")
+        return
+    require(number(measured, integer=True, positive=True), "Invalid capture interval")
+    seconds = measured / 1e9
+    if run["durationSeconds"] < seconds:
+        findings.append("declared trial duration is shorter than capture")
+    if seconds < 120:
+        missing.append("120 seconds of continuous capture")
+    tolerance = min(0.25, 2 * epoch["maximumFramesPerChunk"] / epoch["sampleRate"])
+    if abs(epoch["consumedFrames"] / epoch["sampleRate"] - seconds) > tolerance:
+        findings.append("delivered audio duration differs from the capture interval")
+    samples = record["resourceSamples"]
+
+    def spans_capture(rows):
+        return (len(rows) >= 3 and rows[0]["elapsedSeconds"] <= seconds / 4
+                and rows[-1]["elapsedSeconds"] >= seconds * 3 / 4
+                and any(seconds / 4 < r["elapsedSeconds"] < seconds * 3 / 4 for r in rows))
+
+    for key in ("residentBytes", "queueDepthSlots", "processCPUSeconds", "acceptedChunks"):
+        if not spans_capture([r for r in samples if r.get(key) is not None]):
+            missing.append(f"sustained {key} observations")
+    progress = [r for r in samples if r.get("acceptedChunks") is not None]
+    for previous, row in zip(progress, progress[1:]):
+        elapsed = min(seconds, row["elapsedSeconds"]) - previous["elapsedSeconds"]
+        if elapsed > tolerance and row["acceptedChunks"] == previous["acceptedChunks"]:
+            findings.append("capture stalled between resource observations")
+            break
+    for row in samples:
+        stall = row.get("longestObservedStallNS")
+        if stall is not None:
+            require(number(stall, integer=True), "Invalid observed admission stall")
+            if stall / 1e9 > tolerance:
+                findings.append("capture stalled before thinning resource history")
+                break
+    if "processCPUSecondsPerWallSecond" not in result:
+        missing.append("process CPU interval")
+    needed = LATENCIES if run["operation"] == "live-analysis" else ("callbackDurationNS",)
+    missing.extend(key for key in needed if key not in result)
 
 
 def evaluate(record, directory):
@@ -273,45 +338,14 @@ def evaluate(record, directory):
     record = dict(record, resourceSamples=align_samples(record["resourceSamples"]))
     if not record["evidence"]:
         missing.append("local hashed observation artifact")
-    epochs = check_epochs(record["epochs"], scenario, findings)
+    epochs, affected = check_epochs(record["epochs"], scenario, findings)
+    if scenario in ("route-change", "interruption") and (not affected or record["epochs"][-1]["epoch"] in affected):
+        missing.append("observed boundary followed by a new unaffected epoch")
     if scenario not in NO_CAPTURE_CASES and len(epochs) < (2 if scenario in RESTART_CASES else 1):
         missing.append("required capture epochs")
     result = resources(record, run["durationSeconds"], findings)
     if scenario == "sustained-foreground":
-        samples = record["resourceSamples"]
-        def spans_trial(rows):
-            return (len(rows) >= 3 and rows[0]["elapsedSeconds"] <= run["durationSeconds"] / 4
-                    and rows[-1]["elapsedSeconds"] >= run["durationSeconds"] * 3 / 4
-                    and any(run["durationSeconds"] / 4 < r["elapsedSeconds"] < run["durationSeconds"] * 3 / 4
-                            for r in rows))
-        if run["durationSeconds"] < 120 or len(epochs) != 1:
-            missing.append("120 seconds of continuous foreground capture")
-        if len(epochs) == 1:
-            epoch = record["epochs"][0]
-            measured = epoch.get("durationNS")
-            if measured is None:
-                missing.append("observed capture interval")
-            else:
-                require(number(measured, integer=True, positive=True), "Invalid capture interval")
-                seconds = measured / 1e9
-                if seconds < 120:
-                    missing.append("120 seconds of continuous capture")
-                tolerance = min(0.25, 2 * epoch["maximumFramesPerChunk"] / epoch["sampleRate"])
-                if abs(epoch["consumedFrames"] / epoch["sampleRate"] - seconds) > tolerance:
-                    findings.append("delivered audio duration differs from the capture interval")
-        for key in ("residentBytes", "queueDepthSlots", "processCPUSeconds"):
-            if not spans_trial([r for r in samples if r.get(key) is not None]):
-                missing.append(f"sustained {key} observations")
-        progress = [r for r in samples if r.get("acceptedChunks") is not None]
-        if not spans_trial(progress):
-            missing.append("capture progress throughout the sustained trial")
-        elif not any(progress[0]["acceptedChunks"] < r["acceptedChunks"] < progress[-1]["acceptedChunks"]
-                     for r in progress if run["durationSeconds"] / 4 < r["elapsedSeconds"] < run["durationSeconds"] * 3 / 4):
-            findings.append("capture did not advance across the sustained trial")
-        if "processCPUSecondsPerWallSecond" not in result:
-            missing.append("process CPU interval")
-        needed = LATENCIES if run["operation"] == "live-analysis" else ("callbackDurationNS",)
-        missing.extend(key for key in needed if key not in result)
+        sustained(record, result, missing, findings)
     status = "failed" if findings else "deferred" if missing else "passed"
     return dict(output, functionalStatus=status, run=run, measurements=result, failures=findings,
                 epochs=record["epochs"], resourceSamples=record["resourceSamples"], observations=observations, missing=missing, evidence=record["evidence"],

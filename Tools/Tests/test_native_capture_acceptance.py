@@ -13,6 +13,7 @@ from Capture import acceptance, device_trial
 
 
 class AcceptanceTests(unittest.TestCase):
+    boot = "11111111-2222-3333-4444-555555555555"
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
@@ -138,7 +139,7 @@ class AcceptanceTests(unittest.TestCase):
         first = row["epochs"].pop()
         first.update(startedUptimeNS=1, stoppedUptimeNS=101, durationNS=100, inputChanged=False, resourceSamples=[])
         second = dict(first, epoch="e2", startedUptimeNS=102, stoppedUptimeNS=202)
-        receipt = dict(schemaVersion=1, operation="capture-only", status="completed", requestedRuns=2,
+        receipt = dict(schemaVersion=1, bootSession=self.boot, operation="capture-only", status="completed", requestedRuns=2,
                        revision=self.commit, sourceState="clean", runs=[first, second])
         item = dict(kind="mac-capture-check", file="native.json", sha256=self.save("native.json", receipt))
         row["evidence"].append(item)
@@ -167,7 +168,7 @@ class AcceptanceTests(unittest.TestCase):
         for sample in epoch["resourceSamples"]:
             sample["uptimeNS"] = 10 + sample["elapsedSeconds"] * 1_000_000_000
         row["resourceSamples"] = []
-        receipt = dict(schemaVersion=1, operation="capture-only", status="completed", requestedRuns=1,
+        receipt = dict(schemaVersion=1, bootSession=self.boot, operation="capture-only", status="completed", requestedRuns=1,
                        revision=self.commit, sourceState="clean", runs=[epoch])
         item = dict(kind="mac-capture-check", file="native.json", sha256=self.save("native.json", receipt))
         row["evidence"].append(item)
@@ -190,7 +191,7 @@ class AcceptanceTests(unittest.TestCase):
             return dict(first, epoch=key, durationNS=100, startedUptimeNS=start, stoppedUptimeNS=start + 100,
                         inputChanged=changed, resourceSamples=[sample])
         one, two, three = epoch(1, "e1", False), epoch(110, "e2", True), epoch(220, "e3", False)
-        receipt = dict(schemaVersion=1, operation="capture-only", requestedRuns=2, revision=self.commit,
+        receipt = dict(schemaVersion=1, bootSession=self.boot, operation="capture-only", requestedRuns=2, revision=self.commit,
                        sourceState="clean", status="failed", failure="input configuration changed", runs=[one,two])
         row["evidence"].append(dict(kind="mac-capture-check", file="before.json", sha256=self.save("before.json",receipt)))
         self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "deferred")
@@ -198,6 +199,9 @@ class AcceptanceTests(unittest.TestCase):
         row["evidence"].append(dict(kind="mac-capture-check", file="after.json", sha256=self.save("after.json",after)))
         result = device_trial.evaluate(row, self.folder)
         self.assertEqual(result["functionalStatus"], "passed")
+        after["bootSession"] = self.boot.replace("1", "9")
+        row["evidence"][-1]["sha256"] = self.save("after.json", after)
+        self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "failed")
         self.assertEqual(result["measurements"]["queueDepthSlots"]["count"], 3)
         self.assertEqual(result["resourceSamples"][-1]["elapsedSeconds"], 219e-9)
 
@@ -210,6 +214,30 @@ class AcceptanceTests(unittest.TestCase):
             invalid["epochs"][0].update(changes)
             with self.assertRaises(ValueError):
                 device_trial.evaluate(invalid, self.folder)
+
+    def test_recovered_epoch_must_be_lossless_and_have_an_observed_prior_boundary(self):
+        row = self.physical("interruption")
+        old = row["epochs"][0]
+        old.update(boundary="interruption", droppedFrames=5, knownGapFrames=5)
+        new = dict(old, epoch="e2", boundary=None, droppedFrames=0, knownGapFrames=0)
+        row["epochs"].append(new)
+        self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "passed")
+        new.update(droppedFrames=1, knownGapFrames=1)
+        self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "failed")
+        new["boundary"] = "interruption"
+        self.assertEqual(device_trial.evaluate(row, self.folder)["functionalStatus"], "deferred")
+
+    def test_sustained_capture_cannot_hide_stalls_or_shorten_its_measurement_window(self):
+        row = self.physical()
+        row["resourceSamples"].insert(1,dict(row["resourceSamples"][0], elapsedSeconds=30, processCPUSeconds=3))
+        self.assertIn("capture stalled between resource observations", device_trial.evaluate(row,self.folder)["failures"])
+        row["resourceSamples"].pop(1)
+        row["resourceSamples"][1]["longestObservedStallNS"] = 5_000_000_000
+        self.assertIn("capture stalled before thinning resource history", device_trial.evaluate(row,self.folder)["failures"])
+        row["epochs"][0].update(durationNS=600_000_000_000, acceptedChunks=30000, drainedChunks=30000, consumedFrames=28_800_000)
+        report = device_trial.evaluate(row,self.folder)
+        self.assertIn("declared trial duration is shorter than capture", report["failures"])
+        self.assertIn("sustained residentBytes observations", report["missing"])
 
     def test_invalid_clock_counter_and_sensor_observations_cannot_pass(self):
         row = self.physical()

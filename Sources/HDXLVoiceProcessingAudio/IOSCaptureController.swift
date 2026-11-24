@@ -33,6 +33,7 @@
 
     @MainActor final class IOSCaptureController {
         private(set) var session: IOSCaptureSession?
+        private(set) var admissionClosedUptimeNanoseconds: UInt64?
         private let owner = UUID()
         private var intent: UUID?
         private var generation = UUID()
@@ -89,6 +90,7 @@
             if let epoch { nextEpoch = epoch }
             generation = token.generation
             pendingChange = nil
+            admissionClosedUptimeNanoseconds = nil
             completion = nil
             let task = Task { @MainActor in
                 try await self.startOperation(
@@ -319,6 +321,7 @@
             timer = nil
             let knownFault = tap?.failure
             tap?.close()
+            admissionClosedUptimeNanoseconds = DispatchTime.now().uptimeNanoseconds
             native.stopEngine()
             let retired = tap.map { RetiredCaptureTap.releaseWhenUnreferenced($0) }
             tap = nil
