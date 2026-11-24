@@ -2,12 +2,17 @@
 """Record production streaming signposts on deterministic PCM; retain numerical evidence."""
 import argparse
 from collections import Counter, defaultdict
+import ctypes
 import json
+import os
 from pathlib import Path
 import re
+import select
 import subprocess
 import sys
 import tempfile
+import time
+import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "Tools"))
@@ -133,6 +138,36 @@ def inspect(xml, document):
                 approvedNumericMetadataOnly=True)
 
 
+def record_when_ready(arguments, trace, ready):
+    """Release the measured target after Instruments announces the recording."""
+    name = "org.hdxl.voice.streaming-replay." + uuid.uuid4().hex
+    system = ctypes.CDLL("/usr/lib/libSystem.B.dylib")
+    fd, token = ctypes.c_int(), ctypes.c_int()
+    if system.notify_register_file_descriptor(name.encode(), ctypes.byref(fd), 0, ctypes.byref(token)):
+        raise RuntimeError("Unable to register for Instruments recording startup")
+    command = ["xcrun", "xctrace", "record", "--template", "Logging", "--output", trace,
+               "--time-limit", "1m", "--notify-tracing-started", name,
+               "--env", f"HDXL_REPLAY_RECORDING_START={ready}", "--launch", "--", *arguments]
+    try:
+        with subprocess.Popen(command) as recorder:
+            try:
+                deadline = time.monotonic() + 60
+                while not select.select([fd.value], [], [], 0.25)[0]:
+                    if recorder.poll() is not None or time.monotonic() >= deadline:
+                        raise RuntimeError("Instruments exited or timed out before recording started")
+                if len(os.read(fd.value, 4)) != 4:
+                    raise RuntimeError("Incomplete Instruments startup notification")
+                ready.touch(exist_ok=False)
+                if recorder.wait(timeout=120):
+                    raise subprocess.CalledProcessError(recorder.returncode, command)
+            finally:
+                if recorder.poll() is None:
+                    recorder.kill()
+    finally:
+        # Darwin releases the notification descriptor when its token is cancelled.
+        system.notify_cancel(token.value)
+
+
 def capture(binary, profile, load, directory):
     def run_args(mode, path):
         return [binary, profile, "48000", "512", load, mode, "1", "7",
@@ -145,9 +180,7 @@ def capture(binary, profile, load, directory):
         with tempfile.TemporaryDirectory(dir=directory) as tmp:
             work = Path(tmp)
             trace, report, xml = work / "capture.trace", work / "trial.json", work / "signposts.xml"
-            subprocess.run(["xcrun", "xctrace", "record", "--template", "Logging", "--output", trace,
-                            "--time-limit", "1m", "--launch", "--", *run_args("detailed", report)],
-                           check=True, timeout=120)
+            record_when_ready(run_args("detailed", report), trace, work / "recorder-started")
             doc = json.loads(report.read_bytes())
             observed = doc["trials"][0]
             if observed["science"]["sha256"] != baseline["science"]["sha256"]:
