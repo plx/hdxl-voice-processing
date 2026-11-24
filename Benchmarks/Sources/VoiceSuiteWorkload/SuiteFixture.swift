@@ -117,11 +117,47 @@ public struct SuitePerturbationCoverage: Encodable, Equatable, Sendable {
     public let shimmer: ShimmerCoverage
 }
 
+public struct SuiteSpectralDigest: Encodable, Equatable, Sendable {
+    public private(set) var rows = 0
+    public private(set) var bins = 0
+    public private(set) var fingerprint: UInt64 = 14_695_981_039_346_656_037
+
+    private mutating func mix(_ word: UInt64) {
+        fingerprint = (fingerprint ^ word) &* 1_099_511_628_211
+    }
+    mutating func append<Values: Collection>(
+        _ values: Values, at sample: Int64, status: SpectralFrameStatus
+    )
+    where Values.Element: BinaryFloatingPoint {
+        rows += 1
+        bins += values.count
+        mix(UInt64(bitPattern: sample))
+        switch status {
+        case .measured: mix(1)
+        case .noEnergy: mix(2)
+        case .unavailable(let reason):
+            mix(3)
+            mix(UInt64(reason.rawValue.utf8.count))
+            for byte in reason.rawValue.utf8 { mix(UInt64(byte)) }
+        }
+        mix(UInt64(values.count))
+        for value in values { mix(Double(value).bitPattern) }
+    }
+}
+
+/// Populated only by the untimed full-buffer and partitioned verification runs.
+public struct SuiteSpectralVerification: Encodable, Equatable, Sendable {
+    public internal(set) var spectrogram = SuiteSpectralDigest()
+    public internal(set) var accumulationInput = SuiteSpectralDigest()
+    public internal(set) var longTermSpectrum = SuiteSpectralDigest()
+}
+
 public struct SuiteResult: Encodable, Equatable, Sendable {
     public internal(set) var lanes: [String: SuiteLane] = [:]
     public internal(set) var epochs = 0
     public internal(set) var analyzedSamples = 0
     public internal(set) var spectralRows = 0
+    public internal(set) var spectralVerification: SuiteSpectralVerification?
     public internal(set) var robustFitSlopesPerFit = 0
     public internal(set) var maximumRootSweeps = 0
     public internal(set) var secondRootStarts = 0
@@ -166,5 +202,6 @@ public struct SuiteResult: Encodable, Equatable, Sendable {
 
 public protocol SuiteInput: Sendable {
     var recipe: SuiteRecipe { get }
-    func run(chunk: Int, diagnostics: RuntimeDiagnosticMode) throws -> SuiteResult
+    func run(chunk: Int, diagnostics: RuntimeDiagnosticMode, verifySpectra: Bool) throws
+        -> SuiteResult
 }

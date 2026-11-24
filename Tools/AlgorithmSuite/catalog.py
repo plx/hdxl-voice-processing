@@ -22,7 +22,9 @@ def catalog_family(archives):
                 read = lambda name: json.loads(z.read(root + name))
                 receipt, manifest = read("result.json"), read("workload-manifest.json")
                 mode = manifest["mode"]
-                if receipt["status"] != "passed" or receipt["mode"] != mode:
+                manifest_hash = sha256(z.read(key)).hexdigest()
+                if (receipt["status"] != "passed" or receipt["mode"] != mode
+                        or receipt.get("workloadManifestSHA256") != manifest_hash):
                     raise ValueError(f"Incomplete mode: {key}")
                 for field in ("caseFile", "distributionFile", "environmentFile", "exportFile"):
                     if sha256(z.read(root + manifest[field])).hexdigest() != manifest[field + "SHA256"]:
@@ -44,7 +46,7 @@ def catalog_family(archives):
                         raise ValueError(f"Duplicate or unrelated measured operation: {name}")
                     cases[mode][name] = case
                 evidence.append(dict(archiveSHA256=expected_sha, mode=mode,
-                                     workloadManifestSHA256=sha256(z.read(key)).hexdigest()))
+                                     workloadManifestSHA256=manifest_hash))
     if not cases["timing"] or cases["timing"] != cases["allocation"]:
         raise ValueError("Clean timing and instrumented operation catalogs differ")
     by_case = defaultdict(list)

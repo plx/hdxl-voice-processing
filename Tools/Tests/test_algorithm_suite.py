@@ -5,13 +5,24 @@ import sys
 import tempfile
 import unittest
 from unittest import mock
+from zipfile import ZipFile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from AlgorithmSuite import benchmark, compare, prepare, replay, trace
+from AlgorithmSuite import benchmark, catalog, compare, prepare, replay, trace
 from Performance import records
 
 
 class AlgorithmSuiteTests(unittest.TestCase):
+    def test_catalog_rejects_stale_receipt_in_an_intact_archive(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "run.zip"
+            with ZipFile(path, "w") as archive:
+                archive.writestr("run/workload-manifest.json", json.dumps({"mode": "timing"}))
+                archive.writestr("run/result.json", json.dumps(dict(mode="timing", status="passed",
+                                                                    workloadManifestSHA256="0" * 64)))
+            with self.assertRaisesRegex(ValueError, "Incomplete mode"):
+                catalog.catalog_family([(path, records.sha(path))])
+
     def test_comparison_binds_each_mode_and_requires_clean_sources(self):
         def write(path, value):
             path.write_text(json.dumps(value))
@@ -93,12 +104,28 @@ class AlgorithmSuiteTests(unittest.TestCase):
                     "process": process, "message": f"session=1 epoch=0 span=1 profile={token} frame=2 samples=160"}
         rows = [row("Pitch", "Begin", 0, 38), row("Pitch", "End", 11, 38),
                 row("Pitch", "Begin", 11, 44), row("Pitch", "End", 19, 44),
-                row("BurgLPC", "Begin", 20, 46, process="Other (555)")]
+                row("BurgLPC", "Begin", 20, 46, process="VoiceSuiteWorkloadCheck (555)")]
         with mock.patch.object(trace, "signpost_records", return_value=rows):
-            observed = trace.summarize(b"")
+            observed = trace.summarize(b"", 123)
         self.assertEqual(set(observed), {"Pitch/38", "Pitch/44"})
         self.assertEqual(observed["Pitch/38"]["totalNS"], 11)
         self.assertEqual(observed["Pitch/44"]["totalNS"], 8)
         with mock.patch.object(trace, "signpost_records", return_value=rows[:1]):
             with self.assertRaisesRegex(ValueError, "Incomplete"):
-                trace.summarize(b"")
+                trace.summarize(b"", 123)
+
+        with mock.patch.object(trace, "signpost_records", return_value=[rows[1]]):
+            with self.assertRaisesRegex(trace.IncompleteRecording, "Missing begin"):
+                trace.summarize(b"", 123)
+
+    def test_entirely_missing_spans_cannot_certify_a_trace(self):
+        reference = dict(results=[dict(lanes={key: dict(available=16, unavailable=1)
+                                              for key in ("cpp", "cpps", "rollingCPPS")})])
+        counts = {"Cepstrum": 17, "CPP": 16, "CPPSSmoothing": 16, "CPPSFitting": 16, "CPPSAggregation": 17}
+        spans = {k: dict(count=v) for k, v in counts.items()}
+        self.assertEqual(trace.verify_cpps_counts(spans, reference), counts)
+        for stage in counts:
+            with self.assertRaisesRegex(trace.IncompleteRecording, stage):
+                trace.verify_cpps_counts({k: v for k, v in spans.items() if k != stage}, reference)
+        with self.assertRaisesRegex(trace.IncompleteRecording, "expected 17"):
+            trace.verify_cpps_counts(dict(spans, CPPSAggregation=dict(count=1)), reference)

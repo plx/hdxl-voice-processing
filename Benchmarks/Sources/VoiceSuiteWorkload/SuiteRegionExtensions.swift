@@ -41,11 +41,17 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             do {
                 result.spectralRows += 1
                 let at = base + row.info.source.startSample
+                result.spectralVerification?.spectrogram.append(
+                    row.binPower, at: at, status: row.info.status)
                 result.record(
                     "spectrogram", power: row.binPower.first.map(Double.init),
                     status: row.info.status, at: at)
                 try recordShape(shape.evaluate(row), prefix: "frame", at: at, result: &result)
-                if secondSpectrum == nil { try accumulator.append(row) }
+                if secondSpectrum == nil {
+                    result.spectralVerification?.accumulationInput.append(
+                        row.binPower, at: at, status: row.info.status)
+                    try accumulator.append(row)
+                }
             } catch { failure = error }
         }
         if let secondSpectrum {
@@ -53,6 +59,9 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
                 guard failure == nil else { return }
                 do {
                     result.spectralRows += 1
+                    result.spectralVerification?.accumulationInput.append(
+                        row.binPower, at: base + row.info.source.startSample,
+                        status: row.info.status)
                     try accumulator.append(row)
                 } catch { failure = error }
             }
@@ -89,6 +98,8 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             _ = try worker.finish(emit: emit)
         }
         let mean = try accumulator.snapshot(observedSource: source)
+        result.spectralVerification?.longTermSpectrum.append(
+            mean.meanBinPower, at: base, status: mean.status)
         result.record("ltas", power: mean.meanBinPower.first, status: mean.status, at: base)
         try recordShape(aggregateShape.evaluate(mean), prefix: "ltas", at: base, result: &result)
         _ = try mask.finish { output in
@@ -125,7 +136,7 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             let span = pitch.timing.source
             let at = base + span.startSample
             guard span.sampleCount == pitch.requiredSampleCount else {
-                for number in 1...3 {
+                for number in 1...recipe.harmonics.formants.maximumFormants {
                     result.record(
                         "formant" + String(number), nil, at: at, reason: .insufficientData)
                     result.record(
@@ -152,7 +163,7 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
                     result.maximumRootSweeps = max(
                         result.maximumRootSweeps, formants.diagnostics.rootSweeps)
                     if formants.diagnostics.triedSecondStart { result.secondRootStarts += 1 }
-                    for number in 1...3 {
+                    for number in 1...recipe.harmonics.formants.maximumFormants {
                         let frequency = try formants.measurement(
                             number: number, kind: .formantFrequency
                         ).result

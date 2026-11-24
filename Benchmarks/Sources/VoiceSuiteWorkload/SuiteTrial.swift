@@ -21,17 +21,26 @@ public struct SuiteTrial: Sendable {
 
     /// Independent mutable workers read the same governed PCM at a shared start. Pair latency
     /// includes dispatch and the join, and represents completion of both analyses.
-    @inline(never) public func run(chunk: Int = 173, diagnostics: RuntimeDiagnosticMode = .disabled)
+    @inline(never) public func run(
+        chunk: Int = 173, diagnostics: RuntimeDiagnosticMode = .disabled,
+        verifySpectra: Bool = false
+    )
         throws -> [SuiteResult]
     {
-        if !simultaneous { return [try input.run(chunk: chunk, diagnostics: diagnostics)] }
+        if !simultaneous {
+            return [
+                try input.run(chunk: chunk, diagnostics: diagnostics, verifySpectra: verifySpectra)
+            ]
+        }
         let ready = DispatchSemaphore(value: 0)
         let start = DispatchSemaphore(value: 0)
         let finished = DispatchGroup()
         let other = Mutex<TimedResult?>(nil)
         @Sendable func measureWorker() -> TimedResult {
             let begin = DispatchTime.now().uptimeNanoseconds
-            let result = Result { try input.run(chunk: chunk, diagnostics: diagnostics) }
+            let result = Result {
+                try input.run(chunk: chunk, diagnostics: diagnostics, verifySpectra: verifySpectra)
+            }
             return TimedResult(
                 begin: begin, end: DispatchTime.now().uptimeNanoseconds, result: result)
         }
@@ -58,8 +67,9 @@ public struct SuiteTrial: Sendable {
     }
 
     public func verify() throws -> [SuiteResult] {
-        let whole = try input.run(chunk: item.sampleCount, diagnostics: .disabled)
-        let split = try run()
+        let whole = try input.run(
+            chunk: item.sampleCount, diagnostics: .disabled, verifySpectra: true)
+        let split = try run(verifySpectra: true)
         guard split.allSatisfy({ $0 == whole }), whole.epochs == item.repeats * item.regions.count,
             whole.analyzedSamples == item.repeats * item.regions.reduce(0, { $0 + $1.count }),
             let cpps = whole.lanes["cpps"], cpps.available + cpps.unavailable > 0

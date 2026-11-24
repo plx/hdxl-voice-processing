@@ -2,6 +2,7 @@
 """Check one fixture across profiles before collecting clean or allocation-mode distributions."""
 
 import argparse
+from dataclasses import replace
 import json
 import math
 import os
@@ -89,6 +90,15 @@ def validate_cases(rows):
     require(all(core["lanes"][k] == v for k, v in cpps["lanes"].items())
             and all(full["lanes"][k] == v for k, v in core["lanes"].items()), "Shared results changed with composition")
     separate = observed["single.separateSpectra"]
+    spectral = full["spectralVerification"]
+    full_recipe = next(row["recipe"] for row in rows if row["name"] == "single.full." + name)["extensions"]
+    width = full_recipe["layout"]["frequency"]["count"]
+    require(spectral["spectrogram"] == spectral["accumulationInput"]
+            and spectral["spectrogram"]["rows"] == full["spectralRows"]
+            and spectral["spectrogram"]["bins"] == full["lanes"]["spectrogram"]["available"] * width
+            and spectral["longTermSpectrum"]["rows"] == full["epochs"]
+            and spectral["longTermSpectrum"]["bins"] == full["lanes"]["ltas"]["available"] * width,
+            "Spectrogram or LTAS bin sequences or denominators differ")
     require(full["spectralRows"] > 0 and separate == dict(full, spectralRows=2 * full["spectralRows"]),
             "Separate transforms failed to reproduce the shared path")
     require(observed["pair.full"] == full, "Independent and concurrent results differ")
@@ -101,12 +111,20 @@ def validate_cases(rows):
             "Missing perturbation coverage for a measured epoch")
     required = {"cpp", "cpps", "rollingCPPS", "peak", "rms", "meanSquare", "kWeightedMeanSquare",
                 "levelDBFS", "samplePeakDBFS", "clippingFraction", "crest", "yin", "trackedYin",
-                "hnrDB", "hnrPeriodicity", "swipePrime", "spectrogram", "ltas", "ltsf", "speechInterval",
+                "hnrDB", "hnrPeriodicity", "swipePrime", "swipePrimeStrength", "spectrogram", "ltas", "ltsf", "speechInterval",
                 "h1h2", "correctedH1H2", "pulses"}
-    required |= {f"{prefix}{n}" for prefix in ("formant", "bandwidth") for n in range(1, 4)}
+    ranks = full_recipe["harmonics"]["formants"]["order"] // 2
+    formants = {f"{prefix}{n}" for prefix in ("formant", "bandwidth") for n in range(1, ranks + 1)}
+    required |= formants
     required |= {"jitter." + s for s in ("local", "absolute", "rap", "ppq5", "ddp")}
     required |= {"shimmer." + s for s in ("local", "db", "apq3", "apq5", "apq11", "dda")}
     require(required <= full["lanes"].keys(), "Missing public metric")
+    for lane in formants:
+        row = full["lanes"][lane]
+        require(row["available"] + row["unavailable"] == sum(full["lanes"]["yin"]["statusCounts"].values()),
+                "Formant rank missing from one or more frames")
+    require(full["lanes"]["swipePrime"]["statusCounts"] == full["lanes"]["swipePrimeStrength"]["statusCounts"],
+            "SWIPE-prime frequency and strength have different status counts")
     require(all(sum(k.startswith(prefix) for k in full["lanes"]) == 6 for prefix in ("frame.", "ltas.")),
             "Missing spectral descriptor")
     direct_levels(fixture, full, directory)
@@ -122,7 +140,9 @@ def validate_cases(rows):
         require(full["secondRootStarts"] > 0 and full["maximumRootSweeps"] == 128,
                 "Adversarial pole solver did not exercise the bounded second start")
     if name == "corpus-bl01-vowel-a":
-        require(all(full["lanes"][k]["available"] > 0 for k in required), "Missing positive vowel control")
+        # The source supports the first three ranks. Higher requested ranks can legitimately be unavailable.
+        positive = (required - formants) | {f"{prefix}{n}" for prefix in ("formant", "bandwidth") for n in range(1, 4)}
+        require(all(full["lanes"][k]["available"] > 0 for k in positive), "Missing positive vowel control")
     expected_f0 = {"harmonic-low": 62.5, "harmonic-high": 625, "gaussian-48000-80-float64": 80,
                    "gaussian-48000-600-float32": 600}.get(name)
     if expected_f0:
@@ -156,8 +176,7 @@ SUITE = SpectralBenchmarkSuite("VoiceSuiteBenchmarks", "VoiceSuite", "Capability
     "both completions. Each phase measures only its named operation with the inputs recorded in its phase receipt."},
     validate_cases, throughput, "Hash-checked governed mono PCM. Each region uses its own acquisition epoch.",
     "PCM decoding and profile construction precede the timer. Each trial owns its workers and scalar result fingerprints.",
-    "Elapsed duration of one named CPPS phase, a complete fixture, or a concurrent pair completing that fixture.",
-    minimum_trials=3)
+    "Elapsed duration of one named CPPS phase, a complete fixture, or a concurrent pair completing that fixture.")
 
 
 def main():
@@ -169,11 +188,13 @@ def main():
     with tempfile.TemporaryDirectory() as temp:
         directory = Path(temp) / "inputs"
         prepare(directory)
-        if args.fixture not in {row["name"] for row in json.loads((directory / "manifest.json").read_bytes())["cases"]}:
+        cases = json.loads((directory / "manifest.json").read_bytes())["cases"]
+        fixture = next((row for row in cases if row["name"] == args.fixture), None)
+        if fixture is None:
             parser.error("Unknown governed fixture")
         os.environ.update(VOICE_SUITE_INPUTS=str(directory), VOICE_SUITE_FIXTURE=args.fixture)
         sys.argv[1:] = [args.mode] + (["--development-toolchain"] if args.development_toolchain else [])
-        measure(SUITE)
+        measure(replace(SUITE, minimum_trials=3) if fixture["condition"].startswith("long-") else SUITE)
 
 
 if __name__ == "__main__":

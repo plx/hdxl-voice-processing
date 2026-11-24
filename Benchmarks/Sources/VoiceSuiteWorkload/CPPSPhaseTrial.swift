@@ -36,6 +36,28 @@ private struct PowerRow {
     let bins: [Double]
 }
 
+/// Each governed phase emits one scalar. Keep the timed observation in fixed storage, then
+/// construct the public status and fingerprint report after stopping the measurement.
+private struct PhaseObservation {
+    var count = 0
+    var value: Double?
+    var index: Int64 = 0
+    var reason: UnavailabilityReason?
+
+    mutating func record(_ value: Double?, at index: Int64, reason: UnavailabilityReason? = nil) {
+        count += 1
+        self.value = value
+        self.index = index
+        self.reason = reason
+    }
+
+    mutating func record(_ frame: CPPSFrameResult) {
+        record(
+            frame.observation?.prominenceDB, at: Int64(frame.context.frameIndex),
+            reason: frame.unavailability)
+    }
+}
+
 /// Every phase uses the same half-second governed PCM and the same numerical settings. The
 /// warm split is chosen by observing actual complete outputs from the public preview worker.
 public final class CPPSPhaseTrial {
@@ -55,7 +77,7 @@ public final class CPPSPhaseTrial {
     private var warmFrame = 0
     private var warmRow = 0
     private var expected = SuiteLane()
-    private var observed = SuiteLane()
+    private var observation = PhaseObservation()
     private var expectedBytes = 0
     private var preview: PreparedPreviewCPPS<Double>?
     private var cepstrogram: PreparedPreviewCepstrogram<Double>?
@@ -156,7 +178,7 @@ public final class CPPSPhaseTrial {
     }
 
     public func prepareIteration() throws {
-        observed = SuiteLane()
+        observation = PhaseObservation()
         preview = nil
         switch phase {
         case .coldSetup: break
@@ -213,29 +235,34 @@ public final class CPPSPhaseTrial {
         switch phase {
         case .coldSetup:
             preview = try PreparedPreviewCPPS<Double>(profile: profile, epoch: origin.epoch)
-            observed.record(Double(preview!.scalarWorkspaceBytes), at: 0)
+            observation.record(Double(preview!.scalarWorkspaceBytes), at: 0)
         case .firstOutput, .warmHop:
             let range = phase == .firstOutput ? 0..<firstEnd : (warmEnd - hop)..<warmEnd
             try withPCM(range) { buffer, span in
-                _ = try preview!.process(buffer, interval: span) { note($0.result, in: &observed) }
+                _ = try preview!.process(buffer, interval: span) { observation.record($0.result) }
             }
         case .warmPowerCepstrogram:
             try withPCM((warmEnd - hop)..<warmEnd) { buffer, span in
                 _ = try cepstrogram!.process(buffer, interval: span) {
-                    observed.record(
+                    observation.record(
                         $0.stage(.powerCepstrum).values.first, at: Int64($0.context.frameIndex))
                 }
             }
         case .warmFromPower:
-            try appendPower(warmRow, worker: smoother!) { note($0.result, in: &observed) }
+            try appendPower(warmRow, worker: smoother!) { observation.record($0.result) }
         case .warmAggregation:
             let mean = try aggregate(warmFrame, worker: rolling!)
-            observed.record(mean, at: Int64(warmFrame))
+            observation.record(mean, at: Int64(warmFrame))
         }
-        return observed.fingerprint
+        return observation.value?.bitPattern ?? UInt64.max
     }
 
     public func check() throws -> CPPSPhaseEvidence {
+        guard observation.count == 1 else {
+            throw SuiteError.mismatch("Expected one phase observation")
+        }
+        var observed = SuiteLane()
+        observed.record(observation.value, at: observation.index, reason: observation.reason)
         if phase == .warmAggregation {
             guard observed.available == 1, observed.unavailable == 0,
                 abs(observed.sum - expected.sum) <= 1e-12

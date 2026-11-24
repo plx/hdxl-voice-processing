@@ -27,6 +27,11 @@ struct Evidence: Encodable {
     }
 }
 
+struct TracedRun: Encodable {
+    let processID: Int32
+    let evidence: Evidence
+}
+
 func printJSON<T: Encodable>(_ value: T) throws {
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.sortedKeys]
@@ -80,7 +85,13 @@ func main() throws {
     let results =
         try args[0].hasPrefix("verify")
         ? trial.verify() : trial.run(diagnostics: args[0] == "trace" ? .detailed : .disabled)
-    try printJSON(Evidence(trial, results))
+    let evidence = Evidence(trial, results)
+    if args[0] == "trace" {
+        try printJSON(
+            TracedRun(processID: ProcessInfo.processInfo.processIdentifier, evidence: evidence))
+    } else {
+        try printJSON(evidence)
+    }
 }
 
 do { try main() } catch {

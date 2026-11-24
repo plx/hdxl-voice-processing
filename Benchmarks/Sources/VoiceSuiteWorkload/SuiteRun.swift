@@ -13,9 +13,12 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
         self.samples = samples
     }
 
-    func run(chunk: Int, diagnostics: RuntimeDiagnosticMode) throws -> SuiteResult {
+    func run(chunk: Int, diagnostics: RuntimeDiagnosticMode, verifySpectra: Bool) throws
+        -> SuiteResult
+    {
         guard chunk > 0 else { throw SuiteError.invalidInput("chunk") }
         var result = SuiteResult()
+        if verifySpectra, recipe.extensions != nil { result.spectralVerification = .init() }
         var epoch = StreamEpoch(streamID: UUID(uuidString: "00000000-0000-0000-0000-000000000055")!)
         try samples.withUnsafeBufferPointer { input in
             for repetition in 0..<fixture.repeats {
@@ -134,6 +137,10 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
             case .swipePrime(let value):
                 result.record(
                     "swipePrime", value.observation?.frequencyHz,
+                    at: base + value.timing.source.startSample, status: value.status.rawValue,
+                    reason: value.qualityReason)
+                result.record(
+                    "swipePrimeStrength", value.observation?.pitchStrength,
                     at: base + value.timing.source.startSample, status: value.status.rawValue,
                     reason: value.qualityReason)
             }
