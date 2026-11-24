@@ -1,0 +1,95 @@
+name: Voice suite benchmarks
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Package.swift'
+      - 'Sources/HDXLVoiceProcessing/**'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Corpus/**'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Pulses/**'
+      - 'Tests/HDXLVoiceProcessingTests/Fixtures/Synthetic/**'
+      - 'Benchmarks/Package.*'
+      - 'Benchmarks/Sources/VoiceSuiteWorkload*/**'
+      - 'Benchmarks/Benchmarks/VoiceSuiteBenchmarks/**'
+      - 'Configuration/build.json'
+      - 'Tools/AlgorithmSuite/**'
+      - 'Tools/Reference/common.py'
+      - 'Tools/benchmark.py'
+      - 'Tools/ci.py'
+      - 'Tools/instrumentation.py'
+      - 'Tools/SpectralProducts/benchmark.py'
+      - 'Tools/Performance/records.py'
+      - 'Tools/Tests/test_algorithm_suite*'
+      - '.github/workflows/voice-suite-benchmarks.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: voice-suite-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    name: Voice suite / ${{ matrix.fixture }}
+    runs-on: xcode-27
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        fixture:
+          - corpus-bl01-vowel-a
+          - corpus-bl02-consonant-rich
+          - corpus-bl03-all-voiced
+          - corpus-bl01-noisy
+          - corpus-bl01-silence
+          - corpus-long-stream-v1
+          - harmonic-low
+          - harmonic-low-continuous-30s
+          - harmonic-high
+          - noise-seed-seven
+          - missing-intervals
+          - filtered-harmonics
+          - inharmonic
+          - gaussian-48000-80-float64
+          - gaussian-48000-600-float32
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+      FIXTURE: ${{ matrix.fixture }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.8'
+      - name: Verify numerical outputs and measure clean timing
+        run: python3 Tools/AlgorithmSuite/benchmark.py timing "$FIXTURE"
+      - name: Measure allocations and ARC with positive controls
+        run: python3 Tools/AlgorithmSuite/benchmark.py allocation "$FIXTURE"
+      - name: Compare shared, independent and disabled work
+        run: |
+          mkdir -p Benchmarks/.build/artifacts/voice-suite-comparison
+          python3 Tools/AlgorithmSuite/compare.py Benchmarks/.build/artifacts/voice-suite-timing/* \
+            Benchmarks/.build/artifacts/voice-suite-allocation/* Benchmarks/.build/artifacts/voice-suite-comparison/results.json
+      - name: Reproduce selected cases through the external consumer
+        if: matrix.fixture == 'harmonic-low'
+        run: |
+          swift build --package-path Tools/AlgorithmSuite/Consumer --scratch-path .build/voice-suite-consumer -c release --product ReplayVoiceSuite
+          python3 Tools/AlgorithmSuite/replay.py .build/timing/release/VoiceSuiteWorkloadCheck \
+            .build/voice-suite-consumer/release/ReplayVoiceSuite Benchmarks/.build/artifacts/voice-suite-comparison/replay.json
+      - name: Trace native CPPS-only and full workers
+        if: matrix.fixture == 'harmonic-low'
+        run: |
+          python3 Tools/AlgorithmSuite/trace.py .build/timing/release/VoiceSuiteWorkloadCheck \
+            Benchmarks/.build/artifacts/voice-suite-comparison/signposts.json
+      - name: Retain distributions, per-metric counts, comparisons and verification receipts
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: voice-suite-${{ matrix.fixture }}-${{ github.run_attempt }}
+          path: Benchmarks/.build/artifacts/voice-suite-*/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

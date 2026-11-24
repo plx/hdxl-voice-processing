@@ -241,3 +241,5 @@ the input identities, counts, memory, delay, and separate per-attempt stage prob
 The [workload and measurement contract](../Documentation/BenchmarkProtocol.md) defines
 portable fixture identities, operation boundaries, counter capabilities, valid-work
 denominators and target-specific budget approvals for the complete benchmark suite.
+
+The combined voice-suite benchmark measures shared and independent analyzer instances on governed PCM and includes a stand-alone public consumer. [Protocol and reproduction](../Tools/AlgorithmSuite/README.md) · [Results and family catalog](../Documentation/Evidence/voice-algorithm-benchmarks.md)

@@ -111,7 +111,7 @@ private func previewCPP<S: BinaryFloatingPoint & Sendable>(
     let consumer = try PreparedCPP(
         CPPProfile(cepstrogram: c, settings: CPPConfiguration.murtonRecipePraat7()))
     let old = cppNoise(Float.self, count: 2000)
-    try old.withUnsafeBufferPointer { input in
+    let beforeGap = try old.withUnsafeBufferPointer { input in
         try worker.process(
             input,
             interval: SourceInterval(
@@ -119,6 +119,7 @@ private func previewCPP<S: BinaryFloatingPoint & Sendable>(
                 sampleCount: Int64(old.count), sampleRate: 48_000)
         ) { _ in Issue.record("Short old epoch emitted") }
     }
+    #expect(beforeGap.consumedSampleCount == old.count)
     let next = try cppEpoch.successor()
     let gap = try SourceDiscontinuity(
         previousEpoch: cppEpoch, nextEpoch: next, reason: .droppedAudio,

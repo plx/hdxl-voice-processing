@@ -21,3 +21,34 @@ The input SHA-256 for all three rows is `0436923454bc86af92326075a12d4553b117e11
 | Owned stage exports | `bf0d38c51b5c66787fdcedc5daeb91fa3ee12480dde89816d80ddce0a0515546` | `44ce8543ec62e71fae27ee013346d9865b6bdedba7a77d0779b7293fcbe0fc65` |
 
 The same tree also passed all 77 unsmoothed CPP cases and 38 cepstrum cases. The former include four background fit methods, peak searches and PCM-to-CPP processing. The latter include individual windows, power-cepstrogram construction, streaming and matrix export. Their results provide separate measurements for upstream work. [CPP run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068572) · [Cepstrum run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068823)
+
+## Public algorithm catalog
+
+The 16 family runs below contain 3,798 distinct measured operations across 2,026 named cases. Each operation appears in both a clean timing distribution and a separate allocation/ARC distribution. The count includes 1,028 individual DSP kernel cases. The catalog preserves the exact combinations that ran. For each group, join an operation prefix and case name with a period to get the framework's measurement ID. Each artifact and per-mode workload manifest has a SHA-256 digest. [Machine-readable catalog](voice-algorithm-catalog.json)
+
+| Family | Named cases | Measured operations | Boundaries and variants |
+| --- | ---: | ---: | --- |
+| Cepstrum | 38 | 76 | Window transform, power-cepstrogram, preview, interval, bounded owned export. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068823) |
+| CPP | 77 | 154 | Peak interpolation, search bounds, background fitting and complete processing. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068572) |
+| CPPS | 87 | 174 | Smoothing along time and quefrency, edge support, optional pretrend, preview and whole-interval processing, rolling query and owned diagnostics. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068566) |
+| Segmentation | 26 | 52 | LTSF speech activity, energy eligibility, region routing, mask resolution, reset and export. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231069103) |
+| Levels | 100 | 200 | Peak, RMS, energy, intensity and K-weighted levels, accumulation choices and exceptional inputs. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068858) |
+| YIN | 82 | 164 | Raw and tracked F0, direct and Fourier differences, dynamic range, failure paths and candidate export. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068830) |
+| SWIPE-prime | 44 | 176 | Multi-resolution pitch and strength, candidate geometry, comparison with baseline YIN. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068805) |
+| HNR | 210 | 420 | Autocorrelation and forward cross-correlation, causal and complete-interval normalization, low floor, silence and diagnostics. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068416) |
+| Pulses | 88 | 176 | Contour handling, waveform matching, landmark interpolation, period/amplitude sequences, failures and ownership. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068676) |
+| Jitter | 68 | 240 | Local, absolute, RAP, PPQ5 and DDP. Supplied periods, rolling and PCM paths. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068904) |
+| Shimmer | 68 | 240 | Local, dB, APQ3, APQ5, APQ11 and DDA. Supplied amplitudes, rolling and PCM paths. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068730) |
+| Spectral products | 18 | 162 | Spectrogram, LTAS, bounded retention and owned spectral or cepstral export. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068799) |
+| Spectral shape | 8 | 56 | Centroid, spread, flatness, roll-off, band energy ratio and slope from frame or LTAS, shared or separate evaluation. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068864) |
+| Formants | 72 | 432 | Complete Burg analysis, resampling, LPC, root solving, close roots and bounded failure. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068711) |
+| H1–H2 | 12 | 48 | Raw harmonic fit, supplied formant correction, YIN and Burg dependencies, complete path, near-resonance cases. [Run](https://github.com/plx/hdxl-voice-processing/actions/runs/45231068628) |
+| DSP kernels | 1,028 | 1,028 | Includes mean removal, Fourier transforms, log power, cepstral inversion, background fitting and the peak interpolators. [Kernel evidence](dsp-kernels.md) |
+
+## Combined profiles
+
+The full vowel trial at 44.1 kHz used 88,200 source samples. It produced 191 valid CPPS frames and one unavailable tail. The full 600 Hz trial at 48 kHz retained 46 raw H1–H2 estimates and all 47 unavailable corrected slots. On the three-region gap fixture, each region ended before a complete YIN window and the two perturbation pipelines made zero tracking attempts. On the 80 Hz Gaussian-pulse fixture the Burg solver exercised its second starting point and reached the 128-sweep limit. The machine-readable workload receipts retain these denominators for every timing comparison.
+
+In the local development trace on the 16 kHz harmonic-low fixture, both profiles entered smoothing and fitting 16 times and aggregation 17 times. In the full profile, Instruments recorded 25 spectrogram intervals, 26 shape intervals, 22 YIN intervals, two SWIPE-prime intervals, 28 pulse-matching intervals, one jitter interval and one shimmer interval. The CPPS-only recording contained zero intervals for all 16 disabled-stage controls. Running each process with diagnostics disabled reproduced its traced public result fingerprints. Instrumented interval durations are nested and include signpost overhead. The timing executable measures clean end-to-end latency separately. [Trace collector and positive controls](../../Tools/AlgorithmSuite/trace.py)
+
+On the half-second filtered-harmonics fixture, a prepared CPPS worker emitted its first valid result after a 1,920-sample source prefix. A subsequent 160-sample hop and the corresponding precomputed power-cepstrum row both produced 17.6032251175 dB. A separate query appended the fifth available frame to its rolling history. All phases use the same 10 ms hop, 20 ms time smoothing, 1 ms quefrency smoothing and 3 s aggregation profile. Full profile, fixture, toolchain, timing and allocation receipts are published by the voice-suite workflow. [Reproduction protocol](../../Tools/AlgorithmSuite/README.md) · [Workflow](../../.github/workflows/voice-suite-benchmarks.yml)

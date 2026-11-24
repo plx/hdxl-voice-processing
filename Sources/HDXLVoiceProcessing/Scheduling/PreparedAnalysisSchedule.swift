@@ -31,6 +31,18 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     private var completion: AnalysisScheduleCompletion?
     private let inspect: ((BorrowedScheduledInspection) -> Void)?
     private let cppsIdentity: ProfileIdentity?
+    private let diagnosticMode: RuntimeDiagnosticMode
+
+    private func workerDiagnostics() -> WorkerDiagnostics {
+        WorkerDiagnostics(mode: diagnosticMode.facadeMode)
+    }
+
+    private func workerOrigin(_ origin: AnalysisScheduleOrigin) throws -> AnalysisTiming {
+        try AnalysisTiming(
+            source: SourceInterval(
+                epoch: origin.continuityEpoch, startSample: 0, sampleCount: 0,
+                sampleRate: origin.source.sampleRate), includedSampleCount: 0)
+    }
 
     public var preparedBufferBytes: Int {
         tile.count * MemoryLayout<Sample>.stride
@@ -45,12 +57,27 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
             + (swipePrimeWorker?.preparedBufferBytes ?? 0)
     }
 
-    public init(
+    public convenience init(
         profile: AnalysisScheduleProfile, origin: AnalysisScheduleOrigin,
         mode: AnalysisScheduleMode, expectedSampleCount: Int64? = nil,
         sourceTileCapacity: Int = 256, mask: PreparedAnalysisMask? = nil,
         inspect: ((BorrowedScheduledInspection) -> Void)? = nil
     ) throws {
+        try self.init(
+            profile: profile, origin: origin, mode: mode, expectedSampleCount: expectedSampleCount,
+            sourceTileCapacity: sourceTileCapacity, mask: mask, diagnosticMode: .disabled,
+            inspect: inspect)
+    }
+
+    /// Enable bounded worker signposts for profiling. This changes instrumentation only.
+    public init(
+        profile: AnalysisScheduleProfile, origin: AnalysisScheduleOrigin,
+        mode: AnalysisScheduleMode, expectedSampleCount: Int64? = nil,
+        sourceTileCapacity: Int = 256, mask: PreparedAnalysisMask? = nil,
+        diagnosticMode: RuntimeDiagnosticMode,
+        inspect: ((BorrowedScheduledInspection) -> Void)? = nil
+    ) throws {
+        self.diagnosticMode = diagnosticMode
         try Self.validate(
             profile: profile, origin: origin, mode: mode,
             expectedSampleCount: expectedSampleCount, capacity: sourceTileCapacity)
@@ -122,33 +149,39 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
     private func prepareWorkers() throws {
         if let configuration = profile.swipePrime {
             swipePrimeWorker = try PreparedSWIPEPrimeAnalyzer(
-                configuration: configuration, epoch: origin.continuityEpoch)
+                configuration: configuration, origin: workerOrigin(origin),
+                diagnostics: workerDiagnostics())
         }
         if let levels = profile.levels {
             levelWorker = try PreparedLevelAnalyzer(
-                configuration: levels, epoch: origin.continuityEpoch)
+                configuration: levels, epoch: origin.continuityEpoch,
+                diagnostics: workerDiagnostics())
         }
         if let pitch = profile.pitch {
-            pitchWorker = try PreparedYINAnalyzer(profile: pitch, epoch: origin.continuityEpoch)
+            pitchWorker = try PreparedYINAnalyzer(
+                profile: pitch, origin: workerOrigin(origin), diagnostics: workerDiagnostics())
         }
         if let cpps = profile.cpps {
             if cpps.cepstrogram.previewHopLength != nil {
                 previewWorker = try PreparedPreviewCPPS(
-                    profile: cpps, epoch: origin.continuityEpoch)
+                    profile: cpps, epoch: origin.continuityEpoch, diagnostics: workerDiagnostics())
             } else if let count = expectedSampleCount, count > 0 {
                 intervalWorker = try PreparedIntervalCPPS(
-                    profile: cpps, source: localInterval(start: 0, count: count))
+                    profile: cpps, source: localInterval(start: 0, count: count),
+                    diagnostics: workerDiagnostics())
             }
         }
         if let hnr = profile.hnr {
             if hnr.normalization == .causalWindow {
                 hnrStreamWorker = try PreparedHNRStream(
-                    configuration: hnr, epoch: origin.continuityEpoch)
+                    configuration: hnr, origin: workerOrigin(origin),
+                    diagnostics: workerDiagnostics())
             } else if let count = expectedSampleCount {
                 hnrIntervalWorker = try PreparedIntervalHNR(
                     configuration: hnr,
                     timing: AnalysisTiming(
-                        source: localInterval(start: 0, count: count), includedSampleCount: count))
+                        source: localInterval(start: 0, count: count), includedSampleCount: count),
+                    diagnostics: workerDiagnostics())
             }
         }
     }
@@ -508,20 +541,23 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         let newLevel: PreparedLevelAnalyzer<Sample>?
         if levelWorker == nil, let configuration = profile.levels {
             newLevel = try PreparedLevelAnalyzer(
-                configuration: configuration, epoch: next.continuityEpoch)
+                configuration: configuration, epoch: next.continuityEpoch,
+                diagnostics: workerDiagnostics())
         } else {
             newLevel = nil
         }
         let newPitch: PreparedYINAnalyzer<Sample>?
         if pitchWorker == nil, let profile = profile.pitch {
-            newPitch = try PreparedYINAnalyzer(profile: profile, epoch: next.continuityEpoch)
+            newPitch = try PreparedYINAnalyzer(
+                profile: profile, origin: workerOrigin(next), diagnostics: workerDiagnostics())
         } else {
             newPitch = nil
         }
         let newSWIPEPrime: PreparedSWIPEPrimeAnalyzer<Sample>?
         if swipePrimeWorker == nil, let configuration = profile.swipePrime {
             newSWIPEPrime = try PreparedSWIPEPrimeAnalyzer(
-                configuration: configuration, epoch: next.continuityEpoch)
+                configuration: configuration, origin: workerOrigin(next),
+                diagnostics: workerDiagnostics())
         } else {
             newSWIPEPrime = nil
         }
@@ -529,7 +565,8 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         if previewWorker == nil, let profile = profile.cpps,
             profile.cepstrogram.previewHopLength != nil
         {
-            newPreview = try PreparedPreviewCPPS(profile: profile, epoch: next.continuityEpoch)
+            newPreview = try PreparedPreviewCPPS(
+                profile: profile, epoch: next.continuityEpoch, diagnostics: workerDiagnostics())
         } else {
             newPreview = nil
         }
@@ -541,14 +578,16 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         if let profile = profile.cpps, profile.cepstrogram.previewHopLength == nil,
             let count, count > 0, !reuseInterval
         {
-            newInterval = try PreparedIntervalCPPS(profile: profile, source: nextInterval)
+            newInterval = try PreparedIntervalCPPS(
+                profile: profile, source: nextInterval, diagnostics: workerDiagnostics())
         } else {
             newInterval = nil
         }
 
         let newHNRStream: PreparedHNRStream<Sample>?
         if hnrStreamWorker == nil, let hnr = profile.hnr, hnr.normalization == .causalWindow {
-            newHNRStream = try PreparedHNRStream(configuration: hnr, epoch: next.continuityEpoch)
+            newHNRStream = try PreparedHNRStream(
+                configuration: hnr, origin: workerOrigin(next), diagnostics: workerDiagnostics())
         } else {
             newHNRStream = nil
         }
@@ -557,7 +596,8 @@ public final class PreparedAnalysisSchedule<Sample: BinaryFloatingPoint & Sendab
         let reuseHNRInterval = hnrIntervalWorker != nil && count == expectedSampleCount
         let newHNRInterval: PreparedIntervalHNR<Sample>?
         if let hnr = profile.hnr, hnr.normalization == .wholeInterval, !reuseHNRInterval {
-            newHNRInterval = try PreparedIntervalHNR(configuration: hnr, timing: nextHNRTiming)
+            newHNRInterval = try PreparedIntervalHNR(
+                configuration: hnr, timing: nextHNRTiming, diagnostics: workerDiagnostics())
         } else {
             newHNRInterval = nil
         }
