@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 import ci
 
 ROOT = ci.ROOT
+SUBSYSTEM = "org.hdxl.voice-processing"
 MODES = ("bare", "disabled", "sampled", "detailed")
 
 
@@ -53,7 +54,7 @@ def signpost_records(xml):
             if len(row) != len(columns):
                 raise ValueError("Signpost schema column mismatch")
             fields = dict(zip(columns, row))
-            if value(fields["subsystem"]) == "org.hdxl.voice-processing":
+            if value(fields["subsystem"]) == SUBSYSTEM:
                 records.append({key: value(node) for key, node in fields.items()} |
                                {"time": int(resolve(fields["time"]).text), "message": metadata(fields["message"])})
     return records

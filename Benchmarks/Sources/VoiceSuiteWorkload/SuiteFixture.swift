@@ -88,7 +88,11 @@ public struct SuiteLane: Codable, Equatable, Sendable {
     public private(set) var unavailable = 0
     public private(set) var fingerprint: UInt64 = 14_695_981_039_346_656_037
     public private(set) var sum = 0.0
-    mutating func record(_ value: Double?, at sample: Int64) {
+    public private(set) var statusCounts: [String: Int] = [:]
+    mutating func record(
+        _ value: Double?, at sample: Int64, status: String? = nil,
+        reason: UnavailabilityReason? = nil
+    ) {
         fingerprint = (fingerprint ^ UInt64(bitPattern: sample)) &* 1_099_511_628_211
         if let value {
             precondition(value.isFinite)
@@ -99,10 +103,21 @@ public struct SuiteLane: Codable, Equatable, Sendable {
             unavailable += 1
             fingerprint = (fingerprint ^ UInt64.max) &* 1_099_511_628_211
         }
+        let tag = status ?? (value == nil ? "unavailable" : "available")
+        let label = reason.map { tag + "." + $0.rawValue } ?? tag
+        statusCounts[label, default: 0] += 1
+        fingerprint = (fingerprint ^ UInt64(label.utf8.count)) &* 1_099_511_628_211
+        for byte in label.utf8 { fingerprint = (fingerprint ^ UInt64(byte)) &* 1_099_511_628_211 }
     }
 }
 
-public struct SuiteResult: Codable, Equatable, Sendable {
+public struct SuitePerturbationCoverage: Encodable, Equatable, Sendable {
+    public let startSample: Int64
+    public let jitter: JitterCoverage
+    public let shimmer: ShimmerCoverage
+}
+
+public struct SuiteResult: Encodable, Equatable, Sendable {
     public internal(set) var lanes: [String: SuiteLane] = [:]
     public internal(set) var epochs = 0
     public internal(set) var analyzedSamples = 0
@@ -111,11 +126,41 @@ public struct SuiteResult: Codable, Equatable, Sendable {
     public internal(set) var maximumRootSweeps = 0
     public internal(set) var secondRootStarts = 0
     public internal(set) var completePitchWindows = 0
+    public internal(set) var completeVoicedPitchWindows = 0
+    public internal(set) var minimumCompletePitchHz: Double?
+    public internal(set) var maximumCompletePitchHz: Double?
     public internal(set) var omittedPulseRegions = 0
     public internal(set) var pulseTrackingAttempts = 0
+    public internal(set) var perturbationCoverage: [SuitePerturbationCoverage] = []
 
-    mutating func record(_ lane: String, _ value: Double?, at sample: Int64) {
-        lanes[lane, default: SuiteLane()].record(value, at: sample)
+    mutating func record(
+        _ lane: String, _ value: Double?, at sample: Int64, status: String? = nil,
+        reason: UnavailabilityReason? = nil
+    ) {
+        lanes[lane, default: SuiteLane()].record(value, at: sample, status: status, reason: reason)
+    }
+
+    mutating func record(_ lane: String, outcome: MeasurementOutcome, at sample: Int64) {
+        switch outcome {
+        case .available(let estimate): record(lane, estimate.value, at: sample)
+        case .unavailable(let reason): record(lane, nil, at: sample, reason: reason)
+        }
+    }
+
+    mutating func record(_ lane: String, level: DigitalLevel, at sample: Int64) {
+        record(
+            lane, level.finiteDecibels, at: sample, status: level.status.rawValue,
+            reason: level.unavailability)
+    }
+
+    mutating func record(
+        _ lane: String, power: Double?, status: SpectralFrameStatus, at sample: Int64
+    ) {
+        switch status {
+        case .measured: record(lane, power, at: sample, status: "measured")
+        case .noEnergy: record(lane, power, at: sample, status: "noEnergy")
+        case .unavailable(let reason): record(lane, nil, at: sample, reason: reason)
+        }
     }
 }
 

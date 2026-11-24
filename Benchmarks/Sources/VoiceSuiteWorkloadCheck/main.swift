@@ -7,6 +7,7 @@ struct Evidence: Encodable {
     let name: String
     let results: [SuiteResult]
     let phase: CPPSPhaseEvidence?
+    let measurementBoundary: String?
 
     init(_ trial: SuiteTrial, _ results: [SuiteResult]) {
         fixture = trial.item
@@ -14,6 +15,7 @@ struct Evidence: Encodable {
         name = trial.name
         self.results = results
         phase = nil
+        measurementBoundary = nil
     }
     init(_ trial: CPPSPhaseTrial, _ evidence: CPPSPhaseEvidence) {
         fixture = trial.item
@@ -21,6 +23,7 @@ struct Evidence: Encodable {
         name = "phase." + trial.phase.rawValue + "." + trial.item.name
         results = []
         phase = evidence
+        measurementBoundary = trial.phase.measurementBoundary
     }
 }
 

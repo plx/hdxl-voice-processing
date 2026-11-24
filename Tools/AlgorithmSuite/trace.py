@@ -20,7 +20,7 @@ from instrumentation import signpost_records
 # YIN/SWIPE and jitter/shimmer share a stage name. Native profile tokens distinguish the workers.
 DISABLED = {"LevelEnergy", "KWeighting", "Pitch/38", "Pitch/44", "PitchTracking", "HNRCorrelation",
             "Spectrogram", "LongTermSpectrum", "SpectralShape", "BurgLPC", "HarmonicFit",
-            "SpeechActivity", "PulseMatching", "Perturbation/50", "Perturbation/51"}
+            "HarmonicCorrection", "SpeechActivity", "PulseMatching", "Perturbation/50", "Perturbation/51"}
 ENABLED = {"CPPSSmoothing", "CPPSFitting", "CPPSAggregation"}
 
 

@@ -58,7 +58,7 @@ def validate_cases(rows):
         require(r["fixture"] == fixture, "Prepared PCM identity differs")
         if op.startswith("phase."):
             phase = r["phase"]
-            require(r["recipe"]["composition"] == "cpps" and op == "phase." + phase["phase"]
+            require(r["recipe"]["composition"] == "cpps" and r["measurementBoundary"] and op == "phase." + phase["phase"]
                     and phase["measuredOutputs"]["available"] > 0 and phase["measuredOutputs"]["unavailable"] == 0,
                     "Phase produced no valid work")
             if phase["phase"] in ("warmHop", "warmPowerCepstrogram"):
@@ -67,7 +67,8 @@ def validate_cases(rows):
             elif phase["phase"] == "warmFromPower":
                 require(phase["inputPowerRowsInsideTimer"] == 1, "Missing upstream power row")
             elif phase["phase"] == "warmAggregation":
-                require(phase["inputFramesBeforeAggregation"] > 0, "Aggregation was cold")
+                require(phase["inputFramesBeforeAggregation"] > 0 and phase["preparedRecordBytes"] > 0
+                        and "preparedScalarBytes" not in phase, "Missing rolling record workspace or warm history")
             elif phase["phase"] == "firstOutput":
                 require(phase["sourceSamplesBeforeTimer"] == 0 and phase["sourceSamplesInsideTimer"] > 0,
                         "First-output phase was prefilled")
@@ -76,10 +77,14 @@ def validate_cases(rows):
         require(r["recipe"]["composition"] == op.split(".")[1], "Unexpected numerical profile")
         require(len(r["results"]) == (2 if op == "pair.full" else 1) and all(x == result for x in r["results"]),
                 "Concurrent workers differ")
-        require(all(v["available"] + v["unavailable"] > 0 and math.isfinite(v["sum"])
+        require(all(v["available"] + v["unavailable"] > 0
+                    and sum(v["statusCounts"].values()) == v["available"] + v["unavailable"] and math.isfinite(v["sum"])
                     for v in result["lanes"].values()), "Empty or nonfinite metric")
     cpps, core, full = (observed[k] for k in OPERATIONS[:3])
     require(set(cpps["lanes"]) == {"cpp", "cpps", "rollingCPPS"}, "Unexpected reduced-profile lane")
+    require(set(core["lanes"]) == set(cpps["lanes"]) | {"yin", "trackedYin", "rms", "meanSquare", "peak",
+            "kWeightedMeanSquare", "levelDBFS", "samplePeakDBFS", "clippingFraction", "crest"},
+            "Core profile must report raw and tracked pitch and all configured levels")
     require(cpps["spectralRows"] == core["spectralRows"] == 0, "Disabled transform executed")
     require(all(core["lanes"][k] == v for k, v in cpps["lanes"].items())
             and all(full["lanes"][k] == v for k, v in core["lanes"].items()), "Shared results changed with composition")
@@ -92,6 +97,8 @@ def validate_cases(rows):
             "Discontinuity was lost")
     require(full["maximumRootSweeps"] <= 128 and full["pulseTrackingAttempts"] <= 2 * full["epochs"] * 16384,
             "Numerical work exceeded its profile bound")
+    require(len(full["perturbationCoverage"]) + full["omittedPulseRegions"] == full["epochs"],
+            "Missing perturbation coverage for a measured epoch")
     required = {"cpp", "cpps", "rollingCPPS", "peak", "rms", "meanSquare", "kWeightedMeanSquare",
                 "levelDBFS", "samplePeakDBFS", "clippingFraction", "crest", "yin", "trackedYin",
                 "hnrDB", "hnrPeriodicity", "swipePrime", "spectrogram", "ltas", "ltsf", "speechInterval",
@@ -104,6 +111,8 @@ def validate_cases(rows):
             "Missing spectral descriptor")
     direct_levels(fixture, full, directory)
     if fixture["condition"] == "silence":
+        require(full["lanes"]["levelDBFS"]["statusCounts"].get("zeroEnergy", 0) > 0,
+                "Silence must retain the measured zero-energy status")
         for lane in ("cpps", "yin", "swipePrime", "pulses", "jitter.local", "shimmer.local", "correctedH1H2"):
             require(full["lanes"][lane]["available"] == 0, f"Silence produced {lane}")
     if fixture["condition"] == "boundary":
@@ -117,9 +126,15 @@ def validate_cases(rows):
     expected_f0 = {"harmonic-low": 62.5, "harmonic-high": 625, "gaussian-48000-80-float64": 80,
                    "gaussian-48000-600-float32": 600}.get(name)
     if expected_f0:
-        lane = full["lanes"]["yin"]
-        require(lane["available"] > 0 and abs(1200 * math.log2(lane["sum"] / lane["available"] / expected_f0)) <= 20,
-                "Pitch differs from governed periodic source by more than the harmonic reference budget")
+        rate = fixture["sampleRate"]
+        complete = sum(max(0, 1 + (r["count"] - rate // 20) // (rate // 100))
+                       for r in fixture["regions"]) * fixture["repeats"]
+        require(complete > 0 and full["completePitchWindows"] == complete
+                and 10 * full["completeVoicedPitchWindows"] >= 9 * complete,
+                "Voiced coverage is below the harmonic reference budget")
+        worst = max(abs(1200 * math.log2(full[key] / expected_f0))
+                    for key in ("minimumCompletePitchHz", "maximumCompletePitchHz"))
+        require(worst <= 20, "Individual pitch exceeds the harmonic reference budget")
 
 
 def throughput(_, row, wall):
@@ -136,11 +151,13 @@ def throughput(_, row, wall):
 
 
 SUITE = SpectralBenchmarkSuite("VoiceSuiteBenchmarks", "VoiceSuite", "Capability.VoiceSuiteAllocationARC",
-    "voice-suite", "VoiceSuiteWorkloadCheck", {"Run": "One complete fixture including worker preparation, every "
-    "continuity boundary, result consumption and finish. The pair includes dispatch and both completions."},
+    "voice-suite", "VoiceSuiteWorkloadCheck", {"Run": "Single and paired profiles measure the complete fixture, "
+    "including preparation, continuity boundaries, result consumption and finish. The pair includes dispatch and "
+    "both completions. Each phase measures only its named operation with the inputs recorded in its phase receipt."},
     validate_cases, throughput, "Hash-checked governed mono PCM. Each region uses its own acquisition epoch.",
     "PCM decoding and profile construction precede the timer. Each trial owns its workers and scalar result fingerprints.",
-    "Elapsed duration of the entire fixture for one worker or one concurrent pair.", minimum_trials=3)
+    "Elapsed duration of one named CPPS phase, a complete fixture, or a concurrent pair completing that fixture.",
+    minimum_trials=3)
 
 
 def main():

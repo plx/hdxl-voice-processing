@@ -3,13 +3,30 @@ import HDXLVoiceProcessing
 
 public enum CPPSPhase: String, CaseIterable {
     case coldSetup, firstOutput, warmHop, warmPowerCepstrogram, warmFromPower, warmAggregation
+
+    public var measurementBoundary: String {
+        switch self {
+        case .coldSetup:
+            "Construct and retain the preview CPPS worker and observe its scalar workspace size."
+        case .firstOutput:
+            "Process the shortest source prefix that emits a valid CPPS frame on a prepared worker."
+        case .warmHop:
+            "Feed one PCM hop to the warmed CPPS worker and consume its next public result."
+        case .warmPowerCepstrogram:
+            "Feed one PCM hop to the warmed cepstrogram and read its next power row."
+        case .warmFromPower:
+            "Append one precomputed power row to the warmed CPPS smoother and consume the result."
+        case .warmAggregation:
+            "Append one CPPS frame and query the mean of the warmed rolling history."
+        }
+    }
 }
 
 public struct CPPSPhaseEvidence: Encodable {
     public let phase: String
     public let sourceSamplesBeforeTimer, sourceSamplesInsideTimer, inputPowerRowsInsideTimer: Int
     public let measuredOutputs: SuiteLane
-    public let preparedScalarBytes: Int
+    public let preparedScalarBytes, preparedRecordBytes: Int?
     public let inputFramesBeforeAggregation: Int
 }
 
@@ -75,7 +92,9 @@ public final class CPPSPhaseTrial {
             sampleCount: Int64(range.count), sampleRate: source.sampleRate)
     }
     private func note(_ frame: CPPSFrameResult, in lane: inout SuiteLane) {
-        lane.record(frame.observation?.prominenceDB, at: Int64(frame.context.frameIndex))
+        lane.record(
+            frame.observation?.prominenceDB, at: Int64(frame.context.frameIndex),
+            reason: frame.unavailability)
     }
 
     private func calibrate() throws {
@@ -83,7 +102,18 @@ public final class CPPSPhaseTrial {
         let upstream = try PreparedPreviewCepstrogram<Double>(
             configuration: profile.cepstrogram, epoch: origin.epoch)
         expectedBytes = direct.scalarWorkspaceBytes
+        // Locate the first available frame at a single-sample boundary independently of the warm hop grid.
+        let firstWorker = try PreparedPreviewCPPS<Double>(profile: profile, epoch: origin.epoch)
         var prefix = SuiteLane()
+        for start in pcm.indices {
+            try withPCM(start..<(start + 1)) { buffer, span in
+                _ = try firstWorker.process(buffer, interval: span) { note($0.result, in: &prefix) }
+            }
+            if prefix.available > 0 {
+                firstEnd = start + 1
+                break
+            }
+        }
         try pcm.withUnsafeBufferPointer { input in
             for start in stride(from: 0, through: pcm.count - hop, by: hop) {
                 let end = start + hop
@@ -97,11 +127,7 @@ public final class CPPSPhaseTrial {
                             context: row.context, profile: row.profile,
                             bins: Array(row.stage(.powerCepstrum).values)))
                 }
-                _ = try direct.process(part, interval: span) { value in
-                    frames.append(value.result)
-                    if firstEnd == 0 { note(value.result, in: &prefix) }
-                }
-                if firstEnd == 0, frames.count > priorFrames { firstEnd = end }
+                _ = try direct.process(part, interval: span) { frames.append($0.result) }
                 if firstEnd > 0, end >= firstEnd + 4 * hop,
                     frames.count == priorFrames + 1, powers.count == priorPowers + 1,
                     frames.last?.observation != nil, !(powers.last?.bins.isEmpty ?? true)
@@ -223,7 +249,11 @@ public final class CPPSPhaseTrial {
             phase: phase.rawValue, sourceSamplesBeforeTimer: prefix,
             sourceSamplesInsideTimer: length,
             inputPowerRowsInsideTimer: phase == .warmFromPower ? 1 : 0,
-            measuredOutputs: observed, preparedScalarBytes: expectedBytes,
+            measuredOutputs: observed,
+            preparedScalarBytes: preview?.scalarWorkspaceBytes ?? cepstrogram?.scalarWorkspaceBytes
+                ?? smoother?.scalarWorkspaceBytes,
+            preparedRecordBytes: preview?.smoothingRecordWorkspaceBytes ?? smoother?
+                .recordWorkspaceBytes ?? rolling?.recordWorkspaceBytes,
             inputFramesBeforeAggregation: phase == .warmAggregation ? warmFrame : 0)
     }
 }

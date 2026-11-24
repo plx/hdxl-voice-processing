@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import struct
 import subprocess
@@ -21,15 +22,25 @@ def lane_digest(rows):
     fingerprint = 14695981039346656037
     total = 0.0
     available = 0
+    statuses = {}
     for row in rows:
         value = row.get("value")
         fingerprint = (fingerprint ^ row["sourceStart"]) * 1099511628211 & MASK
         bits = MASK if value is None else struct.unpack("<Q", struct.pack("<d", value))[0]
         fingerprint = (fingerprint ^ bits) * 1099511628211 & MASK
+        status = row["status"]
+        if row.get("reason") is not None:
+            status += "." + row["reason"]
+        statuses[status] = statuses.get(status, 0) + 1
+        label = status.encode("utf-8")
+        fingerprint = (fingerprint ^ len(label)) * 1099511628211 & MASK
+        for byte in label:
+            fingerprint = (fingerprint ^ byte) * 1099511628211 & MASK
         if value is not None:
             available += 1
             total += value
-    return dict(fingerprint=fingerprint, available=available, unavailable=len(rows)-available, sum=total)
+    return dict(fingerprint=fingerprint, available=available, unavailable=len(rows)-available, sum=total,
+                statusCounts=statuses)
 
 
 def profile_sha(settings):
@@ -46,6 +57,10 @@ def compare(checker, consumer):
             expected = json.loads(subprocess.check_output([checker, "run", directory, "full", name]))
             digest = expected["fixture"]["pcmSHA256"]
             profile = expected["recipe"]["schedule"]
+            if name == "filtered-harmonics":
+                cases = json.loads(subprocess.check_output([checker], env=dict(
+                    os.environ, VOICE_SUITE_INPUTS=str(directory), VOICE_SUITE_FIXTURE=name)))
+                first = next(r["phase"] for r in cases if r.get("phase", {}).get("phase") == "firstOutput")
             for chunk in (1, 251, expected["fixture"]["sampleCount"]):
                 output = json.loads(subprocess.check_output([consumer, directory / (digest + ".pcm"), str(chunk)]))
                 if (output["pcmSHA256"] != digest or output["cppsProfileSHA256"] != profile_sha(profile["cpps"])
@@ -55,7 +70,10 @@ def compare(checker, consumer):
                          for key in ("cpp", "cpps", "yin")}
                 if any(not row["available"] or row != expected["results"][0]["lanes"][key] for key, row in lanes.items()):
                     raise ValueError(f"Consumer frame sequence differs for {name}/{chunk}")
+                if chunk == 1 and name == "filtered-harmonics" and output["firstValidCPPSAfterSamples"] != first["sourceSamplesInsideTimer"]:
+                    raise ValueError("CPPS first-output timing differs from sample-by-sample external replay")
                 receipts.append(dict(fixture=name, chunk=chunk, pcmSHA256=digest, lanes=lanes,
+                                     firstValidCPPSAfterSamples=output["firstValidCPPSAfterSamples"],
                                      cppsProfileSHA256=output["cppsProfileSHA256"], yinProfileSHA256=output["yinProfileSHA256"]))
     return receipts
 

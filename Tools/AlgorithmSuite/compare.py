@@ -4,6 +4,11 @@
 import argparse
 import json
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from Performance.denominators import verify_manifest
+from Performance.records import sha
 
 
 def load(root, name):
@@ -11,10 +16,20 @@ def load(root, name):
 
 
 def compare(timing, allocation):
+    manifests = {}
     for mode, path in (("timing", timing), ("allocation", allocation)):
         status = load(path, "result.json")
         if status["status"] != "passed" or status["mode"] != mode:
             raise ValueError(f"Missing successful {mode} receipt")
+        verify_manifest(path, status, mode, {"caseFile": "workloads.json", "environmentFile": "environment.json",
+                                             "distributionFile": "distributions.json", "exportFile": "p99.json"})
+        env = load(path, "environment.json")
+        if env["workingTreeDirty"] is not False:
+            raise ValueError("Comparison requires a clean recorded source tree in each mode")
+        if (env["measurementMode"] != mode or env["packageResolvedSHA256"] != sha(path / "resolution.json")
+                or env["allocatorBackend"] != {"timing": "disabled", "allocation": "malloc-interposer"}[mode]):
+            raise ValueError(f"Build settings or dependency resolution differ from the {mode} receipt")
+        manifests[mode] = status["workloadManifestSHA256"]
     if ((timing / "resolution.json").read_bytes() != (allocation / "resolution.json").read_bytes()
             or load(timing, "workloads.json") != load(allocation, "workloads.json")):
         raise ValueError("The two modes used different resolution, geometry or public results")
@@ -40,7 +55,8 @@ def compare(timing, allocation):
         first, second = (records[key + "." + name] for key in (a, b))
         differences.append(dict(first=a, second=b, differenceOfWallMediansNS=second["wallNS"]["p50"]-first["wallNS"]["p50"],
             differenceOfMallocMedians=second["allocations"]["mallocCountTotal"]["p50"]-first["allocations"]["mallocCountTotal"]["p50"]))
-    return dict(fixture=source[0]["fixture"], scenarios=records, comparisons=differences)
+    return dict(commit=timing_env["commit"], workloadManifestSHA256=manifests, fixture=source[0]["fixture"],
+                scenarios=records, comparisons=differences)
 
 
 if __name__ == "__main__":

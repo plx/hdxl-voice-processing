@@ -8,9 +8,12 @@ struct Frame: Encodable {
     let lane: String
     let sourceStart: Int64
     let value: Double?
+    let status: String
+    let reason: UnavailabilityReason?
 }
 struct Replay: Encodable {
     let pcmSHA256, cppsProfileSHA256, yinProfileSHA256: String
+    let firstValidCPPSAfterSamples: Int?
     let frames: [Frame]
 }
 enum ReplayError: Error { case invalidArguments, invalidPCM }
@@ -48,23 +51,32 @@ func replay() throws -> Replay {
     let cepstral = try PreparedPreviewCPPS<Double>(profile: recipe, epoch: epoch)
     let pitch = try PreparedYINAnalyzer<Double>(profile: .init(estimator: yin), epoch: epoch)
     var frames: [Frame] = []
+    var delivered = 0
+    var firstValidCPPS: Int?
     func consume(_ value: BorrowedCPPSOutput) {
         let source = value.result.context.timing.source
+        if firstValidCPPS == nil, value.result.observation != nil { firstValidCPPS = delivered }
         frames.append(
             Frame(
                 lane: "cpps", sourceStart: source.startSample,
-                value: value.result.observation?.prominenceDB))
+                value: value.result.observation?.prominenceDB,
+                status: value.result.observation == nil ? "unavailable" : "available",
+                reason: value.result.unavailability))
+        let raw = value.result.rawCPP
         frames.append(
             Frame(
-                lane: "cpp", sourceStart: source.startSample,
-                value: value.result.rawCPP.observation?.prominenceDB))
+                lane: "cpp", sourceStart: raw.context.timing.source.startSample,
+                value: raw.observation?.prominenceDB,
+                status: raw.observation == nil ? "unavailable" : "available",
+                reason: raw.unavailability))
     }
     func consumePitch(_ value: BorrowedYINAnalysisOutput) {
         let result = value.raw.result
         frames.append(
             Frame(
                 lane: "yin", sourceStart: result.timing.source.startSample,
-                value: result.observation?.frequencyHz))
+                value: result.observation?.frequencyHz, status: result.status.rawValue,
+                reason: result.unavailability))
     }
     try samples.withUnsafeBufferPointer { input in
         var start = 0
@@ -74,6 +86,7 @@ func replay() throws -> Replay {
                 epoch: epoch, startSample: Int64(start), sampleCount: Int64(count),
                 sampleRate: 16000)
             let part = UnsafeBufferPointer(rebasing: input[start..<(start + count)])
+            delivered = start + count
             _ = try cepstral.process(part, interval: span, emit: consume)
             _ = try pitch.process(part, interval: span, emit: consumePitch)
             start += count
@@ -84,7 +97,7 @@ func replay() throws -> Replay {
     return try Replay(
         pcmSHA256: SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined(),
         cppsProfileSHA256: recipe.identity().sha256, yinProfileSHA256: yin.identity().sha256,
-        frames: frames)
+        firstValidCPPSAfterSamples: firstValidCPPS, frames: frames)
 }
 
 let encoder = JSONEncoder()

@@ -67,8 +67,12 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
             switch frame.value {
             case .cpps(let value):
                 let at = base + value.context.timing.source.startSample
-                result.record("cpp", value.rawCPP.observation?.prominenceDB, at: at)
-                result.record("cpps", value.observation?.prominenceDB, at: at)
+                let raw = value.rawCPP
+                result.record(
+                    "cpp", raw.observation?.prominenceDB,
+                    at: base + raw.context.timing.source.startSample, reason: raw.unavailability)
+                result.record(
+                    "cpps", value.observation?.prominenceDB, at: at, reason: value.unavailability)
                 result.robustFitSlopesPerFit = max(
                     result.robustFitSlopesPerFit, value.rawCPP.layout.slopeEvaluationCount)
                 let center = Int64(floor(value.context.centerSecondsFromOrigin * source.sampleRate))
@@ -76,38 +80,62 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
                 do {
                     try rolling.append(value)
                     let estimate = try rolling.result(atSourceSample: clock, mask: mask)
-                    result.record("rollingCPPS", estimate.meanDB, at: base + clock)
+                    result.record(
+                        "rollingCPPS", estimate.meanDB, at: base + clock,
+                        reason: estimate.unavailability)
                 } catch { callbackError = error }
             case .levels(let value):
                 let at = base + value.source.startSample
-                result.record("peak", value.peakAmplitude.estimate?.value, at: at)
-                result.record("rms", value.unweighted.rms.estimate?.value, at: at)
-                result.record("meanSquare", value.unweighted.meanSquare.estimate?.value, at: at)
-                result.record(
-                    "kWeightedMeanSquare", value.weighted?.meanSquare.estimate?.value, at: at)
-                result.record("levelDBFS", value.unweighted.digitalLevel.finiteDecibels, at: at)
-                result.record("samplePeakDBFS", value.samplePeakDBFS.finiteDecibels, at: at)
+                result.record("peak", outcome: value.peakAmplitude, at: at)
+                result.record("rms", outcome: value.unweighted.rms, at: at)
+                result.record("meanSquare", outcome: value.unweighted.meanSquare, at: at)
+                if let weighted = value.weighted {
+                    result.record("kWeightedMeanSquare", outcome: weighted.meanSquare, at: at)
+                }
+                result.record("levelDBFS", level: value.unweighted.digitalLevel, at: at)
+                result.record("samplePeakDBFS", level: value.samplePeakDBFS, at: at)
                 result.record("clippingFraction", value.possibleClippingFraction, at: at)
-                result.record("crest", value.crestFactor.estimate?.value, at: at)
+                result.record("crest", outcome: value.crestFactor, at: at)
             case .pitch(let raw, let tracked):
                 let at = base + raw.timing.source.startSample
-                result.record("yin", raw.observation?.frequencyHz, at: at)
-                result.record("trackedYin", tracked?.observation?.frequencyHz, at: at)
+                result.record(
+                    "yin", raw.observation?.frequencyHz, at: at, status: raw.status.rawValue,
+                    reason: raw.unavailability)
+                if let tracked {
+                    result.record(
+                        "trackedYin", tracked.observation?.frequencyHz, at: at,
+                        status: tracked.raw.status.rawValue, reason: tracked.raw.unavailability)
+                }
+                if raw.timing.source.sampleCount == raw.requiredSampleCount {
+                    result.completePitchWindows += 1
+                    if raw.status == .voiced { result.completeVoicedPitchWindows += 1 }
+                    if let hz = raw.observation?.frequencyHz {
+                        result.minimumCompletePitchHz = min(result.minimumCompletePitchHz ?? hz, hz)
+                        result.maximumCompletePitchHz = max(result.maximumCompletePitchHz ?? hz, hz)
+                    }
+                }
                 if extras != nil { pitches.append(raw) }
             case .hnr(let value):
-                let at = base + value.dependencyTiming.source.startSample
                 switch value {
                 case .frame(let output):
-                    result.record("hnrPeriodicity", output.selectedObservation?.periodicity, at: at)
-                    result.record("hnrDB", output.selectedObservation?.finiteDecibels, at: at)
-                case .unavailable:
-                    result.record("hnrPeriodicity", nil, at: at)
-                    result.record("hnrDB", nil, at: at)
+                    let at = base + output.frameTiming.source.startSample
+                    result.record(
+                        "hnrPeriodicity", output.selectedObservation?.periodicity, at: at,
+                        reason: output.unavailability)
+                    result.record(
+                        "hnrDB", output.selectedObservation?.finiteDecibels, at: at,
+                        status: output.selectedObservation?.status.rawValue,
+                        reason: output.unavailability)
+                case .unavailable(let output):
+                    let at = base + output.timing.source.startSample
+                    result.record("hnrPeriodicity", nil, at: at, reason: output.reason)
+                    result.record("hnrDB", nil, at: at, reason: output.reason)
                 }
             case .swipePrime(let value):
                 result.record(
                     "swipePrime", value.observation?.frequencyHz,
-                    at: base + value.timing.source.startSample)
+                    at: base + value.timing.source.startSample, status: value.status.rawValue,
+                    reason: value.qualityReason)
             }
         }
         var start = 0

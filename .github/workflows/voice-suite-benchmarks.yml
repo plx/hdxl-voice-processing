@@ -20,6 +20,7 @@ on:
       - 'Tools/instrumentation.py'
       - 'Tools/SpectralProducts/benchmark.py'
       - 'Tools/Performance/records.py'
+      - 'Tools/Performance/denominators.py'
       - 'Tools/Tests/test_algorithm_suite*'
       - '.github/workflows/voice-suite-benchmarks.yml'
 

@@ -41,7 +41,9 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             do {
                 result.spectralRows += 1
                 let at = base + row.info.source.startSample
-                result.record("spectrogram", row.binPower.first.map(Double.init), at: at)
+                result.record(
+                    "spectrogram", power: row.binPower.first.map(Double.init),
+                    status: row.info.status, at: at)
                 try recordShape(shape.evaluate(row), prefix: "frame", at: at, result: &result)
                 if secondSpectrum == nil { try accumulator.append(row) }
             } catch { failure = error }
@@ -63,9 +65,9 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
         result: inout SuiteResult
     ) {
         for descriptor in SpectralShapeDescriptor.allCases {
-            result.record(
-                prefix + "." + descriptor.rawValue, shape[descriptor]?.outcome.estimate?.value,
-                at: at)
+            if let entry = shape[descriptor] {
+                result.record(prefix + "." + descriptor.rawValue, outcome: entry.outcome, at: at)
+            }
         }
     }
 
@@ -87,17 +89,21 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             _ = try worker.finish(emit: emit)
         }
         let mean = try accumulator.snapshot(observedSource: source)
-        result.record("ltas", mean.meanBinPower.first, at: base)
+        result.record("ltas", power: mean.meanBinPower.first, status: mean.status, at: base)
         try recordShape(aggregateShape.evaluate(mean), prefix: "ltas", at: base, result: &result)
         _ = try mask.finish { output in
-            if output.flatness.isEmpty { result.record("ltsf", nil, at: base) }
+            if output.flatness.isEmpty {
+                result.record("ltsf", nil, at: base, reason: output.unavailability)
+            }
             for (index, value) in output.flatness.enumerated() {
                 let center =
                     output.layout.firstCenterSeconds! + Double(index) * recipe.mask.hopSeconds
                 result.record(
                     "ltsf", value, at: base + Int64((center * source.sampleRate).rounded()))
             }
-            if output.speechIntervals.isEmpty { result.record("speechInterval", nil, at: base) }
+            if output.speechIntervals.isEmpty {
+                result.record("speechInterval", nil, at: base, reason: output.unavailability)
+            }
             for region in output.speechIntervals {
                 let at = base + Int64((region.startSeconds * source.sampleRate).rounded())
                 result.record("speechInterval", region.isSpeech ? 1 : 0, at: at)
@@ -112,7 +118,6 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
         source: SourceInterval, base: Int64, result: inout SuiteResult
     ) throws {
         let full = pitches.filter { $0.timing.source.sampleCount == $0.requiredSampleCount }
-        result.completePitchWindows += full.count
         let harmonic = try PreparedHarmonicDifference<S>(
             recipe.harmonics, diagnosticMode: diagnostics)
         var burg: PreparedBurgFormants<S>?
@@ -121,11 +126,13 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             let at = base + span.startSample
             guard span.sampleCount == pitch.requiredSampleCount else {
                 for number in 1...3 {
-                    result.record("formant" + String(number), nil, at: at)
-                    result.record("bandwidth" + String(number), nil, at: at)
+                    result.record(
+                        "formant" + String(number), nil, at: at, reason: .insufficientData)
+                    result.record(
+                        "bandwidth" + String(number), nil, at: at, reason: .insufficientData)
                 }
-                result.record("h1h2", nil, at: at)
-                result.record("correctedH1H2", nil, at: at)
+                result.record("h1h2", nil, at: at, reason: .insufficientData)
+                result.record("correctedH1H2", nil, at: at, reason: .insufficientData)
                 continue
             }
             if burg == nil {
@@ -146,20 +153,34 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
                         result.maximumRootSweeps, formants.diagnostics.rootSweeps)
                     if formants.diagnostics.triedSecondStart { result.secondRootStarts += 1 }
                     for number in 1...3 {
-                        let candidate = formants.failure == nil ? formants.formant(number) : nil
-                        result.record("formant" + String(number), candidate?.frequencyHz, at: at)
-                        result.record("bandwidth" + String(number), candidate?.bandwidthHz, at: at)
+                        let frequency = try formants.measurement(
+                            number: number, kind: .formantFrequency
+                        ).result
+                        let bandwidth = try formants.measurement(
+                            number: number, kind: .formantBandwidth
+                        ).result
+                        result.record(
+                            "formant" + String(number), outcome: frequency.outcome,
+                            at: base + frequency.timing.source.startSample)
+                        result.record(
+                            "bandwidth" + String(number), outcome: bandwidth.outcome,
+                            at: base + bandwidth.timing.source.startSample)
                     }
                     let output = try harmonic.analyze(
                         samples, source: span, pitch: f0, formants: formants)
-                    result.record("h1h2", output.raw.measurement.outcome.estimate?.value, at: at)
+                    let raw = output.raw.measurement
                     result.record(
-                        "correctedH1H2", output.measurement.outcome.estimate?.value, at: at)
+                        "h1h2", outcome: raw.outcome, at: base + raw.timing.source.startSample)
+                    result.record(
+                        "correctedH1H2", outcome: output.measurement.outcome,
+                        at: base + output.measurement.timing.source.startSample)
                 })
         }
         guard let first = full.first else {
             result.omittedPulseRegions += 1
-            for lane in Self.pulseLanes { result.record(lane, nil, at: base) }
+            for lane in Self.pulseLanes {
+                result.record(lane, nil, at: base, reason: .insufficientData)
+            }
             return
         }
         let rate = source.sampleRate
@@ -180,17 +201,23 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             configuration: recipe.jitter, pulseConfiguration: recipe.pulses,
             maximumSampleCount: pcm.count, maximumF0FrameCount: full.count,
             maximumTrackingAttempts: recipe.maximumTrackingAttempts, diagnosticMode: diagnostics)
+        var jitterCoverage: JitterCoverage?
         try jitter.analyze(pcm, contour: contour, timing: timing) { output in
             result.pulseTrackingAttempts += output.pulses.result.trackingAttemptCount
             result.record(
                 "pulses",
                 output.pulses.result.unavailability == nil
-                    ? Double(output.pulses.landmarks.count) : nil, at: base)
+                    ? Double(output.pulses.landmarks.count) : nil, at: base,
+                reason: output.pulses.result.unavailability)
             let value = output.result
+            jitterCoverage = value.coverage
             for estimate in [value.local, value.absolute, value.rap, value.ppq5, value.ddp] {
-                result.record("jitter." + estimate.variant.rawValue, estimate.value, at: base)
+                result.record(
+                    "jitter." + estimate.variant.rawValue, estimate.value, at: base,
+                    status: estimate.status.rawValue, reason: estimate.unavailability)
             }
         }
+        guard let jitterCoverage else { throw SuiteError.mismatch("Missing jitter coverage") }
         let shimmer = try PreparedPCMShimmer<S>(
             configuration: recipe.shimmer, pulseConfiguration: recipe.pulses,
             maximumSampleCount: pcm.count, maximumF0FrameCount: full.count,
@@ -198,9 +225,13 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
         try shimmer.analyze(pcm, contour: contour, timing: timing) { output in
             result.pulseTrackingAttempts += output.pulses.result.trackingAttemptCount
             let value = output.result
+            result.perturbationCoverage.append(
+                .init(startSample: base, jitter: jitterCoverage, shimmer: value.coverage))
             for estimate in [value.local, value.db, value.apq3, value.apq5, value.apq11, value.dda]
             {
-                result.record("shimmer." + estimate.variant.rawValue, estimate.value, at: base)
+                result.record(
+                    "shimmer." + estimate.variant.rawValue, estimate.value, at: base,
+                    status: estimate.status.rawValue, reason: estimate.unavailability)
             }
         }
     }

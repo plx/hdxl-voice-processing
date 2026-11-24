@@ -32,17 +32,21 @@ def verify_files(directory, result, environment, files):
         return "legacy-unbound"
     if environment.get("measurementMode") != "timing" or environment.get("allocatorBackend") != "disabled":
         raise ValueError("Timing requires an environment with the allocator backend disabled")
-    content = manifest_path.read_bytes()
+    verify_manifest(directory, result, "timing", files)
+    return "digest-verified"
+
+
+def verify_manifest(directory, result, mode, files):
+    content = (directory / "workload-manifest.json").read_bytes()
     if result.get("workloadManifestSHA256") != hashlib.sha256(content).hexdigest():
         raise ValueError("Final result does not match the workload manifest digest")
     manifest = json.loads(content)
-    if manifest["schemaVersion"] != 1 or manifest["mode"] != "timing":
-        raise ValueError("Expected a timing workload manifest")
+    if manifest["schemaVersion"] != 1 or manifest["mode"] != mode:
+        raise ValueError(f"Expected a {mode} workload manifest")
     for field, filename in files.items():
         if (manifest[field] != filename or
                 manifest[field + "SHA256"] != hashlib.sha256((directory / filename).read_bytes()).hexdigest()):
             raise ValueError(f"Workload manifest digest or filename mismatch: {filename}")
-    return "digest-verified"
 
 
 def smoke(directory):

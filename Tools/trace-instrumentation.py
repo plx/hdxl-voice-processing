@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 
 import ci
 import instrumentation
+from instrumentation import SUBSYSTEM
 
 METADATA = re.compile(r"session=(\d+) epoch=(\d+) span=(\d+) profile=(\d+) frame=(\d+) "
                       r"samples=(\d+) depth=(\d+) validity=(\d+) processed=(\d+) queue_ns=(\d+)")
