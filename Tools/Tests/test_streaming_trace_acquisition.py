@@ -18,7 +18,7 @@ class TraceAcquisitionTests(unittest.TestCase):
         self.addCleanup(folder.cleanup)
         self.directory = Path(folder.name)
         self.output = self.directory / "signposts.json"
-        self.environment = {"commit": "candidate", "xcode": "Xcode under test"}
+        self.environment = {"commit": "candidate", "xcode": "Xcode under test", "workingTreeDirty": False}
         self.build = {"binarySHA256": "a" * 64}
 
     def run_recorder(self, timeout):
@@ -30,13 +30,14 @@ class TraceAcquisitionTests(unittest.TestCase):
 
         def publish_after_start(_):
             self.assertTrue(ready.exists())
-            report.write_text("{}")
+            report.write_text(json.dumps({"trials": [{"science": {"sha256": "reference"}}]}))
 
         def stop(sig):
             self.assertEqual(sig, signal.SIGINT)
             self.assertTrue(report.is_file() and ready.exists())
 
         def finalize(timeout):
+            self.assertFalse(ready.exists())
             self.assertEqual(timeout, 120)
             recorder.poll.return_value = 0
             return 0
@@ -47,21 +48,21 @@ class TraceAcquisitionTests(unittest.TestCase):
             trace.select, "select", return_value=([1], [], [])
         ), mock.patch.object(trace.os, "read", return_value=bytes(4)), mock.patch.object(
             trace.time, "sleep", side_effect=publish_after_start
-        ), mock.patch.object(trace.subprocess, "Popen") as launch:
+        ), mock.patch.object(trace, "summarize", return_value={}), mock.patch.object(trace.subprocess, "Popen") as launch:
             library.return_value.notify_register_file_descriptor.return_value = 0
             launch.return_value.__enter__.return_value = recorder
             if timeout:
                 with self.assertRaisesRegex(trace.CollectorTimeout, "finalization"):
-                    trace.record_when_ready([], self.directory / "test.trace", report, journal)
+                    trace.record_when_ready([], self.directory / "test.trace", report, journal, {"science": {"sha256": "reference"}})
                 recorder.kill.assert_called_once_with()
             else:
-                trace.record_when_ready([], self.directory / "test.trace", report, journal)
+                trace.record_when_ready([], self.directory / "test.trace", report, journal, {"science": {"sha256": "reference"}})
                 recorder.kill.assert_not_called()
             recorder.send_signal.assert_called_once_with(signal.SIGINT)
             library.return_value.notify_cancel.assert_called_once()
         self.assertFalse(ready.exists())
         self.assertEqual([e["phase"] for e in journal.data["events"]][-3:],
-                         ["recorder-startup", "measured-workload", "recorder-finalization"])
+                         ["reference-comparison", "workload-validation", "recorder-finalization"])
 
     def test_graceful_stop_follows_atomic_workload_report(self):
         self.run_recorder(False)
@@ -69,7 +70,7 @@ class TraceAcquisitionTests(unittest.TestCase):
     def test_stalled_finalization_releases_target_and_reaps_owned_recorder(self):
         self.run_recorder(True)
 
-    def simulate(self, outcomes):
+    def simulate(self, outcomes, invalid_workload=False):
         fake_binary = self.directory / "probe"
         def run(args, **unused):
             if args[0] == fake_binary:
@@ -78,12 +79,15 @@ class TraceAcquisitionTests(unittest.TestCase):
                 self.assertEqual(args[:3], ["xcrun", "xctrace", "export"])
                 args[-1].write_text("<trace/>")
 
-        def record(args, output, report, journal):
+        def record(args, output, report, journal, baseline):
             outcome = next(outcomes)
+            value = {"timeout": "reference", "mismatched-timeout": "different"}.get(outcome, outcome)
+            report.write_text(json.dumps({"trials": [{"science": {"sha256": value}}]}))
+            completed = trace.read_completed_trial(report, baseline, journal)
             journal.mark("recorder-finalization")
-            if outcome == "timeout":
+            if outcome.endswith("timeout"):
                 raise trace.CollectorTimeout("Recorder finalization timed out")
-            report.write_text(json.dumps({"trials": [{"science": {"sha256": outcome}}]}))
+            return completed
 
         with mock.patch.object(trace.ci, "environment", return_value=dict(self.environment)), mock.patch.object(
             trace.ci, "capture", return_value="test"
@@ -91,7 +95,8 @@ class TraceAcquisitionTests(unittest.TestCase):
             trace.subprocess, "run", side_effect=run
         ), mock.patch.object(trace, "record_when_ready", side_effect=record), mock.patch.object(
             trace, "inspect", return_value={"completeIntervals": 8}
-        ), mock.patch.object(trace, "summarize", return_value={}), mock.patch.object(
+        ), mock.patch.object(trace, "summarize", return_value={}, side_effect=ValueError("invalid workload") if invalid_workload else None
+        ), mock.patch.object(
             sys, "argv", ["trace.py", "build.json", str(self.output)]
         ):
             trace.main()
@@ -117,6 +122,32 @@ class TraceAcquisitionTests(unittest.TestCase):
         failures = [(e["during"], e["reason"]) for e in journal["events"] if e["phase"] == "discarded"]
         self.assertEqual(failures, [("recorder-finalization", "timeout")] * 3)
         self.assertFalse(self.output.exists())
+
+    def test_timeout_cannot_hide_a_published_numerical_mismatch(self):
+        with self.assertRaisesRegex(ValueError, "numerical"):
+            self.simulate(iter(["mismatched-timeout", "reference"]))
+        events = self.read_journal()["events"]
+        self.assertEqual(events[-1]["during"], "reference-comparison")
+        self.assertFalse(any(e["phase"] in {"discarded", "validated"} for e in events))
+
+    def test_invalid_workload_is_never_marked_validated(self):
+        with self.assertRaisesRegex(ValueError, "invalid workload"):
+            self.simulate(iter(["reference"]), invalid_workload=True)
+        events = self.read_journal()["events"]
+        self.assertEqual(events[-1]["during"], "workload-validation")
+        self.assertFalse(any(e["phase"] == "validated" for e in events))
+
+    def test_unignored_journal_preserves_other_provenance_changes(self):
+        subprocess.run(["git", "init", "--quiet", self.directory], check=True)
+        journal = trace.AcquisitionJournal(self.output, self.environment, self.build)
+        def environment(_):
+            return {"workingTreeDirty": True}
+        with mock.patch.object(trace, "ROOT", self.directory.resolve()), mock.patch.object(
+            trace.ci, "environment", side_effect=environment
+        ):
+            self.assertFalse(trace.verification_environment(journal)["workingTreeDirty"])
+            (self.directory / "other-source.swift").touch()
+            self.assertTrue(trace.verification_environment(journal)["workingTreeDirty"])
 
     def test_numerical_mismatch_fails_without_retry(self):
         with self.assertRaisesRegex(ValueError, "numerical"):

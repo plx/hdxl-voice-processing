@@ -168,7 +168,17 @@ class AcquisitionJournal:
         temporary.replace(self.path)
 
 
-def record_when_ready(arguments, trace, report, journal):
+def read_completed_trial(report, baseline, journal):
+    journal.mark("reference-comparison")
+    document = json.loads(report.read_bytes())
+    trial = document["trials"][0]
+    if trial["science"]["sha256"] != baseline["science"]["sha256"]:
+        raise ValueError("Traced admission or numerical results differ from the disabled reference")
+    journal.mark("workload-validation")
+    return document, summarize(trial)
+
+
+def record_when_ready(arguments, trace, report, journal, baseline):
     """Stop a recorder we launched while its measured target is still available."""
     ready = report.with_name("recorder-started")
     name = "org.hdxl.voice.streaming-replay." + uuid.uuid4().hex
@@ -201,14 +211,17 @@ def record_when_ready(arguments, trace, report, journal):
                     time.sleep(0.05)
                 # The target atomically publishes its report after all measured work. Request
                 # Instruments' documented interactive stop before the target leaves the process.
+                completed = read_completed_trial(report, baseline, journal)
                 journal.mark("recorder-finalization")
                 recorder.send_signal(signal.SIGINT)
+                ready.unlink()
                 try:
                     status = recorder.wait(timeout=120)
                 except subprocess.TimeoutExpired as error:
                     raise CollectorTimeout("Recorder finalization timed out") from error
                 if status:
                     raise subprocess.CalledProcessError(status, command)
+                return completed
             finally:
                 ready.unlink(missing_ok=True)
                 if recorder.poll() is None:
@@ -232,12 +245,7 @@ def capture(binary, profile, load, directory, journal):
             work = Path(temporary)
             trace, report, xml = work / "capture.trace", work / "trial.json", work / "signposts.xml"
             try:
-                record_when_ready(run_args("detailed", report), trace, report, journal)
-                journal.mark("reference-comparison")
-                doc = json.loads(report.read_bytes())
-                observed = doc["trials"][0]
-                if observed["science"]["sha256"] != baseline["science"]["sha256"]:
-                    raise ValueError("Traced admission or numerical results differ from the disabled reference")
+                doc, workload = record_when_ready(run_args("detailed", report), trace, report, journal, baseline)
                 journal.mark("export")
                 try:
                     subprocess.run(["xcrun", "xctrace", "export", "--input", trace, "--xpath",
@@ -256,8 +264,21 @@ def capture(binary, profile, load, directory, journal):
                 continue
             journal.mark("validated", intervals=stages["completeIntervals"])
             return dict(stages, xmlSHA256=sha(xml), discardedRecordings=attempts,
-                        workload=summarize(observed), referenceSHA256=baseline["science"]["sha256"])
+                        workload=workload, referenceSHA256=baseline["science"]["sha256"])
     raise IncompleteRecording(f"No complete {load} trace in three recordings: {attempts}")
+
+
+def verification_environment(journal):
+    environment = ci.environment("release")
+    path = journal.path.resolve()
+    if environment["workingTreeDirty"] and path.is_relative_to(ROOT):
+        # An unignored output inside the checkout creates one new journal during this run.
+        # Keep every other tracked and untracked change in the existing provenance check.
+        relative = path.relative_to(ROOT).as_posix()
+        environment["workingTreeDirty"] = bool(subprocess.check_output(
+            ["git", "-C", ROOT, "status", "--porcelain", "--", ".", f":(exclude,literal){relative}"]
+        ))
+    return environment
 
 
 def main():
@@ -273,7 +294,8 @@ def main():
             recordings = {name: capture(binary, profile, load, Path(directory), journal)
                           for name, profile, load in (("paced", "cpps", "paced"), ("burst", "cpps", "burst"),
                                                       ("full", "full", "throughput"))}
-        if verified_binary(args.build_receipt, ci.environment("release"))[1] != build:
+        journal.mark("build-verification")
+        if verified_binary(args.build_receipt, verification_environment(journal))[1] != build:
             raise ValueError("Release build changed during trace acquisition")
         environment["execution"] = "Instruments Logging on governed, synthetic native PCM"
         environment["model"] = ci.capture("sysctl", "-n", "hw.model")
