@@ -13,7 +13,7 @@
     "macOS": "27.0",
     "iOS": "27.0"
   },
-  "watchOS": "pending capability issue #60; no support claim",
+  "watchOS": "27.0 minimum for the standalone Core/recorded-segment feasibility probe; physical behavior pending #74, sustained qualification #64",
   "ciRunner": "xcode-27 (standard GitHub-hosted arm64; macOS 27 runtime required)",
   "physicalDeviceEvidence": "deferred by owner to issue #74",
   "pythonVersion": "3.14.8",
