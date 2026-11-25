@@ -14,6 +14,7 @@ on:
       - 'Tools/instrumentation.py'
       - 'Tools/Performance/records.py'
       - 'Tools/Tests/test_streaming_replay.py'
+      - 'Tools/Tests/test_streaming_trace_acquisition.py'
       - 'Configuration/build.json'
       - '.github/workflows/streaming-replay.yml'
 
