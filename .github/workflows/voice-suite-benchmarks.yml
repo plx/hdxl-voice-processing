@@ -17,6 +17,7 @@ on:
       - 'Tools/Reference/common.py'
       - 'Tools/benchmark.py'
       - 'Tools/ci.py'
+      - 'Tools/trace_acquisition.py'
       - 'Tools/instrumentation.py'
       - 'Tools/SpectralProducts/benchmark.py'
       - 'Tools/Performance/records.py'

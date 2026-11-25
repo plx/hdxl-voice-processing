@@ -11,6 +11,7 @@ on:
       - 'Tools/Capture/acceptance.py'
       - 'Tools/Capture/device_trial.py'
       - 'Tools/ci.py'
+      - 'Tools/trace_acquisition.py'
       - 'Tools/instrumentation.py'
       - 'Tools/Performance/records.py'
       - 'Tools/Tests/test_streaming_replay.py'
