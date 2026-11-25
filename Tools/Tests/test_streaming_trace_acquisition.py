@@ -21,48 +21,62 @@ class TraceAcquisitionTests(unittest.TestCase):
         self.environment = {"commit": "candidate", "xcode": "Xcode under test", "workingTreeDirty": False}
         self.build = {"binarySHA256": "a" * 64}
 
+    def document(self, trial):
+        return {"schemaVersion": 1, "processID": 123, "trials": [trial]}
+
     def run_recorder(self, timeout):
         journal = trace.AcquisitionJournal(self.output, self.environment, self.build)
         report = self.directory / "trial.json"
         ready = self.directory / "recorder-started"
-        recorder = mock.MagicMock()
-        recorder.poll.return_value = None
+        target, recorder = mock.MagicMock(), mock.MagicMock()
+        for child in (target, recorder):
+            child.poll.return_value = None
+            child.__enter__.return_value = child
+        target.pid = 123
+        baseline = {"science": {"sha256": "reference"}}
+        expected = {"profile": "cpps"}
 
         def publish_after_start(_):
             self.assertTrue(ready.exists())
-            report.write_text(json.dumps({"trials": [{"science": {"sha256": "reference"}}]}))
-
-        def stop(sig):
-            self.assertEqual(sig, signal.SIGINT)
-            self.assertTrue(report.is_file() and ready.exists())
+            report.write_text(json.dumps(self.document(dict(baseline, **expected))))
 
         def finalize(timeout):
-            self.assertFalse(ready.exists())
+            self.assertTrue(ready.exists() and report.is_file())
             self.assertEqual(timeout, 120)
             recorder.poll.return_value = 0
             return 0
 
-        recorder.send_signal.side_effect = stop
+        def exit_target(timeout):
+            self.assertFalse(ready.exists())
+            self.assertEqual(recorder.poll(), 0)
+            target.poll.return_value = 0
+            return 0
+
+        target.wait.side_effect = exit_target
         recorder.wait.side_effect = subprocess.TimeoutExpired("recorder", 120) if timeout else finalize
         with mock.patch.object(trace.ctypes, "CDLL") as library, mock.patch.object(
             trace.select, "select", return_value=([1], [], [])
         ), mock.patch.object(trace.os, "read", return_value=bytes(4)), mock.patch.object(
             trace.time, "sleep", side_effect=publish_after_start
-        ), mock.patch.object(trace, "summarize", return_value={}), mock.patch.object(trace.subprocess, "Popen") as launch:
+        ), mock.patch.object(trace, "summarize", return_value={}), mock.patch.object(
+            trace.subprocess, "Popen", side_effect=[target, recorder]
+        ) as launch:
             library.return_value.notify_register_file_descriptor.return_value = 0
-            launch.return_value.__enter__.return_value = recorder
+            args = (["probe"], self.directory / "test.trace", report, journal, baseline, expected)
             if timeout:
                 with self.assertRaisesRegex(trace.CollectorTimeout, "finalization"):
-                    trace.record_when_ready([], self.directory / "test.trace", report, journal, {"science": {"sha256": "reference"}})
+                    trace.record_when_ready(*args)
                 recorder.kill.assert_called_once_with()
+                target.kill.assert_called_once_with()
             else:
-                trace.record_when_ready([], self.directory / "test.trace", report, journal, {"science": {"sha256": "reference"}})
+                trace.record_when_ready(*args)
                 recorder.kill.assert_not_called()
+                target.kill.assert_not_called()
+                target.wait.assert_called_once_with(timeout=10)
+            self.assertEqual(launch.call_args_list[1].args[0][-2:], ["--attach", "123"])
             recorder.send_signal.assert_called_once_with(signal.SIGINT)
             library.return_value.notify_cancel.assert_called_once()
         self.assertFalse(ready.exists())
-        self.assertEqual([e["phase"] for e in journal.data["events"]][-3:],
-                         ["reference-comparison", "workload-validation", "recorder-finalization"])
 
     def test_graceful_stop_follows_atomic_workload_report(self):
         self.run_recorder(False)
@@ -74,16 +88,27 @@ class TraceAcquisitionTests(unittest.TestCase):
         fake_binary = self.directory / "probe"
         def run(args, **unused):
             if args[0] == fake_binary:
-                args[-1].write_text(json.dumps({"trials": [{"science": {"sha256": "reference"}}]}))
+                trial = dict(profile=args[1], sampleRate=int(args[2]), pattern=[int(args[3])], load=args[4],
+                             mode=args[5], seconds=int(args[6]), seed=int(args[7]), operation=args[8],
+                             queueSlots=32, science={"sha256": "reference"})
+                args[-1].write_text(json.dumps(self.document(trial)))
             else:
                 self.assertEqual(args[:3], ["xcrun", "xctrace", "export"])
                 args[-1].write_text("<trace/>")
 
-        def record(args, output, report, journal, baseline):
+        def record(args, output, report, journal, baseline, expected):
             outcome = next(outcomes)
+            if outcome == "interrupt":
+                journal.mark("recorder-startup")
+                raise KeyboardInterrupt
             value = {"timeout": "reference", "mismatched-timeout": "different"}.get(outcome, outcome)
-            report.write_text(json.dumps({"trials": [{"science": {"sha256": value}}]}))
-            completed = trace.read_completed_trial(report, baseline, journal)
+            document = self.document(dict(expected, science={"sha256": value}))
+            if outcome == "wrong-workload":
+                document["trials"][0]["load"] = "throughput"
+            if outcome == "two-trials":
+                document["trials"] *= 2
+            report.write_text(json.dumps(document))
+            completed = trace.read_completed_trial(report, expected, 123, baseline, journal)
             journal.mark("recorder-finalization")
             if outcome.endswith("timeout"):
                 raise trace.CollectorTimeout("Recorder finalization timed out")
@@ -136,6 +161,18 @@ class TraceAcquisitionTests(unittest.TestCase):
         events = self.read_journal()["events"]
         self.assertEqual(events[-1]["during"], "workload-validation")
         self.assertFalse(any(e["phase"] == "validated" for e in events))
+
+    def test_mislabeled_workload_and_extra_trials_fail_before_retry(self):
+        for outcome in ("wrong-workload", "two-trials"):
+            with self.subTest(outcome=outcome), self.assertRaisesRegex(ValueError, "requested process and workload"):
+                self.simulate(iter([outcome]))
+
+    def test_interrupt_preserves_phase_and_terminal_outcome(self):
+        with self.assertRaises(KeyboardInterrupt):
+            self.simulate(iter(["interrupt"]))
+        journal = self.read_journal()
+        self.assertEqual(journal["status"], "interrupted")
+        self.assertEqual(journal["events"][-1]["during"], "recorder-startup")
 
     def test_unignored_journal_preserves_other_provenance_changes(self):
         subprocess.run(["git", "init", "--quiet", self.directory], check=True)
