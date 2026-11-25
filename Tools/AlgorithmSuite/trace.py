@@ -110,6 +110,13 @@ def capture(binary, bundle, profile, directory, journal):
         with tempfile.TemporaryDirectory(dir=directory) as recording:
             try:
                 evidence = record(binary, arguments, reference, Path(recording), journal)
+                journal.mark("profile-coverage")
+                spans = evidence["spans"].keys()
+                if profile == "cpps" and DISABLED & spans:
+                    raise ValueError(f"Disabled native stages executed: {sorted(DISABLED & spans)}")
+                required = ENABLED | DISABLED if profile == "full" else ENABLED
+                if missing := required - spans:
+                    raise IncompleteRecording(f"Missing native stage controls: {sorted(missing)}")
             except IncompleteRecording as error:
                 journal.mark("discarded", during=journal.data["events"][-1]["phase"],
                              reason="timeout" if isinstance(error, CollectorTimeout) else "incomplete-signposts")
@@ -137,15 +144,12 @@ def main():
             prepare(bundle)
             for composition in ("cpps", "full"):
                 profiles[composition] = capture(binary, bundle, composition, directory, journal)
-        journal.mark("profile-coverage")
-        reduced = set(profiles["cpps"]["spans"])
-        full = set(profiles["full"]["spans"])
-        if not ENABLED <= reduced or reduced & DISABLED or not (DISABLED | ENABLED) <= full:
-            raise ValueError(f"Trace coverage differs. Reduced {sorted(reduced)}, full {sorted(full)}")
+        journal.mark("binary-verification")
         if sha(binary) != digest:
             raise ValueError("Offline trace binary changed during acquisition")
         result = dict(template="Logging", binarySHA256=digest, toolchain=environment,
                       profiles=profiles, requiredPositiveControls=sorted(DISABLED), requiredCPPSStages=sorted(ENABLED))
+        journal.mark("publication")
         with args.output.open("x") as stream:
             stream.write(ci.redact(json.dumps(result, indent=2, allow_nan=False)) + "\n")
     except KeyboardInterrupt:

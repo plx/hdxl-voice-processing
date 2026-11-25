@@ -39,7 +39,9 @@ class OfflineTraceTests(unittest.TestCase):
             journal.mark("recorder-finalization")
             if outcome == "timeout":
                 raise trace.CollectorTimeout("Recorder finalization timed out")
-            recording.write_text(arguments[3])
+            if outcome == "changed-binary":
+                self.binary.write_bytes(b"replacement")
+            recording.write_text(outcome if outcome in {"forbidden-stage", "missing-positive"} else arguments[3])
             return pid
 
         def export(arguments, **options):
@@ -49,6 +51,10 @@ class OfflineTraceTests(unittest.TestCase):
         def spans(xml, pid):
             self.assertEqual(pid, 123)
             stages = trace.ENABLED if xml == b"cpps" else trace.ENABLED | trace.DISABLED
+            if xml == b"forbidden-stage":
+                stages = trace.ENABLED | {"BurgLPC"}
+            elif xml == b"missing-positive":
+                stages = stages - {"BurgLPC"}
             return {stage: {"count": 1} for stage in stages}
 
         with mock.patch.object(sys, "argv", ["trace.py", str(self.binary), str(self.output)]), mock.patch.object(
@@ -74,6 +80,33 @@ class OfflineTraceTests(unittest.TestCase):
         self.assertEqual(set(data["profiles"]["full"]["spans"]), trace.ENABLED | trace.DISABLED)
         self.assertEqual(self.journal()["status"], "passed")
         self.assertEqual(len(data["profiles"]["cpps"]["discardedRecordings"]), 1)
+
+    def test_missing_full_profile_stage_retries_before_validation(self):
+        self.run_trace(["passed", "missing-positive", "passed"])
+        events = self.journal()["events"]
+        self.assertEqual([e["during"] for e in events if e["phase"] == "discarded"], ["profile-coverage"])
+        self.assertEqual([e["profile"] for e in events if e["phase"] == "validated"], ["cpps", "full"])
+
+    def test_forbidden_reduced_profile_stage_fails_without_retry(self):
+        with self.assertRaisesRegex(ValueError, "Disabled native stages"):
+            self.run_trace(["forbidden-stage"])
+        events = self.journal()["events"]
+        self.assertEqual(events[-1]["during"], "profile-coverage")
+        self.assertFalse(any(e["phase"] in {"validated", "discarded"} for e in events))
+        self.assertFalse(self.output.exists())
+
+    def test_replaced_binary_is_reported_as_binary_verification(self):
+        with self.assertRaisesRegex(ValueError, "binary changed"):
+            self.run_trace(["passed", "changed-binary"])
+        self.assertEqual(self.journal()["events"][-1]["during"], "binary-verification")
+        self.assertFalse(self.output.exists())
+
+    def test_existing_result_survives_a_publication_failure(self):
+        self.output.write_text("prior")
+        with self.assertRaises(FileExistsError):
+            self.run_trace(["passed", "passed"])
+        self.assertEqual(self.journal()["events"][-1]["during"], "publication")
+        self.assertEqual(self.output.read_text(), "prior")
 
     def test_exhausted_collector_keeps_phases_without_publishing_a_result(self):
         with self.assertRaisesRegex(trace.IncompleteRecording, "three attempts"):
