@@ -99,7 +99,7 @@ class AlgorithmSuiteTests(unittest.TestCase):
             self.assertNotEqual(digest["fingerprint"], replay.lane_digest(changed)["fingerprint"])
 
     def test_trace_pairs_only_the_actual_worker_and_separates_shared_names(self):
-        def row(name, kind, t, token, process="VoiceSuiteWorkloadCheck (123)"):
+        def row(name, kind, t, token, process="VoiceSuiteWorkl… (123)"):
             return {"name": name, "category": "worker", "event-type": kind, "identifier": "1", "time": t,
                     "process": process, "message": f"session=1 epoch=0 span=1 profile={token} frame=2 samples=160"}
         rows = [row("Pitch", "Begin", 0, 38), row("Pitch", "End", 11, 38),

@@ -10,6 +10,7 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from Streaming import trace
+import trace_acquisition
 
 
 class TraceAcquisitionTests(unittest.TestCase):
@@ -25,7 +26,7 @@ class TraceAcquisitionTests(unittest.TestCase):
         return {"schemaVersion": 1, "processID": 123, "trials": [trial]}
 
     def run_recorder(self, timeout):
-        journal = trace.AcquisitionJournal(self.output, self.environment, self.build)
+        journal = trace.AcquisitionJournal(self.output, self.environment, self.build["binarySHA256"])
         report = self.directory / "trial.json"
         ready = self.directory / "recorder-started"
         target, recorder = mock.MagicMock(), mock.MagicMock()
@@ -54,15 +55,17 @@ class TraceAcquisitionTests(unittest.TestCase):
 
         target.wait.side_effect = exit_target
         recorder.wait.side_effect = subprocess.TimeoutExpired("recorder", 120) if timeout else finalize
-        with mock.patch.object(trace.ctypes, "CDLL") as library, mock.patch.object(
-            trace.select, "select", return_value=([1], [], [])
-        ), mock.patch.object(trace.os, "read", return_value=bytes(4)), mock.patch.object(
-            trace.time, "sleep", side_effect=publish_after_start
+        with mock.patch.object(trace_acquisition.ctypes, "CDLL") as library, mock.patch.object(
+            trace_acquisition.select, "select", return_value=([1], [], [])
+        ), mock.patch.object(trace_acquisition.os, "read", return_value=bytes(4)), mock.patch.object(
+            trace_acquisition.time, "sleep", side_effect=publish_after_start
         ), mock.patch.object(trace, "summarize", return_value={}), mock.patch.object(
             trace.subprocess, "Popen", side_effect=[target, recorder]
         ) as launch:
             library.return_value.notify_register_file_descriptor.return_value = 0
-            args = (["probe"], self.directory / "test.trace", report, journal, baseline, expected)
+            def verify(pid):
+                return trace.read_completed_trial(report, expected, pid, baseline, journal)
+            args = (["probe"], self.directory / "test.trace", report, journal, verify)
             if timeout:
                 with self.assertRaisesRegex(trace.CollectorTimeout, "finalization"):
                     trace.record_when_ready(*args)
@@ -96,19 +99,22 @@ class TraceAcquisitionTests(unittest.TestCase):
                 self.assertEqual(args[:3], ["xcrun", "xctrace", "export"])
                 args[-1].write_text("<trace/>")
 
-        def record(args, output, report, journal, baseline, expected):
+        def record(args, output, report, journal, validate_report):
             outcome = next(outcomes)
             if outcome == "interrupt":
                 journal.mark("recorder-startup")
                 raise KeyboardInterrupt
             value = {"timeout": "reference", "mismatched-timeout": "different"}.get(outcome, outcome)
-            document = self.document(dict(expected, science={"sha256": value}))
+            trial = dict(profile=args[1], sampleRate=int(args[2]), pattern=[int(args[3])], load=args[4],
+                         mode=args[5], seconds=int(args[6]), seed=int(args[7]), operation=args[8],
+                         queueSlots=32, science={"sha256": value})
+            document = self.document(trial)
             if outcome == "wrong-workload":
                 document["trials"][0]["load"] = "throughput"
             if outcome == "two-trials":
                 document["trials"] *= 2
             report.write_text(json.dumps(document))
-            completed = trace.read_completed_trial(report, expected, 123, baseline, journal)
+            completed = validate_report(123)
             journal.mark("recorder-finalization")
             if outcome.endswith("timeout"):
                 raise trace.CollectorTimeout("Recorder finalization timed out")
@@ -176,7 +182,7 @@ class TraceAcquisitionTests(unittest.TestCase):
 
     def test_unignored_journal_preserves_other_provenance_changes(self):
         subprocess.run(["git", "init", "--quiet", self.directory], check=True)
-        journal = trace.AcquisitionJournal(self.output, self.environment, self.build)
+        journal = trace.AcquisitionJournal(self.output, self.environment, self.build["binarySHA256"])
         def environment(_):
             return {"workingTreeDirty": True}
         with mock.patch.object(trace, "ROOT", self.directory.resolve()), mock.patch.object(

@@ -16,6 +16,7 @@ from AlgorithmSuite.prepare import prepare
 from Performance.records import sha
 import ci
 from instrumentation import signpost_records
+from trace_acquisition import AcquisitionJournal, CollectorTimeout, IncompleteRecording, record_when_ready
 
 # YIN/SWIPE and jitter/shimmer share a stage name. Native profile tokens distinguish the workers.
 DISABLED = {"LevelEnergy", "KWeighting", "Pitch/38", "Pitch/44", "PitchTracking", "HNRCorrelation",
@@ -24,14 +25,12 @@ DISABLED = {"LevelEnergy", "KWeighting", "Pitch/38", "Pitch/44", "PitchTracking"
 ENABLED = {"Cepstrum", "CPP", "CPPSSmoothing", "CPPSFitting", "CPPSAggregation"}
 
 
-class IncompleteRecording(ValueError):
-    """Instruments omitted at least one interval boundary from the target process."""
-
-
 def summarize(xml, process_id):
     active = {}
     durations = defaultdict(list)
-    rows = [r for r in signpost_records(xml) if r["process"] == f"VoiceSuiteWorkloadCheck ({process_id})"]
+    # The separately owned target stays alive until the recorder exits. Its PID uniquely
+    # identifies these rows even when Instruments abbreviates the displayed process name.
+    rows = [r for r in signpost_records(xml) if r["process"].endswith(f" ({process_id})")]
     if not rows:
         raise IncompleteRecording("No signposts from the traced target")
     for record in sorted(rows, key=lambda r: r["time"]):
@@ -74,36 +73,49 @@ def verify_cpps_counts(spans, reference):
     return expected
 
 
-def record(binary, arguments, reference, directory):
+def record(binary, arguments, reference, directory, journal):
     trace = directory / "recording.trace"
-    stdout = directory / "observed.json"
+    report = directory / "observed.json"
     xml = directory / "signposts.xml"
-    subprocess.run(["xcrun", "xctrace", "record", "--template", "Logging", "--output", trace,
-                    "--time-limit", "1m", "--target-stdout", stdout, "--launch", "--",
-                    binary, "trace", *arguments], check=True, timeout=120)
-    traced = json.loads(stdout.read_bytes())
-    if traced["evidence"] != reference:
-        raise ValueError("Native outputs changed with tracing")
-    subprocess.run(["xcrun", "xctrace", "export", "--input", trace, "--xpath",
-                    '/trace-toc/run[@number="1"]/data/table[@schema="os-signpost"]', "--output", xml],
-                   check=True, timeout=120)
-    spans = summarize(xml.read_bytes(), traced["processID"])
+
+    def validate_report(pid):
+        journal.mark("reference-comparison")
+        traced = json.loads(report.read_bytes())
+        if traced["processID"] != pid or traced["evidence"] != reference:
+            raise ValueError("Traced process or native outputs differ from the reference")
+        return pid
+
+    process_id = record_when_ready([binary, "trace", *arguments, report], trace, report, journal, validate_report)
+    journal.mark("export")
+    try:
+        subprocess.run(["xcrun", "xctrace", "export", "--input", trace, "--xpath",
+                        '/trace-toc/run[@number="1"]/data/table[@schema="os-signpost"]', "--output", xml],
+                       check=True, timeout=120)
+    except subprocess.TimeoutExpired as error:
+        raise CollectorTimeout("Recorder export timed out") from error
+    journal.mark("signpost-accounting")
+    spans = summarize(xml.read_bytes(), process_id)
     expected = verify_cpps_counts(spans, reference)
     return dict(xmlSHA256=sha(xml), spans=spans, expectedCPPSCounts=expected, fixture=reference["fixture"],
                 recipe=reference["recipe"], results=reference["results"])
 
 
-def capture(binary, bundle, profile, directory):
+def capture(binary, bundle, profile, directory, journal):
     arguments = [str(bundle), profile, "harmonic-low"]
-    reference = json.loads(subprocess.check_output([binary, "run", *arguments]))
+    journal.mark("reference", profile=profile)
+    reference = json.loads(subprocess.check_output([binary, "run", *arguments], timeout=90))
     discarded = []
-    for _ in range(3):
+    for attempt in range(1, 4):
+        journal.mark("attempt", profile=profile, attempt=attempt)
         with tempfile.TemporaryDirectory(dir=directory) as recording:
             try:
-                evidence = record(binary, arguments, reference, Path(recording))
+                evidence = record(binary, arguments, reference, Path(recording), journal)
             except IncompleteRecording as error:
+                journal.mark("discarded", during=journal.data["events"][-1]["phase"],
+                             reason="timeout" if isinstance(error, CollectorTimeout) else "incomplete-signposts")
                 discarded.append(str(error))
                 continue
+            journal.mark("validated", profile=profile, intervals=sum(row["count"] for row in evidence["spans"].values()))
             return dict(evidence, discardedRecordings=discarded)
     raise IncompleteRecording(f"Could not record complete {profile} intervals in three attempts: {discarded}")
 
@@ -114,21 +126,37 @@ def main():
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
     binary = args.binary.resolve(strict=True)
-    profiles = {}
-    with tempfile.TemporaryDirectory() as raw:
-        directory = Path(raw)
-        bundle = directory / "inputs"
-        prepare(bundle)
-        for composition in ("cpps", "full"):
-            profiles[composition] = capture(binary, bundle, composition, directory)
-    reduced = set(profiles["cpps"]["spans"])
-    full = set(profiles["full"]["spans"])
-    if not ENABLED <= reduced or reduced & DISABLED or not (DISABLED | ENABLED) <= full:
-        raise ValueError(f"Trace coverage differs. Reduced {sorted(reduced)}, full {sorted(full)}")
-    result = dict(template="Logging", binarySHA256=sha(binary), toolchain=ci.environment("release"),
-                  profiles=profiles, requiredPositiveControls=sorted(DISABLED), requiredCPPSStages=sorted(ENABLED))
-    with args.output.open("x") as stream:
-        stream.write(ci.redact(json.dumps(result, indent=2, allow_nan=False)) + "\n")
+    environment = ci.environment("release")
+    digest = sha(binary)
+    journal = AcquisitionJournal(args.output, environment, digest)
+    try:
+        profiles = {}
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            bundle = directory / "inputs"
+            prepare(bundle)
+            for composition in ("cpps", "full"):
+                profiles[composition] = capture(binary, bundle, composition, directory, journal)
+        journal.mark("profile-coverage")
+        reduced = set(profiles["cpps"]["spans"])
+        full = set(profiles["full"]["spans"])
+        if not ENABLED <= reduced or reduced & DISABLED or not (DISABLED | ENABLED) <= full:
+            raise ValueError(f"Trace coverage differs. Reduced {sorted(reduced)}, full {sorted(full)}")
+        if sha(binary) != digest:
+            raise ValueError("Offline trace binary changed during acquisition")
+        result = dict(template="Logging", binarySHA256=digest, toolchain=environment,
+                      profiles=profiles, requiredPositiveControls=sorted(DISABLED), requiredCPPSStages=sorted(ENABLED))
+        with args.output.open("x") as stream:
+            stream.write(ci.redact(json.dumps(result, indent=2, allow_nan=False)) + "\n")
+    except KeyboardInterrupt:
+        journal.mark("interrupted", during=journal.data["events"][-1]["phase"])
+        journal.finish("interrupted")
+        raise
+    except Exception as error:
+        journal.mark("failure", during=journal.data["events"][-1]["phase"], kind=type(error).__name__)
+        journal.finish("failed")
+        raise
+    journal.finish("passed")
 
 
 if __name__ == "__main__":

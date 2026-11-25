@@ -32,11 +32,26 @@ struct TracedRun: Encodable {
     let evidence: Evidence
 }
 
-func printJSON<T: Encodable>(_ value: T) throws {
+func encodeJSON<T: Encodable>(_ value: T) throws -> Data {
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.sortedKeys]
-    FileHandle.standardOutput.write(try encoder.encode(value))
+    return try encoder.encode(value)
+}
+
+func printJSON<T: Encodable>(_ value: T) throws {
+    FileHandle.standardOutput.write(try encodeJSON(value))
     FileHandle.standardOutput.write(Data([10]))
+}
+
+// Both waits are outside the measured work and apply only to controller-driven traces.
+func waitForRecorder(_ marker: String, present: Bool, timeout: Duration) throws {
+    let deadline = ContinuousClock.now + timeout
+    while FileManager.default.fileExists(atPath: marker) != present {
+        guard ContinuousClock.now < deadline else {
+            throw SuiteError.invalidInput("Instruments controller handshake timed out")
+        }
+        Thread.sleep(forTimeInterval: 0.05)
+    }
 }
 
 func main() throws {
@@ -70,7 +85,8 @@ func main() throws {
         try printJSON(rows)
         return
     }
-    guard args.count == 4, let composition = SuiteComposition(rawValue: args[2]),
+    let controlledTrace = args.count == 5 && args.first == "trace"
+    guard args.count == 4 || controlledTrace, let composition = SuiteComposition(rawValue: args[2]),
         ["verify", "run", "pair", "verify-pair", "trace"].contains(args[0])
     else {
         throw SuiteError.invalidInput(
@@ -82,13 +98,31 @@ func main() throws {
     let trial = try SuiteTrial(
         item: item, composition: composition, directory: directory,
         simultaneous: args[0].hasSuffix("pair"))
+    let marker: String?
+    if controlledTrace {
+        guard let path = ProcessInfo.processInfo.environment["HDXL_REPLAY_RECORDING_START"] else {
+            throw SuiteError.invalidInput("Controlled trace requires a recorder startup marker")
+        }
+        try waitForRecorder(path, present: true, timeout: .seconds(90))
+        // Give the target's logging provider time to attach before the short native trial.
+        Thread.sleep(forTimeInterval: 1)
+        marker = path
+    } else {
+        marker = nil
+    }
     let results =
         try args[0].hasPrefix("verify")
         ? trial.verify() : trial.run(diagnostics: args[0] == "trace" ? .detailed : .disabled)
     let evidence = Evidence(trial, results)
     if args[0] == "trace" {
-        try printJSON(
-            TracedRun(processID: ProcessInfo.processInfo.processIdentifier, evidence: evidence))
+        let traced = TracedRun(
+            processID: ProcessInfo.processInfo.processIdentifier, evidence: evidence)
+        if let marker {
+            try encodeJSON(traced).write(to: URL(filePath: args[4]), options: .atomic)
+            try waitForRecorder(marker, present: false, timeout: .seconds(150))
+        } else {
+            try printJSON(traced)
+        }
     } else {
         try printJSON(evidence)
     }
