@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import select
+import signal
 import subprocess
 import sys
 import tempfile
@@ -34,6 +35,10 @@ FULL_STAGES = {"LevelEnergy", "KWeighting", "Pitch", "PitchTracking", "HNR", "HN
 
 class IncompleteRecording(ValueError):
     """Instruments omitted target records. Keep the attempt reason if recording again."""
+
+
+class CollectorTimeout(IncompleteRecording):
+    """A collector phase timed out without producing verified evidence."""
 
 
 def reconcile_kernels(profiled, expected):
@@ -138,61 +143,118 @@ def inspect(xml, document):
                 approvedNumericMetadataOnly=True)
 
 
-def record_when_ready(arguments, trace, ready):
-    """Release the measured target after Instruments announces the recording."""
+class AcquisitionJournal:
+    """Persist phase transitions separately from the validated signpost result."""
+
+    def __init__(self, output, environment, build):
+        self.path = output.with_name(f"{output.stem}-attempts-{uuid.uuid4().hex}.json")
+        self.started = time.monotonic()
+        self.data = {"schemaVersion": 1, "commit": environment["commit"], "xcode": environment["xcode"],
+                     "binarySHA256": build["binarySHA256"], "status": "acquiring", "events": []}
+        self.mark("prepared")
+
+    def mark(self, phase, **values):
+        self.data["events"].append({"phase": phase, "elapsedSeconds": round(time.monotonic() - self.started, 3),
+                                    **values})
+        self.persist()
+
+    def finish(self, status):
+        self.data["status"] = status
+        self.persist()
+
+    def persist(self):
+        temporary = self.path.with_suffix(".tmp")
+        temporary.write_text(json.dumps(self.data, indent=2, allow_nan=False) + "\n")
+        temporary.replace(self.path)
+
+
+def record_when_ready(arguments, trace, report, journal):
+    """Stop a recorder we launched while its measured target is still available."""
+    ready = report.with_name("recorder-started")
     name = "org.hdxl.voice.streaming-replay." + uuid.uuid4().hex
     system = ctypes.CDLL("/usr/lib/libSystem.B.dylib")
     fd, token = ctypes.c_int(), ctypes.c_int()
+    journal.mark("recorder-startup")
     if system.notify_register_file_descriptor(name.encode(), ctypes.byref(fd), 0, ctypes.byref(token)):
         raise RuntimeError("Unable to register for Instruments recording startup")
-    command = ["xcrun", "xctrace", "record", "--template", "Logging", "--output", trace,
+    command = ["xcrun", "xctrace", "record", "--template", "Logging", "--no-prompt", "--output", trace,
                "--time-limit", "1m", "--notify-tracing-started", name,
-               "--env", f"HDXL_REPLAY_RECORDING_START={ready}", "--launch", "--", *arguments]
+               "--env", f"HDXL_REPLAY_RECORDING_START={ready}", "--env", "HDXL_REPLAY_HOLD_FOR_RECORDER=1",
+               "--launch", "--", *arguments]
     try:
-        with subprocess.Popen(command) as recorder:
+        with subprocess.Popen(command, stdin=subprocess.DEVNULL) as recorder:
             try:
                 deadline = time.monotonic() + 60
                 while not select.select([fd.value], [], [], 0.25)[0]:
-                    if recorder.poll() is not None or time.monotonic() >= deadline:
-                        raise RuntimeError("Instruments exited or timed out before recording started")
+                    if recorder.poll() is not None:
+                        raise RuntimeError("Instruments exited before recording started")
+                    if time.monotonic() >= deadline:
+                        raise CollectorTimeout("Recording-start notification timed out")
                 if len(os.read(fd.value, 4)) != 4:
                     raise RuntimeError("Incomplete Instruments startup notification")
+                journal.mark("measured-workload")
                 ready.touch(exist_ok=False)
-                if recorder.wait(timeout=120):
-                    raise subprocess.CalledProcessError(recorder.returncode, command)
+                deadline = time.monotonic() + 60
+                while not report.is_file():
+                    if recorder.poll() is not None or time.monotonic() >= deadline:
+                        raise RuntimeError("Replay failed to publish its trial before recording ended")
+                    time.sleep(0.05)
+                # The target atomically publishes its report after all measured work. Request
+                # Instruments' documented interactive stop before the target leaves the process.
+                journal.mark("recorder-finalization")
+                recorder.send_signal(signal.SIGINT)
+                try:
+                    status = recorder.wait(timeout=120)
+                except subprocess.TimeoutExpired as error:
+                    raise CollectorTimeout("Recorder finalization timed out") from error
+                if status:
+                    raise subprocess.CalledProcessError(status, command)
             finally:
+                ready.unlink(missing_ok=True)
                 if recorder.poll() is None:
                     recorder.kill()
     finally:
-        # Darwin releases the notification descriptor when its token is cancelled.
         system.notify_cancel(token.value)
 
 
-def capture(binary, profile, load, directory):
+def capture(binary, profile, load, directory, journal):
     def run_args(mode, path):
         return [binary, profile, "48000", "512", load, mode, "1", "7",
                 "trace" if mode == "detailed" else "single", path]
+    journal.mark("reference", profile=profile, load=load)
     reference = directory / f"{load}-disabled.json"
     subprocess.run(run_args("disabled", reference), check=True, timeout=90)
     baseline = json.loads(reference.read_bytes())["trials"][0]
     attempts = []
-    for _ in range(3):
-        with tempfile.TemporaryDirectory(dir=directory) as tmp:
-            work = Path(tmp)
+    for attempt in range(1, 4):
+        journal.mark("attempt", profile=profile, load=load, attempt=attempt)
+        with tempfile.TemporaryDirectory(dir=directory) as temporary:
+            work = Path(temporary)
             trace, report, xml = work / "capture.trace", work / "trial.json", work / "signposts.xml"
-            record_when_ready(run_args("detailed", report), trace, work / "recorder-started")
-            doc = json.loads(report.read_bytes())
-            observed = doc["trials"][0]
-            if observed["science"]["sha256"] != baseline["science"]["sha256"]:
-                raise ValueError("Traced admission or numerical results differ from the disabled reference")
-            subprocess.run(["xcrun", "xctrace", "export", "--input", trace, "--xpath",
-                            '/trace-toc/run[@number="1"]/data/table[@schema="os-signpost"]',
-                            "--output", xml], check=True, timeout=120)
             try:
+                record_when_ready(run_args("detailed", report), trace, report, journal)
+                journal.mark("reference-comparison")
+                doc = json.loads(report.read_bytes())
+                observed = doc["trials"][0]
+                if observed["science"]["sha256"] != baseline["science"]["sha256"]:
+                    raise ValueError("Traced admission or numerical results differ from the disabled reference")
+                journal.mark("export")
+                try:
+                    subprocess.run(["xcrun", "xctrace", "export", "--input", trace, "--xpath",
+                                    '/trace-toc/run[@number="1"]/data/table[@schema="os-signpost"]',
+                                    "--output", xml], check=True, timeout=120)
+                except subprocess.TimeoutExpired as error:
+                    raise CollectorTimeout("Recorder export timed out") from error
+                journal.mark("signpost-accounting")
                 stages = inspect(xml.read_bytes(), doc)
             except IncompleteRecording as error:
+                # The public journal publishes the failing phase without exception payloads,
+                # paths, raw signposts, environment variables or target arguments.
+                journal.mark("discarded", during=journal.data["events"][-1]["phase"],
+                             reason="timeout" if isinstance(error, CollectorTimeout) else "incomplete-signposts")
                 attempts.append(str(error))
                 continue
+            journal.mark("validated", intervals=stages["completeIntervals"])
             return dict(stages, xmlSHA256=sha(xml), discardedRecordings=attempts,
                         workload=summarize(observed), referenceSHA256=baseline["science"]["sha256"])
     raise IncompleteRecording(f"No complete {load} trace in three recordings: {attempts}")
@@ -205,17 +267,26 @@ def main():
     args = parser.parse_args()
     environment = ci.environment("release")
     binary, build = verified_binary(args.build_receipt, environment)
-    with tempfile.TemporaryDirectory() as directory:
-        recordings = {name: capture(binary, profile, load, Path(directory)) for name, profile, load in
-                      (("paced", "cpps", "paced"), ("burst", "cpps", "burst"), ("full", "full", "throughput"))}
-    if verified_binary(args.build_receipt, ci.environment("release"))[1] != build:
-        raise ValueError("Release build changed during trace acquisition")
-    environment["execution"] = "Instruments Logging on governed, synthetic native PCM"
-    environment["model"] = ci.capture("sysctl", "-n", "hw.model")
-    report = dict(schemaVersion=1, template="Logging", toolchain=environment,
-                  binarySHA256=build["binarySHA256"], build=build, recordings=recordings)
-    with args.output.open("x") as output:
-        output.write(ci.redact(json.dumps(report, indent=2, allow_nan=False)) + "\n")
+    journal = AcquisitionJournal(args.output, environment, build)
+    try:
+        with tempfile.TemporaryDirectory() as directory:
+            recordings = {name: capture(binary, profile, load, Path(directory), journal)
+                          for name, profile, load in (("paced", "cpps", "paced"), ("burst", "cpps", "burst"),
+                                                      ("full", "full", "throughput"))}
+        if verified_binary(args.build_receipt, ci.environment("release"))[1] != build:
+            raise ValueError("Release build changed during trace acquisition")
+        environment["execution"] = "Instruments Logging on governed, synthetic native PCM"
+        environment["model"] = ci.capture("sysctl", "-n", "hw.model")
+        report = dict(schemaVersion=1, template="Logging", toolchain=environment,
+                      binarySHA256=build["binarySHA256"], build=build, recordings=recordings)
+        encoded = ci.redact(json.dumps(report, indent=2, allow_nan=False)) + "\n"
+        with args.output.open("x") as output:
+            output.write(encoded)
+    except Exception as error:
+        journal.mark("failure", during=journal.data["events"][-1]["phase"], kind=type(error).__name__)
+        journal.finish("failed")
+        raise
+    journal.finish("passed")
 
 
 if __name__ == "__main__":

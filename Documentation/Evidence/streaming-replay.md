@@ -12,6 +12,8 @@ python3 Tools/Streaming/benchmark.py .build/streaming/build.json full .build/ful
 python3 Tools/Streaming/trace.py .build/streaming/build.json .build/streaming-signposts.json
 ```
 
+For trace acquisition the controller waits for Instruments startup and releases the target to run the measured work. The target writes the trial atomically and stays alive while the controller requests a graceful recorder stop. This wait occurs after measurement. Each invocation leaves a sibling `*-attempts-*.json` journal with phase transitions, attempt numbers and outcomes. A startup, finalization or export timeout, or incomplete signpost accounting, allows up to three recordings per workload. A numerical or metadata mismatch fails the run. The signpost result is published only after all three workloads pass validation.
+
 The builder requires a fresh directory and binds the release executable to the source digest, Git revision and compiler. Every group verifies this receipt before and after measurement. Use a fresh output directory for each benchmark group. The default runner checks the toolchain pinned in `Configuration/build.json`. Use `--development-toolchain` for a separately labelled local run. Groups `cpps`, `core` and `full` cover 44.1/48 kHz and 64, 128, 256, 512, 1024 and mixed callbacks, each at native pace and at maximum sustainable throughput. The mixed pattern also includes 93 and 711 frames. The one-second deterministic source repeats seeded voiced harmonics, silence and a clipped segment. Each run includes a 20 ms jump in the device sample clock.
 
 | Group | Question |
