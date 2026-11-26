@@ -34,6 +34,7 @@ public struct SuiteSupport: Encodable, Equatable, Sendable {
     public let epoch: UInt64
     public let windowStart, windowCount, dependencyStart, dependencyCount: Int64
     public let eligible, selected: Int64
+    public let metricTiming: AnalysisTiming
     public let centerSecondsFromRegionOrigin, effectiveDelaySeconds: Double
     public let selectedCandidate, trackedCandidate, strongestCandidate: Int?
     public let smoothingFrames: Int?
@@ -45,6 +46,8 @@ public struct SuiteSupport: Encodable, Equatable, Sendable {
 public struct SuiteObservations: Encodable, Equatable, Sendable {
     public internal(set) var spectra: [String: SuiteBinSequence] = [:]
     public internal(set) var landmarks: [SuitePulsePoint] = []
+    public internal(set) var cycleAmplitudes: [SuiteCycleAmplitude] = []
+    public internal(set) var completions: [SuiteCompletion] = []
     public internal(set) var nativeUnits: [String: MeasurementUnit] = [:]
 
     mutating func register(_ unit: MeasurementUnit, for key: String) throws {
@@ -104,9 +107,13 @@ public struct SuiteObservations: Encodable, Equatable, Sendable {
             let key = frame.algorithm.rawValue + "." + metric.rawValue
             let descriptor = export.result.measurement
             let window = export.observationWindow
+            let measurement = export.result.timing
             guard export.result.profile == expectedProfile, export.origin == origin,
                 window.epoch == region.epoch, window.startSample >= region.startSample,
                 window.endSample <= region.endSample, export.dependencyTiming == frame.timing,
+                measurement.source.epoch == region.epoch,
+                measurement.source.startSample >= region.startSample,
+                measurement.source.endSample <= region.endSample,
                 descriptors[key].map({ $0 == descriptor }) ?? true
             else {
                 throw SuiteError.mismatch("Measurement support, profile or units differ: " + key)
@@ -120,6 +127,7 @@ public struct SuiteObservations: Encodable, Equatable, Sendable {
                     dependencyCount: frame.timing.source.sampleCount,
                     eligible: frame.coverage.eligible,
                     selected: frame.coverage.selected,
+                    metricTiming: measurement,
                     centerSecondsFromRegionOrigin: frame.frameCenterSecondsFromOrigin,
                     effectiveDelaySeconds: frame.timing.effectiveDelaySeconds,
                     selectedCandidate: selected, trackedCandidate: tracked,
@@ -187,5 +195,15 @@ public struct SuitePulsePoint: Encodable, Equatable, Sendable {
     let index, voicedInterval: Int
     let timeSeconds: Double
     let run: Int?
+    let eligible: Bool
+}
+
+public struct SuiteCycleAmplitude: Encodable, Equatable, Sendable {
+    let epoch: UInt64
+    let sourceStart: Int64
+    let pulse: Int
+    let rms, supportStartSeconds, supportEndSeconds: Double?
+    let observedSamples: Int
+    let rejections: PulseRejections
     let eligible: Bool
 }

@@ -39,7 +39,8 @@ def build(target, scratch):
         args += ["--triple", f"{platform.machine()}-apple-ios27.0-simulator",
                  "--sdk", ci.capture("xcrun", "--sdk", "iphonesimulator", "--show-sdk-path")]
     subprocess.run(args, cwd=ROOT, check=True)
-    return Path(ci.capture(*args, "--show-bin-path")) / "AlgorithmConformance"
+    binary_dir = subprocess.check_output([*args, "--show-bin-path"], cwd=ROOT, text=True).strip()
+    return Path(binary_dir) / "AlgorithmConformance"
 
 
 def exercise(prefix, inputs, item, composition, temporary, target):
@@ -76,6 +77,8 @@ def compare_case(targets, inputs, items, composition, temporary):
                   sourceSHA256=items[0]["sourceSHA256"], cases={v["representation"]: dict(
                       pcmSHA256=v["pcmSHA256"], precision=v["precision"], profile=host[v["representation"]]["recipe"]["scheduleIdentity"],
                       recipe=host[v["representation"]]["recipe"],
+                      completions=host[v["representation"]]["reference"]["conformance"]["completions"],
+                      cycleAmplitudes=len(host[v["representation"]]["reference"]["conformance"]["cycleAmplitudes"]),
                       epochs=host[v["representation"]]["reference"]["epochs"],
                       analyzedSamples=host[v["representation"]]["reference"]["analyzedSamples"]) for v in items},
                   commonPCM=precision(host["float32"], common))
@@ -100,7 +103,7 @@ def continuity_targets(targets, inputs, temporary):
             require(evidence["execution"]["platform"] == ("macOS" if target == "mac" else "iOS Simulator")
                     and r["observedSamples"] == 960000 and r["observedFrames"] > 0 and r["gaps"] == [1, 1600]
                     and r["routeSampleRate"] == 44100 and r["routeSchedule"] != r["schedule"]
-                    and r["rejectedInputs"] == ["nan", "infinity", "unannounced-gap", "unannounced-route"]
+                    and r["rejectedInputs"] == ["nan", "infinity", "unannounced-gap", "unannounced-sample-rate", "unannounced-epoch"]
                     and len(r["heapSamples"]) == 6 and r["preparedBufferBytes"] > 0, "Incomplete continuity evidence")
             pair[target] = evidence
         if "ios" in targets:

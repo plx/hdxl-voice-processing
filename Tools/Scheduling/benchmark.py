@@ -157,9 +157,9 @@ def main():
             "input": "Original 125Hz/375Hz harmonic; rounded native precision; stereo right=left/2; exact PCM hashes in workloads.json",
             "operations": {
                 "Prepare": "construct and destroy all enabled kernels, profile identities, tiles, and mask prefix counts",
-                "Run": "reset/replay, process one original source second in 173-frame chunks through 256-frame tiles, finish, consume fixed scalar digests; selected cases analyze 0.8 seconds in separate regions"},
+                "Run": "reset/replay, process one original source second using the workload inputChunkSamples through 256-frame tiles, finish, consume fixed scalar digests; selected cases analyze 0.8 seconds in separate regions"},
             "workingMemory": "owned scalar/record scratch, tile, mask prefix counts and plane descriptors; excludes object/opaque FFT/allocator overhead; prepared PCM input separate",
-            "validation": "independent direct-kernel values/support, exact digest parity for 63/173/whole-source chunks, invariant scratch across reset; kernel fixture gates independently validate numerical recipes",
+            "validation": "independent direct-kernel values/support, exact digest parity for the declared, 63-frame and whole-source chunks, invariant scratch across reset; kernel fixture gates independently validate numerical recipes",
             "timingInterpretation": "batch throughput only; use inputDurationSeconds or analyzedDurationSeconds explicitly; no per-frame, capture-to-result or display-latency claim",
             "allocationClaim": "prepared Run including reset and finish, all three heap maxima zero with positive allocation/ARC controls; decoder/I/O and owned exports excluded"})
         (output / "environment.json").write_text(ci.redact(json.dumps(environment, indent=2)) + "\n")

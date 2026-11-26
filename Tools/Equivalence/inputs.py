@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "Tools"))
 sys.path.insert(0, str(ROOT / "Tools/Corpus"))
 from Corpus.corpus import outcome as corpus_outcome
+from AlgorithmSuite.prepare import SYNTHETIC_CONDITIONS
 from Reference.common import read_pcm, UnsupportedInput
 
 FIXTURES = ROOT / "Tests/HDXLVoiceProcessingTests/Fixtures"
@@ -70,6 +71,8 @@ def prepare(destination):
         condition = "connected-speech" if row["task"] in ("all-voiced", "consonant-rich") or "voiced" in name or "consonant" in name else "steady-vowel"
         if name.endswith("noisy"):
             condition = "noisy-speech"
+        elif name.endswith("silence"):
+            condition = "silence"
         regions = None
         if name.endswith("dropout"):
             gap = row["transformations"][-1]["parameters"]
@@ -103,7 +106,7 @@ def prepare(destination):
             continue
         regions = [(r["startSample"], r["sampleCount"]) for r in item["selection"] if r["included"]]
         extra = dict(expected_pcm=artifact["normalizedFloat64LESHA256"])
-        condition = "boundary" if len(regions) != 1 else "synthetic"
+        condition = SYNTHETIC_CONDITIONS.get(name, "boundary" if len(regions) != 1 else "synthetic")
         include(name, "synthetic", audio, artifact["sha256"], condition, selection=regions, **extra)
         if name == "harmonic-low":
             # Make a one-sample interruption exactly on the 256-sample pitch period,

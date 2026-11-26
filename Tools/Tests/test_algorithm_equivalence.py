@@ -30,6 +30,8 @@ class AlgorithmEquivalenceTests(unittest.TestCase):
             self.assertEqual(excluded["empty"], "insufficientData")
             self.assertIn("missingAcquisition", excluded.values())
             self.assertEqual(by_name["short-120ms"]["float32"]["sampleCount"], 1920)
+            self.assertEqual(by_name["noise-seed-seven"]["float32"]["condition"], "aperiodic")
+            self.assertEqual(by_name["inharmonic"]["float64"]["condition"], "inharmonic")
             pair = by_name["off-bin-tone"]
             def pcm(label):
                 return (dest / (pair[label]["pcmSHA256"] + ".pcm")).read_bytes()
@@ -51,10 +53,10 @@ class AlgorithmEquivalenceTests(unittest.TestCase):
 
     def test_precision_fails_if_candidate_or_support_changes_at_fixed_scalar(self):
         obs = dict(values={}, support={"yin": [dict(selectedCandidate=2)]}, descriptors={}, nativeUnits={},
-                   candidates={"yin": [dict(count=3)]}, landmarks=[], spectra={})
+                   candidates={"yin": [dict(count=3)]}, landmarks=[], spectra={}, cycleAmplitudes=[], completions=[])
         report = dict(reference=dict(conformance=obs, perturbationCoverage=[]), fixture=dict(sampleRate=16000))
         compare.precision(report, report)
-        for key in ("support", "candidates", "landmarks"):
+        for key in ("support", "candidates", "landmarks", "cycleAmplitudes", "completions"):
             altered = deepcopy(report)
             altered["reference"]["conformance"][key] = ["changed"]
             with self.assertRaisesRegex(ValueError, key):
@@ -65,14 +67,17 @@ class AlgorithmEquivalenceTests(unittest.TestCase):
             return dict(rows=[dict(start=0, count=2, status="measured"), dict(start=8, count=2, status="measured")],
                         values=base64.b64encode(struct.pack("<4d", 10, 1, a, b)).decode())
         original = bins(1e-20, 2e-20)
-        self.assertEqual(compare.spectral_precision(original, original, 64)["bins"], 4)
+        self.assertEqual(compare.spectral_difference(original, original, transform_length=64)["bins"], 4)
         for values in ((2e-20, 1e-20), (1e-20, float("nan")), (-1e-20, 2e-20)):
             with self.assertRaises(ValueError):
-                compare.spectral_precision(original, bins(*values), 64)
+                compare.spectral_difference(original, bins(*values), transform_length=64)
+        measured = compare.spectral_difference(original, bins(1e-20, 1e-10))
+        self.assertEqual((measured["worstSourceSample"], measured["worstBin"], measured["bins"]), (8, 1, 4))
+        self.assertAlmostEqual(measured["maxAbsoluteError"], 1e-10-2e-20, delta=1e-25)
         missing = deepcopy(original)
         missing["rows"][0]["start"] = 1
         with self.assertRaisesRegex(ValueError, "source index"):
-            compare.spectral_precision(original, missing, 64)
+            compare.spectral_difference(original, missing, transform_length=64)
 
     def test_independent_transforms_and_shared_compositions_retain_exact_observations(self):
         full = dict(values={"cpp": "a", "rms": "b"}, support={}, candidates={}, spectralRows=3, outputSHA256="abc")

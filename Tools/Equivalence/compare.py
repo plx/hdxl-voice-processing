@@ -63,6 +63,17 @@ def validate(report, item, composition, platform, architecture):
              for repeat in range(item["repeats"]) for span in item["regions"]]
     require(r["epochs"] == len(spans) and r["analyzedSamples"] == sum(n for _, n in spans),
             "Acquired regions were stitched or dropped")
+    completions = observed["completions"]
+    require(len(completions) == len(spans), "Missing region completion")
+    for epoch, ((start, n), completion) in enumerate(zip(spans, completions)):
+        source = completion["source"]
+        require(completion["sourceOffset"] == start and source["startSample"] == 0 and source["sampleCount"] == n
+                and source["epoch"]["sequence"] == epoch and source["sampleRate"] == item["sampleRate"]
+                and completion["eligible"] == completion["selected"] == n and completion["emittedFrames"] > 0,
+                "Completion differs from acquired source or coverage")
+        cpps = completion["cpps"]
+        require(cpps["source"] == source and 0 <= cpps["available"] <= cpps["frames"]
+                and ("meanDB" in cpps) != ("reason" in cpps), "Invalid CPPS completion or aggregate outcome")
     for key, rows in observed["values"].items():
         summary = r["lanes"][key]
         counts = Counter(status(row) for row in rows)
@@ -91,6 +102,12 @@ def validate(report, item, composition, platform, architecture):
                 require(start <= row[prefix + "Start"] <= row[prefix + "Start"] + row[prefix + "Count"] <= start + n,
                         f"Measurement {prefix} crosses a gap: {key}")
             require(0 <= row["selected"] <= row["eligible"] <= row["dependencyCount"], f"Invalid coverage: {key}")
+            metric = row["metricTiming"]
+            source = metric["source"]
+            require(source["epoch"]["sequence"] == row["epoch"] and source["sampleRate"] == item["sampleRate"]
+                    and 0 <= source["startSample"] <= source["startSample"] + source["sampleCount"] <= n
+                    and 0 <= metric["includedSampleCount"] <= source["sampleCount"] and metric["effectiveDelaySeconds"] >= 0,
+                    f"Invalid exported measurement timing: {key}")
     candidate_lanes = {} if composition == "cpps" else {"yin": "yin.fundamentalFrequency"}
     if ext:
         candidate_lanes["hnr"] = "hnr.harmonicToNoiseRatio"
@@ -128,6 +145,8 @@ def validate(report, item, composition, platform, architecture):
         require(observed["spectra"].keys() == {"spectrogram", "ltas"} and r["spectralVerification"]["spectrogram"]
                 == r["spectralVerification"]["accumulationInput"], "Incomplete shared-transform verification")
         require(len(r["perturbationCoverage"]) + r["omittedPulseRegions"] == len(spans), "Missing cycle coverage")
+        require([(a["sourceStart"], a["pulse"]) for a in observed["cycleAmplitudes"]] ==
+                [(p["sourceStart"], p["index"]) for p in observed["landmarks"]], "Missing cycle amplitude outcome")
     return dict(epochs=r["epochs"], acquiredSamples=r["analyzedSamples"], metrics=len(expected),
                 profile=recipe["scheduleIdentity"]["sha256"], validities={k: v["statusCounts"] for k,v in r["lanes"].items()})
 
@@ -189,29 +208,47 @@ def unpack_bins(sequence):
     values.frombytes(base64.b64decode(sequence["values"], validate=True))
     if sys.byteorder != "little":
         values.byteswap()
+    require(all(type(r["count"]) is int and r["count"] >= 0 for r in sequence["rows"]), "Invalid spectral row size")
+    require(all(math.isfinite(v) and v >= 0 for v in values), "Nonfinite or negative spectral power")
     require(sum(r["count"] for r in sequence["rows"]) == len(values), "Spectral row lengths differ")
     return values
 
 
-def spectral_precision(a, b, transform_length):
-    require(a["rows"] == b["rows"], "Spectral status, row count or source index differs")
+def spectral_difference(a, b, *, transform_length=None):
+    """Compare matching frequency bins. A transform length enables the identical-PCM budget."""
     x, y = unpack_bins(a), unpack_bins(b)
-    require(all(math.isfinite(v) and v >= 0 for values in (x, y) for v in values),
-            "Nonfinite or negative spectral power")
-    offset = 0
+    left_rows, right_rows = a["rows"], b["rows"]
+    require(len(left_rows) == len(right_rows), "Spectral frame count changed")
+    left_offset = right_offset = compared = 0
     maximum = 0
-    for row in a["rows"]:
-        n = row["count"]
-        stop = offset + n
-        peak = max(max(x[offset:stop], default=0), max(y[offset:stop], default=0))
-        # Norm-wise forward roundoff, proportional to the FFT's butterfly depth and
-        # the largest bin in the SAME row. Allow subnormal Float power to round to zero.
-        budget = 16 * 2**-23 * math.ceil(math.log2(transform_length)) * peak + transform_length * 2**-149
-        error = max((abs(x[i] - y[i]) for i in range(offset, stop)), default=0)
-        require(math.isfinite(error) and error <= budget, f"Spectral precision budget exceeded at {row['start']}")
-        maximum = max(maximum, error)
-        offset = stop
-    return dict(rows=len(a["rows"]), bins=offset, maxAbsoluteError=maximum)
+    worst_sample = worst_bin = None
+    changes = Counter()
+    for left, right in zip(left_rows, right_rows):
+        require(left["start"] == right["start"], "Spectral source index differs")
+        if transform_length is not None:
+            require(left == right, "Spectral status or row length differs")
+        left_count, right_count = left["count"], right["count"]
+        require(left_count == right_count or min(left_count, right_count) == 0, "Frequency grids differ")
+        if left["status"] != right["status"]:
+            changes[left["status"] + " -> " + right["status"]] += 1
+        count = min(left_count, right_count)
+        error = peak = 0
+        for bin_index in range(count):
+            first, second = x[left_offset + bin_index], y[right_offset + bin_index]
+            peak = max(peak, first, second)
+            delta = abs(first - second)
+            error = max(error, delta)
+            if delta > maximum:
+                maximum, worst_sample, worst_bin = delta, left["start"], bin_index
+        if transform_length is not None:
+            # Norm-wise roundoff over the butterfly depth, scaled by this row alone.
+            budget = 16 * 2**-23 * math.ceil(math.log2(transform_length)) * peak + transform_length * 2**-149
+            require(error <= budget, f"Spectral precision budget exceeded at {left['start']}")
+        compared += count
+        left_offset += left_count
+        right_offset += right_count
+    return dict(rows=len(left_rows), bins=compared, maxAbsoluteError=maximum, worstSourceSample=worst_sample,
+                worstBin=worst_bin, statusChanges=dict(changes), leftOnlyBins=len(x)-compared, rightOnlyBins=len(y)-compared)
 
 
 def composition_signature(reference):
@@ -244,14 +281,14 @@ def precision(float32, widened):
     a, b = (r["reference"] for r in (float32, widened))
     x, y = a["conformance"], b["conformance"]
     require(set(x["values"]) == set(y["values"]), "Precision changed metric set")
-    for field in ("support", "descriptors", "nativeUnits", "candidates", "landmarks"):
+    for field in ("support", "descriptors", "nativeUnits", "candidates", "landmarks", "cycleAmplitudes", "completions"):
         require(x[field] == y[field], f"Precision changed discrete or timing evidence: {field}")
     require(a["perturbationCoverage"] == b["perturbationCoverage"], "Precision changed cycle coverage")
     errors = distribution(x, y, float32["fixture"]["sampleRate"])
     bins = {}
     if x["spectra"]:
         transform = float32["recipe"]["extensions"]["layout"]["spectrum"]["transform"]["length"]
-        bins = {k: spectral_precision(v, y["spectra"][k], transform) for k, v in x["spectra"].items()}
+        bins = {k: spectral_difference(v, y["spectra"][k], transform_length=transform) for k, v in x["spectra"].items()}
     return dict(scalars=errors, spectra=bins)
 
 
@@ -266,6 +303,14 @@ def quantization(native, widened):
         for a, b in zip(aa, bb):
             for field in a.keys() | b.keys():
                 if a.get(field) != b.get(field):
+                    if field == "metricTiming":
+                        # Inclusion can follow a signal-dependent status. The source clock and delay cannot move.
+                        left, right = a[field], b[field]
+                        require({k:v for k,v in left.items() if k != "includedSampleCount"} ==
+                                {k:v for k,v in right.items() if k != "includedSampleCount"},
+                                f"Input rounding changed metric support: {key}")
+                        changes["metricIncludedSampleCount"] += 1
+                        continue
                     require(field in ("selectedCandidate", "trackedCandidate", "strongestCandidate", "warnings"),
                             f"Input rounding changed acoustic support: {key}.{field}")
                     changes[field] += 1
@@ -274,6 +319,7 @@ def quantization(native, widened):
     return dict(nativePCMSHA256=native["fixture"]["pcmSHA256"], widenedPCMSHA256=widened["fixture"]["pcmSHA256"],
                 scalars=distribution(x, y, native["fixture"]["sampleRate"], different_input=True),
                 changedSelection=support_changes,
-                differingCandidateLists={k: sum(a != b for a, b in zip(v, y["candidates"][k]))
-                                         for k,v in x["candidates"].items()},
+                spectra={k: spectral_difference(v, y["spectra"][k]) for k,v in x["spectra"].items()},
+                differingCandidateCounts={k: sum(a["count"] != b["count"] for a, b in zip(v, y["candidates"][k], strict=True))
+                                          for k,v in x["candidates"].items()},
                 nativePulseCount=len(x["landmarks"]), roundedPulseCount=len(y["landmarks"]))

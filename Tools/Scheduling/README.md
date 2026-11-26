@@ -13,12 +13,13 @@ the allocator-instrumented mode.
 
 ## Matrix and numerical recipes
 
-Twenty one-second workloads cover:
+The 24 workloads each process one second of source PCM.
 
 - Twelve mono interleaved cases: Float32/Float64 × 16/44.1/48 kHz × light/full.
 - Four full stereo cases: both precisions × interleaved/planar at 48 kHz.
 - Two selected-region full cases at 16 kHz, one per input precision.
 - Two finite whole-interval full cases at 16 kHz, one per input precision.
+- Four delivery variants on the same 16 kHz Float64 light and full bundles, using 7- or 16,000-sample callbacks alongside the existing 173-sample cases.
 
 Light combines 25 ms rectangular digital levels with 50–700 Hz raw YIN. Full adds
 100 ms warm-up K-weighting, the separate causal YIN tracker and CPPS. Source-rate
@@ -43,8 +44,8 @@ source coverage and 0.8 seconds of analyzed input. Exact native PCM bytes are ha
 
 ## Verification and measured boundaries
 
-`ScheduleWorkloadCheck` runs each composition with 63-frame, 173-frame and whole-source
-chunks through the same 256-frame source tile. It requires exact per-lane digest parity
+`ScheduleWorkloadCheck` runs each composition using its declared callback size, 63-frame chunks and the whole source
+through the same 256-frame source tile. It requires exact per-lane digest parity
 and unchanged prepared buffer sizes across replay/reset. It separately executes each
 native kernel directly on independently converted mono input, one region at a time.
 Numeric values, availability counts and original dependency-support sums must agree.
@@ -52,7 +53,7 @@ Per-lane accumulators avoid changing floating-point sum order when algorithms in
 Delivery delay is excluded from that direct-kernel comparison because external delivery
 batching legitimately differs. Native fixture tests independently verify the kernels.
 
-`workloads.py` checks the entire 20-case matrix, canonical composition identities,
+`workloads.py` checks the entire 24-case matrix, canonical composition identities,
 explicit YIN/CPPS recipes, independent pinned K-weighting coefficient budgets,
 level/pitch support and availability arithmetic, CPPS complete/partial frame counts,
 selection geometry, input memory, finite checksums and digest parity. Mutation tests
@@ -61,8 +62,7 @@ reference outputs, identities, distributions and units.
 
 Each case has separate Prepare and Run rows. Prepare constructs and destroys the
 kernels, scratch, profile identities and, where requested, resolved mask/prefix counts.
-Run includes ordinary reset or mask replay, processing the original second in 173-frame
-chunks, finalization and fixed scalar digest accumulation. Input generation, direct
+Run includes ordinary reset or mask replay, processing the original second with the declared number of frames per callback, finalization and fixed scalar digest accumulation. Input generation, direct
 verification and borrowed-to-owned exports are outside measurement. File decoding,
 transport copy/drain, I/O and UI are also outside this core matrix; their integration
 parity is exercised by package tests.
@@ -74,7 +74,7 @@ reference storage is not a production scheduler allocation. These numbers are ex
 buffer budgets, not process resident-memory or leak measurements.
 
 Three warm-up iterations precede up to 30 measured iterations/30 seconds. The wrapper
-requires at least ten observations for every metric and all 40 timing rows or 41
+requires at least ten observations for every metric and all 48 timing rows or 49
 allocation rows. It retains fresh compressed raw histograms, validates their counts and
 nonnegative bins, checks exported p99 units and verifies allocator linkage. Every Run
 row must have zero maximum malloc-count, malloc-byte and object-allocation counters.
@@ -83,7 +83,7 @@ reported separately; it is not silently assumed to be zero.
 
 Artifacts are written under `Benchmarks/.build/artifacts/schedule-{timing,allocation}`:
 environment/toolchain, locked resolution, exact workloads, commands, raw distributions,
-validated distribution summaries, p99 values, linkage and final status. Allocation-mode
+validated distribution summaries, p99 values, linkage and final status. The partition comparison also records p50/p95/p99, maximum, sample count and throughput for each delivery size. Allocation-mode
 timing is instrumentation overhead evidence, not comparable to the timing-mode result.
 Throughput uses either original input seconds or analyzed selected seconds explicitly,
 divided by a whole Run duration. No value is per-frame latency, capture-to-display

@@ -174,8 +174,11 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
             try extras?.process(part, interval: interval, base: base, result: &result)
             start += count
         }
-        _ = try worker.finish(emit: consume)
+        let completion = try worker.finish(emit: consume)
         if let callbackError { throw callbackError }
+        try result.conformance?.completions.append(
+            SuiteCompletion(
+                completion, recipe: recipe, origin: origin, source: source, offset: base))
         try extras?.finish(pcm, source: source, pitches: pitches, base: base, result: &result)
         if let inspection {
             for (lane, counts) in inspection.counts {

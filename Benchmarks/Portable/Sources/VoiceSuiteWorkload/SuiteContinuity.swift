@@ -122,8 +122,13 @@ private func verify<S: BinaryFloatingPoint & Sendable>(
     let nextRoute = try stream.successor()
     try requireRejection(.unexpectedInput) {
         try append(
-            block, to: worker, at: 0, epoch: nextRoute, rate: Int(route.inputFormat.sampleRate)
+            block, to: worker, at: received, epoch: stream, rate: Int(route.inputFormat.sampleRate)
         ) { _ in invalidEmissions += 1 }
+    }
+    try requireRejection(.unexpectedInput) {
+        try append(block, to: worker, at: received, epoch: nextRoute, rate: rate) { _ in
+            invalidEmissions += 1
+        }
     }
     guard invalidEmissions == 0, worker.receivedSampleCount == received else {
         throw SuiteError.mismatch("Rejected input advanced the worker")
@@ -181,6 +186,8 @@ private func verify<S: BinaryFloatingPoint & Sendable>(
         schedule: profile.identity(), observedSamples: Int(received), observedFrames: observed,
         preparedBufferBytes: bytes, heapSamples: heapSamples, allowedWarmHeapRangeBytes: heapSlack,
         gaps: gaps,
-        rejectedInputs: ["nan", "infinity", "unannounced-gap", "unannounced-route"],
+        rejectedInputs: [
+            "nan", "infinity", "unannounced-gap", "unannounced-sample-rate", "unannounced-epoch",
+        ],
         routeSampleRate: hz, routeSchedule: routeID)
 }

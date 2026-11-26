@@ -263,6 +263,19 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             maximumSampleCount: pcm.count, maximumF0FrameCount: full.count,
             maximumTrackingAttempts: recipe.maximumTrackingAttempts, diagnosticMode: diagnostics)
         try shimmer.analyze(pcm, contour: contour, timing: timing) { output in
+            if result.conformance != nil {
+                for amplitude in output.pulses.amplitudes {
+                    result.conformance?.cycleAmplitudes.append(
+                        SuiteCycleAmplitude(
+                            epoch: source.epoch.sequence, sourceStart: base,
+                            pulse: amplitude.pulseIndex,
+                            rms: amplitude.rmsAmplitude,
+                            supportStartSeconds: amplitude.supportStartSeconds,
+                            supportEndSeconds: amplitude.supportEndSeconds,
+                            observedSamples: amplitude.observedSampleCount,
+                            rejections: amplitude.rejections, eligible: amplitude.isEligible))
+                }
+            }
             result.pulseTrackingAttempts += output.pulses.result.trackingAttemptCount
             let value = output.result
             result.perturbationCoverage.append(
