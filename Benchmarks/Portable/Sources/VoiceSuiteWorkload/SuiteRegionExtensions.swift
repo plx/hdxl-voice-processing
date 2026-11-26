@@ -41,6 +41,8 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             do {
                 result.spectralRows += 1
                 let at = base + row.info.source.startSample
+                result.conformance?.spectra["spectrogram", default: .init()].append(
+                    row.binPower, at: at, status: row.info.status)
                 result.spectralVerification?.spectrogram.append(
                     row.binPower, at: at, status: row.info.status)
                 result.record(
@@ -72,10 +74,12 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
     private func recordShape(
         _ shape: SpectralShapeResult, prefix: String, at: Int64,
         result: inout SuiteResult
-    ) {
+    ) throws {
         for descriptor in SpectralShapeDescriptor.allCases {
             if let entry = shape[descriptor] {
-                result.record(prefix + "." + descriptor.rawValue, outcome: entry.outcome, at: at)
+                let key = prefix + "." + descriptor.rawValue
+                try result.conformance?.register(entry.measurement.unit, for: key)
+                result.record(key, outcome: entry.outcome, at: at)
             }
         }
     }
@@ -98,6 +102,8 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
             _ = try worker.finish(emit: emit)
         }
         let mean = try accumulator.snapshot(observedSource: source)
+        result.conformance?.spectra["ltas", default: .init()].append(
+            mean.meanBinPower, at: base, status: mean.status)
         result.spectralVerification?.longTermSpectrum.append(
             mean.meanBinPower, at: base, status: mean.status)
         result.record("ltas", power: mean.meanBinPower.first, status: mean.status, at: base)
@@ -170,6 +176,10 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
                         let bandwidth = try formants.measurement(
                             number: number, kind: .formantBandwidth
                         ).result
+                        try result.conformance?.register(
+                            frequency.measurement.unit, for: "formant" + String(number))
+                        try result.conformance?.register(
+                            bandwidth.measurement.unit, for: "bandwidth" + String(number))
                         result.record(
                             "formant" + String(number), outcome: frequency.outcome,
                             at: base + frequency.timing.source.startSample)
@@ -180,6 +190,9 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
                     let output = try harmonic.analyze(
                         samples, source: span, pitch: f0, formants: formants)
                     let raw = output.raw.measurement
+                    try result.conformance?.register(raw.measurement.unit, for: "h1h2")
+                    try result.conformance?.register(
+                        output.measurement.measurement.unit, for: "correctedH1H2")
                     result.record(
                         "h1h2", outcome: raw.outcome, at: base + raw.timing.source.startSample)
                     result.record(
@@ -220,9 +233,25 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
                 output.pulses.result.unavailability == nil
                     ? Double(output.pulses.landmarks.count) : nil, at: base,
                 reason: output.pulses.result.unavailability)
+            if result.conformance != nil {
+                for point in output.pulses.landmarks {
+                    guard
+                        !point.isEligible
+                            || (point.timeSeconds >= 0
+                                && point.timeSeconds <= source.durationSeconds)
+                    else { throw SuiteError.mismatch("Eligible pulse outside its observed epoch") }
+                    result.conformance?.landmarks.append(
+                        SuitePulsePoint(
+                            epoch: source.epoch.sequence, sourceStart: base, index: point.index,
+                            voicedInterval: point.voicedIntervalID, timeSeconds: point.timeSeconds,
+                            run: point.runID, eligible: point.isEligible))
+                }
+            }
             let value = output.result
             jitterCoverage = value.coverage
             for estimate in [value.local, value.absolute, value.rap, value.ppq5, value.ddp] {
+                try result.conformance?.register(
+                    estimate.unit, for: "jitter." + estimate.variant.rawValue)
                 result.record(
                     "jitter." + estimate.variant.rawValue, estimate.value, at: base,
                     status: estimate.status.rawValue, reason: estimate.unavailability)
@@ -240,6 +269,8 @@ final class SuiteRegionExtensions<S: BinaryFloatingPoint & Sendable> {
                 .init(startSample: base, jitter: jitterCoverage, shimmer: value.coverage))
             for estimate in [value.local, value.db, value.apq3, value.apq5, value.apq11, value.dda]
             {
+                try result.conformance?.register(
+                    estimate.unit, for: "shimmer." + estimate.variant.rawValue)
                 result.record(
                     "shimmer." + estimate.variant.rawValue, estimate.value, at: base,
                     status: estimate.status.rawValue, reason: estimate.unavailability)

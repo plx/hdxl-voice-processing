@@ -119,3 +119,5 @@ and [third-party notices](THIRD_PARTY_NOTICES.md). The project license is pendin
 redistribution license is granted by the public development repository alone.
 
 The [macOS capture adapter guide](Documentation/MacOSCapture.md) describes native input, explicit start/stop, worker channel selection, timing, and the signed development host.
+
+The [PCM conformance guide](Documentation/Evidence/algorithm-equivalence.md) defines partition, precision, gap and platform expectations for each algorithm family and explains how to reproduce the comparisons.

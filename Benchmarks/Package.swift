@@ -80,7 +80,8 @@ let package = Package(
     targets: [
         .target(
             name: "VoiceSuiteWorkload",
-            dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")]),
+            dependencies: [.product(name: "HDXLVoiceProcessing", package: "HDXLVoiceProcessing")],
+            path: "Portable/Sources/VoiceSuiteWorkload"),
         .executableTarget(name: "VoiceSuiteWorkloadCheck", dependencies: ["VoiceSuiteWorkload"]),
         .executableTarget(
             name: "VoiceSuiteBenchmarks",

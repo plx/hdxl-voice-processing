@@ -24,10 +24,12 @@ cpps = load("schedule_cpps_recipe", "Tools/CPPS/benchmark.py")
 def expected_cases():
     result = {}
 
-    def add(precision, rate, composition="full", channels=1, layout="interleaved", kind="preview"):
+    def add(precision, rate, composition="full", channels=1, layout="interleaved", kind="preview", chunk=173):
         name = f"{composition}.{precision}.{rate}Hz.c{channels}.{layout}.{kind}"
+        if chunk != 173:
+            name += f".chunk{chunk}"
         result[name] = dict(precision=precision, rate=rate, composition=composition,
-                            channels=channels, layout=layout, kind=kind)
+                            channels=channels, layout=layout, kind=kind, chunk=chunk)
 
     for precision in ("float32", "float64"):
         for rate in (16000, 44100, 48000):
@@ -37,6 +39,9 @@ def expected_cases():
             add(precision, 48000, channels=2, layout=layout)
         for kind in ("selected", "whole"):
             add(precision, 16000, kind=kind)
+    for composition in ("light", "full"):
+        for chunk in (7, 16000):
+            add("float64", 16000, composition, chunk=chunk)
     return result
 
 
@@ -167,7 +172,7 @@ def validate_matrix(matrix):
         identity = dict(identifier=dict(name="shared-pcm-analysis-schedule", version=1),
             sha256=hashlib.sha256(canonical(profile)).hexdigest())
         wanted = dict(name=name, kind=row["kind"], composition=row["composition"], profile=profile,
-            identity=identity, sourceTileCapacity=256, inputChunkSamples=173, inputSampleCount=row["rate"])
+            identity=identity, sourceTileCapacity=256, inputChunkSamples=row["chunk"], inputSampleCount=row["rate"])
         if row["kind"] == "selected": wanted["maskPlan"] = expected_mask(row["rate"])
         if canonical(workload) != canonical(wanted):
             raise ValueError("Incorrect scheduler recipe, profile identity or mask")

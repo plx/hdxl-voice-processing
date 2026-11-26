@@ -13,11 +13,14 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
         self.samples = samples
     }
 
-    func run(chunk: Int, diagnostics: RuntimeDiagnosticMode, verifySpectra: Bool) throws
+    func run(
+        partition: SuitePartition, diagnostics: RuntimeDiagnosticMode, verifySpectra: Bool,
+        collectObservations: Bool
+    ) throws
         -> SuiteResult
     {
-        guard chunk > 0 else { throw SuiteError.invalidInput("chunk") }
         var result = SuiteResult()
+        if collectObservations { result.conformance = SuiteObservations() }
         if verifySpectra, recipe.extensions != nil { result.spectralVerification = .init() }
         var epoch = StreamEpoch(streamID: UUID(uuidString: "00000000-0000-0000-0000-000000000055")!)
         try samples.withUnsafeBufferPointer { input in
@@ -30,7 +33,8 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
                         epoch: epoch, startSample: 0, sampleCount: Int64(part.count),
                         sampleRate: Double(fixture.sampleRate))
                     try runRegion(
-                        part, source: source, base: base, chunk: chunk, diagnostics: diagnostics,
+                        part, source: source, base: base, partition: partition,
+                        diagnostics: diagnostics,
                         result: &result)
                     result.epochs += 1
                     result.analyzedSamples += part.count
@@ -43,15 +47,17 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
 
     private func runRegion(
         _ pcm: UnsafeBufferPointer<S>, source: SourceInterval, base: Int64,
-        chunk: Int, diagnostics: RuntimeDiagnosticMode, result: inout SuiteResult
+        partition: SuitePartition, diagnostics: RuntimeDiagnosticMode, result: inout SuiteResult
     ) throws {
         let origin = try AnalysisScheduleOrigin(
             source: SourceInterval(
                 epoch: source.epoch, startSample: 0,
                 sampleCount: 0, sampleRate: source.sampleRate), continuityEpoch: source.epoch)
+        let inspection = result.conformance == nil ? nil : SuiteCandidateInspection()
         let worker = try PreparedAnalysisSchedule<S>(
             profile: recipe.schedule, origin: origin,
-            mode: .finite, expectedSampleCount: source.sampleCount, diagnosticMode: diagnostics)
+            mode: .finite, expectedSampleCount: source.sampleCount, diagnosticMode: diagnostics,
+            inspect: inspection.map { collector in { collector.inspect($0) } })
         let extras = try recipe.extensions.map {
             try SuiteRegionExtensions<S>(
                 $0, source: source, separateSpectra: recipe.composition == .separateSpectra,
@@ -67,6 +73,16 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
         var pitches: [YINFrameResult] = []
         func consume(_ frame: ScheduledFrame) {
             guard callbackError == nil else { return }
+            if result.conformance != nil {
+                do {
+                    try result.conformance?.record(
+                        frame, origin: origin, region: source, base: base,
+                        expectedProfile: recipe.scheduleIdentity)
+                } catch {
+                    callbackError = error
+                    return
+                }
+            }
             switch frame.value {
             case .cpps(let value):
                 let at = base + value.context.timing.source.startSample
@@ -146,8 +162,9 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
             }
         }
         var start = 0
+        var partitionIndex = 0
         while start < pcm.count {
-            let count = min(chunk, pcm.count - start)
+            let count = min(partition.next(at: &partitionIndex), pcm.count - start)
             let interval = try SourceInterval(
                 epoch: source.epoch, startSample: Int64(start),
                 sampleCount: Int64(count), sampleRate: source.sampleRate)
@@ -160,5 +177,10 @@ struct TypedSuiteInput<S: BinaryFloatingPoint & Sendable>: SuiteInput {
         _ = try worker.finish(emit: consume)
         if let callbackError { throw callbackError }
         try extras?.finish(pcm, source: source, pitches: pitches, base: base, result: &result)
+        if let inspection {
+            for (lane, counts) in inspection.counts {
+                result.conformance?.candidates[lane, default: []].append(contentsOf: counts)
+            }
+        }
     }
 }

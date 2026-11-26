@@ -32,7 +32,9 @@ def capture(mode):
 class ScheduleBenchmarkTests(unittest.TestCase):
     def test_expected_matrix_has_each_composition_precision_rate_and_boundary(self):
         cases = list(benchmark.expected_cases().values())
-        self.assertEqual(len(cases), 20)
+        self.assertEqual(len(cases), 24)
+        self.assertEqual({(row["composition"], row["chunk"]) for row in cases if row["chunk"] != 173},
+                         {(composition, size) for composition in ("light", "full") for size in (7, 16000)})
         primary = [row for row in cases if row["kind"] == "preview" and row["channels"] == 1]
         self.assertEqual({(row["precision"], row["rate"], row["composition"]) for row in primary},
             {(precision, rate, composition) for precision in ("float32", "float64")

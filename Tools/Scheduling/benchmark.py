@@ -16,6 +16,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "Tools"))
 import ci
+from SpectralProducts.benchmark import histogram_percentiles
 
 SPEC = importlib.util.spec_from_file_location("smoke_benchmark", ROOT / "Tools/benchmark.py")
 smoke = importlib.util.module_from_spec(SPEC)
@@ -91,6 +92,42 @@ def validate_export(rows, names, mode):
     return result
 
 
+def partition_overhead(raw, matrix, mode):
+    """Compare identical prepared workers across delivery geometries in the same execution."""
+    workloads = {row["name"]: row for row in matrix}
+    histograms = {identity["name"]: {next(iter(m["metric"])): m["statistics"]["histogram"] for m in metrics}
+                  for identity, metrics in zip(raw["results"][::2], raw["results"][1::2])}
+    bundles = {}
+    for composition in ("light", "full"):
+        base = f"{composition}.float64.16000Hz.c1.interleaved.preview"
+        reference = workloads[base]
+        measurements = {}
+        for size, name in ((7, base + ".chunk7"), (173, base), (16000, base + ".chunk16000")):
+            case = workloads[name]
+            if (case["workload"]["inputChunkSamples"] != size or
+                    any(case[key] != reference[key] for key in ("inputSHA256", "digest", "preparedBufferBytes")) or
+                    case["workload"]["identity"] != reference["workload"]["identity"]):
+                raise ValueError("Delivery comparison requires matching PCM, results, profile and workspace")
+            phases = {}
+            for phase in OPERATIONS:
+                distributions = {}
+                for metric, histogram in histograms["Schedule." + phase + "." + name].items():
+                    values = histogram_percentiles(histogram)
+                    distributions[metric] = dict(samples=histogram["_totalCount"], p50=values[50],
+                                                 p95=values[95], p99=values[99], maximum=histogram["maxValue"])
+                phases[phase] = distributions
+            elapsed = phases["Run"]["wallClock"]["p50"]
+            measurements[str(size)] = dict(phases=phases, workerAudioSecondsPerWallSecond=
+                                            case["analyzedDurationSeconds"] * 1e9 / elapsed)
+        baseline = measurements["16000"]["phases"]["Run"]["wallClock"]["p50"]
+        for row in measurements.values():
+            row["wallMedianRelativeToWhole"] = row["phases"]["Run"]["wallClock"]["p50"] / baseline
+        bundles[composition] = dict(profile=reference["workload"]["profile"], identity=reference["workload"]["identity"],
+                                    inputSHA256=reference["inputSHA256"], analyzedSeconds=reference["analyzedDurationSeconds"],
+                                    preparedBufferBytes=reference["preparedBufferBytes"], chunks=measurements)
+    return dict(schemaVersion=1, mode=mode, bundles=bundles)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("timing", "allocation"))
@@ -155,6 +192,8 @@ def main():
             exports = json.loads((output / f"{name}.json").read_text())
             values = validate_export(exports, summary, args.mode)
             (output / "p99.json").write_text(json.dumps(values, indent=2) + "\n")
+            partition = partition_overhead(raw, matrix, args.mode)
+            (output / "partition-overhead.json").write_text(json.dumps(partition, indent=2, allow_nan=False) + "\n")
             result["workloadManifestSHA256"] = smoke.write_workload_manifest(output, args.mode)
             (output / f"{name}.json").unlink()
             result.update({"status": "passed", "workloadCount": len(matrix), "benchmarkCount": len(summary),

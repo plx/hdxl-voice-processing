@@ -350,3 +350,43 @@ private func hnrCompareSchedule<Sample: BinaryFloatingPoint & Sendable>(
         }
     }
 }
+
+@Test func hnrQuietPrefixHasDistinctGlobalAndCausalAmplitudeReferences() throws {
+    let rate = 16000
+    let quietCount = 4800
+    let pcm = (0..<(2 * quietCount)).map { i in
+        (i < quietCount ? 0.0001 : 0.8) * sin(Double(i) * 2 * .pi * 250 / Double(rate))
+    }
+    let origin = try hnrScheduleOrigin(rate: rate, start: 0)
+    func quietFrames(_ normalization: HNRNormalizationDefinition, _ chunks: [Int]) throws
+        -> [HNRFrameResult]
+    {
+        let configuration = try HNRConfiguration(
+            method: .autocorrelation, sampleRate: rate, inputPrecision: .float64,
+            pitchFloorHz: 100, silenceThreshold: 0.1, normalization: normalization)
+        return try hnrScheduled(
+            pcm, configuration: configuration, origin: origin, mode: .finite, chunks: chunks
+        ).0.compactMap {
+            if case .hnr(.frame(let frame)) = $0.value,
+                frame.frameTiming.source.endSample <= quietCount
+            {
+                return frame
+            }
+            return nil
+        }
+    }
+    let global = try quietFrames(.wholeInterval, [pcm.count])
+    let local = try quietFrames(.causalWindow, [pcm.count])
+    #expect(!global.isEmpty && !local.isEmpty)
+    #expect(try quietFrames(.wholeInterval, [7, 173, 1]) == global)
+    #expect(try quietFrames(.causalWindow, [7, 173, 1]) == local)
+    #expect(
+        global.allSatisfy {
+            $0.selectedObservation == nil && $0.dependencyTiming.source.sampleCount == pcm.count
+        })
+    #expect(
+        local.allSatisfy {
+            $0.selectedObservation != nil && $0.dependencyTiming.source.endSample <= quietCount
+        })
+    #expect(global.first?.profile != local.first?.profile)
+}
