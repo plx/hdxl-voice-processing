@@ -9,6 +9,7 @@ on:
       - 'Sources/HDXLVoiceProcessing/**'
       - 'Benchmarks/**'
       - 'Tools/Scheduling/**'
+      - 'Tools/SpectralProducts/benchmark.py'
       - 'Tools/Tests/test_schedule_benchmark.py'
       - 'Tools/YIN/benchmark.py'
       - 'Tools/CPPS/benchmark.py'

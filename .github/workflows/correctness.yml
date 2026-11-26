@@ -43,6 +43,9 @@ jobs:
       - name: Verify native capture acceptance cases
         if: matrix.lane == 'debug'
         run: python3 Tools/Capture/acceptance.py .build/ci-artifacts/debug
+      - name: Verify algorithm conformance and declared profile differences
+        if: matrix.lane == 'debug'
+        run: python3 Tools/Equivalence/regressions.py .build/ci-artifacts/debug
       - name: Retain public correctness evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

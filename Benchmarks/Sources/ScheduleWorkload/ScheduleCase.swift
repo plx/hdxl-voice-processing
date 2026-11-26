@@ -24,12 +24,13 @@ public struct ScheduleCase: Codable, Sendable {
 
     init(
         rate: Int, precision: AnalysisPrecision, composition: ScheduleComposition,
-        channels: Int = 1, layout: PCMLayout = .interleaved, kind: ScheduleKind = .preview
+        channels: Int = 1, layout: PCMLayout = .interleaved, kind: ScheduleKind = .preview,
+        inputChunkSamples: Int = 173
     ) throws {
         self.composition = composition
         self.kind = kind
         sourceTileCapacity = 256
-        inputChunkSamples = 173
+        self.inputChunkSamples = inputChunkSamples
         inputSampleCount = rate
         let full = composition == .full
         profile = try AnalysisScheduleProfile(
@@ -64,6 +65,7 @@ public struct ScheduleCase: Codable, Sendable {
         identity = try profile.identity()
         name =
             "\(composition.rawValue).\(precision.rawValue).\(rate)Hz.c\(channels).\(layout.rawValue).\(kind.rawValue)"
+            + (inputChunkSamples == 173 ? "" : ".chunk" + String(inputChunkSamples))
         if kind == .selected {
             let whole = try SourceInterval(
                 epoch: scheduleBenchmarkEpoch, startSample: 0,
@@ -110,6 +112,14 @@ public struct ScheduleCase: Codable, Sendable {
                 try Self(rate: 16000, precision: precision, composition: .full, kind: .selected))
             result.append(
                 try Self(rate: 16000, precision: precision, composition: .full, kind: .whole))
+        }
+        for composition in [ScheduleComposition.light, .full] {
+            for chunk in [7, 16000] {
+                result.append(
+                    try Self(
+                        rate: 16000, precision: .float64, composition: composition,
+                        inputChunkSamples: chunk))
+            }
         }
         return result
     }

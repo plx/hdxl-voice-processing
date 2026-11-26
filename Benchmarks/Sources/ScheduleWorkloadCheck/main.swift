@@ -2,7 +2,7 @@ import Foundation
 import ScheduleWorkload
 
 let matrix = try ScheduleCase.matrix()
-precondition(matrix.count == 20 && Set(matrix.map(\.name)).count == 20)
+precondition(!matrix.isEmpty && Set(matrix.map(\.name)).count == matrix.count)
 let records = try matrix.map { try $0.makeWorkload().verify() }
 let encoder = JSONEncoder()
 encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]

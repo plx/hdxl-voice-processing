@@ -5,6 +5,8 @@ on:
     paths: &watch_paths
       - "Examples/WatchFeasibilityProbe/**"
       - "Tools/Watch/**"
+      - "Tools/Equivalence/**"
+      - "Benchmarks/Portable/**"
       - "Sources/HDXLVoiceProcessing/**"
       - "Package.swift"
       - ".github/workflows/watch-feasibility.yml"

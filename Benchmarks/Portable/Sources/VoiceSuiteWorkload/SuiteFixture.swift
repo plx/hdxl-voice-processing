@@ -34,7 +34,7 @@ public struct SuiteFixture: Codable, Sendable {
             Set(manifest.cases.map(\.name)).count == manifest.cases.count
         else { throw SuiteError.invalidInput("manifest") }
         for item in manifest.cases {
-            guard [16000, 44100, 48000].contains(item.sampleRate),
+            guard [16000, 32000, 44100, 48000].contains(item.sampleRate),
                 (1...30 * item.sampleRate).contains(item.sampleCount),
                 (1...30).contains(item.repeats),
                 !item.regions.isEmpty, item.pcmSHA256.count == 64,
@@ -154,6 +154,7 @@ public struct SuiteSpectralVerification: Encodable, Equatable, Sendable {
 
 public struct SuiteResult: Encodable, Equatable, Sendable {
     public internal(set) var lanes: [String: SuiteLane] = [:]
+    public internal(set) var conformance: SuiteObservations?
     public internal(set) var epochs = 0
     public internal(set) var analyzedSamples = 0
     public internal(set) var spectralRows = 0
@@ -174,6 +175,8 @@ public struct SuiteResult: Encodable, Equatable, Sendable {
         reason: UnavailabilityReason? = nil
     ) {
         lanes[lane, default: SuiteLane()].record(value, at: sample, status: status, reason: reason)
+        conformance?.values[lane, default: []].append(
+            SuitePoint(sample: sample, value: value, status: status, reason: reason))
     }
 
     mutating func record(_ lane: String, outcome: MeasurementOutcome, at sample: Int64) {
@@ -202,6 +205,18 @@ public struct SuiteResult: Encodable, Equatable, Sendable {
 
 public protocol SuiteInput: Sendable {
     var recipe: SuiteRecipe { get }
-    func run(chunk: Int, diagnostics: RuntimeDiagnosticMode, verifySpectra: Bool) throws
+    func run(
+        partition: SuitePartition, diagnostics: RuntimeDiagnosticMode, verifySpectra: Bool,
+        collectObservations: Bool
+    ) throws -> SuiteResult
+}
+
+extension SuiteInput {
+    public func run(chunk: Int, diagnostics: RuntimeDiagnosticMode, verifySpectra: Bool) throws
         -> SuiteResult
+    {
+        try run(
+            partition: SuitePartition([chunk]), diagnostics: diagnostics,
+            verifySpectra: verifySpectra, collectObservations: false)
+    }
 }

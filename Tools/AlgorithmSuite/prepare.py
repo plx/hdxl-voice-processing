@@ -13,6 +13,9 @@ sys.path.insert(0, str(ROOT / "Tools"))
 from Reference.common import read_pcm
 
 FIXTURES = ROOT / "Tests/HDXLVoiceProcessingTests/Fixtures"
+SYNTHETIC_CONDITIONS = {"harmonic-low": "low-f0", "harmonic-high": "high-f0",
+                        "noise-seed-seven": "aperiodic", "missing-intervals": "boundary",
+                        "filtered-harmonics": "resonant", "inharmonic": "inharmonic"}
 
 
 def load(path):
@@ -77,9 +80,7 @@ def prepare(destination):
         raise ValueError("Unexpected long-stream recipe")
     speech(long["fixtureID"], "long-stream", repeats=repeats, label="corpus-long-stream-v1")
 
-    for name, condition in (("harmonic-low", "low-f0"), ("harmonic-high", "high-f0"),
-                            ("noise-seed-seven", "aperiodic"), ("missing-intervals", "boundary"),
-                            ("filtered-harmonics", "resonant"), ("inharmonic", "inharmonic")):
+    for name, condition in SYNTHETIC_CONDITIONS.items():
         directory = FIXTURES / "Synthetic"
         record = load(directory / (name + ".json"))
         artifact = record["artifact"]

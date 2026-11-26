@@ -48,3 +48,5 @@ validated maxima/sample counts, p99 summaries, environment/toolchain, locked res
 commands and status. Physical latency, drift, thermal behavior and capture measurements
 remain explicitly deferred to [#74](https://github.com/plx/hdxl-voice-processing/issues/74).
 Policy/default attention is tracked in [#123](https://github.com/plx/hdxl-voice-processing/issues/123).
+
+The scheduler's partition comparison measures 7-, 173- and 16,000-sample callbacks on identical light and full profiles. [Protocol and artifact fields](algorithm-equivalence.md#memory-timing-and-instrumentation)
