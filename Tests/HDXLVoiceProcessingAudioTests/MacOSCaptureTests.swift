@@ -6,35 +6,66 @@
 
     @testable import HDXLVoiceProcessingAudio
 
+    /// The Swift allocation gives Thread Sanitizer a lifetime it can track across parallel fixtures.
+    private final class CaptureFixtureStorage {
+        let buffers: UnsafeMutableAudioBufferListPointer
+        private let samples: UnsafeMutableRawPointer
+
+        init(format: AVAudioFormat, bytesPerPlane: UInt32) {
+            let planeCount = format.isInterleaved ? 1 : Int(format.channelCount)
+            buffers = AudioBufferList.allocate(maximumBuffers: planeCount)
+            samples = .allocate(
+                byteCount: planeCount * Int(bytesPerPlane),
+                alignment: MemoryLayout<Double>.alignment)
+            for plane in buffers.indices {
+                buffers[plane] = AudioBuffer(
+                    mNumberChannels: format.isInterleaved ? format.channelCount : 1,
+                    mDataByteSize: bytesPerPlane,
+                    mData: samples.advanced(by: plane * Int(bytesPerPlane)))
+            }
+        }
+
+        deinit {
+            samples.deallocate()
+            free(buffers.unsafeMutablePointer)
+        }
+    }
+
     private func nativeCaptureBuffer(
         frames: UInt32, channels: UInt32 = 2, interleaved: Bool = false,
-        double: Bool = false, rate: Double = 48000
+        double: Bool = false, rate: Double = 48000, sampleOffset: Double = 0
     ) throws -> AVReadOnlyAudioPCMBuffer {
         let format = try #require(
             AVAudioFormat(
                 commonFormat: double ? .pcmFormatFloat64 : .pcmFormatFloat32,
                 sampleRate: rate, channels: channels, interleaved: interleaved))
-        let buffer = try #require(
-            AVAudioPCMBuffer(pcmFormat: format, frameCapacity: max(frames, 1)))
-        buffer.frameLength = frames
-        buffer.withUnsafeAudioBufferList { list in
-            let values = UnsafeMutableAudioBufferListPointer(UnsafeMutablePointer(mutating: list))
-            for plane in values.indices {
-                let count = Int(frames) * (interleaved ? Int(channels) : 1)
-                for index in 0..<count {
-                    let channel = interleaved ? index % Int(channels) : plane
-                    let frame = interleaved ? index / Int(channels) : index
-                    let value = Double(channel + 1) * 0.125 + Double(frame) * 0.001
-                    if double {
-                        values[plane].mData!.storeBytes(
-                            of: value, toByteOffset: index * 8, as: Double.self)
-                    } else {
-                        values[plane].mData!.storeBytes(
-                            of: Float(value), toByteOffset: index * 4, as: Float.self)
-                    }
+        let frameBytes = UInt64(format.streamDescription.pointee.mBytesPerFrame)
+        let bytesPerPlane = try #require(UInt32(exactly: UInt64(max(frames, 1)) * frameBytes))
+        let storage = CaptureFixtureStorage(format: format, bytesPerPlane: bytesPerPlane)
+        for (plane, descriptor) in storage.buffers.enumerated() {
+            let data = try #require(descriptor.mData)
+            let count = Int(frames) * Int(descriptor.mNumberChannels)
+            for index in 0..<count {
+                let channel = interleaved ? index % Int(channels) : plane
+                let frame = interleaved ? index / Int(channels) : index
+                let value = sampleOffset + Double(channel + 1) * 0.125 + Double(frame) * 0.001
+                if double {
+                    data.storeBytes(
+                        of: value, toByteOffset: index * MemoryLayout<Double>.stride,
+                        as: Double.self)
+                } else {
+                    data.storeBytes(
+                        of: Float(value), toByteOffset: index * MemoryLayout<Float>.stride,
+                        as: Float.self)
                 }
             }
         }
+        let buffer = try #require(
+            AVAudioPCMBuffer(pcmFormat: format, bufferListNoCopy: storage.buffers.unsafePointer) {
+                _ in
+                withExtendedLifetime(storage) {}
+            })
+        buffer.frameLength = frames
         // Transfer sole ownership; the SDK copying initializer loses data in some formats.
         return AVReadOnlyAudioPCMBuffer(unsafeRetaining: buffer)
     }
@@ -136,6 +167,41 @@
                     }
                 }
             }
+        }
+    }
+
+    @Test func macCaptureFixturesRetainIndependentSamplesDuringConcurrentConstruction() async throws
+    {
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for worker in 0..<8 {
+                group.addTask {
+                    let double = worker.isMultiple(of: 2)
+                    let interleaved = (worker / 2).isMultiple(of: 2)
+                    let transfer = try captureTransfer(double: double, interleaved: interleaved)
+                    let tap = PreparedCaptureTap(transfer: transfer)
+                    let seed = Double(worker * 100)
+                    func makeBuffer(_ offset: Double) throws -> AVReadOnlyAudioPCMBuffer {
+                        try nativeCaptureBuffer(
+                            frames: 1, interleaved: interleaved, double: double,
+                            sampleOffset: offset)
+                    }
+                    func check(_ buffer: AVReadOnlyAudioPCMBuffer, offset: Double) throws {
+                        tap.accept(buffer, at: captureTime())
+                        let block = try #require(drainCapture(transfer).blocks.first)
+                        #expect(block.samples == [offset + 0.125, offset + 0.25])
+                    }
+
+                    let held = try makeBuffer(seed)
+                    for index in 1...32 {
+                        try autoreleasepool {
+                            let offset = seed + Double(index)
+                            try check(makeBuffer(offset), offset: offset)
+                        }
+                    }
+                    try check(held, offset: seed)
+                }
+            }
+            try await group.waitForAll()
         }
     }
 
