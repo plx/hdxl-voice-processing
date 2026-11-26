@@ -21,6 +21,7 @@ class WatchRuntimeTests(unittest.TestCase):
         self.rows = []
         self.images = {}
         self.query_errors = []
+        self.disk_errors = []
         self.operations = []
         self.action = lambda args: (0, b"")
         inventory = patch.object(probe, "command", side_effect=self.inventory)
@@ -38,6 +39,8 @@ class WatchRuntimeTests(unittest.TestCase):
                 raise self.query_errors.pop(0)
             return json.dumps({"runtimes": self.rows})
         self.assertEqual(("xcrun", "simctl", "runtime", "list", "-j"), args)
+        if self.disk_errors:
+            raise self.disk_errors.pop(0)
         return json.dumps(self.images)
 
     def run_setup(self, args, *, timeout, **kwargs):
@@ -111,11 +114,38 @@ class WatchRuntimeTests(unittest.TestCase):
 
     def test_unavailable_after_cached_image_error_is_a_failure(self):
         self.action = lambda args: (70, b"already downloaded /private/test")
-        with self.assertRaisesRegex(RuntimeError, "could not export"):
+        with self.assertRaisesRegex(RuntimeError, "Expected one"):
             probe.select_runtime(True, self.evidence)
         self.assertEqual([], self.evidence["afterExport"])
+        self.assertEqual(0, self.evidence["export"]["assetCount"])
         self.assertEqual(2, len(self.operations))
         self.assertNotIn("private", json.dumps(self.evidence))
+
+    def test_exit_70_can_still_provide_a_signed_bundle_for_import(self):
+        def export(args):
+            if "-downloadPlatform" in args:
+                (Path(args[-1]) / "watch.exportedBundle").mkdir()
+                return 70, b"watchOS 27.0 is already downloaded."
+            if "-importPlatform" in args:
+                self.assertTrue(Path(args[-1]).is_dir())
+                self.rows = [self.available]
+            return 0, b""
+        self.action = export
+        self.assertEqual("24R362", probe.select_runtime(True, self.evidence)["buildversion"])
+        self.assertEqual(70, self.evidence["export"]["exitCode"])
+        self.assertEqual(1, self.evidence["export"]["assetCount"])
+        self.assertEqual({"exitCode": 0}, self.evidence["import"])
+
+    def test_other_export_errors_never_import_a_partial_file(self):
+        def export(args):
+            if "-downloadPlatform" in args:
+                (Path(args[-1]) / "incomplete.dmg").touch()
+                return 1, b"transfer failed"
+            return 0, b""
+        self.action = export
+        with self.assertRaisesRegex(RuntimeError, "could not export"):
+            probe.select_runtime(True, self.evidence)
+        self.assertNotIn("import", self.evidence)
 
     def test_transient_inventory_errors_during_registration_preserve_replay(self):
         def install(args):
@@ -140,6 +170,34 @@ class WatchRuntimeTests(unittest.TestCase):
         self.assertIsNone(self.evidence["initial"])
         self.assertEqual(3, len(self.evidence["queryFailures"]))
         self.assertEqual([], self.operations)
+
+    def test_unreadable_inventory_before_and_after_scan_prevents_download(self):
+        self.query_errors = [subprocess.TimeoutExpired(["simctl"], 20)] * 7
+        with self.assertRaisesRegex(RuntimeError, "could not list runtimes before export"):
+            probe.select_runtime(True, self.evidence)
+        self.assertEqual([["xcrun", "simctl", "runtime", "scan-and-mount"]], self.operations)
+        self.assertIsNone(self.evidence["initial"])
+        self.assertIsNone(self.evidence["afterScan"])
+        self.assertEqual(7, len(self.evidence["queryFailures"]))
+
+    def test_failure_diagnostics_retry_disk_image_queries(self):
+        error = subprocess.CalledProcessError(1, ["simctl"], stderr=b"/private/machine")
+        self.disk_errors = [error]
+        def export(args):
+            if "-downloadPlatform" in args:
+                self.disk_errors = [error, subprocess.TimeoutExpired(["simctl"], 20)]
+                self.images = {"private-id": {"platformIdentifier": "com.apple.platform.watchsimulator",
+                                               "version": "27.0", "state": "Ready"}}
+            return 1, b""
+        self.action = export
+        with self.assertRaisesRegex(RuntimeError, "could not export"):
+            probe.select_runtime(True, self.evidence)
+        self.assertEqual([], self.evidence["initialDiskImages"])
+        self.assertEqual([{"ready": True, "pinnedVersion": True}], self.evidence["finalDiskImages"])
+        self.assertEqual([{"stage": "initialDiskImages", "attempt": 1, "exitCode": 1},
+                          {"stage": "finalDiskImages", "attempt": 1, "exitCode": 1},
+                          {"stage": "finalDiskImages", "attempt": 2, "timedOut": True}], self.evidence["queryFailures"])
+        self.assertNotIn("private", json.dumps(self.evidence))
 
     def test_provisioning_never_guesses_an_exported_asset(self):
         for count in (0, 2):
