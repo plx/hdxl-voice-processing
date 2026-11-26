@@ -9,6 +9,7 @@ on:
       - 'Benchmarks/Portable/**'
       - 'Tools/Equivalence/**'
       - 'Tools/AlgorithmSuite/prepare.py'
+      - 'Tools/AlgorithmSuite/replay.py'
       - 'Tools/Performance/verify_portable.py'
       - 'Tools/Capture/ios_host.py'
       - 'Tools/Reference/common.py'

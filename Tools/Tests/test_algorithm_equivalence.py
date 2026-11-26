@@ -10,7 +10,8 @@ import unittest
 
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
-from Equivalence import compare, inputs, regressions
+from Equivalence import compare, inputs, platforms, regressions
+from AlgorithmSuite.replay import lane_digest
 
 
 class AlgorithmEquivalenceTests(unittest.TestCase):
@@ -51,6 +52,51 @@ class AlgorithmEquivalenceTests(unittest.TestCase):
         delta = compare.distribution(reference, shifted, 16000, different_input=True)["rms"]
         self.assertEqual(delta["absent -> available"]["count"], 1)
         self.assertEqual(delta["available -> absent"]["count"], 1)
+
+    def test_platform_fft_roundoff_retains_native_summaries_and_exact_grid(self):
+        # Swift's one-sample fixture emits an unavailable final row with no bins.
+        empty = dict(rows=[dict(start=0, count=0, status="unavailable.insufficientData")], values="")
+        self.assertEqual(platforms.spectral_digest(empty), dict(rows=1, bins=0, fingerprint=12264696042095112929))
+
+        def report(power):
+            bins = dict(rows=[dict(start=16, count=2, status="measured")],
+                        values=base64.b64encode(struct.pack("<2d", power, 0.25)).decode())
+            reading = dict(sample=16, status="measured", value=power)
+            digest = platforms.spectral_digest(bins)
+            summary = lane_digest([dict(reading, sourceStart=16)])
+            reference = dict(lanes={"spectrogram": summary}, epochs=1,
+                             spectralVerification=dict(spectrogram=digest, accumulationInput=digest, longTermSpectrum=digest),
+                             conformance=dict(values={"spectrogram": [reading]}, spectra=dict(spectrogram=bins, ltas=bins),
+                                              support={"yin": [dict(windowStart=16, selectedCandidate=1)]}))
+            return dict(fixture=dict(name="control", precision="float32", sampleRate=16000), reference=reference,
+                        recipe=dict(composition="full", extensions=dict(layout=dict(spectrum=dict(transform=dict(length=2))))))
+
+        mac, ios = report(0.01), report(0.010000001)
+        result = platforms.compare_platforms(mac, ios)
+        self.assertEqual(result["agreement"], "bounded-float32-spectrum")
+        self.assertEqual(result["spectra"]["spectrogram"]["worstBin"], 0)
+        self.assertEqual(result["scalars"]["spectrogram"]["measured"]["worstSourceSample"], 16)
+        self.assertEqual(platforms.compare_platforms(mac, mac), {"agreement": "exact"})
+        for path, update in (
+            (("lanes", "spectrogram"), {"sum": 0.01}),
+            (("lanes", "spectrogram"), {"fingerprint": 0}),
+            (("spectralVerification", "accumulationInput"), {"fingerprint": 0}),
+            (("conformance", "support", "yin", 0), {"selectedCandidate": 2}),
+            (("conformance", "values", "spectrogram", 0), {"sample": 17}),
+        ):
+            altered = deepcopy(ios)
+            target = altered["reference"]
+            for key in path:
+                target = target[key]
+            target.update(update)
+            with self.assertRaisesRegex(ValueError, "Platform mismatch"):
+                platforms.compare_platforms(mac, altered)
+        with self.assertRaisesRegex(ValueError, "budget exceeded"):
+            platforms.compare_platforms(mac, report(0.011))
+        for r in (mac, ios):
+            r["fixture"]["precision"] = "float64"
+        with self.assertRaisesRegex(ValueError, "Platform mismatch"):
+            platforms.compare_platforms(mac, ios)
 
     def test_precision_fails_if_candidate_or_support_changes_at_fixed_scalar(self):
         obs = dict(values={}, support={"yin": [dict(selectedCandidate=2)]}, descriptors={}, nativeUnits={},

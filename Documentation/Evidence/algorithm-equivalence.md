@@ -23,12 +23,15 @@ The Float32/Float64 arithmetic comparison uses identical sample values. The cont
 
 | Comparison on identical PCM | Acceptance rule |
 | --- | --- |
-| Partitions within one target and precision, or matching precision on the two qualified targets | Exact public observations, source coordinates, coverage, statuses/reasons, candidate inspection counts and selections, units, profile and aggregate outputs. |
+| Partitions within one target and precision | Exact public observations, source coordinates, coverage, statuses/reasons, candidate inspection counts and selections, units, profile and aggregate outputs. |
+| macOS versus iOS Simulator with the same PCM and precision | Float64 results agree exactly. For Float32, only native spectral power and its derived descriptors use the bounds below. Source indices, selections, row lengths, frequency grids, roll-off and every other measurement stay exact. When numerical differences occur, the verifier reconstructs each affected scalar sum and fingerprint and both targets' spectrogram and LTAS fingerprints from their reported observations. |
 | Float32 versus widened Float64 | Exact discrete and timing evidence. Scalar measurements computed in Double use zero absolute tolerance. |
 | Native spectral power | Every bin is checked within its own row. Absolute budget is `16 × 2⁻²³ × ceil(log₂(FFT length)) × row peak + FFT length × 2⁻¹⁴⁹`. The terms cover accumulated Float butterfly roundoff and underflow. The scalar first-bin export additionally has an absolute ceiling of 1e−8 in normalized power. |
 | Spectral shape | Centroid and spread allow 1e−6 of Nyquist in hertz. Flatness allows 1e−5, slope 0.001 dB/octave and the band ratio 0.05 dB. These bounds cover propagation of native spectral roundoff through normalized moments, log fits and ratios of low-power bands. The roll-off frequency and all status transitions must match exactly. |
 
 Each per-case artifact contains both recipes, input hashes, partition sizes, measurement counts, maxima and the corresponding source sample for each nonzero maximum. Spectral summaries record matched rows and bins, bin-status changes, and the source position and frequency-bin index of the largest error. Input-quantization reports retain all bins and indicate changes in candidate counts. Replay of a named case can export its individual observations and every bin. Source files and PCM stay out of the uploaded artifacts. [Comparison implementation](../../Tools/Equivalence/compare.py)
+
+The 1 kHz bin-centered tone reproduced a target-dependent Float32 difference on macOS and the iOS 27.0 Simulator. The largest observed spectrogram difference was 7.28e−12 in normalized power, at source sample 0, bin 29. The frame band-energy ratio differed by 0.00109 dB. The Float64 run agreed exactly. The paired-platform archive records exact agreement or the measured differences for each typed input in `platformComparisons`. [Platform comparison](../../Tools/Equivalence/platforms.py) · [Physical qualification of these bounds](https://github.com/plx/hdxl-voice-processing/issues/298)
 
 ## Reproduce the evidence
 

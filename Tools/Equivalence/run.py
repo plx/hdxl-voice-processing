@@ -14,6 +14,7 @@ from tempfile import TemporaryDirectory
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from Equivalence.inputs import ROOT, prepare, read
 from Equivalence.compare import check_compositions, composition_signature, precision, quantization, require, validate
+from Equivalence.platforms import compare_platforms
 import ci
 from Capture.ios_host import ensure_runtime
 sys.path.append(str(ROOT / "Tools/Performance"))
@@ -56,6 +57,7 @@ def exercise(prefix, inputs, item, composition, temporary, target):
 def compare_case(targets, inputs, items, composition, temporary):
     host = {}
     platforms = {}
+    platform_comparisons = {}
     for item in items:
         label = item["representation"]
         mac = exercise(targets["mac"], inputs, item, composition, temporary, "mac")
@@ -63,8 +65,7 @@ def compare_case(targets, inputs, items, composition, temporary):
         platforms["macOS"] = mac["execution"]
         if "ios" in targets:
             mobile = exercise(targets["ios"], inputs, item, composition, temporary, "ios")
-            require(mac["recipe"] == mobile["recipe"] and mac["reference"] == mobile["reference"],
-                    f"Platform mismatch for {item['name']} / {composition}")
+            platform_comparisons[label] = compare_platforms(mac, mobile)
             platforms["iOS Simulator"] = mobile["execution"]
             del mobile
     common = host.get("widened", host["float64"])
@@ -82,6 +83,8 @@ def compare_case(targets, inputs, items, composition, temporary):
                       epochs=host[v["representation"]]["reference"]["epochs"],
                       analyzedSamples=host[v["representation"]]["reference"]["analyzedSamples"]) for v in items},
                   commonPCM=precision(host["float32"], common))
+    if platform_comparisons:
+        result["platformComparisons"] = platform_comparisons
     if "widened" in host:
         result["sourceQuantization"] = quantization(host["float64"], common)
     if items[0]["pair"] == "yin-silence-boundary":
