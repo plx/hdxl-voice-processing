@@ -5,6 +5,7 @@ import json
 import math
 from pathlib import Path
 import plistlib
+import re
 import subprocess
 import tempfile
 import time
@@ -16,16 +17,144 @@ PROJECT = ROOT / "Examples" / APP / (APP + ".xcodeproj")
 BUNDLE = "org.hdxl.voice-processing.watch-feasibility"
 REPLAY_PROFILE = "f98d6602d57b33ab0e41076cddb38a2991a05dbabb6dc2738e72794681f948cb"
 DEVICE_TYPE = "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-11-42mm"
+WATCH_RUNTIME = "com.apple.CoreSimulator.SimRuntime.watchOS-27-0"
 
 
-def command(*args):
-    return subprocess.check_output(args, cwd=ROOT, text=True).strip()
+def command(*args, timeout=None, stderr=None):
+    return subprocess.check_output(args, cwd=ROOT, text=True, timeout=timeout, stderr=stderr).strip()
 
 
-def runtime():
-    entries = json.loads(command("xcrun", "simctl", "list", "runtimes", "--json"))["runtimes"]
-    return next((r for r in entries if r["isAvailable"] and r["version"] == "27.0"
-                 and r["identifier"].startswith("com.apple.CoreSimulator.SimRuntime.watchOS-")), None)
+def watch_runtimes():
+    inventory = json.loads(command("xcrun", "simctl", "list", "runtimes", "--json", timeout=20, stderr=subprocess.PIPE))
+    if not isinstance(inventory, dict) or not isinstance(inventory.get("runtimes"), list):
+        raise ValueError("Invalid CoreSimulator runtime inventory")
+    watches = []
+    for item in inventory["runtimes"]:
+        if (re.fullmatch(r"com\.apple\.CoreSimulator\.SimRuntime\.watchOS-\d+(?:-\d+)*", item["identifier"])
+                and re.fullmatch(r"\d+(?:\.\d+)*", item["version"])):
+            build = item.get("buildversion") or ""
+            watches.append({"identifier": item["identifier"], "version": item["version"],
+                            "buildversion": build if re.fullmatch(r"\d+[A-Z]\d+[a-z]?", build) else None,
+                            "isAvailable": item.get("isAvailable") is True})
+    return watches
+
+
+def poll_inventory(evidence, stage, read, attempts=3, until=None):
+    # Keep the last successful observation. A stage that never answered is null;
+    # a successful inventory can legitimately have zero Watch entries.
+    evidence[stage] = None
+    for attempt in range(1, attempts + 1):
+        try:
+            rows = read()
+        except (OSError, subprocess.SubprocessError, KeyError, TypeError, ValueError) as error:
+            failure = {"stage": stage, "attempt": attempt}
+            if isinstance(error, subprocess.CalledProcessError):
+                failure["exitCode"] = error.returncode
+            elif isinstance(error, subprocess.TimeoutExpired):
+                failure["timedOut"] = True
+            elif isinstance(error, OSError):
+                failure["osError"] = True
+            else:
+                failure["invalidInventory"] = True
+            evidence.setdefault("queryFailures", []).append(failure)
+        else:
+            evidence[stage] = rows
+            if until is None or until(rows):
+                break
+        if attempt < attempts:
+            time.sleep(5)
+    return evidence[stage]
+
+
+def pinned_runtime(watches):
+    return next((item for item in watches if item["identifier"] == WATCH_RUNTIME
+                 and item["version"] == "27.0" and item["isAvailable"] and item["buildversion"]), None)
+
+
+def runtime(evidence, stage, attempts=3, wait_for_registration=False):
+    watches = poll_inventory(evidence, stage, watch_runtimes, attempts,
+                             until=pinned_runtime if wait_for_registration else None)
+    return pinned_runtime(watches or [])
+
+
+def watch_disk_images():
+    # This is a separate inventory from runtimes visible to the selected Xcode.
+    # It contains UUIDs and absolute paths, which must stay out of the artifact.
+    images = json.loads(command("xcrun", "simctl", "runtime", "list", "-j", timeout=20, stderr=subprocess.PIPE))
+    if not isinstance(images, dict):
+        raise ValueError("Invalid CoreSimulator disk-image inventory")
+    return [{"ready": image.get("state") == "Ready", "pinnedVersion": image.get("version") == "27.0"}
+            for image in images.values() if isinstance(image, dict)
+            and image.get("platformIdentifier") == "com.apple.platform.watchsimulator"]
+
+
+def setup_command(evidence, stage, args, timeout):
+    # Tool output can include machine paths and device identifiers. Retain only
+    # the status and the known cached-image diagnostic in the public receipt.
+    record = evidence[stage] = {}
+    try:
+        result = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        record["timedOut"] = True
+        return None
+    record["exitCode"] = result.returncode
+    if b"already downloaded" in result.stdout.lower():
+        record["alreadyDownloaded"] = True
+    return result.returncode
+
+
+def select_runtime(install, evidence):
+    selected = runtime(evidence, "initial")
+    if selected:
+        return selected
+    poll_inventory(evidence, "initialDiskImages", watch_disk_images)
+    if not install:
+        if evidence["initial"] is None:
+            raise RuntimeError("CoreSimulator could not list runtimes")
+        raise RuntimeError("watchOS 27.0 is unavailable; use --install-runtime to provision it")
+
+    try:
+        return provision_runtime(evidence)
+    except (RuntimeError, OSError, subprocess.SubprocessError):
+        poll_inventory(evidence, "finalDiskImages", watch_disk_images)
+        raise
+
+
+def provision_runtime(evidence):
+    # CoreSimulator can rediscover an existing image without downloading it.
+    setup_command(evidence, "scan", ["xcrun", "simctl", "runtime", "scan-and-mount"], 90)
+    selected = runtime(evidence, "afterScan", attempts=4, wait_for_registration=True)
+    if selected:
+        return selected
+
+    if evidence["initial"] is None and evidence["afterScan"] is None:
+        raise RuntimeError("CoreSimulator could not list runtimes before export")
+
+    with tempfile.TemporaryDirectory(prefix="hdxl-watch-runtime-") as directory:
+        export_code = setup_command(evidence, "export", [
+            "xcodebuild", "-downloadPlatform", "watchOS", "-buildVersion", "27.0",
+            "-architectureVariant", "arm64", "-exportPath", directory], 900)
+        selected = runtime(evidence, "afterExport", attempts=4, wait_for_registration=export_code != 0)
+        if selected:
+            return selected
+        # Xcode can finish writing an export and still exit with EX_SOFTWARE.
+        # The import verifies the asset; only a runnable runtime can start replay.
+        if export_code not in (0, 70):
+            raise RuntimeError("Xcode could not export the pinned watchOS 27.0 runtime")
+        assets = [p for p in Path(directory).iterdir() if not p.is_symlink() and (
+            (p.suffix == ".dmg" and p.is_file())
+            or (p.suffix in (".exportedBundle", ".exportBundle") and p.is_dir()))]
+        evidence["export"]["assetCount"] = len(assets)
+        if len(assets) != 1:
+            raise RuntimeError("Expected one exported watchOS runtime image or bundle")
+        evidence["export"]["assetType"] = assets[0].suffix[1:]
+        setup_command(evidence, "import", ["xcodebuild", "-importPlatform", str(assets[0])], 600)
+        selected = runtime(evidence, "afterImport", attempts=12, wait_for_registration=True)
+        if selected:
+            return selected
+    if evidence["afterImport"] is None:
+        raise RuntimeError("CoreSimulator could not list runtimes after import")
+    raise RuntimeError("CoreSimulator still has no available watchOS 27.0 runtime after import")
 
 
 def validate_bundle(bundle, platform):
@@ -85,13 +214,8 @@ def failure_observation(receipt):
 
 
 def replay(bundle, install, info, output):
-    selected = runtime()
-    if not selected and install:
-        subprocess.run(["xcodebuild", "-downloadPlatform", "watchOS", "-buildVersion", "27.0",
-                        "-architectureVariant", "arm64"], check=True)
-        selected = runtime()
-    if not selected:
-        raise RuntimeError("watchOS 27.0 Simulator runtime required for execution")
+    evidence = info["runtimeSetup"] = {}
+    selected = select_runtime(install, evidence)
     info["simulator"] = {"deviceType": DEVICE_TYPE, "runtime": selected["identifier"],
                          "runtimeBuild": selected["buildversion"]}
     save(info, output)
