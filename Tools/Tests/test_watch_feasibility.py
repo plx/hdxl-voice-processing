@@ -20,6 +20,7 @@ class WatchRuntimeTests(unittest.TestCase):
         self.evidence = {}
         self.rows = []
         self.images = {}
+        self.query_errors = []
         self.operations = []
         self.action = lambda args: (0, b"")
         inventory = patch.object(probe, "command", side_effect=self.inventory)
@@ -29,9 +30,12 @@ class WatchRuntimeTests(unittest.TestCase):
             mock.start()
             self.addCleanup(mock.stop)
 
-    def inventory(self, *args, timeout):
+    def inventory(self, *args, timeout, stderr):
         self.assertGreater(timeout, 0)
+        self.assertEqual(subprocess.PIPE, stderr)
         if args == ("xcrun", "simctl", "list", "runtimes", "--json"):
+            if self.query_errors:
+                raise self.query_errors.pop(0)
             return json.dumps({"runtimes": self.rows})
         self.assertEqual(("xcrun", "simctl", "runtime", "list", "-j"), args)
         return json.dumps(self.images)
@@ -113,6 +117,30 @@ class WatchRuntimeTests(unittest.TestCase):
         self.assertEqual(2, len(self.operations))
         self.assertNotIn("private", json.dumps(self.evidence))
 
+    def test_transient_inventory_errors_during_registration_preserve_replay(self):
+        def install(args):
+            if "-downloadPlatform" in args:
+                (Path(args[-1]) / "watch.dmg").touch()
+            if "-importPlatform" in args:
+                self.query_errors = [subprocess.TimeoutExpired(["simctl"], 20),
+                                     subprocess.CalledProcessError(70, ["simctl"], stderr=b"/private/machine")]
+                self.rows = [self.available]
+            return 0, b""
+        self.action = install
+        self.assertEqual("24R362", probe.select_runtime(True, self.evidence)["buildversion"])
+        self.assertEqual([{"stage": "afterImport", "attempt": 1, "timedOut": True},
+                          {"stage": "afterImport", "attempt": 2, "exitCode": 70}], self.evidence["queryFailures"])
+        self.assertEqual(3, len(self.operations))
+        self.assertNotIn("private", json.dumps(self.evidence))
+
+    def test_exhausted_inventory_reads_are_distinct_from_an_empty_inventory(self):
+        self.query_errors = [subprocess.TimeoutExpired(["simctl"], 20)] * 3
+        with self.assertRaisesRegex(RuntimeError, "could not list"):
+            probe.select_runtime(False, self.evidence)
+        self.assertIsNone(self.evidence["initial"])
+        self.assertEqual(3, len(self.evidence["queryFailures"]))
+        self.assertEqual([], self.operations)
+
     def test_provisioning_never_guesses_an_exported_asset(self):
         for count in (0, 2):
             with self.subTest(count=count):
@@ -133,14 +161,21 @@ class WatchRuntimeTests(unittest.TestCase):
                 def install(args):
                     if "-downloadPlatform" in args:
                         (Path(args[-1]) / "watch.dmg").touch()
-                    if "-importPlatform" in args and timeout:
-                        raise subprocess.TimeoutExpired(args, 600)
+                    if "-importPlatform" in args:
+                        self.images = {"private-id": {"platformIdentifier": "com.apple.platform.watchsimulator",
+                                                      "version": "27.0", "state": "Ready", "path": "/private/example"}}
+                        if timeout:
+                            raise subprocess.TimeoutExpired(args, 600)
                     return 0, b""
                 self.action = install
+                self.images = {}
                 with self.assertRaisesRegex(RuntimeError, "after import"):
                     probe.select_runtime(True, self.evidence)
                 self.assertEqual([], self.evidence["afterImport"])
                 self.assertEqual({"timedOut": True} if timeout else {"exitCode": 0}, self.evidence["import"])
+                self.assertEqual([], self.evidence["initialDiskImages"])
+                self.assertEqual([{"ready": True, "pinnedVersion": True}], self.evidence["finalDiskImages"])
+                self.assertNotIn("private", json.dumps(self.evidence))
 
 
 class WatchReplayTests(unittest.TestCase):
