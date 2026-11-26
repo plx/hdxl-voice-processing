@@ -27,7 +27,7 @@
 
         deinit {
             samples.deallocate()
-            buffers.unsafeMutablePointer.deallocate()
+            free(buffers.unsafeMutablePointer)
         }
     }
 
