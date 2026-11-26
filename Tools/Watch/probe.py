@@ -5,6 +5,7 @@ import json
 import math
 from pathlib import Path
 import plistlib
+import re
 import subprocess
 import tempfile
 import time
@@ -16,16 +17,95 @@ PROJECT = ROOT / "Examples" / APP / (APP + ".xcodeproj")
 BUNDLE = "org.hdxl.voice-processing.watch-feasibility"
 REPLAY_PROFILE = "f98d6602d57b33ab0e41076cddb38a2991a05dbabb6dc2738e72794681f948cb"
 DEVICE_TYPE = "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-11-42mm"
+WATCH_RUNTIME = "com.apple.CoreSimulator.SimRuntime.watchOS-27-0"
 
 
-def command(*args):
-    return subprocess.check_output(args, cwd=ROOT, text=True).strip()
+def command(*args, timeout=None):
+    return subprocess.check_output(args, cwd=ROOT, text=True, timeout=timeout).strip()
 
 
-def runtime():
-    entries = json.loads(command("xcrun", "simctl", "list", "runtimes", "--json"))["runtimes"]
-    return next((r for r in entries if r["isAvailable"] and r["version"] == "27.0"
-                 and r["identifier"].startswith("com.apple.CoreSimulator.SimRuntime.watchOS-")), None)
+def runtime(evidence, stage, attempts=1):
+    for attempt in range(attempts):
+        entries = json.loads(command("xcrun", "simctl", "list", "runtimes", "--json", timeout=20))["runtimes"]
+        watches = []
+        for item in entries:
+            if (re.fullmatch(r"com\.apple\.CoreSimulator\.SimRuntime\.watchOS-\d+(?:-\d+)*", item["identifier"])
+                    and re.fullmatch(r"\d+(?:\.\d+)*", item["version"])):
+                build = item.get("buildversion") or ""
+                watches.append({"identifier": item["identifier"], "version": item["version"],
+                                "buildversion": build if re.fullmatch(r"\d+[A-Z]\d+[a-z]?", build) else None,
+                                "isAvailable": item.get("isAvailable") is True})
+        evidence[stage] = watches
+        selected = next((item for item in watches if item["identifier"] == WATCH_RUNTIME
+                         and item["version"] == "27.0" and item["isAvailable"] and item["buildversion"]), None)
+        if selected:
+            return selected
+        if attempt + 1 < attempts:
+            time.sleep(5)
+    return None
+
+
+def watch_disk_images():
+    # This is a separate inventory from runtimes visible to the selected Xcode.
+    # It contains UUIDs and absolute paths, which must stay out of the artifact.
+    try:
+        images = json.loads(command("xcrun", "simctl", "runtime", "list", "-j", timeout=20))
+    except (subprocess.SubprocessError, ValueError):
+        return None
+    return [{"ready": image.get("state") == "Ready", "pinnedVersion": image.get("version") == "27.0"}
+            for image in images.values() if image.get("platformIdentifier") == "com.apple.platform.watchsimulator"]
+
+
+def setup_command(evidence, stage, args, timeout):
+    # Tool output can include machine paths and device identifiers. Retain only
+    # the status and the known cached-image diagnostic in the public receipt.
+    record = evidence[stage] = {}
+    try:
+        result = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        record["timedOut"] = True
+        return False
+    record["exitCode"] = result.returncode
+    if b"already downloaded" in result.stdout.lower():
+        record["alreadyDownloaded"] = True
+    return result.returncode == 0
+
+
+def select_runtime(install, evidence):
+    selected = runtime(evidence, "initial")
+    if selected:
+        return selected
+    evidence["initialDiskImages"] = watch_disk_images()
+    if not install:
+        raise RuntimeError("watchOS 27.0 is unavailable; use --install-runtime to provision it")
+
+    # CoreSimulator can rediscover an existing image without downloading it.
+    setup_command(evidence, "scan", ["xcrun", "simctl", "runtime", "scan-and-mount"], 90)
+    selected = runtime(evidence, "afterScan", attempts=4)
+    if selected:
+        return selected
+
+    with tempfile.TemporaryDirectory(prefix="hdxl-watch-runtime-") as directory:
+        exported = setup_command(evidence, "export", [
+            "xcodebuild", "-downloadPlatform", "watchOS", "-buildVersion", "27.0",
+            "-architectureVariant", "arm64", "-exportPath", directory], 900)
+        selected = runtime(evidence, "afterExport", attempts=1 if exported else 4)
+        if selected:
+            return selected
+        if not exported:
+            raise RuntimeError("Xcode could not export the pinned watchOS 27.0 runtime")
+        assets = [p for p in Path(directory).iterdir() if not p.is_symlink() and (
+            (p.suffix == ".dmg" and p.is_file())
+            or (p.suffix in (".exportedBundle", ".exportBundle") and p.is_dir()))]
+        evidence["export"]["assetCount"] = len(assets)
+        if len(assets) != 1:
+            raise RuntimeError("Expected one exported watchOS runtime image or bundle")
+        evidence["export"]["assetType"] = assets[0].suffix[1:]
+        setup_command(evidence, "import", ["xcodebuild", "-importPlatform", str(assets[0])], 600)
+        selected = runtime(evidence, "afterImport", attempts=12)
+        if selected:
+            return selected
+    raise RuntimeError("CoreSimulator still has no available watchOS 27.0 runtime after import")
 
 
 def validate_bundle(bundle, platform):
@@ -85,13 +165,8 @@ def failure_observation(receipt):
 
 
 def replay(bundle, install, info, output):
-    selected = runtime()
-    if not selected and install:
-        subprocess.run(["xcodebuild", "-downloadPlatform", "watchOS", "-buildVersion", "27.0",
-                        "-architectureVariant", "arm64"], check=True)
-        selected = runtime()
-    if not selected:
-        raise RuntimeError("watchOS 27.0 Simulator runtime required for execution")
+    evidence = info["runtimeSetup"] = {}
+    selected = select_runtime(install, evidence)
     info["simulator"] = {"deviceType": DEVICE_TYPE, "runtime": selected["identifier"],
                          "runtimeBuild": selected["buildversion"]}
     save(info, output)
