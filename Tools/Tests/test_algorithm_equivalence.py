@@ -30,7 +30,8 @@ class AlgorithmEquivalenceTests(unittest.TestCase):
             self.assertEqual(excluded["empty"], "insufficientData")
             self.assertIn("missingAcquisition", excluded.values())
             self.assertEqual(by_name["short-120ms"]["float32"]["sampleCount"], 1920)
-            self.assertEqual(by_name["noise-seed-seven"]["float32"]["condition"], "aperiodic")
+            for seed in ("noise-seed-seven", "noise-seed-zero"):
+                self.assertEqual(by_name[seed]["float32"]["condition"], "aperiodic")
             self.assertEqual(by_name["inharmonic"]["float64"]["condition"], "inharmonic")
             pair = by_name["off-bin-tone"]
             def pcm(label):
@@ -79,12 +80,53 @@ class AlgorithmEquivalenceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "source index"):
             compare.spectral_difference(original, missing, transform_length=64)
 
+    def test_only_rolling_end_cursor_can_use_first_missing_sample(self):
+        spans = [(0, 1536), (1537, 2559)]
+        self.assertFalse(compare.sample_is_acquired("rms", 1536, spans))
+        self.assertTrue(compare.sample_is_acquired("rms", 1537, spans))
+        self.assertTrue(compare.sample_is_acquired("rollingCPPS", 1536, spans))
+
+    def test_tracked_selection_must_index_the_current_borrowed_candidates(self):
+        frame = dict(epoch=0, selectedCandidate=0, trackedCandidate=1)
+        frames = {"yin.fundamentalFrequency": [frame]}
+        candidates = {"yin": [dict(epoch=0, frame=0, count=2)]}
+        compare.validate_candidates(candidates, frames, "core", False)
+        frame["trackedCandidate"] = 2
+        with self.assertRaisesRegex(ValueError, "candidate index"):
+            compare.validate_candidates(candidates, frames, "core", False)
+
+    def test_rounding_can_change_voicing_history_and_export_confidence_on_same_window(self):
+        a = dict(epoch=0, windowStart=160, windowCount=800, dependencyStart=160, dependencyCount=800,
+                 eligible=800, effectiveDelaySeconds=0.025, outcome=dict(status="unavailable", reason="unvoiced"))
+        b = dict(a, dependencyStart=0, dependencyCount=960, eligible=960, effectiveDelaySeconds=0.035,
+                 outcome=dict(status="available", estimate=dict(value=250, confidence=0.94)))
+        left, right = (dict(support={"yin.trackedFundamentalFrequency": [row]}) for row in (a,b))
+        differences = compare.quantized_support(left, right)["yin.trackedFundamentalFrequency"][0]["changes"]
+        self.assertEqual(differences["dependencyCount"], {"native":800, "rounded":960})
+        self.assertEqual(differences["outcome"]["rounded"]["estimate"]["confidence"], 0.94)
+        b["windowStart"] += 1
+        with self.assertRaisesRegex(ValueError, "observation window"):
+            compare.quantized_support(left, right)
+
+    def test_pulse_alignment_reports_insertions_amplitudes_and_shifted_support(self):
+        def sequence(times, levels):
+            return dict(landmarks=[dict(epoch=0, sourceStart=0, index=i, timeSeconds=t) for i,t in enumerate(times)],
+                        cycleAmplitudes=[dict(pulse=i, rms=v) for i,v in enumerate(levels)])
+        original = sequence([0.01, 0.03, 0.04], [0.1, 0.2, 0.3])
+        rounded = sequence([0.01, 0.02, 0.030001, 0.04], [0.1, 0.4, 0.25, 0.3])
+        diff = compare.pulse_changes(original, rounded, 16000, 0.02)
+        self.assertEqual((diff["matched"], len(diff["nativeOnly"]), len(diff["roundedOnly"])), (3, 0, 1))
+        self.assertEqual(diff["roundedOnly"][0]["landmark"]["timeSeconds"], 0.02)
+        self.assertAlmostEqual(diff["changed"][0]["rmsDelta"], 0.05)
+        self.assertAlmostEqual(diff["changed"][0]["timeDeltaSeconds"], 1e-6)
+
     def test_independent_transforms_and_shared_compositions_retain_exact_observations(self):
-        full = dict(values={"cpp": "a", "rms": "b"}, support={}, candidates={}, spectralRows=3, outputSHA256="abc")
+        full = dict(values={"cpp": "a", "rms": "b"}, support={}, candidates={}, completions={"cpps":"same"}, spectralRows=3, outputSHA256="abc")
         bundles = dict(cpps=dict(full, values={"cpp":"a"}, spectralRows=0), core=dict(full, spectralRows=0),
                        full=full, separateSpectra=dict(full, spectralRows=6))
         compare.check_compositions(bundles)
         for label, update in (("cpps", dict(values={"cpp":"changed"})), ("core", dict(spectralRows=1)),
+                              ("cpps", dict(completions={"cpps":"different"})),
                               ("separateSpectra", dict(outputSHA256="def")), ("separateSpectra", dict(spectralRows=3))):
             altered = deepcopy(bundles)
             altered[label].update(update)

@@ -23,17 +23,8 @@ def prepare(destination):
     destination.mkdir(parents=True, exist_ok=False)
     cases, excluded = [], []
 
-    def include(name, group, audio, expected_hash, condition, *, selection=None,
-                limit=None, repeats=1, transform="identity", expected_pcm=None):
-        if sha256(audio.read_bytes()).hexdigest() != expected_hash:
-            raise ValueError(f"Fixture content differs: {name}")
-        samples, info = read_pcm(audio)
-        if expected_pcm and info["normalizedFloat64LESHA256"] != expected_pcm:
-            raise ValueError(f"Decoded PCM differs: {name}")
-        if limit is not None:
-            if not 0 < limit <= len(samples):
-                raise ValueError("Excerpt exceeds source")
-            samples = samples[:limit]
+    def encode(name, group, audio, expected_hash, condition, samples, sample_rate, *,
+               selection=None, repeats=1, transform="identity"):
         regions = selection if selection is not None else [(0, len(samples))]
         if not regions:
             excluded.append(dict(name=name, group=group, reason="missingAcquisition",
@@ -53,8 +44,22 @@ def prepare(destination):
             cases.append(dict(name=name + "." + label, pair=name, group=group, representation=label,
                               condition=condition, precision=precision, pcmSHA256=digest,
                               source=audio.relative_to(ROOT).as_posix(), sourceSHA256=expected_hash,
-                              sampleRate=info["sampleRate"], sampleCount=len(samples), repeats=repeats,
+                              sampleRate=sample_rate, sampleCount=len(samples), repeats=repeats,
                               transform=transform, regions=[dict(start=s, count=n) for s, n in regions]))
+
+    def include(name, group, audio, expected_hash, condition, *, selection=None,
+                limit=None, repeats=1, transform="identity", expected_pcm=None):
+        if sha256(audio.read_bytes()).hexdigest() != expected_hash:
+            raise ValueError(f"Fixture content differs: {name}")
+        samples, info = read_pcm(audio)
+        if expected_pcm and info["normalizedFloat64LESHA256"] != expected_pcm:
+            raise ValueError(f"Decoded PCM differs: {name}")
+        if limit is not None:
+            if not 0 < limit <= len(samples):
+                raise ValueError("Excerpt exceeds source")
+            samples = samples[:limit]
+        encode(name, group, audio, expected_hash, condition, samples, info["sampleRate"],
+               selection=selection, repeats=repeats, transform=transform)
 
     catalog = read(FIXTURES / "Corpus/manifest.json")
     for row in catalog["fixtures"]:
@@ -107,6 +112,8 @@ def prepare(destination):
         regions = [(r["startSample"], r["sampleCount"]) for r in item["selection"] if r["included"]]
         extra = dict(expected_pcm=artifact["normalizedFloat64LESHA256"])
         condition = SYNTHETIC_CONDITIONS.get(name, "boundary" if len(regions) != 1 else "synthetic")
+        if item["recipe"].get("source", {}).get("kind") == "noise":
+            condition = "aperiodic"
         include(name, "synthetic", audio, artifact["sha256"], condition, selection=regions, **extra)
         if name == "harmonic-low":
             # Make a one-sample interruption exactly on the 256-sample pitch period,
@@ -117,6 +124,17 @@ def prepare(destination):
                         transform=f"omit {gap} acquired samples at offset 1536")
             include("short-120ms", "edges", audio, artifact["sha256"], "short", limit=1920,
                     transform="first 1920 samples at 16 kHz", **extra)
+
+    recipe_path = Path(__file__).with_name("yin-silence-boundary.json")
+    recipe = read(recipe_path)
+    if (recipe["schemaVersion"], recipe["signal"], recipe["firstHalfIsPositive"]) != (1, "bipolar-square", True):
+        raise ValueError("Unsupported boundary recipe")
+    amplitude = recipe["amplitude"]
+    if not amplitude < 1e-7 < struct.unpack("<f", struct.pack("<f", amplitude))[0]:
+        raise ValueError("Boundary fixture must straddle the YIN silence threshold after Float32 rounding")
+    samples = [amplitude if i // recipe["halfPeriodSamples"] % 2 == 0 else -amplitude for i in range(recipe["samples"])]
+    encode("yin-silence-boundary", "edges", recipe_path, sha256(recipe_path.read_bytes()).hexdigest(),
+           "boundary", samples, recipe["sampleRate"], transform="render alternating signed half-periods from recipe")
 
     if len({row["name"] for row in cases}) != len(cases):
         raise ValueError("Duplicate workload name")

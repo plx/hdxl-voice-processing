@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "signal": "bipolar-square",
+  "sampleRate": 16000,
+  "samples": 1920,
+  "halfPeriodSamples": 32,
+  "amplitude": 9.99999999e-8,
+  "firstHalfIsPositive": true
+}

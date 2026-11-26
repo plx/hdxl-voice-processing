@@ -1,6 +1,7 @@
 """Compare per-observation contracts before applying any numerical precision budget."""
 from array import array
 import base64
+from bisect import bisect_left
 from collections import Counter
 import hashlib
 import math
@@ -33,6 +34,30 @@ def lanes(composition, ranks):
 def status(row):
     tag = row.get("status", "available" if "value" in row else "unavailable")
     return tag + ("." + row["reason"] if "reason" in row else "")
+
+
+def sample_is_acquired(lane, sample, spans):
+    # A rolling query is placed at the exclusive end of the observed prefix.
+    return any(start <= sample < start + n or lane == "rollingCPPS" and sample == start + n for start, n in spans)
+
+
+def validate_candidates(candidates, frame_support, composition, with_hnr):
+    candidate_lanes = {} if composition == "cpps" else {"yin": "yin.fundamentalFrequency"}
+    if with_hnr:
+        candidate_lanes["hnr"] = "hnr.harmonicToNoiseRatio"
+    require(candidate_lanes.keys() == candidates.keys(), "Missing candidate inspections")
+    for key, support in candidate_lanes.items():
+        inspections = candidates[key]
+        frames = frame_support[support]
+        require(len(inspections) == len(frames), f"Missing candidate frame: {key}")
+        next_frame = Counter()
+        for inspection, frame in zip(inspections, frames):
+            epoch = frame["epoch"]
+            count = inspection["count"]
+            require(inspection["epoch"] == epoch and inspection["frame"] == next_frame[epoch] and count >= 0
+                    and all(0 <= frame[field] < count for field in ("selectedCandidate", "trackedCandidate", "strongestCandidate")
+                            if field in frame), f"Invalid candidate index or inspection order: {key}")
+            next_frame[epoch] += 1
 
 
 def validate(report, item, composition, platform, architecture):
@@ -80,7 +105,7 @@ def validate(report, item, composition, platform, architecture):
         available = sum("value" in row for row in rows)
         require(rows and dict(counts) == summary["statusCounts"] and available == summary["available"]
                 and len(rows) - available == summary["unavailable"], f"Availability counts differ: {key}")
-        require(all(any(start <= row["sample"] <= start + n for start, n in spans) and
+        require(all(sample_is_acquired(key, row["sample"], spans) and
                     ("value" not in row or math.isfinite(row["value"])) for row in rows),
                 f"Nonfinite value or timestamp outside acquisition: {key}")
     units = {"cpps.cpp": "decibelsRatio", "cpps.cpps": "decibelsRatio"}
@@ -108,22 +133,7 @@ def validate(report, item, composition, platform, architecture):
                     and 0 <= source["startSample"] <= source["startSample"] + source["sampleCount"] <= n
                     and 0 <= metric["includedSampleCount"] <= source["sampleCount"] and metric["effectiveDelaySeconds"] >= 0,
                     f"Invalid exported measurement timing: {key}")
-    candidate_lanes = {} if composition == "cpps" else {"yin": "yin.fundamentalFrequency"}
-    if ext:
-        candidate_lanes["hnr"] = "hnr.harmonicToNoiseRatio"
-    require(candidate_lanes.keys() == observed["candidates"].keys(), "Missing candidate inspections")
-    for key, support in candidate_lanes.items():
-        inspections = observed["candidates"][key]
-        frames = observed["support"][support]
-        require(len(inspections) == len(frames), f"Missing candidate frame: {key}")
-        next_frame = Counter()
-        for inspection, frame in zip(inspections, frames):
-            epoch = frame["epoch"]
-            count = inspection["count"]
-            require(inspection["epoch"] == epoch and inspection["frame"] == next_frame[epoch] and count >= 0
-                    and all(0 <= frame[field] < count for field in ("selectedCandidate", "strongestCandidate")
-                            if field in frame), f"Invalid candidate index or inspection order: {key}")
-            next_frame[epoch] += 1
+    validate_candidates(observed["candidates"], observed["support"], composition, bool(ext))
     if ext:
         typed_keys = {k for k in expected if k.startswith(("frame.", "ltas."))}
         if r["completePitchWindows"]:
@@ -256,9 +266,19 @@ def composition_signature(reference):
     def digest(value):
         return hashlib.sha256(canonical(value)).hexdigest()
     observations = reference["conformance"]
+    completions = {}
+    for record in observations["completions"]:
+        stages = dict(cpps=record["cpps"], **record["framing"])
+        if "hnr" in stages:
+            stages["hnr"] = dict(framing=stages["hnr"], available=record["hnrAvailableFrames"],
+                                 unavailable=record["hnrUnavailableFrames"])
+        for stage, details in stages.items():
+            completions.setdefault(stage, []).append(dict(source=record["source"], sourceOffset=record["sourceOffset"],
+                                                          eligible=record["eligible"], selected=record["selected"], result=details))
     return dict(values={key: digest(rows) for key, rows in observations["values"].items()},
                 support={key: digest(rows) for key, rows in observations["support"].items()},
                 candidates={key: digest(rows) for key, rows in observations["candidates"].items()},
+                completions={key: digest(rows) for key, rows in completions.items()},
                 spectralRows=reference["spectralRows"],
                 outputSHA256=digest({k: v for k, v in reference.items() if k != "spectralRows"}))
 
@@ -268,7 +288,7 @@ def check_compositions(signatures):
     for name in ("cpps", "core"):
         reduced = signatures[name]
         require(reduced["spectralRows"] == 0, "Disabled transform emitted spectral rows")
-        for field in ("values", "support", "candidates"):
+        for field in ("values", "support", "candidates", "completions"):
             require(all(full[field].get(key) == digest for key, digest in reduced[field].items()),
                     f"Shared {field} changed when enabling additional features: {name}")
     separate = signatures["separateSpectra"]
@@ -292,34 +312,81 @@ def precision(float32, widened):
     return dict(scalars=errors, spectra=bins)
 
 
+def pulse_changes(original, rounded, rate, maximum_period):
+    """Match mutual nearest landmarks on the same epoch, capped at half a local period."""
+    def epochs(data):
+        groups = {}
+        for landmark, amplitude in zip(data["landmarks"], data["cycleAmplitudes"], strict=True):
+            groups.setdefault((landmark["epoch"], landmark["sourceStart"]), []).append(
+                dict(landmark=landmark, amplitude=amplitude))
+        for records in groups.values():
+            records.sort(key=lambda r: (r["landmark"]["timeSeconds"], r["landmark"]["index"]))
+        return groups
+
+    def nearest(times, target):
+        index = bisect_left(times, target)
+        candidates = [i for i in (index - 1, index) if 0 <= i < len(times)]
+        return min(candidates, key=lambda i: (abs(times[i] - target), i)) if candidates else None
+
+    def radius(times, index):
+        gaps = [abs(times[i] - times[index]) for i in (index - 1, index + 1) if 0 <= i < len(times)]
+        return min(maximum_period / 2, min(gaps) / 2) if gaps else 1 / rate
+
+    aa, bb = epochs(original), epochs(rounded)
+    changed, missing_native, missing_rounded = [], [], []
+    matched = 0
+    for epoch in sorted(aa.keys() | bb.keys()):
+        left, right = aa.get(epoch, []), bb.get(epoch, [])
+        first = [r["landmark"]["timeSeconds"] for r in left]
+        second = [r["landmark"]["timeSeconds"] for r in right]
+        used = set()
+        for i, a in enumerate(left):
+            j = nearest(second, first[i])
+            if j is None or nearest(first, second[j]) != i or abs(first[i] - second[j]) > min(radius(first, i), radius(second, j)):
+                missing_rounded.append(a)
+                continue
+            used.add(j)
+            matched += 1
+            b = right[j]
+            if a != b:
+                change = dict(native=a, rounded=b, timeDeltaSeconds=second[j] - first[i])
+                if "rms" in a["amplitude"] and "rms" in b["amplitude"]:
+                    change["rmsDelta"] = b["amplitude"]["rms"] - a["amplitude"]["rms"]
+                changed.append(change)
+        missing_native.extend(b for j,b in enumerate(right) if j not in used)
+    return dict(matched=matched, changed=changed, nativeOnly=missing_rounded, roundedOnly=missing_native)
+
+
+def quantized_support(original, rounded):
+    """PCM rounding can change voicing, tracker memory and measurement confidence on a fixed window."""
+    fields = ("epoch", "windowStart", "windowCount", "centerSecondsFromRegionOrigin",
+              "smoothingFrames", "smoothingEdge", "lookahead")
+    changes = {}
+    for key, left in original["support"].items():
+        rows = []
+        right = rounded["support"][key]
+        require(len(left) == len(right), f"Input rounding moved a fixed scheduled frame: {key}")
+        for a, b in zip(left, right):
+            require(all(a.get(field) == b.get(field) for field in fields),
+                    f"Input rounding moved an observation window: {key}")
+            differences = {field: dict(native=a.get(field), rounded=b.get(field))
+                           for field in a.keys() | b.keys() if a.get(field) != b.get(field)}
+            if differences:
+                rows.append(dict(epoch=a["epoch"], windowStart=a["windowStart"], changes=differences))
+        if rows:
+            changes[key] = rows
+    return changes
+
+
 def quantization(native, widened):
     """These representations encode different input samples. Preserve the measured differences."""
     x, y = (item["reference"]["conformance"] for item in (native, widened))
-    support_changes = {}
-    for key in x["support"]:
-        aa, bb = x["support"][key], y["support"][key]
-        require(len(aa) == len(bb), f"Input rounding moved a fixed scheduled frame: {key}")
-        changes = Counter()
-        for a, b in zip(aa, bb):
-            for field in a.keys() | b.keys():
-                if a.get(field) != b.get(field):
-                    if field == "metricTiming":
-                        # Inclusion can follow a signal-dependent status. The source clock and delay cannot move.
-                        left, right = a[field], b[field]
-                        require({k:v for k,v in left.items() if k != "includedSampleCount"} ==
-                                {k:v for k,v in right.items() if k != "includedSampleCount"},
-                                f"Input rounding changed metric support: {key}")
-                        changes["metricIncludedSampleCount"] += 1
-                        continue
-                    require(field in ("selectedCandidate", "trackedCandidate", "strongestCandidate", "warnings"),
-                            f"Input rounding changed acoustic support: {key}.{field}")
-                    changes[field] += 1
-        if changes:
-            support_changes[key] = dict(changes)
+    extensions = native["recipe"].get("extensions")
     return dict(nativePCMSHA256=native["fixture"]["pcmSHA256"], widenedPCMSHA256=widened["fixture"]["pcmSHA256"],
                 scalars=distribution(x, y, native["fixture"]["sampleRate"], different_input=True),
-                changedSelection=support_changes,
+                changedSupport=quantized_support(x, y),
                 spectra={k: spectral_difference(v, y["spectra"][k]) for k,v in x["spectra"].items()},
                 differingCandidateCounts={k: sum(a["count"] != b["count"] for a, b in zip(v, y["candidates"][k], strict=True))
                                           for k,v in x["candidates"].items()},
-                nativePulseCount=len(x["landmarks"]), roundedPulseCount=len(y["landmarks"]))
+                pulseChanges=pulse_changes(x, y, native["fixture"]["sampleRate"], extensions["pulses"]["maximumPeriodSeconds"])
+                            if extensions else None)

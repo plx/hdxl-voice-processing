@@ -40,7 +40,7 @@ public struct SuiteSupport: Encodable, Equatable, Sendable {
     public let smoothingFrames: Int?
     public let smoothingEdge: Bool?
     public let lookahead: Double?
-    public let warnings: [MeasurementWarning]
+    public let outcome: MeasurementOutcome
 }
 
 public struct SuiteObservations: Encodable, Equatable, Sendable {
@@ -134,7 +134,7 @@ public struct SuiteObservations: Encodable, Equatable, Sendable {
                     strongestCandidate: strongest,
                     smoothingFrames: smoothingFrames, smoothingEdge: smoothingEdge,
                     lookahead: lookahead,
-                    warnings: export.result.outcome.estimate?.warnings ?? []))
+                    outcome: export.result.outcome))
         }
     }
 }

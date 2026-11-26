@@ -84,6 +84,14 @@ def compare_case(targets, inputs, items, composition, temporary):
                   commonPCM=precision(host["float32"], common))
     if "widened" in host:
         result["sourceQuantization"] = quantization(host["float64"], common)
+    if items[0]["pair"] == "yin-silence-boundary":
+        native = host["float64"]["reference"]["conformance"]
+        rounded = common["reference"]["conformance"]
+        key = "yin.trackedFundamentalFrequency"
+        require(native["values"]["yin"][0].get("reason") == "silence" and rounded["values"]["yin"][0]["status"] == "voiced"
+                and native["support"][key][1]["windowStart"] == rounded["support"][key][1]["windowStart"]
+                and native["support"][key][1]["dependencyCount"] < rounded["support"][key][1]["dependencyCount"],
+                "The silence-boundary fixture did not exercise a rounding-dependent change in tracker memory")
     if items[0]["pair"] in COMPOSITION_CONTROLS:
         result["compositionSignatures"] = {key: composition_signature(run["reference"]) for key, run in host.items()}
     return result
